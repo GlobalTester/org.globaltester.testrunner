@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            defaultHandler="org.globaltester.testrunner.ui.commands.RunTestCommandHandler"
+            id="org.globaltester.testrunner.ui.commands.RunTestCommand"
+            name="Run Test">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="popup:org.globaltester.core.ui.views.GlobalTesterNavigator.PopupMenu?after=group.edit">
+         <command
+               commandId="org.globaltester.testrunner.ui.commands.RunTestCommand"
+               label="Run Test"
+               style="push"
+               tooltip="Some tooltip text">
+         </command>
+      </menuContribution>
+   </extension>
+</plugin>
