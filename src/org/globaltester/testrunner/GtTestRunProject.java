@@ -32,8 +32,8 @@ public class GtTestRunProject {
 		try {
 			addGtTestRunNature(project);
 
-			String[] paths = { "TestData/Certificates", "TestData/Subroutines",
-					"TestLayer" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			String[] paths = { "DUTconfiguration", "TestSpecification",
+					"TestResults" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			addToProjectStructure(project, paths);
 		} catch (CoreException e) {
 			e.printStackTrace();
