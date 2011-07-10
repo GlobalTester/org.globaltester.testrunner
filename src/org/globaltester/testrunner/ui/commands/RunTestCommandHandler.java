@@ -3,7 +3,6 @@ package org.globaltester.testrunner.ui.commands;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -36,24 +35,23 @@ public class RunTestCommandHandler extends AbstractHandler {
 		
 		Object firstSelectionElement = treeSel.getFirstElement();
 		//check type of selected element
-		if (! (firstSelectionElement instanceof IFile)){
+		if (! (firstSelectionElement instanceof IResource)){
 			return null;
 		}
-		 
-		IFile selectedResource = (IFile) firstSelectionElement;
 		
-		//create the new testrun project
-		GtTestRunProject.createProject(selectedResource.getName()+"_run", null);
+		//get the according run project instance
+		GtTestRunProject project = GtTestRunProject.getProjectForResource((IResource) firstSelectionElement);
+
+		//execute all unexecuted tests
+		project.executeTests();
 		
 		//refresh the workspace
 		try {
 			ResourcesPlugin.getWorkspace().getRoot().refreshLocal(IResource.DEPTH_INFINITE, null);
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new ExecutionException("Workspace could not be refreshed", e);
 		}
 
-		
 		return null;
 	}
 

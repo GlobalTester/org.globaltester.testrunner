@@ -8,6 +8,11 @@
             id="org.globaltester.testrunner.ui.commands.RunTestCommand"
             name="Run Test">
       </command>
+      <command
+            defaultHandler="org.globaltester.testrunner.ui.commands.CreateExecutionProjectCommandHandler"
+            id="org.globaltester.testrunner.ui.commands.CreateExecutionProjectCommand"
+            name="Create Execution Project">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.menus">
@@ -16,6 +21,12 @@
          <command
                commandId="org.globaltester.testrunner.ui.commands.RunTestCommand"
                label="Run Test"
+               style="push"
+               tooltip="Some tooltip text">
+         </command>
+         <command
+               commandId="org.globaltester.testrunner.ui.commands.CreateExecutionProjectCommand"
+               label="Create Execution Project"
                style="push"
                tooltip="Some tooltip text">
          </command>
