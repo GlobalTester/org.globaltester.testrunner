@@ -33,8 +33,8 @@ public class GtTestRunProjectTest {
 				project.hasNature(GtTestRunNature.NATURE_ID));
 
 		// check directory structure is created correctly
-		String[] paths = { "DUTconfiguration", "TestSpecification",
-		"TestResults" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		String[] paths = { "DUTconfiguration", "ExecutionState", "TestSpecification",
+		"TestResults" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		String projectPath = project.getLocation().toString();
 		for (String path : paths) {
 			File file = new File(projectPath + "/" + path);
