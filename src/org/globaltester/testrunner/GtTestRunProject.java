@@ -1,17 +1,37 @@
 package org.globaltester.testrunner;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Iterator;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.globaltester.smartcardshell.ScriptRunner;
+import org.globaltester.testrunner.testframework.TestExecution;
+import org.globaltester.testrunner.testframework.TestExecutionFactory;
+import org.globaltester.testspecification.testframework.TestExecutable;
+import org.mozilla.javascript.Context;
 
 public class GtTestRunProject {
+
+	private static final String SPEC_FOLDER = "TestSpecification";
+	private static final String CONFIG_FOLDER = "DUTconfiguration";
+	private static final String STATE_FOLDER = "ExecutionState";
+	private static final String RESULT_FOLDER = "TestResults";
+
+	private static Hashtable<IProject, GtTestRunProject> instances = new Hashtable<IProject, GtTestRunProject>();
+	private IProject iProject; // IProject that is represented by this
+								// instance
+	private ArrayList<TestExecution> executions = new ArrayList<TestExecution>();
+
 	/**
 	 * Create a GlobalTester TestSpecification Project. This includes creation
 	 * of the Eclipse project, adding the according nature and creating the
@@ -32,8 +52,8 @@ public class GtTestRunProject {
 		try {
 			addGtTestRunNature(project);
 
-			String[] paths = { "DUTconfiguration", "TestSpecification",
-					"TestResults" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			String[] paths = { CONFIG_FOLDER, STATE_FOLDER, SPEC_FOLDER,
+					RESULT_FOLDER };
 			addToProjectStructure(project, paths);
 		} catch (CoreException e) {
 			e.printStackTrace();
@@ -130,4 +150,74 @@ public class GtTestRunProject {
 		}
 	}
 
+	public static GtTestRunProject getProjectForResource(
+			IResource selectedResource) {
+
+		IProject iProject = selectedResource.getProject();
+
+		if (!instances.containsKey(iProject)) {
+			instances.put(iProject, new GtTestRunProject(iProject));
+		}
+
+		return instances.get(iProject);
+	}
+
+	private GtTestRunProject(IProject iProject) {
+		super();
+		try {
+			Assert.isTrue(iProject.hasNature(GtTestRunNature.NATURE_ID),
+					"Project does not use GtTestRunNature");
+		} catch (CoreException e) {
+			Assert.isTrue(false, "Project nature can not be checked");
+		}
+
+		this.iProject = iProject;
+	}
+
+	/**
+	 * @return the iProject
+	 */
+	public IProject getIProject() {
+		return iProject;
+	}
+
+	/**
+	 * Execute all tests that need to be executed e.g. which do not have a valid
+	 * previous execution associated
+	 */
+	public void executeTests() {
+		Context cx = Context.enter();
+		ScriptRunner sr = new ScriptRunner(cx, iProject.getLocation().toOSString());
+		for (Iterator<TestExecution> execIter = executions.iterator(); execIter
+				.hasNext();) {
+			TestExecution curExecution = (TestExecution) execIter.next();
+			curExecution.execute(sr, cx);
+
+		}
+		
+		//close JS context
+		Context.exit();
+	}
+
+	/**
+	 * Create an TestExecution from an Executable, add it to the list of
+	 * executions and keep the related files in sync
+	 * 
+	 * @param testExecutable
+	 */
+	public void addExecutable(TestExecutable testExecutable) {
+		TestExecution testExecution = null;
+		try {
+			testExecution = TestExecutionFactory.createExecution(
+					testExecutable, this);
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if (testExecution != null) {
+			executions.add(testExecution);
+		}
+		// FIXME store list of execution instances to filesystem
+
+	}
 }
