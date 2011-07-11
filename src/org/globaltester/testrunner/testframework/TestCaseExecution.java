@@ -86,13 +86,17 @@ public class TestCaseExecution extends TestExecution {
 		TestLogger.initTestExecutable(getTestCase().getTestCaseID());
 		getTestCase().dumpTestCaseInfos();
 		
-		TestStepExecutor stepExecutor = new TestStepExecutor(sr, cx);
+		//TODO handle preconditions etc.
 		
 		//iterate over all test steps and execute them
+		TestLogger.info("Running TestSteps");
+		TestStepExecutor stepExecutor = new TestStepExecutor(sr, cx);
 		List<TestStep> testSteps = getTestCase().getTestSteps(); 
 		for (Iterator<TestStep> testStepIter = testSteps.iterator(); testStepIter.hasNext();) {
 			stepExecutor.execute(testStepIter.next());
 		}
+		
+		//TODO handle postconditions etc.
 		
 		//dump execution information to logfile
 		TestLogger.shutdownTestExecutableLogger();

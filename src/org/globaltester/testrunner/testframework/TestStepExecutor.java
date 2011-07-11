@@ -1,5 +1,7 @@
 package org.globaltester.testrunner.testframework;
 
+import java.util.Iterator;
+
 import org.globaltester.logging.logger.TestLogger;
 import org.globaltester.smartcardshell.ScriptRunner;
 import org.globaltester.testspecification.testframework.TestStep;
@@ -16,13 +18,19 @@ public class TestStepExecutor {
 	}
 
 	public void execute(TestStep curStep) {
-		// FIXME implement execution of TestStep
-		TestLogger.debug("TestStep Description");
-		TestLogger.trace("TestStep code");
+		TestLogger.info("TestStep "+ curStep.getId());
 		
-		String code = curStep.getTechnicalCommand(); //FIXME get this code from TestStep
+		//log TestStep descriptions
+		Iterator<String> descrIter = curStep.getDescriptions().iterator();
+		while (descrIter.hasNext()) {
+			TestLogger.debug("   * "+descrIter.next());
+			
+		}
 		
-		scriptRunner.executeCommand(context, code, "SourceName", -1);
+		//get and execute the code
+		String code = curStep.getTechnicalCommand();
+		TestLogger.trace("Code \n" + code);
+		scriptRunner.executeCommand(context, code, curStep.getId(), -1);
 	}
 
 }
