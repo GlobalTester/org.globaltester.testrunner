@@ -10,7 +10,7 @@ import org.globaltester.testspecification.testframework.TestExecutable;
 
 public class TestExecutionFactory {
 
-	private static Hashtable<IFile, TestExecution> instances;
+	private static Hashtable<IFile, TestExecution> instances = new Hashtable<IFile, TestExecution>();
 
 	/**
 	 * Return the instance representing the state of the given IFile
@@ -41,7 +41,7 @@ public class TestExecutionFactory {
 	public static TestExecution createExecution(TestExecutable testExecutable,
 			GtTestRunProject gtTestRunProject) throws CoreException {
 
-		IFile executionFile = gtTestRunProject.getIProject().getFile("path");
+		IFile executionFile = gtTestRunProject.getStateIFile(testExecutable);
 
 		if (testExecutable instanceof TestCase) {
 			TestCaseExecution tcExecution = new TestCaseExecution(

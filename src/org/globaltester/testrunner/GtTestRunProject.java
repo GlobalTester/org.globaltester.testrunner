@@ -77,7 +77,7 @@ public class GtTestRunProject {
 	 *            default workspace location will be used.
 	 * 
 	 */
-	//TODO refactor this to GtResourceHelper
+	// TODO refactor this to GtResourceHelper
 	private static IProject createEmptyProject(String projectName, URI location) {
 		IProject newProject = ResourcesPlugin.getWorkspace().getRoot()
 				.getProject(projectName);
@@ -106,7 +106,7 @@ public class GtTestRunProject {
 		return newProject;
 	}
 
-	//TODO refactor this to GtResourceHelper
+	// TODO refactor this to GtResourceHelper
 	private static void createFolder(IFolder folder) throws CoreException {
 		IContainer parent = folder.getParent();
 		if (parent instanceof IFolder) {
@@ -126,7 +126,7 @@ public class GtTestRunProject {
 	 *            array of relative paths of the folders to be created
 	 * @throws CoreException
 	 */
-	//TODO refactor this to GtResourceHelper
+	// TODO refactor this to GtResourceHelper
 	private static void addToProjectStructure(IProject project, String[] paths)
 			throws CoreException {
 		for (String currentPath : paths) {
@@ -142,7 +142,7 @@ public class GtTestRunProject {
 	 *            project to add the nature to
 	 * @throws CoreException
 	 */
-	//TODO refactor this to GtResourceHelper
+	// TODO refactor this to GtResourceHelper
 	private static void addGtTestRunNature(IProject project)
 			throws CoreException {
 		if (!project.hasNature(GtTestRunNature.NATURE_ID)) {
@@ -159,7 +159,7 @@ public class GtTestRunProject {
 	}
 
 	public static GtTestRunProject getProjectForResource(
-			IResource selectedResource) {
+			IResource selectedResource) throws CoreException {
 
 		IProject iProject = selectedResource.getProject();
 
@@ -170,7 +170,7 @@ public class GtTestRunProject {
 		return instances.get(iProject);
 	}
 
-	private GtTestRunProject(IProject iProject) {
+	private GtTestRunProject(IProject iProject) throws CoreException {
 		super();
 		try {
 			Assert.isTrue(iProject.hasNature(GtTestRunNature.NATURE_ID),
@@ -180,6 +180,26 @@ public class GtTestRunProject {
 		}
 
 		this.iProject = iProject;
+
+		// add all TestExecutions
+		IResource[] testExecutionsFile = iProject.getFolder(STATE_FOLDER)
+				.members();
+		for (int i = 0; i < testExecutionsFile.length; i++) {
+			if (testExecutionsFile[i] instanceof IFile) {
+
+				TestExecution testExecution = null;
+				try {
+					testExecution = TestExecutionFactory
+							.getInstance((IFile) testExecutionsFile[i]);
+				} catch (CoreException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				if (testExecution != null) {
+					executions.add(testExecution);
+				}
+			}
+		}
 	}
 
 	/**
@@ -198,12 +218,10 @@ public class GtTestRunProject {
 		// initialize the TestLogger
 		if (!TestLogger.isInitialized()) {
 			// initialize test logging for this test session
-			IFile defaultLoggingDir = iProject.getFile(RESULT_FOLDER
+			IFolder defaultLoggingDir = iProject.getFolder(RESULT_FOLDER
 					+ File.separator + "Logging");
 			try {
-				if (!defaultLoggingDir.exists()) {
-					defaultLoggingDir.create(null, false, null);
-				}
+				GtResourceHelper.createWithAllParents(defaultLoggingDir);
 			} catch (CoreException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -266,13 +284,34 @@ public class GtTestRunProject {
 	 * @return IFile inside the SPEC_FOLDER of this project
 	 * @throws CoreException
 	 */
-	public IFile getSecificationIFile(TestExecutable executable)
+	public IFile getSpecificationIFile(TestExecutable executable)
 			throws CoreException {
 		String execProjName = executable.getIFile().getProject().getName();
 		String execRelPath = executable.getIFile().getProjectRelativePath()
 				.toOSString();
 		String copyRelPath = GtTestRunProject.SPEC_FOLDER + File.separator
 				+ execProjName + File.separator + execRelPath;
+
+		// make sure that parents exist
+		IFile iFile = iProject.getFile(copyRelPath);
+		GtResourceHelper.createWithAllParents(iFile.getParent());
+
+		return iFile;
+	}
+
+	/**
+	 * Returns an IFile where the given TestExecution file for the given
+	 * TestExecutable should be stored for usage by this run
+	 * 
+	 * @param executable
+	 *            TestExecutable
+	 * @return IFile inside the STATE_FOLDER of this project
+	 * @throws CoreException
+	 */
+	public IFile getStateIFile(TestExecutable executable) throws CoreException {
+		String execName = executable.getName();
+		String copyRelPath = GtTestRunProject.STATE_FOLDER + File.separator
+				+ execName;
 
 		// make sure that parents exist
 		IFile iFile = iProject.getFile(copyRelPath);

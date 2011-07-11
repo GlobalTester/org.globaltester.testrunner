@@ -62,6 +62,21 @@ public abstract class TestExecution {
 		// TODO define and extract additional required meta data
 		// TODO handle reference to original specification resource
 	}
+	
+	/**
+	 * dump metadata from XML Element that is common for all TestExecutoin
+	 * types
+	 * 
+	 * @param root
+	 */
+	void dumpCommonMetaData(Element root) {
+		Element specFileElement = new Element("SpecificationResource");
+		specFileElement.addContent(specFile.getProjectRelativePath().toString());
+		root.addContent(specFileElement);
+
+		// TODO define and extract additional required meta data
+		// TODO handle reference to original specification resource
+	}
 
 	/**
 	 * @return the specFile
@@ -75,8 +90,9 @@ public abstract class TestExecution {
 	/**
 	 * Returns the GtTestProject instance this TestExecution is associated with
 	 * @return
+	 * @throws CoreException 
 	 */
-	protected GtTestRunProject getGtTestRunProject() {
+	protected GtTestRunProject getGtTestRunProject() throws CoreException {
 		return GtTestRunProject.getProjectForResource(iFile);
 	}
 

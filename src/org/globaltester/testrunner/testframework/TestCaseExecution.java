@@ -28,7 +28,7 @@ public class TestCaseExecution extends TestExecution {
 		super(iFile);
 
 		//copy the specFile to the GtTestRunProject
-		specFile = getGtTestRunProject().getSecificationIFile(testCase);
+		specFile = getGtTestRunProject().getSpecificationIFile(testCase);
 		testCase.getIFile().copy(specFile.getFullPath(), false, null);
 
 		//store this configuration
@@ -39,7 +39,10 @@ public class TestCaseExecution extends TestExecution {
 	 * Store the current state to the resource iFile
 	 */
 	private void storeToIFile() {
-		// FIXME save configuration to IFile
+		Element root = new Element("TestCaseExecution");
+		dumpCommonMetaData(root);
+		
+		XMLHelper.saveDoc(iFile, root);
 
 	}
 
