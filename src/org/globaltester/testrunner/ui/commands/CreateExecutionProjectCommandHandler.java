@@ -47,24 +47,8 @@ public class CreateExecutionProjectCommandHandler extends AbstractHandler {
 			return null;
 		}
 
-		IFile selectedResource = (IFile) firstSelectionElement;
-
-		// create the new testrun project
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-		Calendar cal = Calendar.getInstance();
-		IProject iProject = GtTestRunProject.createProject(
-				selectedResource.getName() + "_" + sdf.format(cal.getTime()),
-				null);
-		GtTestRunProject runProject = GtTestRunProject.getProjectForResource(iProject);
-		
-		//add the selected resource to the list of executables
-		TestExecutable testExecutable;
-		try {
-			testExecutable = TestExecutableFactory.getInstance(selectedResource);
-		} catch (CoreException e) {
-			throw new ExecutionException("No Testexectubale could be created from selected Resource", e);
-		}
-		runProject.addExecutable(testExecutable);
+		//create the project
+		createExecutionProject((IFile) firstSelectionElement);
 
 		// refresh the workspace
 		try {
@@ -75,6 +59,27 @@ public class CreateExecutionProjectCommandHandler extends AbstractHandler {
 		}
 
 		return null;
+	}
+
+	public static GtTestRunProject createExecutionProject(IFile testExecutableFile) throws ExecutionException {
+		// create the new testrun project
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+		Calendar cal = Calendar.getInstance();
+		IProject iProject = GtTestRunProject.createProject(
+				testExecutableFile.getName() + "_" + sdf.format(cal.getTime()),
+				null);
+		GtTestRunProject runProject = GtTestRunProject.getProjectForResource(iProject);
+		
+		//add the selected resource to the list of executables
+		TestExecutable testExecutable;
+		try {
+			testExecutable = TestExecutableFactory.getInstance(testExecutableFile);
+		} catch (CoreException e) {
+			throw new ExecutionException("No TestExectubale could be created from selected Resource", e);
+		}
+		runProject.addExecutable(testExecutable);
+		
+		return runProject;
 	}
 
 }
