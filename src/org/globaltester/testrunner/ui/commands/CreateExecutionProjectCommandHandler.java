@@ -48,7 +48,11 @@ public class CreateExecutionProjectCommandHandler extends AbstractHandler {
 		}
 
 		//create the project
-		createExecutionProject((IFile) firstSelectionElement);
+		try {
+			createExecutionProject((IFile) firstSelectionElement);
+		} catch (CoreException e) {
+			throw new ExecutionException("ExecutionProject could not be created", e);
+		}
 
 		// refresh the workspace
 		try {
@@ -61,7 +65,7 @@ public class CreateExecutionProjectCommandHandler extends AbstractHandler {
 		return null;
 	}
 
-	public static GtTestRunProject createExecutionProject(IFile testExecutableFile) throws ExecutionException {
+	public static GtTestRunProject createExecutionProject(IFile testExecutableFile) throws ExecutionException, CoreException {
 		// create the new testrun project
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 		Calendar cal = Calendar.getInstance();
