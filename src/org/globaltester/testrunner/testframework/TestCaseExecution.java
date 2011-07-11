@@ -83,8 +83,8 @@ public class TestCaseExecution extends TestExecution {
 		//TODO use variable forceExecution
 		
 		//dump execution information to logfile
-		TestLogger.info("----- Begin TestCase execution -----");
-		getTestCase().dumpTestCaseInformation();
+		TestLogger.initTestExecutable(getTestCase().getTestCaseID());
+		getTestCase().dumpTestCaseInfos();
 		
 		TestStepExecutor stepExecutor = new TestStepExecutor(sr, cx);
 		
@@ -95,7 +95,7 @@ public class TestCaseExecution extends TestExecution {
 		}
 		
 		//dump execution information to logfile
-		TestLogger.info("----- End TestCase execution -----");
+		TestLogger.shutdownTestExecutableLogger();
 		
 
 	}
