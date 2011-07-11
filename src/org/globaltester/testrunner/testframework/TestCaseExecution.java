@@ -7,6 +7,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.globaltester.core.xml.XMLHelper;
+import org.globaltester.logging.logger.TestLogger;
 import org.globaltester.smartcardshell.ScriptRunner;
 import org.globaltester.testspecification.testframework.TestCase;
 import org.globaltester.testspecification.testframework.TestExecutableFactory;
@@ -78,7 +79,13 @@ public class TestCaseExecution extends TestExecution {
 	}
 
 	@Override
-	public void forceExecute(ScriptRunner sr, Context cx) {
+	public void execute(ScriptRunner sr, Context cx, boolean forceExecution) {
+		//TODO use variable forceExecution
+		
+		//dump execution information to logfile
+		TestLogger.info("----- Begin TestCase execution -----");
+		getTestCase().dumpTestCaseInformation();
+		
 		TestStepExecutor stepExecutor = new TestStepExecutor(sr, cx);
 		
 		//iterate over all test steps and execute them
@@ -86,6 +93,10 @@ public class TestCaseExecution extends TestExecution {
 		for (Iterator<TestStep> testStepIter = testSteps.iterator(); testStepIter.hasNext();) {
 			stepExecutor.execute(testStepIter.next());
 		}
+		
+		//dump execution information to logfile
+		TestLogger.info("----- End TestCase execution -----");
+		
 
 	}
 

@@ -1,11 +1,13 @@
 package org.globaltester.testrunner;
 
+import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
 
 import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
@@ -14,6 +16,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.globaltester.logging.logger.TestLogger;
 import org.globaltester.smartcardshell.ScriptRunner;
 import org.globaltester.testrunner.testframework.TestExecution;
 import org.globaltester.testrunner.testframework.TestExecutionFactory;
@@ -186,17 +189,45 @@ public class GtTestRunProject {
 	 * previous execution associated
 	 */
 	public void executeTests() {
+
+		// initialize the TestLogger
+		if (!TestLogger.isInitialized()) {
+			// initialize test logging for this test session
+			IFile defaultLoggingDir = iProject.getFile(RESULT_FOLDER
+					+ File.separator + "Logging");
+			try {
+				if (!defaultLoggingDir.exists()) {
+					defaultLoggingDir.create(null, false, null);
+				}
+			} catch (CoreException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			TestLogger.init(defaultLoggingDir.getLocation().toOSString());
+		}
+
+		// init JS ScriptRunner and Context
 		Context cx = Context.enter();
-		ScriptRunner sr = new ScriptRunner(cx, iProject.getLocation().toOSString());
+		ScriptRunner sr = new ScriptRunner(cx, iProject.getLocation()
+				.toOSString());
+
+		// execute all required tests
 		for (Iterator<TestExecution> execIter = executions.iterator(); execIter
 				.hasNext();) {
+			// TODO configure logger for indiviual logfiles here
 			TestExecution curExecution = (TestExecution) execIter.next();
-			curExecution.execute(sr, cx);
+			curExecution.execute(sr, cx, false);
+			// TODO deconfigure logger for indiviual logfiles here
 
 		}
-		
-		//close JS context
+
+		// close JS context
 		Context.exit();
+
+		// shutdown the TestLogger
+		TestLogger.shutdown();
+
 	}
 
 	/**

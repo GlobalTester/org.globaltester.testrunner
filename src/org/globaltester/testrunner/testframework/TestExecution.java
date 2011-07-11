@@ -33,14 +33,19 @@ public abstract class TestExecution {
 	}
 
 	/**
-	 * Execute the represented test executable
+	 * (Re)Execute the code associated with this test execution
+	 * 
+	 * @param sr
+	 *            ScriptRunner to execut JS code in
+	 * @param cx
+	 *            Context to execute JS code in
+	 * @param forceExecution
+	 *            if true the code is executed regardles if previous execution
+	 *            is still valid, if true code is only executed if no previous
+	 *            execution is still valid
 	 */
-	public void execute(ScriptRunner sr, Context cx) {
-		// TODO differentiate when no execution is needed
-		forceExecute(sr, cx);
-	}
-
-	public abstract void forceExecute(ScriptRunner sr, Context cx);
+	public abstract void execute(ScriptRunner sr, Context cx,
+			boolean forceExecution);
 
 	/**
 	 * extract metadata from XML Element that is common for all TestExecutoin
@@ -49,7 +54,8 @@ public abstract class TestExecution {
 	 * @param root
 	 */
 	void extractCommonMetaData(Element root) {
-				String specFileName = root.getChild("SpecificationResource").getTextTrim();
+		String specFileName = root.getChild("SpecificationResource")
+				.getTextTrim();
 		specFile = iFile.getProject().getFile(specFileName);
 
 		// TODO define and extract additional required meta data
