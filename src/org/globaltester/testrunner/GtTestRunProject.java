@@ -16,6 +16,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.globaltester.core.resources.GtResourceHelper;
 import org.globaltester.logging.logger.TestLogger;
 import org.globaltester.smartcardshell.ScriptRunner;
 import org.globaltester.testrunner.testframework.TestExecution;
@@ -76,6 +77,7 @@ public class GtTestRunProject {
 	 *            default workspace location will be used.
 	 * 
 	 */
+	//TODO refactor this to GtResourceHelper
 	private static IProject createEmptyProject(String projectName, URI location) {
 		IProject newProject = ResourcesPlugin.getWorkspace().getRoot()
 				.getProject(projectName);
@@ -104,6 +106,7 @@ public class GtTestRunProject {
 		return newProject;
 	}
 
+	//TODO refactor this to GtResourceHelper
 	private static void createFolder(IFolder folder) throws CoreException {
 		IContainer parent = folder.getParent();
 		if (parent instanceof IFolder) {
@@ -123,6 +126,7 @@ public class GtTestRunProject {
 	 *            array of relative paths of the folders to be created
 	 * @throws CoreException
 	 */
+	//TODO refactor this to GtResourceHelper
 	private static void addToProjectStructure(IProject project, String[] paths)
 			throws CoreException {
 		for (String currentPath : paths) {
@@ -138,6 +142,7 @@ public class GtTestRunProject {
 	 *            project to add the nature to
 	 * @throws CoreException
 	 */
+	//TODO refactor this to GtResourceHelper
 	private static void addGtTestRunNature(IProject project)
 			throws CoreException {
 		if (!project.hasNature(GtTestRunNature.NATURE_ID)) {
@@ -251,4 +256,29 @@ public class GtTestRunProject {
 		// FIXME store list of execution instances to filesystem
 
 	}
+
+	/**
+	 * Returns an IFile where the given TestExecutable specification file should
+	 * be stored for usage by this run
+	 * 
+	 * @param executable
+	 *            TestExecutable
+	 * @return IFile inside the SPEC_FOLDER of this project
+	 * @throws CoreException
+	 */
+	public IFile getSecificationIFile(TestExecutable executable)
+			throws CoreException {
+		String execProjName = executable.getIFile().getProject().getName();
+		String execRelPath = executable.getIFile().getProjectRelativePath()
+				.toOSString();
+		String copyRelPath = GtTestRunProject.SPEC_FOLDER + File.separator
+				+ execProjName + File.separator + execRelPath;
+
+		// make sure that parents exist
+		IFile iFile = iProject.getFile(copyRelPath);
+		GtResourceHelper.createWithAllParents(iFile.getParent());
+
+		return iFile;
+	}
+
 }

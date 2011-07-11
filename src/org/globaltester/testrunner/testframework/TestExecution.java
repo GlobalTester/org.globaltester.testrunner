@@ -3,6 +3,7 @@ package org.globaltester.testrunner.testframework;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.globaltester.smartcardshell.ScriptRunner;
+import org.globaltester.testrunner.GtTestRunProject;
 import org.jdom.Element;
 import org.mozilla.javascript.Context;
 
@@ -67,6 +68,16 @@ public abstract class TestExecution {
 	 */
 	public IFile getSpecFile() {
 		return specFile;
+	}
+	
+
+
+	/**
+	 * Returns the GtTestProject instance this TestExecution is associated with
+	 * @return
+	 */
+	protected GtTestRunProject getGtTestRunProject() {
+		return GtTestRunProject.getProjectForResource(iFile);
 	}
 
 }

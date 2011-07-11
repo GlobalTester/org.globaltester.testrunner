@@ -23,10 +23,15 @@ public class TestCaseExecution extends TestExecution {
 		initFromIFile();
 	}
 
-	public TestCaseExecution(IFile iFile, TestCase testCase) throws CoreException {
+	protected TestCaseExecution(IFile iFile, TestCase testCase)
+			throws CoreException {
 		super(iFile);
-		
-		specFile = testCase.getIFile();
+
+		//copy the specFile to the GtTestRunProject
+		specFile = getGtTestRunProject().getSecificationIFile(testCase);
+		testCase.getIFile().copy(specFile.getFullPath(), false, null);
+
+		//store this configuration
 		storeToIFile();
 	}
 
@@ -35,7 +40,7 @@ public class TestCaseExecution extends TestExecution {
 	 */
 	private void storeToIFile() {
 		// FIXME save configuration to IFile
-		
+
 	}
 
 	/**
@@ -48,7 +53,7 @@ public class TestCaseExecution extends TestExecution {
 																// validation
 																// here
 		Element root = doc.getRootElement();
-		
+
 		// check that root element has correct name
 		Assert.isTrue(root.getName().equals("TestCaseExecution"),
 				"Root element is not TestCaseExecution");
@@ -80,36 +85,38 @@ public class TestCaseExecution extends TestExecution {
 
 	@Override
 	public void execute(ScriptRunner sr, Context cx, boolean forceExecution) {
-		//TODO use variable forceExecution
-		
-		//dump execution information to logfile
+		// TODO use variable forceExecution
+
+		// dump execution information to logfile
 		TestLogger.initTestExecutable(getTestCase().getTestCaseID());
 		getTestCase().dumpTestCaseInfos();
-		
-		//TODO handle preconditions etc.
-		
-		//iterate over all test steps and execute them
+
+		// TODO handle preconditions etc.
+
+		// iterate over all test steps and execute them
 		TestLogger.info("Running TestSteps");
 		TestStepExecutor stepExecutor = new TestStepExecutor(sr, cx);
-		List<TestStep> testSteps = getTestCase().getTestSteps(); 
-		for (Iterator<TestStep> testStepIter = testSteps.iterator(); testStepIter.hasNext();) {
+		List<TestStep> testSteps = getTestCase().getTestSteps();
+		for (Iterator<TestStep> testStepIter = testSteps.iterator(); testStepIter
+				.hasNext();) {
 			stepExecutor.execute(testStepIter.next());
 		}
-		
-		//TODO handle postconditions etc.
-		
-		//dump execution information to logfile
+
+		// TODO handle postconditions etc.
+
+		// dump execution information to logfile
 		TestLogger.shutdownTestExecutableLogger();
-		
 
 	}
 
 	private TestCase getTestCase() {
 		IFile testCaseResource = getSpecFile();
 		try {
-			return (TestCase) TestExecutableFactory.getInstance(testCaseResource);
+			return (TestCase) TestExecutableFactory
+					.getInstance(testCaseResource);
 		} catch (CoreException e) {
-			throw new RuntimeException("Could not create TestCase for "+testCaseResource, e);
+			throw new RuntimeException("Could not create TestCase for "
+					+ testCaseResource, e);
 		}
 	}
 
