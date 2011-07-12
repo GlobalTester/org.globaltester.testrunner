@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.globaltester.core.resources.GtResourceHelper;
+import org.globaltester.logging.logger.GTLogger;
 import org.globaltester.logging.logger.TestLogger;
 import org.globaltester.smartcardshell.ScriptRunner;
 import org.globaltester.testrunner.testframework.TestExecution;
@@ -215,8 +216,10 @@ public class GtTestRunProject {
 	 */
 	public void executeTests() {
 
-		// initialize the TestLogger
-		if (!TestLogger.isInitialized()) {
+		// (re)initialize the TestLogger
+		if (TestLogger.isInitialized()) {
+			TestLogger.shutdown();
+		}
 			// initialize test logging for this test session
 			IFolder defaultLoggingDir = iProject.getFolder(RESULT_FOLDER
 					+ File.separator + "Logging");
@@ -227,8 +230,8 @@ public class GtTestRunProject {
 				e.printStackTrace();
 			}
 
-			TestLogger.init(defaultLoggingDir.getLocation().toOSString());
-		}
+			TestLogger.init(getNewResultDir());
+		
 
 		// init JS ScriptRunner and Context
 		Context cx = Context.enter();
@@ -251,6 +254,22 @@ public class GtTestRunProject {
 		// shutdown the TestLogger
 		TestLogger.shutdown();
 
+	}
+
+	//create a new ResultDirectory
+	private String getNewResultDir() {
+		// initialize test logging for this test session
+		IFolder defaultLoggingDir = iProject.getFolder(RESULT_FOLDER
+				+ File.separator + GTLogger.getIsoDate());
+		try {
+			GtResourceHelper.createWithAllParents(defaultLoggingDir);
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return defaultLoggingDir.getLocation().toOSString();
+		
 	}
 
 	/**
