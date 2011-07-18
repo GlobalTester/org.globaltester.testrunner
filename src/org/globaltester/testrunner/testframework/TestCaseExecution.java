@@ -27,8 +27,8 @@ public class TestCaseExecution extends TestExecution {
 			throws CoreException {
 		super(iFile);
 
-		//copy the specFile to the GtTestRunProject
-		specFile = getGtTestRunProject().getSpecificationIFile(testCase);
+		//copy the specFile to the GtTestCampaignProject
+		specFile = getGtTestCampaignProject().getSpecificationIFile(testCase);
 		testCase.getIFile().copy(specFile.getFullPath(), false, null);
 
 		//store this configuration

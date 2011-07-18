@@ -2,12 +2,12 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
-         id="org.globaltester.testrunner.gtTestRunNature"
-         name="GT TestRun Nature"
+         id="org.globaltester.testrunner.gtTestCampaignNature"
+         name="GT TestCampaign Nature"
          point="org.eclipse.core.resources.natures">
       <runtime>
          <run
-               class="org.globaltester.testrunner.GtTestRunNature">
+               class="org.globaltester.testrunner.GtTestCampaignNature">
          </run>
       </runtime>
    </extension>

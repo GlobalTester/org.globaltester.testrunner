@@ -4,7 +4,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.globaltester.smartcardshell.ScriptRunner;
-import org.globaltester.testrunner.GtTestRunProject;
+import org.globaltester.testrunner.GtTestCampaignProject;
 import org.jdom.Element;
 import org.mozilla.javascript.Context;
 
@@ -125,8 +125,8 @@ public abstract class TestExecution {
 	 * @return
 	 * @throws CoreException 
 	 */
-	protected GtTestRunProject getGtTestRunProject() throws CoreException {
-		return GtTestRunProject.getProjectForResource(iFile);
+	protected GtTestCampaignProject getGtTestCampaignProject() throws CoreException {
+		return GtTestCampaignProject.getProjectForResource(iFile);
 	}
 
 }

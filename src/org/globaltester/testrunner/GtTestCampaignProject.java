@@ -28,14 +28,14 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.mozilla.javascript.Context;
 
-public class GtTestRunProject {
+public class GtTestCampaignProject {
 
 	private static final String SPEC_FOLDER = "TestSpecification";
 	private static final String CONFIG_FOLDER = "DUTconfiguration";
 	private static final String STATE_FOLDER = "ExecutionState";
 	private static final String RESULT_FOLDER = "TestResults";
 
-	private static Hashtable<IProject, GtTestRunProject> instances = new Hashtable<IProject, GtTestRunProject>();
+	private static Hashtable<IProject, GtTestCampaignProject> instances = new Hashtable<IProject, GtTestCampaignProject>();
 	private IProject iProject; // IProject that is represented by this
 								// instance
 	private ArrayList<TestExecution> executions = new ArrayList<TestExecution>();
@@ -58,7 +58,7 @@ public class GtTestRunProject {
 
 		IProject project = createEmptyProject(projectName, location);
 		try {
-			addGtTestRunNature(project);
+			addGtTestCampaignNature(project);
 
 			String[] paths = { CONFIG_FOLDER, STATE_FOLDER, SPEC_FOLDER,
 					RESULT_FOLDER };
@@ -140,21 +140,21 @@ public class GtTestRunProject {
 	}
 
 	/**
-	 * Add the GtTestRunNature to the given project.
+	 * Add the GtTestCampaignNature to the given project.
 	 * 
 	 * @param project
 	 *            project to add the nature to
 	 * @throws CoreException
 	 */
 	// TODO refactor this to GtResourceHelper
-	private static void addGtTestRunNature(IProject project)
+	private static void addGtTestCampaignNature(IProject project)
 			throws CoreException {
-		if (!project.hasNature(GtTestRunNature.NATURE_ID)) {
+		if (!project.hasNature(GtTestCampaignNature.NATURE_ID)) {
 			IProjectDescription description = project.getDescription();
 			String[] prevNatures = description.getNatureIds();
 			String[] newNatures = new String[prevNatures.length + 1];
 			System.arraycopy(prevNatures, 0, newNatures, 0, prevNatures.length);
-			newNatures[prevNatures.length] = GtTestRunNature.NATURE_ID;
+			newNatures[prevNatures.length] = GtTestCampaignNature.NATURE_ID;
 			description.setNatureIds(newNatures);
 
 			IProgressMonitor monitor = null;
@@ -162,23 +162,23 @@ public class GtTestRunProject {
 		}
 	}
 
-	public static GtTestRunProject getProjectForResource(
+	public static GtTestCampaignProject getProjectForResource(
 			IResource selectedResource) throws CoreException {
 
 		IProject iProject = selectedResource.getProject();
 
 		if (!instances.containsKey(iProject)) {
-			instances.put(iProject, new GtTestRunProject(iProject));
+			instances.put(iProject, new GtTestCampaignProject(iProject));
 		}
 
 		return instances.get(iProject);
 	}
 
-	private GtTestRunProject(IProject iProject) throws CoreException {
+	private GtTestCampaignProject(IProject iProject) throws CoreException {
 		super();
 		try {
-			Assert.isTrue(iProject.hasNature(GtTestRunNature.NATURE_ID),
-					"Project does not use GtTestRunNature");
+			Assert.isTrue(iProject.hasNature(GtTestCampaignNature.NATURE_ID),
+					"Project does not use GtTestCampaignNature");
 		} catch (CoreException e) {
 			Assert.isTrue(false, "Project nature can not be checked");
 		}
@@ -374,7 +374,7 @@ public class GtTestRunProject {
 		String execProjName = executable.getIFile().getProject().getName();
 		String execRelPath = executable.getIFile().getProjectRelativePath()
 				.toOSString();
-		String copyRelPath = GtTestRunProject.SPEC_FOLDER + File.separator
+		String copyRelPath = GtTestCampaignProject.SPEC_FOLDER + File.separator
 				+ execProjName + File.separator + execRelPath;
 
 		// make sure that parents exist
@@ -395,7 +395,7 @@ public class GtTestRunProject {
 	 */
 	public IFile getStateIFile(TestExecutable executable) throws CoreException {
 		String execName = executable.getName();
-		String copyRelPath = GtTestRunProject.STATE_FOLDER + File.separator
+		String copyRelPath = GtTestCampaignProject.STATE_FOLDER + File.separator
 				+ execName;
 
 		// make sure that parents exist

@@ -4,7 +4,7 @@ import java.util.Hashtable;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
-import org.globaltester.testrunner.GtTestRunProject;
+import org.globaltester.testrunner.GtTestCampaignProject;
 import org.globaltester.testspecification.testframework.TestCase;
 import org.globaltester.testspecification.testframework.TestExecutable;
 
@@ -39,9 +39,9 @@ public class TestExecutionFactory {
 	}
 
 	public static TestExecution createExecution(TestExecutable testExecutable,
-			GtTestRunProject gtTestRunProject) throws CoreException {
+			GtTestCampaignProject gtTestCampaignProject) throws CoreException {
 
-		IFile executionFile = gtTestRunProject.getStateIFile(testExecutable);
+		IFile executionFile = gtTestCampaignProject.getStateIFile(testExecutable);
 
 		if (testExecutable instanceof TestCase) {
 			TestCaseExecution tcExecution = new TestCaseExecution(
