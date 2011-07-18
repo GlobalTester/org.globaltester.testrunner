@@ -10,8 +10,8 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.ui.PlatformUI;
-import org.globaltester.testrunner.GtTestRunNature;
-import org.globaltester.testrunner.GtTestRunProject;
+import org.globaltester.testrunner.GtTestCampaignNature;
+import org.globaltester.testrunner.GtTestCampaignProject;
 import org.globaltester.testspecification.GtTestSpecNature;
 
 public class RunTestCommandHandler extends AbstractHandler {
@@ -46,18 +46,18 @@ public class RunTestCommandHandler extends AbstractHandler {
 		
 		
 		//get the according run project instance
-		GtTestRunProject project = null;
+		GtTestCampaignProject project = null;
 		try {
 			if((selectedResource.getProject().hasNature(GtTestSpecNature.NATURE_ID))&&(selectedResource instanceof IFile)) {
 				//create a new GtTestExecutionProject if testcase is selected from GtTestSpecificationProject
 				project = CreateExecutionProjectCommandHandler.createExecutionProject((IFile) selectedResource);
-			} else if (selectedResource.getProject().hasNature(GtTestRunNature.NATURE_ID)) {
-				project = GtTestRunProject.getProjectForResource(selectedResource);	
+			} else if (selectedResource.getProject().hasNature(GtTestCampaignNature.NATURE_ID)) {
+				project = GtTestCampaignProject.getProjectForResource(selectedResource);	
 			} else {
-				throw new ExecutionException("No GtTestRunProject could be created form selected Resource");
+				throw new ExecutionException("No GtTestCampaignProject could be created form selected Resource");
 			}
 		} catch (CoreException e) {
-			throw new ExecutionException("No GtTestRunProject could be created form selected Resource", e);
+			throw new ExecutionException("No GtTestCampaignProject could be created form selected Resource", e);
 		}
 		
 		 

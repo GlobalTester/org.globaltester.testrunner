@@ -14,7 +14,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.ui.PlatformUI;
-import org.globaltester.testrunner.GtTestRunProject;
+import org.globaltester.testrunner.GtTestCampaignProject;
 import org.globaltester.testspecification.testframework.TestExecutable;
 import org.globaltester.testspecification.testframework.TestExecutableFactory;
 
@@ -65,14 +65,14 @@ public class CreateExecutionProjectCommandHandler extends AbstractHandler {
 		return null;
 	}
 
-	public static GtTestRunProject createExecutionProject(IFile testExecutableFile) throws ExecutionException, CoreException {
-		// create the new testrun project
+	public static GtTestCampaignProject createExecutionProject(IFile testExecutableFile) throws ExecutionException, CoreException {
+		// create the new TestCampaign project
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 		Calendar cal = Calendar.getInstance();
-		IProject iProject = GtTestRunProject.createProject(
+		IProject iProject = GtTestCampaignProject.createProject(
 				testExecutableFile.getName() + "_" + sdf.format(cal.getTime()),
 				null);
-		GtTestRunProject runProject = GtTestRunProject.getProjectForResource(iProject);
+		GtTestCampaignProject runProject = GtTestCampaignProject.getProjectForResource(iProject);
 		
 		//add the selected resource to the list of executables
 		TestExecutable testExecutable;
