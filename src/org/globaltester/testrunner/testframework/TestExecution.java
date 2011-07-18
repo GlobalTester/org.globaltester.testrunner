@@ -1,6 +1,7 @@
 package org.globaltester.testrunner.testframework;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.globaltester.smartcardshell.ScriptRunner;
 import org.globaltester.testrunner.GtTestRunProject;
@@ -31,7 +32,30 @@ public abstract class TestExecution {
 	 */
 	public TestExecution(IFile iFile) throws CoreException {
 		this.iFile = iFile;
+		if(iFile.exists()){
+			//read current state from file
+			initFromIFile();
+		} else {
+			//create the IFile
+			createIFile();
+		}
 	}
+	
+	/**
+	 * Initialize all values required for this instance form the already set
+	 * variable iFile
+	 */
+	protected abstract void initFromIFile();
+
+	/**
+	 * Store the current state to the resource iFile
+	 */
+	protected abstract void storeToIFile();
+
+	/**
+	 * Create the resource iFile with initial content
+	 */
+	protected abstract void createIFile();
 
 	/**
 	 * (Re)Execute the code associated with this test execution
@@ -76,6 +100,15 @@ public abstract class TestExecution {
 
 		// TODO define and extract additional required meta data
 		// TODO handle reference to original specification resource
+	}
+
+
+	/**
+	 * 
+	 * @return the iFile
+	 */
+	public IResource getIFile() {
+		return iFile;
 	}
 
 	/**

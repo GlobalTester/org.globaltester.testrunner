@@ -17,12 +17,15 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.globaltester.core.resources.GtResourceHelper;
+import org.globaltester.core.xml.XMLHelper;
 import org.globaltester.logging.logger.GTLogger;
 import org.globaltester.logging.logger.TestLogger;
 import org.globaltester.smartcardshell.ScriptRunner;
 import org.globaltester.testrunner.testframework.TestExecution;
 import org.globaltester.testrunner.testframework.TestExecutionFactory;
 import org.globaltester.testspecification.testframework.TestExecutable;
+import org.jdom.Document;
+import org.jdom.Element;
 import org.mozilla.javascript.Context;
 
 public class GtTestRunProject {
@@ -182,25 +185,46 @@ public class GtTestRunProject {
 
 		this.iProject = iProject;
 
-		// add all TestExecutions
-		IResource[] testExecutionsFile = iProject.getFolder(STATE_FOLDER)
-				.members();
-		for (int i = 0; i < testExecutionsFile.length; i++) {
-			if (testExecutionsFile[i] instanceof IFile) {
-
-				TestExecution testExecution = null;
-				try {
-					testExecution = TestExecutionFactory
-							.getInstance((IFile) testExecutionsFile[i]);
-				} catch (CoreException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				if (testExecution != null) {
-					executions.add(testExecution);
-				}
-			}
+		IFile iFile = getIFile();
+		if(iFile.exists()){
+			//read current state from file
+			initFromIFile();
+		} else {
+			//create the IFile
+			storeToIFile();
 		}
+	}
+	
+	/**
+	 * Initialize all values required for this instance form the already set
+	 * variable iFile
+	 * @throws CoreException 
+	 */
+	protected void initFromIFile() throws CoreException{
+		IFile iFile = getIFile();
+		Assert.isNotNull(iFile);
+		Document doc = XMLHelper.readDocument(iFile, false); // TODO enable
+																// validation
+																// here
+		Element root = doc.getRootElement();
+
+		// check that root element has correct name
+		Assert.isTrue(root.getName().equals("TestCampaignProject"),
+				"Root element is not TestCaseExecution");
+
+		// extract TestExecutions
+		@SuppressWarnings("unchecked")
+		Iterator<Element> testExecutionIter = root.getChildren("TestExecution").iterator();
+		while (testExecutionIter.hasNext()) {
+			Element element = (Element) testExecutionIter.next();
+			IFile execIFile = getIProject().getFile(element.getTextTrim());
+			TestExecution curExecution = TestExecutionFactory.getInstance(execIFile);
+			if (curExecution != null) {
+				executions.add(curExecution);
+			}
+			
+		}
+
 	}
 
 	/**
@@ -290,8 +314,50 @@ public class GtTestRunProject {
 		if (testExecution != null) {
 			executions.add(testExecution);
 		}
-		// FIXME store list of execution instances to filesystem
+		
+		try {
+			this.storeToIFile();
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
+	}
+
+	/**
+	 * Store 
+	 * @throws CoreException 
+	 */
+	private void storeToIFile() throws CoreException {
+		Element root = new Element("TestCampaignProject");
+		
+		//add executions to data to be stored
+		Iterator<TestExecution> execIter = executions.iterator();
+		while (execIter.hasNext()) {
+			TestExecution curExecution = (TestExecution) execIter.next();
+			Element elem=new Element("TestExecution");
+			elem.addContent(curExecution.getIFile().getProjectRelativePath().toString());
+			root.addContent(elem);
+		}
+		
+		//create file if it does not exist yet
+		IFile iFile = getIFile();
+		if(!iFile.exists()){
+			iFile.create(null, false, null);
+		}
+		
+		//write to file
+		XMLHelper.saveDoc(iFile, root);
+	}
+
+	/**
+	 * Returns the IFile containing this projects additional data
+	 * @return
+	 * @throws CoreException
+	 */
+	private IFile getIFile() throws CoreException {
+		IFile file = getIProject().getFile("project.xml");
+		return file;
 	}
 
 	/**

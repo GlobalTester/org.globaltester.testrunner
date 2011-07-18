@@ -35,21 +35,24 @@ public class TestCaseExecution extends TestExecution {
 		storeToIFile();
 	}
 
-	/**
-	 * Store the current state to the resource iFile
-	 */
-	private void storeToIFile() {
+	@Override
+	protected void storeToIFile() {
 		Element root = new Element("TestCaseExecution");
 		dumpCommonMetaData(root);
 		
 		XMLHelper.saveDoc(iFile, root);
 
 	}
+	
+	@Override
+	protected void createIFile() {
+		if(!iFile.exists()){
+			Element root = new Element("TestCaseExecution");			
+			XMLHelper.saveDoc(iFile, root);
+		}
+	}
 
-	/**
-	 * Initialize all values required for this instance form the already set
-	 * variable iFile
-	 */
+	@Override
 	protected void initFromIFile() {
 		Assert.isNotNull(iFile);
 		Document doc = XMLHelper.readDocument(iFile, false); // TODO enable
