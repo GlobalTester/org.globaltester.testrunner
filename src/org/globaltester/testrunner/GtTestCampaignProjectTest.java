@@ -7,30 +7,30 @@ import org.eclipse.core.runtime.AssertionFailedException;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class GtTestRunProjectTest {
+public class GtTestCampaignProjectTest {
 
 	@Test(expected = AssertionFailedException.class)
 	public void testCreateProjectWithEmptyNameArg() {
 		String projectName = " "; //$NON-NLS-1$
-		GtTestRunProject.createProject(projectName, null);
+		GtTestCampaignProject.createProject(projectName, null);
 	}
 
 	@Test(expected = AssertionFailedException.class)
 	public void testCreateProjectWithNullNameArg() {
 		String projectName = null;
-		GtTestRunProject.createProject(projectName, null);
+		GtTestCampaignProject.createProject(projectName, null);
 	}
 
 	@Test
 	public void testCreateProjectWithGoodArgs() throws Exception {
 		String projectName = "junitTestProject-deleteMe";
 
-		IProject project = GtTestRunProject.createProject(projectName,
+		IProject project = GtTestCampaignProject.createProject(projectName,
 				null);
 
 		// check nature is added
 		Assert.assertTrue("GtTestRunNature is not correctly added",
-				project.hasNature(GtTestRunNature.NATURE_ID));
+				project.hasNature(GtTestCampaignNature.NATURE_ID));
 
 		// check directory structure is created correctly
 		String[] paths = { "DUTconfiguration", "ExecutionState", "TestSpecification",
