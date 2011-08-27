@@ -67,6 +67,15 @@ public class GtTestCampaignProject {
 			e.printStackTrace();
 			project = null;
 		}
+		
+		// refresh the workspace
+		try {
+			ResourcesPlugin.getWorkspace().getRoot()
+						.refreshLocal(IResource.DEPTH_INFINITE, null);
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		return project;
 	}
