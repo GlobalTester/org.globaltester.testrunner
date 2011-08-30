@@ -20,7 +20,7 @@ public class TestStepExecutor {
 
 	public Result execute(String code, String sourceName) {
 		//get and execute the code
-		TestLogger.trace("Code block to be executed: \n" + code + "\n ---End of code dump, execution follows ---");
+		TestLogger.trace("Code block to be executed: \n" + code);
 		try {
 		scriptRunner.executeCommand(context, code, sourceName, -1);
 //		} catch (EvaluatorException ex) {
