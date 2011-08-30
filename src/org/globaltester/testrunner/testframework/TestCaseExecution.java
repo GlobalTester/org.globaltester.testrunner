@@ -114,6 +114,9 @@ public class TestCaseExecution extends TestExecution {
 
 	@Override
 	public void execute(ScriptRunner sr, Context cx, boolean forceExecution) {
+		//make sure that failures are counted for each test case seperately
+		ResultFactory.reset();
+		
 		// TODO use variable forceExecution
 
 		// dump execution information to logfile

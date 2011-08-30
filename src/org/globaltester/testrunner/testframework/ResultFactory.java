@@ -1,6 +1,7 @@
 package org.globaltester.testrunner.testframework;
 
 
+
 public class ResultFactory {
 
 	// explicit identifier for each failure starting with 1 
@@ -25,10 +26,13 @@ public class ResultFactory {
 	public static Failure newFailure(int rating, int scriptLine, int logFileLine,
 			String failureText) {
 		int failureID = getNewFailureID();
-		// log.info(failureText);
 		Failure failure = new Failure(failureID, rating, scriptLine, logFileLine,
 				failureText);
 		return failure;
+	}
+
+	public static void reset() {
+		failureID = 1;
 	}
 
 }

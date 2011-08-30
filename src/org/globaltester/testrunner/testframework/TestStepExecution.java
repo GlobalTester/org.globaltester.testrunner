@@ -39,9 +39,9 @@ public class TestStepExecution {
 		TestStepExecutor stepExecutor = new TestStepExecutor(sr, cx);
 		
 		//execute the test step itself
-		String command = testStep.getTechnicalCommand();
-		if ((command != null) && (command.trim().length() > 0)) {
-			testStepResult = stepExecutor.execute(command, testStep.getId()+" - Command");
+		String techCommandCode = testStep.getTechnicalCommand();
+		if ((techCommandCode != null) && (techCommandCode.trim().length() > 0)) {
+			testStepResult = stepExecutor.execute(techCommandCode, testStep.getId()+" - Command");
 		} else {
 			//if no code can be executed the result of the step itself is always ok
 			testStepResult = new Result();
@@ -56,14 +56,21 @@ public class TestStepExecution {
 			
 			TestLogger.info("ExpectedResult " + curResult.getId() + " (TestStep "+ testStep.getId()+")");
 			
-			//log TestStep descriptions
+			//log ExpectedResult descriptions
 			descrIter = curResult.getDescriptions().iterator();
 			while (descrIter.hasNext()) {
 				TestLogger.debug("   * "+descrIter.next());			
 			}
 			
 			//execute the current expected result
-			Result curExecutionResult = stepExecutor.execute(curResult.getTechnicalResult(), testStep.getId()+" - Expected Result "+curResult.getId());
+			Result curExecutionResult;
+			String techResultCode = curResult.getTechnicalResult();
+			if ((techResultCode != null) && (techResultCode.trim().length() > 0)) {
+				curExecutionResult = stepExecutor.execute(techResultCode, testStep.getId()+" - Expected Result "+curResult.getId());
+			} else {
+				//if no code can be executed the result of the result is always ok
+				curExecutionResult = new Result();
+			}
 			expResultsExecutionResults.add(curExecutionResult);
 			
 		}

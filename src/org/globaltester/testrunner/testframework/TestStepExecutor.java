@@ -1,12 +1,10 @@
 package org.globaltester.testrunner.testframework;
 
-import java.util.Iterator;
-
 import org.globaltester.logging.logger.TestLogger;
 import org.globaltester.smartcardshell.ScriptRunner;
-import org.globaltester.testspecification.testframework.TestStep;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.JavaScriptException;
+import org.mozilla.javascript.Scriptable;
 
 public class TestStepExecutor {
 
@@ -34,10 +32,10 @@ public class TestStepExecutor {
 		} catch (Exception ex) {
 
 			if (ex instanceof JavaScriptException) {
-//				JavaScriptException jse = (JavaScriptException) ex;
-//				// Some form of JavaScript error.
-//				Scriptable jseo = (Scriptable) jse.getValue();
-//
+				JavaScriptException jse = (JavaScriptException) ex;
+				// Some form of JavaScript error.
+				Scriptable jseo = (Scriptable) jse.getValue();
+
 //				if (jseo.getClassName() == "AssertionError") {
 //					String msg = (String) jseo.get("message", jseo);
 //					// Integer errorID = (Integer)gpe.getProperty(gpe,
@@ -122,7 +120,7 @@ public class TestStepExecutor {
 //					}
 //					*/
 //				} else { // if (jseo instanceof GPError)
-//					return generateFailure(TestCase.STATUS_FAILURE, jse.toString(), 0);
+					return generateFailure(TestExecution.STATUS_FAILURE, jse.toString(), 0);
 //				}
 //				TestLogger.info("");
 			} else {
@@ -150,7 +148,6 @@ public class TestStepExecutor {
 	 *            line in script where the failure occured
 	 */
 	private Failure generateFailure(int rating, String failureText, int scriptLine) {
-		// log.info(failureText);
 		Failure failure = ResultFactory.newFailure(rating, scriptLine, 0,
 				failureText);
 //		failureList.addLast(failure);
