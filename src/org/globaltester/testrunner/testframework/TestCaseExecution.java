@@ -1,6 +1,7 @@
 package org.globaltester.testrunner.testframework;
 
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
@@ -18,6 +19,8 @@ import org.mozilla.javascript.Context;
 
 public class TestCaseExecution extends TestExecution {
 
+	private LinkedList<TestStepExecution> testStepExecutions;
+
 	protected TestCaseExecution(IFile iFile) throws CoreException {
 		super(iFile);
 		initFromIFile();
@@ -30,9 +33,26 @@ public class TestCaseExecution extends TestExecution {
 		//copy the specFile to the GtTestCampaignProject
 		specFile = getGtTestCampaignProject().getSpecificationIFile(testCase);
 		testCase.getIFile().copy(specFile.getFullPath(), false, null);
+		
+		//create execution instances from testcase
+		initFromTestCase();
 
 		//store this configuration
 		storeToIFile();
+	}
+
+	/**
+	 * create all required execution instances from test case. E.g. TestStepExecutions
+	 */
+	private void initFromTestCase() {
+		// TODO Auto-generated method stub
+		testStepExecutions = new LinkedList<TestStepExecution>();
+		List<TestStep> testSteps = getTestCase().getTestSteps();
+		for (Iterator<TestStep> testStepIter = testSteps.iterator(); testStepIter
+		.hasNext();) {
+			testStepExecutions.add(new TestStepExecution(testStepIter.next()));
+		}
+		
 	}
 
 	@Override
@@ -66,6 +86,9 @@ public class TestCaseExecution extends TestExecution {
 
 		// extract meta data
 		extractCommonMetaData(root);
+		
+		//create execution instances from testcase
+		initFromTestCase();
 
 	}
 
@@ -101,12 +124,11 @@ public class TestCaseExecution extends TestExecution {
 
 		// iterate over all test steps and execute them
 		TestLogger.info("Running TestSteps");
-		TestStepExecutor stepExecutor = new TestStepExecutor(sr, cx);
-		List<TestStep> testSteps = getTestCase().getTestSteps();
-		for (Iterator<TestStep> testStepIter = testSteps.iterator(); testStepIter
+		for (Iterator<TestStepExecution> testStepIter = testStepExecutions.iterator(); testStepIter
 				.hasNext();) {
-			stepExecutor.execute(testStepIter.next());
+			testStepIter.next().execute(sr, cx, forceExecution);
 		}
+		
 
 		// TODO handle postconditions etc.
 
