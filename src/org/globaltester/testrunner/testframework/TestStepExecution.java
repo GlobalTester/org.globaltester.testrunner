@@ -8,6 +8,7 @@ import org.globaltester.logging.logger.TestLogger;
 import org.globaltester.smartcardshell.ScriptRunner;
 import org.globaltester.testspecification.testframework.ExpectedResult;
 import org.globaltester.testspecification.testframework.TestStep;
+import org.jdom.Element;
 import org.mozilla.javascript.Context;
 
 public class TestStepExecution {
@@ -27,7 +28,17 @@ public class TestStepExecution {
 	public void execute(ScriptRunner sr, Context cx, boolean forceExecution) {
 		//log TestStep ID and Command
 		TestLogger.info("TestStep "+ testStep.getId());
-		TestLogger.info("Command: \n"+testStep.getCommand().getTextNormalize());
+		Element commandElem = testStep.getCommand();
+		String command = commandElem.getTextNormalize();
+		Element commandTextElem = commandElem.getChild("Text", commandElem.getNamespace());
+		if (commandTextElem != null) {
+			command = command + commandTextElem.getTextNormalize();
+		}
+		TestLogger.info("Command: "+command);
+		Element commandApduElem = commandElem.getChild("APDU", commandElem.getNamespace());
+		if (commandApduElem != null) {
+			TestLogger.info("APDU: \n"+commandApduElem.getTextNormalize());
+		}
 		
 		//log TestStep descriptions
 		Iterator<String> descrIter = testStep.getDescriptions().iterator();
