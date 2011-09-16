@@ -213,9 +213,7 @@ public class GtTestCampaignProject {
 	protected void initFromIFile() throws CoreException{
 		IFile iFile = getIFile();
 		Assert.isNotNull(iFile);
-		Document doc = XMLHelper.readDocument(iFile, false); // TODO enable
-																// validation
-																// here
+		Document doc = XMLHelper.readDocument(iFile);
 		Element root = doc.getRootElement();
 
 		// check that root element has correct name
