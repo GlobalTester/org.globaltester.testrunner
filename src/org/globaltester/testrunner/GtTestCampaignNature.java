@@ -7,29 +7,26 @@ import org.eclipse.core.runtime.CoreException;
 public class GtTestCampaignNature implements IProjectNature {
 	
 	public static final String NATURE_ID = "org.globaltester.testrunner.gtTestCampaignNature"; //$NON-NLS-1$
+	private IProject project = null;
 
 	@Override
 	public void configure() throws CoreException {
-		// TODO Auto-generated method stub
-
+		// currently no action needed here
 	}
 
 	@Override
 	public void deconfigure() throws CoreException {
-		// TODO Auto-generated method stub
-
+		// currently no action needed here		
 	}
 
 	@Override
 	public IProject getProject() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.project;
 	}
 
 	@Override
 	public void setProject(IProject project) {
-		// TODO Auto-generated method stub
-
+		this.project = project;
 	}
 
 }
