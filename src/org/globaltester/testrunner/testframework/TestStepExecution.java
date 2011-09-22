@@ -15,6 +15,11 @@ public class TestStepExecution {
 
 	private TestStep testStep;
 	Result testStepResult;
+
+	public Result getResult() {
+		return testStepResult;
+	}
+
 	List<Result> expResultsExecutionResults;
 
 	/**
