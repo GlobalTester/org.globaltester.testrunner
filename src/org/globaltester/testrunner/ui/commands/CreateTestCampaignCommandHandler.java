@@ -17,7 +17,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
-import org.eclipse.ui.statushandlers.StatusManager;
+import org.globaltester.logging.logger.GtErrorLogger;
 import org.globaltester.testrunner.GtTestCampaignProject;
 import org.globaltester.testrunner.ui.Activator;
 import org.globaltester.testrunner.ui.editor.TestCampaignEditor;
@@ -72,7 +72,7 @@ public class CreateTestCampaignCommandHandler extends AbstractHandler {
 		} catch (PartInitException e) {
 			// opening new project in editor failed
 			// log CoreException to eclipse log
-			StatusManager.getManager().handle(e, Activator.PLUGIN_ID);
+			GtErrorLogger.log(Activator.PLUGIN_ID, e);
 			
 			// users most probably will ignore this behavior and open editor manually, so do not open annoying dialog
 		}
@@ -84,7 +84,7 @@ public class CreateTestCampaignCommandHandler extends AbstractHandler {
 		} catch (CoreException e) {
 			// refresh workspace failed
 			// log CoreException to eclipse log
-			StatusManager.getManager().handle(e, Activator.PLUGIN_ID);
+			GtErrorLogger.log(Activator.PLUGIN_ID, e);
 			
 			// users most probably will ignore this behavior and refresh manually, so do not open annoying dialog
 		}
