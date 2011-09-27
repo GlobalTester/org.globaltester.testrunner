@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.globaltester.core.resources.GtResourceHelper;
 import org.globaltester.core.xml.XMLHelper;
 import org.globaltester.logging.logger.GTLogger;
+import org.globaltester.logging.logger.GtErrorLogger;
 import org.globaltester.logging.logger.TestLogger;
 import org.globaltester.smartcardshell.ScriptRunner;
 import org.globaltester.testrunner.testframework.TestExecution;
@@ -73,9 +74,11 @@ public class GtTestCampaignProject {
 			ResourcesPlugin.getWorkspace().getRoot()
 						.refreshLocal(IResource.DEPTH_INFINITE, null);
 		} catch (CoreException e) {
-			// refresh of workspace failed
-			// relevant CoreException will be in the eclipse log anyhow
-			// users most probably will ignore this behavior and refresh manually 
+			// refresh workspace failed
+			// log CoreException to eclipse log
+			GtErrorLogger.log(Activator.PLUGIN_ID, e);
+			
+			// users most probably will ignore this behavior and refresh manually, so do not open annoying dialog
 		}
 
 		return project;
