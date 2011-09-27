@@ -413,4 +413,8 @@ public class GtTestCampaignProject {
 		return iFile;
 	}
 
+	public String getName() {
+		return getIProject().getName();
+	}
+
 }
