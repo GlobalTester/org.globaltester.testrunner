@@ -6,15 +6,12 @@ import java.util.List;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.ILabelProviderListener;
-import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -111,7 +108,7 @@ public class TestCampaignEditor extends EditorPart {
 		Tree executionStateTree = new Tree(treeViewerComp, SWT.BORDER
 				| SWT.H_SCROLL | SWT.V_SCROLL);
 		executionStateTree.setHeaderVisible(true);
-		TreeViewer m_treeViewer = new TreeViewer(executionStateTree);
+		TreeViewer treeViewer = new TreeViewer(executionStateTree);
 
 		TreeColumn column1 = new TreeColumn(executionStateTree, SWT.LEFT);
 		executionStateTree.setLinesVisible(true);
@@ -127,13 +124,13 @@ public class TestCampaignEditor extends EditorPart {
 		column3.setText("Remarks");
 		column3.setWidth(100);
 
-		m_treeViewer.setContentProvider(new TestCampaignContentProvider());
-		m_treeViewer.setLabelProvider(new TestCampaignTableLabelProvider());
+		treeViewer.setContentProvider(new TestCampaignContentProvider());
+		treeViewer.setLabelProvider(new TestCampaignTableLabelProvider());
 		List<DummyTestCase> cities = new ArrayList<DummyTestCase>();
 		cities.add(new DummyTestCase("DummyContent1"));
 		cities.add(new DummyTestCase("DummyContent2"));
-		m_treeViewer.setInput(cities);
-		m_treeViewer.expandAll();
+		treeViewer.setInput(cities);
+		treeViewer.expandAll();
 
 		// below a little row to control execution and report generation
 		Composite buttonAreaComp = new Composite(parent, SWT.NONE);
@@ -278,40 +275,6 @@ public class TestCampaignEditor extends EditorPart {
 		}
 
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-		}
-	}
-
-	class TestCampaignTableLabelProvider implements ITableLabelProvider {
-
-		public Image getColumnImage(Object element, int columnIndex) {
-			return null;
-		}
-
-		public String getColumnText(Object element, int columnIndex) {
-			switch (columnIndex) {
-			case 0:
-				return element.toString();
-			case 1:
-				if (element instanceof DummyResult)
-					return ((DummyResult) element).getResult();
-			case 2:
-				if (element instanceof DummyResult)
-					return ((DummyResult) element).getRemarks();
-			}
-			return null;
-		}
-
-		public void addListener(ILabelProviderListener listener) {
-		}
-
-		public void dispose() {
-		}
-
-		public boolean isLabelProperty(Object element, String property) {
-			return false;
-		}
-
-		public void removeListener(ILabelProviderListener listener) {
 		}
 	}
 }
