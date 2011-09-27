@@ -6,9 +6,7 @@ import java.util.List;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -126,13 +124,14 @@ public class TestCampaignEditor extends EditorPart {
 
 		treeViewer.setContentProvider(new TestCampaignContentProvider());
 		treeViewer.setLabelProvider(new TestCampaignTableLabelProvider());
-		List<DummyTestCase> cities = new ArrayList<DummyTestCase>();
-		cities.add(new DummyTestCase("DummyContent1"));
-		cities.add(new DummyTestCase("DummyContent2"));
-		treeViewer.setInput(cities);
+		List<Object> treeInput = new ArrayList<Object>();
+		treeInput.add(new DummyTestCase("DummyContent1"));
+		treeInput.add(new DummyTestCase("DummyContent2"));
+		//treeInput.add(input.getTestCampaign());
+		treeViewer.setInput(treeInput);
 		treeViewer.expandAll();
 
-		// below a little row to control execution and report generation
+		// below a little button area to control execution and report generation
 		Composite buttonAreaComp = new Composite(parent, SWT.NONE);
 		buttonAreaComp.setLayout(new FillLayout(SWT.HORIZONTAL));
 		buttonAreaComp.setLayoutData(new GridData(SWT.RIGHT, SWT.BOTTOM, true,
@@ -217,7 +216,7 @@ public class TestCampaignEditor extends EditorPart {
 
 	class DummyResult {
 		DummyTestStep parentStep;
-		private String name;
+		String name;
 
 		public DummyResult(String newName, DummyTestStep parent) {
 			this.parentStep = parent;
@@ -237,44 +236,4 @@ public class TestCampaignEditor extends EditorPart {
 		}
 	}
 
-	class TestCampaignContentProvider implements ITreeContentProvider {
-		public Object[] getChildren(Object parentElement) {
-			if (parentElement instanceof List)
-				return ((List<?>) parentElement).toArray();
-			if (parentElement instanceof DummyTestCase)
-				return ((DummyTestCase) parentElement).getSteps();
-			if (parentElement instanceof DummyTestStep)
-				return ((DummyTestStep) parentElement).getResults();
-			return new Object[0];
-		}
-
-		public Object getParent(Object element) {
-			if (element instanceof DummyTestStep)
-				return ((DummyTestStep) element).parentTestCase;
-			if (element instanceof DummyResult)
-				return ((DummyResult) element).name;
-			return null;
-		}
-
-		public boolean hasChildren(Object element) {
-			if (element instanceof List)
-				return ((List<?>) element).size() > 0;
-			if (element instanceof DummyTestCase)
-				return ((DummyTestCase) element).getSteps().length > 0;
-			if (element instanceof DummyTestStep)
-				return ((DummyTestStep) element).getResults().length > 0;
-			return false;
-		}
-
-		public Object[] getElements(Object cities) {
-			// cities ist das, was oben in setInput(..) gesetzt wurde.
-			return getChildren(cities);
-		}
-
-		public void dispose() {
-		}
-
-		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-		}
-	}
 }

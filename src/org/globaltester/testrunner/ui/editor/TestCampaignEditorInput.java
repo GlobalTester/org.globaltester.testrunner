@@ -50,4 +50,8 @@ public class TestCampaignEditorInput implements IEditorInput {
 		return project.getIProject().getName();
 	}
 
+	public GtTestCampaignProject getTestCampaign() {
+		return project;
+	}
+
 }
