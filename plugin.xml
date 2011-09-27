@@ -32,4 +32,13 @@
          </command>
       </menuContribution>
    </extension>
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="org.globaltester.testrunner.ui.editor.TestCampaignEditor"
+            default="false"
+            id="org.globaltester.testrunner.ui.testcampaigneditor"
+            name="GT TestCampaign Editor">
+      </editor>
+   </extension>
 </plugin>
