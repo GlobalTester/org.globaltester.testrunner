@@ -13,8 +13,14 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.TreeSelection;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.ide.IDE;
+import org.eclipse.ui.statushandlers.StatusManager;
 import org.globaltester.testrunner.GtTestCampaignProject;
+import org.globaltester.testrunner.ui.Activator;
+import org.globaltester.testrunner.ui.editor.TestCampaignEditor;
 import org.globaltester.testspecification.testframework.TestExecutable;
 import org.globaltester.testspecification.testframework.TestExecutableFactory;
 
@@ -50,10 +56,25 @@ public class CreateTestCampaignCommandHandler extends AbstractHandler {
 		}
 
 		//create the project
+		GtTestCampaignProject newProject;
 		try {
-			createExecutionProject((IFile) firstSelectionElement);
+			newProject = createExecutionProject((IFile) firstSelectionElement);
 		} catch (CoreException e) {
 			throw new ExecutionException("ExecutionProject could not be created", e);
+		}
+		
+		//open the new TestCampaign in the Test Campaign Editor
+		IFile file = newProject.getIProject().getFile("project.xml");
+		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		try {
+			//TODO remove the hard coded reference to the TestCampaignEditor, use system default instead after configuring it as default
+			IDE.openEditor(page, file, TestCampaignEditor.ID);
+		} catch (PartInitException e) {
+			// opening new project in editor failed
+			// log CoreException to eclipse log
+			StatusManager.getManager().handle(e, Activator.PLUGIN_ID);
+			
+			// users most probably will ignore this behavior and open editor manually, so do not open annoying dialog
 		}
 
 		// refresh the workspace
@@ -61,7 +82,11 @@ public class CreateTestCampaignCommandHandler extends AbstractHandler {
 			ResourcesPlugin.getWorkspace().getRoot()
 					.refreshLocal(IResource.DEPTH_INFINITE, null);
 		} catch (CoreException e) {
-			throw new ExecutionException("Workspace could not be refreshed", e);
+			// refresh workspace failed
+			// log CoreException to eclipse log
+			StatusManager.getManager().handle(e, Activator.PLUGIN_ID);
+			
+			// users most probably will ignore this behavior and refresh manually, so do not open annoying dialog
 		}
 
 		return null;
