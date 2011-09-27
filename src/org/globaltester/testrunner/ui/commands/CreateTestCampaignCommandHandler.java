@@ -18,8 +18,10 @@ import org.globaltester.testrunner.GtTestCampaignProject;
 import org.globaltester.testspecification.testframework.TestExecutable;
 import org.globaltester.testspecification.testframework.TestExecutableFactory;
 
-public class CreateExecutionProjectCommandHandler extends AbstractHandler {
+public class CreateTestCampaignCommandHandler extends AbstractHandler {
 
+	
+	
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		// check for dirty files and save them

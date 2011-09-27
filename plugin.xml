@@ -9,9 +9,9 @@
             name="Run Test">
       </command>
       <command
-            defaultHandler="org.globaltester.testrunner.ui.commands.CreateExecutionProjectCommandHandler"
-            id="org.globaltester.testrunner.ui.commands.CreateExecutionProjectCommand"
-            name="Create Execution Project">
+            defaultHandler="org.globaltester.testrunner.ui.commands.CreateTestCampaignCommandHandler"
+            id="org.globaltester.testrunner.ui.commands.CreateTestCampaignCommand"
+            name="Create TestCampaign">
       </command>
    </extension>
    <extension
@@ -25,8 +25,8 @@
                tooltip="Some tooltip text">
          </command>
          <command
-               commandId="org.globaltester.testrunner.ui.commands.CreateExecutionProjectCommand"
-               label="Create Execution Project"
+               commandId="org.globaltester.testrunner.ui.commands.CreateTestCampaignCommand"
+               label="Create TestCampaign"
                style="push"
                tooltip="Some tooltip text">
          </command>
