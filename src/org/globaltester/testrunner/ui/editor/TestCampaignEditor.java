@@ -5,14 +5,22 @@ import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.IEditorInput;
@@ -20,6 +28,7 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.part.FileEditorInput;
+import org.globaltester.testrunner.ui.Activator;
 
 public class TestCampaignEditor extends EditorPart {
 	public TestCampaignEditor() {
@@ -75,6 +84,7 @@ public class TestCampaignEditor extends EditorPart {
 
 	@Override
 	public void createPartControl(Composite parent) {
+		parent.setLayout(new GridLayout(1, false));
 		//GridLayout layout = new GridLayout();
 		//layout.numColumns = 2;
 		//parent.setLayout(layout);
@@ -89,21 +99,40 @@ public class TestCampaignEditor extends EditorPart {
 //				false));
 //		lastName.setText(input.getName());
 		
+		//some meta data on top of the editor
+		Composite metaDataComp = new Composite(parent, SWT.NONE);
+		metaDataComp.setLayout(new GridLayout(8, false));
+		metaDataComp.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		new Label(metaDataComp, SWT.NONE);
+		new Label(metaDataComp, SWT.NONE);
+		new Label(metaDataComp, SWT.NONE);
+		new Label(metaDataComp, SWT.NONE);
+		new Label(metaDataComp, SWT.NONE);
+		new Label(metaDataComp, SWT.NONE);
+		new Label(metaDataComp, SWT.NONE);
 		
-		Tree addressTree = new Tree(parent, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
-		addressTree.setHeaderVisible(true);
-      TreeViewer m_treeViewer = new TreeViewer(addressTree);
+		Label lblMetadataHere = new Label(metaDataComp, SWT.NONE);
+		lblMetadataHere.setText("MetaData here");
+		
+		
+		//main part of the editor is occupied by tree view
+		Composite treeViewerComp = new Composite(parent, SWT.NONE);
+		treeViewerComp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		treeViewerComp.setLayout(new FillLayout(SWT.HORIZONTAL));
+		Tree executionStateTree = new Tree(treeViewerComp, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+		executionStateTree.setHeaderVisible(true);
+      TreeViewer m_treeViewer = new TreeViewer(executionStateTree);
  
-      TreeColumn column1 = new TreeColumn(addressTree, SWT.LEFT);
-      addressTree.setLinesVisible(true);
+      TreeColumn column1 = new TreeColumn(executionStateTree, SWT.LEFT);
+      executionStateTree.setLinesVisible(true);
       column1.setAlignment(SWT.LEFT);
       column1.setText("Testcase/TestStep");
       column1.setWidth(160);
-      TreeColumn column2 = new TreeColumn(addressTree, SWT.RIGHT);
+      TreeColumn column2 = new TreeColumn(executionStateTree, SWT.RIGHT);
       column2.setAlignment(SWT.LEFT);
       column2.setText("Result");
       column2.setWidth(100);
-      TreeColumn column3 = new TreeColumn(addressTree, SWT.RIGHT);
+      TreeColumn column3 = new TreeColumn(executionStateTree, SWT.RIGHT);
       column3.setAlignment(SWT.LEFT);
       column3.setText("Remarks");
       column3.setWidth(100);
@@ -115,6 +144,43 @@ public class TestCampaignEditor extends EditorPart {
       cities.add(new DummyTestCase("DummyContent2"));
       m_treeViewer.setInput(cities);
       m_treeViewer.expandAll();
+      
+      //below a little row to control execution and report generation
+      Composite buttonAreaComp = new Composite(parent, SWT.NONE);
+      buttonAreaComp.setLayout(new FillLayout(SWT.HORIZONTAL));
+      buttonAreaComp.setLayoutData(new GridData(SWT.RIGHT, SWT.BOTTOM, true, false, 1, 1));
+      
+      Button btnExecute = new Button(buttonAreaComp, SWT.NONE);
+      btnExecute.setText("Execute");
+      btnExecute.addSelectionListener(new SelectionAdapter(){
+    	  public void widgetSelected(SelectionEvent e) {
+    		//TODO integrate testcase execution here
+				MessageDialog
+				.openWarning(
+						Activator.getDefault().getWorkbench()
+								.getActiveWorkbenchWindow().getShell(),
+						"GlobalTester",
+						"Execution of this TestCampaign is support from context menu only at the moment");
+    	  }
+      });
+      
+      Button btnGenerateReport = new Button(buttonAreaComp, SWT.NONE);
+      btnGenerateReport.setText("Generate Report");
+      btnGenerateReport.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				//TODO integrate report generation here
+				MessageDialog
+				.openWarning(
+						Activator.getDefault().getWorkbench()
+								.getActiveWorkbenchWindow().getShell(),
+						"GlobalTester",
+						"Report generation is not yet supported in GlobalTester3");
+			}
+
+		});
+      
+		
+		
 	}
 
 	@Override
@@ -263,5 +329,4 @@ public class TestCampaignEditor extends EditorPart {
 	      public void removeListener(ILabelProviderListener listener){
 	      }
 	   }
-
 }
