@@ -4,7 +4,6 @@ import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.globaltester.testrunner.testframework.TestCampaign;
-import org.globaltester.testrunner.ui.editor.TestCampaignEditor.DummyResult;
 import org.globaltester.testspecification.testframework.TestCase;
 
 public class TestCampaignTableLabelProvider implements ITableLabelProvider {
@@ -22,12 +21,8 @@ public class TestCampaignTableLabelProvider implements ITableLabelProvider {
 				return ((TestCase) element).getTestCaseID();
 			return element.toString();
 		case 1:
-			if (element instanceof DummyResult)
-				return ((DummyResult) element).getResult();
 			break;
 		case 2:
-			if (element instanceof DummyResult)
-				return ((DummyResult) element).getRemarks();
 			if (element instanceof TestCase)
 				return ((TestCase) element).getIFile().getFullPath().toOSString();
 		}

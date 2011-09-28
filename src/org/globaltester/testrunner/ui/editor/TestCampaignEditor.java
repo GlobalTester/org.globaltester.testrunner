@@ -1,8 +1,5 @@
 package org.globaltester.testrunner.ui.editor;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -124,11 +121,7 @@ public class TestCampaignEditor extends EditorPart {
 
 		treeViewer.setContentProvider(new TestCampaignContentProvider());
 		treeViewer.setLabelProvider(new TestCampaignTableLabelProvider());
-		List<Object> treeInput = new ArrayList<Object>();
-		treeInput.add(new DummyTestCase("DummyContent1"));
-		treeInput.add(new DummyTestCase("DummyContent2"));
-		treeInput.add(input.getTestCampaign());
-		treeViewer.setInput(treeInput);
+		treeViewer.setInput(input.getGtTestCampaignProject());
 		treeViewer.expandAll();
 
 		// below a little button area to control execution and report generation
@@ -171,69 +164,6 @@ public class TestCampaignEditor extends EditorPart {
 	public void setFocus() {
 		// TODO Auto-generated method stub
 
-	}
-
-	class DummyTestCase {
-		DummyTestStep[] steps = new DummyTestStep[2];
-		private String name;
-
-		public DummyTestCase(String newName) {
-			name = newName;
-			for (int i = 0; i < steps.length; i++)
-				steps[i] = new DummyTestStep("DummyStep " + i, this);
-
-		}
-
-		public DummyTestStep[] getSteps() {
-			return steps;
-		}
-
-		public String toString() {
-			return name;
-		}
-	}
-
-	class DummyTestStep {
-		DummyTestCase parentTestCase;
-		DummyResult[] results = new DummyResult[2];
-		private String name;
-
-		public DummyTestStep(String newName, DummyTestCase parent) {
-			this.parentTestCase = parent;
-			this.name = newName;
-			for (int i = 0; i < results.length; i++)
-				results[i] = new DummyResult("DummyResult " + i, this);
-		}
-
-		public DummyResult[] getResults() {
-			return results;
-		}
-
-		public String toString() {
-			return name;
-		}
-	}
-
-	class DummyResult {
-		DummyTestStep parentStep;
-		String name;
-
-		public DummyResult(String newName, DummyTestStep parent) {
-			this.parentStep = parent;
-			this.name = newName;
-		}
-
-		public String toString() {
-			return name;
-		}
-
-		public String getResult() {
-			return toString();
-		}
-
-		public String getRemarks() {
-			return "some remarks here";
-		}
 	}
 
 }

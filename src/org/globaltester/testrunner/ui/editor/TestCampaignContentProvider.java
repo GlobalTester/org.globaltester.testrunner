@@ -1,42 +1,28 @@
 package org.globaltester.testrunner.ui.editor;
 
-import java.util.List;
-
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
+import org.globaltester.testrunner.GtTestCampaignProject;
 import org.globaltester.testrunner.testframework.TestCampaign;
-import org.globaltester.testrunner.ui.editor.TestCampaignEditor.DummyResult;
-import org.globaltester.testrunner.ui.editor.TestCampaignEditor.DummyTestCase;
-import org.globaltester.testrunner.ui.editor.TestCampaignEditor.DummyTestStep;
 
 public class TestCampaignContentProvider implements ITreeContentProvider {
 	public Object[] getChildren(Object parentElement) {
-		if (parentElement instanceof List)
-			return ((List<?>) parentElement).toArray();
-		if (parentElement instanceof DummyTestCase)
-			return ((DummyTestCase) parentElement).getSteps();
-		if (parentElement instanceof DummyTestStep)
-			return ((DummyTestStep) parentElement).getResults();
+		if (parentElement instanceof GtTestCampaignProject)
+			return new Object[]{((GtTestCampaignProject)parentElement).getTestCampaign()};
 		if (parentElement instanceof TestCampaign)
 			return ((TestCampaign)parentElement).getTestExecutables().toArray();
 		return new Object[0];
 	}
 
 	public Object getParent(Object element) {
-		if (element instanceof DummyTestStep)
-			return ((DummyTestStep) element).parentTestCase;
-		if (element instanceof DummyResult)
-			return ((DummyResult) element).name;
+		if (element instanceof TestCampaign)
+			return ((TestCampaign) element).getProject();
 		return null;
 	}
 
 	public boolean hasChildren(Object element) {
-		if (element instanceof List)
-			return ((List<?>) element).size() > 0;
-		if (element instanceof DummyTestCase)
-			return ((DummyTestCase) element).getSteps().length > 0;
-		if (element instanceof DummyTestStep)
-			return ((DummyTestStep) element).getResults().length > 0;
+		if (element instanceof GtTestCampaignProject)
+			return true;
 		if (element instanceof TestCampaign)
 			return !((TestCampaign)element).getTestExecutables().isEmpty();
 		return false;
