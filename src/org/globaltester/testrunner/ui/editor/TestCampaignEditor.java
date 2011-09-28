@@ -127,7 +127,7 @@ public class TestCampaignEditor extends EditorPart {
 		List<Object> treeInput = new ArrayList<Object>();
 		treeInput.add(new DummyTestCase("DummyContent1"));
 		treeInput.add(new DummyTestCase("DummyContent2"));
-		//treeInput.add(input.getTestCampaign());
+		treeInput.add(input.getTestCampaign());
 		treeViewer.setInput(treeInput);
 		treeViewer.expandAll();
 

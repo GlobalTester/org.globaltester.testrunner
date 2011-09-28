@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
+import org.globaltester.testrunner.testframework.TestCampaign;
 import org.globaltester.testrunner.ui.editor.TestCampaignEditor.DummyResult;
 import org.globaltester.testrunner.ui.editor.TestCampaignEditor.DummyTestCase;
 import org.globaltester.testrunner.ui.editor.TestCampaignEditor.DummyTestStep;
@@ -16,6 +17,8 @@ public class TestCampaignContentProvider implements ITreeContentProvider {
 			return ((DummyTestCase) parentElement).getSteps();
 		if (parentElement instanceof DummyTestStep)
 			return ((DummyTestStep) parentElement).getResults();
+		if (parentElement instanceof TestCampaign)
+			return ((TestCampaign)parentElement).getTestExecutables().toArray();
 		return new Object[0];
 	}
 
@@ -34,11 +37,13 @@ public class TestCampaignContentProvider implements ITreeContentProvider {
 			return ((DummyTestCase) element).getSteps().length > 0;
 		if (element instanceof DummyTestStep)
 			return ((DummyTestStep) element).getResults().length > 0;
+		if (element instanceof TestCampaign)
+			return !((TestCampaign)element).getTestExecutables().isEmpty();
 		return false;
 	}
 
-	public Object[] getElements(Object cities) {
-		return getChildren(cities);
+	public Object[] getElements(Object parent) {
+		return getChildren(parent);
 	}
 
 	public void dispose() {

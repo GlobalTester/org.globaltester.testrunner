@@ -6,6 +6,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
 import org.eclipse.ui.part.FileEditorInput;
 import org.globaltester.testrunner.GtTestCampaignProject;
+import org.globaltester.testrunner.testframework.TestCampaign;
 
 public class TestCampaignEditorInput implements IEditorInput {
 
@@ -50,8 +51,12 @@ public class TestCampaignEditorInput implements IEditorInput {
 		return project.getIProject().getName();
 	}
 
-	public GtTestCampaignProject getTestCampaign() {
+	public GtTestCampaignProject getGtTestCampaignProject() {
 		return project;
+	}
+
+	public TestCampaign getTestCampaign() {
+		return project.getTestCampaign();
 	}
 
 }

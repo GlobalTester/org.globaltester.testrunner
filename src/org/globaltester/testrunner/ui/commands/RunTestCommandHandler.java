@@ -63,7 +63,7 @@ public class RunTestCommandHandler extends AbstractHandler {
 		 
 
 		//execute all unexecuted tests
-		project.executeTests();
+		project.getTestCampaign().executeTests();
 		
 		//refresh the workspace
 		try {
