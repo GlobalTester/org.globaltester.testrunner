@@ -1,5 +1,7 @@
 package org.globaltester.testrunner.ui.editor;
 
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -20,6 +22,7 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.part.FileEditorInput;
+import org.eclipse.ui.statushandlers.StatusManager;
 import org.globaltester.testrunner.ui.Activator;
 
 public class TestCampaignEditor extends EditorPart {
@@ -134,13 +137,18 @@ public class TestCampaignEditor extends EditorPart {
 		btnExecute.setText("Execute");
 		btnExecute.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				// TODO integrate testcase execution here
-				MessageDialog
-						.openWarning(
-								Activator.getDefault().getWorkbench()
-										.getActiveWorkbenchWindow().getShell(),
-								"GlobalTester",
-								"Execution of this TestCampaign is support from context menu only at the moment");
+				try {
+					//execute tests
+					input.getTestCampaign().executeTests();
+					
+					//refresh the workspace
+					ResourcesPlugin.getWorkspace().getRoot().refreshLocal(IResource.DEPTH_INFINITE, null);
+					
+				} catch (CoreException ex) {
+					StatusManager.getManager().handle(ex, Activator.PLUGIN_ID);
+				}
+				
+				
 			}
 		});
 
