@@ -67,7 +67,7 @@ public class TestCampaign {
 	public void storeToIFile(IFile iFile) throws CoreException {
 		Element root = new Element("TestCampaignProject");
 		
-		//add executions to data to be stored
+		//add TestCampaignElements to data to be stored
 		Iterator<TestCampaignElement> elemIter = elements.iterator();
 		while (elemIter.hasNext()) {
 			TestCampaignElement curElem = elemIter.next();
@@ -100,8 +100,9 @@ public class TestCampaign {
 	/**
 	 * Execute all tests that need to be executed e.g. which do not have a valid
 	 * previous execution associated
+	 * @throws CoreException 
 	 */
-	public void executeTests() {
+	public void executeTests() throws CoreException {
 
 		// (re)initialize the TestLogger
 		if (TestLogger.isInitialized()) {
@@ -135,6 +136,9 @@ public class TestCampaign {
 
 		// shutdown the TestLogger
 		TestLogger.shutdown();
+		
+		//save the new state
+		project.doSave();
 
 	}
 

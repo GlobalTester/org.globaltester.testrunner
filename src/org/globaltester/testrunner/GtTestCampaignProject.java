@@ -237,7 +237,7 @@ public class GtTestCampaignProject {
 	 * @return
 	 * @throws CoreException
 	 */
-	private IFile getTestCampaignIFile() throws CoreException {
+	public IFile getTestCampaignIFile() throws CoreException {
 		IFile file = getIProject().getFile("project.xml");
 		return file;
 	}
@@ -324,6 +324,10 @@ public class GtTestCampaignProject {
 		}
 		
 		return TestExecutableFactory.getInstance(localSpecIFile);
+	}
+
+	public void doSave() throws CoreException {
+		testCampaign.storeToIFile(getTestCampaignIFile());
 	}
 
 }
