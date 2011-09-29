@@ -65,7 +65,7 @@ public class TestCampaign {
 	 * @throws CoreException 
 	 */
 	public void storeToIFile(IFile iFile) throws CoreException {
-		Element root = new Element("TestCampaignProject");
+		Element root = new Element("TestCampaign");
 		
 		//add TestCampaignElements to data to be stored
 		Iterator<TestCampaignElement> elemIter = elements.iterator();

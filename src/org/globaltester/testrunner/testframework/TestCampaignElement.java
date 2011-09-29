@@ -47,7 +47,7 @@ public class TestCampaignElement {
 		if (lastExecElem != null) {
 			String fileName = lastExecElem.getTextTrim();
 			IFile iFile = parent.getProject().getIProject().getFile(fileName);
-			spec = TestExecutableFactory.getInstance(iFile);
+			lastExecution = TestExecutionFactory.getInstance(iFile);
 		}
 		
 	}
