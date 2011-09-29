@@ -19,11 +19,13 @@ import org.globaltester.logging.logger.GTLogger;
 import org.globaltester.logging.logger.GtErrorLogger;
 import org.globaltester.testrunner.testframework.TestCampaign;
 import org.globaltester.testspecification.testframework.TestExecutable;
+import org.globaltester.testspecification.testframework.TestExecutableFactory;
 
 /**
  * Represents and handles the workspace representation of a TestCampaign
+ * 
  * @author amay
- *
+ * 
  */
 public class GtTestCampaignProject {
 
@@ -64,17 +66,18 @@ public class GtTestCampaignProject {
 			e.printStackTrace();
 			project = null;
 		}
-		
+
 		// refresh the workspace
 		try {
 			ResourcesPlugin.getWorkspace().getRoot()
-						.refreshLocal(IResource.DEPTH_INFINITE, null);
+					.refreshLocal(IResource.DEPTH_INFINITE, null);
 		} catch (CoreException e) {
 			// refresh workspace failed
 			// log CoreException to eclipse log
 			GtErrorLogger.log(Activator.PLUGIN_ID, e);
-			
-			// users most probably will ignore this behavior and refresh manually, so do not open annoying dialog
+
+			// users most probably will ignore this behavior and refresh
+			// manually, so do not open annoying dialog
 		}
 
 		return project;
@@ -192,15 +195,15 @@ public class GtTestCampaignProject {
 		}
 
 		this.iProject = iProject;
-		
+
 		this.testCampaign = new TestCampaign(this);
 
 		IFile iFile = getTestCampaignIFile();
-		if(iFile.exists()){
-			//read current state from file
+		if (iFile.exists()) {
+			// read current state from file
 			this.testCampaign.initFromIFile(iFile);
 		} else {
-			//create the IFile and fill with initial content
+			// create the IFile and fill with initial content
 			this.testCampaign.storeToIFile(iFile);
 		}
 	}
@@ -212,7 +215,7 @@ public class GtTestCampaignProject {
 		return iProject;
 	}
 
-	//create a new ResultDirectory
+	// create a new ResultDirectory
 	public String getNewResultDir() {
 		// initialize test logging for this test session
 		IFolder defaultLoggingDir = iProject.getFolder(RESULT_FOLDER
@@ -225,11 +228,12 @@ public class GtTestCampaignProject {
 		}
 
 		return defaultLoggingDir.getLocation().toOSString();
-		
+
 	}
-	
+
 	/**
 	 * Returns the IFile containing this projects additional data
+	 * 
 	 * @return
 	 * @throws CoreException
 	 */
@@ -273,8 +277,8 @@ public class GtTestCampaignProject {
 	 */
 	public IFile getStateIFile(TestExecutable executable) throws CoreException {
 		String execName = executable.getName();
-		String copyRelPath = GtTestCampaignProject.STATE_FOLDER + File.separator
-				+ execName;
+		String copyRelPath = GtTestCampaignProject.STATE_FOLDER
+				+ File.separator + execName;
 
 		// make sure that parents exist
 		IFile iFile = iProject.getFile(copyRelPath);
@@ -292,8 +296,30 @@ public class GtTestCampaignProject {
 	}
 
 	public IFolder getDefaultLoggingDir() {
-		return getIProject().getFolder(RESULT_FOLDER
-				+ File.separator + "Logging");
+		return getIProject().getFolder(
+				RESULT_FOLDER + File.separator + "Logging");
+	}
+
+	/**
+	 * Store the given TestExecutable in the TestCampaignProject. If the
+	 * specification is already present this will return the existing instance.
+	 * If not the specification will be copied and a new TestExecutable will be
+	 * created and returned.
+	 * 
+	 * @param origTestSpec
+	 * @return
+	 * @throws CoreException 
+	 */
+	public TestExecutable persistTestExecutable(TestExecutable origTestSpec) throws CoreException {
+		// generate the IFile representing the local specification
+		IFile localSpecIFile = getSpecificationIFile(origTestSpec);
+		
+		//if the specification is not yet present in this project copy it to the given IFile
+		if (!localSpecIFile.exists()){
+			origTestSpec.copyTo(localSpecIFile);
+		}
+		
+		return TestExecutableFactory.getInstance(localSpecIFile);
 	}
 
 }

@@ -52,4 +52,10 @@ public class TestExecutionFactory {
 				+ testExecutable);
 	}
 
+	public static TestExecution createExecution(
+			TestCampaignElement testCampaignElement) throws CoreException {
+		//TODO handle multiple TetCampaignElements referencing the same SPEC 
+		return createExecution(testCampaignElement.getExecutable(), testCampaignElement.getParent());
+	}
+
 }

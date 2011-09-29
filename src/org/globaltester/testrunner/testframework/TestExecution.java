@@ -29,6 +29,7 @@ public abstract class TestExecution {
 	
 	IFile iFile;
 	protected IFile specFile;
+	private TestExecution previousExecution;
 
 	/**
 	 * Constructor referencing the workspace file which describes the test
@@ -137,6 +138,20 @@ public abstract class TestExecution {
 	 */
 	protected GtTestCampaignProject getGtTestCampaignProject() throws CoreException {
 		return GtTestCampaignProject.getProjectForResource(iFile);
+	}
+
+	/**
+	 * @param previousExecution the previousExecution to set
+	 */
+	public void setPreviousExecution(TestExecution previousExecution) {
+		this.previousExecution = previousExecution;
+	}
+
+	/**
+	 * @return the previousExecution
+	 */
+	public TestExecution getPreviousExecution() {
+		return previousExecution;
 	}
 
 }

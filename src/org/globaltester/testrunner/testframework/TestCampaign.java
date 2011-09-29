@@ -14,7 +14,6 @@ import org.globaltester.logging.logger.TestLogger;
 import org.globaltester.smartcardshell.ScriptRunner;
 import org.globaltester.testrunner.GtTestCampaignProject;
 import org.globaltester.testspecification.testframework.TestExecutable;
-import org.globaltester.testspecification.testframework.TestExecutableFactory;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.mozilla.javascript.Context;
@@ -27,7 +26,7 @@ import org.mozilla.javascript.Context;
 public class TestCampaign {
 
 	private GtTestCampaignProject project;
-	private ArrayList<TestExecutable> executables = new ArrayList<TestExecutable>();
+	private ArrayList<TestCampaignElement> elements = new ArrayList<TestCampaignElement>();
 
 	public TestCampaign(GtTestCampaignProject gtTestCampaignProject) {
 		this.project = gtTestCampaignProject;
@@ -49,13 +48,12 @@ public class TestCampaign {
 
 		// extract TestExecutables
 		@SuppressWarnings("unchecked")
-		Iterator<Element> testExecutionIter = root.getChildren("TestExecutable").iterator();
+		Iterator<Element> testExecutionIter = root.getChildren(TestCampaignElement.XML_ELEMENT).iterator();
 		while (testExecutionIter.hasNext()) {
-			Element element = (Element) testExecutionIter.next();
-			IFile execIFile = project.getIProject().getFile(element.getTextTrim());
-			TestExecutable curExecutable = TestExecutableFactory.getInstance(execIFile);
-			if (curExecutable != null) {
-				executables.add(curExecutable);
+			Element xmlElem = (Element) testExecutionIter.next();
+			TestCampaignElement curTestCampaignElement = new TestCampaignElement(this, xmlElem);
+			if (curTestCampaignElement != null) {
+				elements.add(curTestCampaignElement);
 			}
 			
 		}
@@ -70,12 +68,10 @@ public class TestCampaign {
 		Element root = new Element("TestCampaignProject");
 		
 		//add executions to data to be stored
-		Iterator<TestExecutable> execIter = executables.iterator();
-		while (execIter.hasNext()) {
-			TestExecutable curExecutable = execIter.next();
-			Element elem=new Element("TestExecutable");
-			elem.addContent(curExecutable.getIFile().getProjectRelativePath().toString());
-			root.addContent(elem);
+		Iterator<TestCampaignElement> elemIter = elements.iterator();
+		while (elemIter.hasNext()) {
+			TestCampaignElement curElem = elemIter.next();
+			root.addContent(curElem.getXmlRepresentation());
 		}
 		
 		//create file if it does not exist yet
@@ -87,21 +83,14 @@ public class TestCampaign {
 		XMLHelper.saveDoc(iFile, root);
 	}
 
-	public List<TestExecutable> getTestExecutables() {
-		return executables;
-	}
+	public void addExecutable(TestExecutable origTestExecutable) throws CoreException {
+		// create a new TestCampaignElement and add it 
+		TestCampaignElement newElement = new TestCampaignElement(this, origTestExecutable);
+		elements.add(newElement);
+		
+		
+		// TODO invalidate all results(or check earlier and allow user to create a copy)
 
-	public TestExecutable addExecutable(TestExecutable origTestExecutable) throws CoreException {
-		// TODO copy executable to the TestCampaignProject
-		TestExecutable localTestExecutable = origTestExecutable.copyTo(project.getSpecificationIFile(origTestExecutable));
-		
-		//add the new local executable to the list
-		executables.add(localTestExecutable);
-		
-		
-		// TODO invalidate all results/ or check earlier and allow user to create a copy
-		
-		return localTestExecutable;
 	}
 	
 	public String getName() {
@@ -135,14 +124,10 @@ public class TestCampaign {
 		ScriptRunner sr = new ScriptRunner(cx, project.getIProject().getLocation()
 				.toOSString());
 
-		// execute all required tests
-		for (Iterator<TestExecutable> execIter = executables.iterator(); execIter
+		// execute all included TestCampaignElements
+		for (Iterator<TestCampaignElement> elemIter = elements.iterator(); elemIter
 				.hasNext();) {
-			// TODO configure logger for indiviual logfiles here
-			TestExecutable curExecutable = (TestExecutable) execIter.next();
-			execute(curExecutable, sr, cx, false);
-			// TODO deconfigure logger for indiviual logfiles here
-
+			elemIter.next().execute(sr, cx, false);
 		}
 
 		// close JS context
@@ -153,37 +138,12 @@ public class TestCampaign {
 
 	}
 
-	/**
-	 * Execute the given executable and all following
-	 * @param curExecutable
-	 * @param sr
-	 * @param cx
-	 * @param forceExecution
-	 */
-	private void execute(TestExecutable curExecutable, ScriptRunner sr,
-			Context cx, boolean forceExecution) {
-		// FIXME create TestExecution for the executale and execute it
-		TestExecution testExecution = null;
-		try {
-			testExecution = TestExecutionFactory.createExecution(
-					curExecutable, this);
-		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		//FIXME register this new execution
-//		if (testExecution != null) {
-//			executions.add(testExecution);
-//		}
-		
-		testExecution.execute(sr, cx, forceExecution);
-		
-		
-		
-	}
-
 	public GtTestCampaignProject getProject() {
 		return project;
+	}
+
+	public List<TestCampaignElement> getElements() {
+		return elements;
 	}
 
 }
