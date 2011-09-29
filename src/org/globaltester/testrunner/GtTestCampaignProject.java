@@ -306,17 +306,21 @@ public class GtTestCampaignProject {
 	 * If not the specification will be copied and a new TestExecutable will be
 	 * created and returned.
 	 * 
-	 * @param origTestSpec
+	 * @param executable
 	 * @return
 	 * @throws CoreException 
 	 */
-	public TestExecutable persistTestExecutable(TestExecutable origTestSpec) throws CoreException {
+	public TestExecutable persistTestExecutable(TestExecutable executable) throws CoreException {
+		//no further action needed if executable is already located in this GtTestCampaignProject
+		if (executable.getIFile().getProject().equals(this.iProject))
+			return executable;
+		
 		// generate the IFile representing the local specification
-		IFile localSpecIFile = getSpecificationIFile(origTestSpec);
+		IFile localSpecIFile = getSpecificationIFile(executable);
 		
 		//if the specification is not yet present in this project copy it to the given IFile
 		if (!localSpecIFile.exists()){
-			origTestSpec.copyTo(localSpecIFile);
+			executable.copyTo(localSpecIFile);
 		}
 		
 		return TestExecutableFactory.getInstance(localSpecIFile);

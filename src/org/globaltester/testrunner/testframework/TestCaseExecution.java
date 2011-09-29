@@ -30,9 +30,8 @@ public class TestCaseExecution extends TestExecution {
 			throws CoreException {
 		super(iFile);
 
-		//copy the specFile to the GtTestCampaignProject
-		specFile = getGtTestCampaignProject().getSpecificationIFile(testCase);
-		testCase.getIFile().copy(specFile.getFullPath(), false, null);
+		//persist the specFile to the GtTestCampaignProject
+		specFile = getGtTestCampaignProject().persistTestExecutable(testCase).getIFile();
 		
 		//create execution instances from testcase
 		initFromTestCase();
