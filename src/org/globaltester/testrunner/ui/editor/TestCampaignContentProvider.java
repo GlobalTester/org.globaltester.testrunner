@@ -10,7 +10,7 @@ public class TestCampaignContentProvider implements ITreeContentProvider {
 		if (parentElement instanceof GtTestCampaignProject)
 			return new Object[]{((GtTestCampaignProject)parentElement).getTestCampaign()};
 		if (parentElement instanceof TestCampaign)
-			return ((TestCampaign)parentElement).getTestExecutables().toArray();
+			return ((TestCampaign)parentElement).getElements().toArray();
 		return new Object[0];
 	}
 
@@ -24,7 +24,7 @@ public class TestCampaignContentProvider implements ITreeContentProvider {
 		if (element instanceof GtTestCampaignProject)
 			return true;
 		if (element instanceof TestCampaign)
-			return !((TestCampaign)element).getTestExecutables().isEmpty();
+			return !((TestCampaign)element).getElements().isEmpty();
 		return false;
 	}
 
