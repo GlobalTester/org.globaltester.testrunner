@@ -73,12 +73,12 @@ public class TestCampaignElement {
 			testExecution.setPreviousExecution(lastExecution);
 			lastExecution = testExecution;
 		
-			// TODO configure logger for indiviual logfiles here
+			// TODO configure logger for individual logfiles here
 			
 			//execute the TestExecutable
 			testExecution.execute(sr, cx, forceExecution);
 			
-			// TODO deconfigure logger for indiviual logfiles here
+			// TODO deconfigure logger for individual logfiles here
 			
 		}
 	
