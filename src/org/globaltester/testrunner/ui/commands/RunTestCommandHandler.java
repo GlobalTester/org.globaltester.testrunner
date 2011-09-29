@@ -63,7 +63,11 @@ public class RunTestCommandHandler extends AbstractHandler {
 		 
 
 		//execute all unexecuted tests
-		project.getTestCampaign().executeTests();
+		try {
+			project.getTestCampaign().executeTests();
+		} catch (CoreException e) {
+			throw new ExecutionException("Test execution failed", e);
+		}
 		
 		//refresh the workspace
 		try {

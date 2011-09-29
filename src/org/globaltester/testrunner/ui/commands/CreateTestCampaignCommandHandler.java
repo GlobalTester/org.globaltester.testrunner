@@ -109,6 +109,7 @@ public class CreateTestCampaignCommandHandler extends AbstractHandler {
 			throw new ExecutionException("No TestExectubale could be created from selected Resource", e);
 		}
 		runProject.getTestCampaign().addExecutable(testExecutable);
+		runProject.doSave();
 		
 		return runProject;
 	}
