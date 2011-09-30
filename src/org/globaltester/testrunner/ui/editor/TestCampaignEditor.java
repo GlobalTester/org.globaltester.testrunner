@@ -31,6 +31,7 @@ public class TestCampaignEditor extends EditorPart {
 
 	public static final String ID = "org.globaltester.testrunner.ui.testcampaigneditor";
 	private TestCampaignEditorInput input;
+	private TreeViewer treeViewer;
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
@@ -106,7 +107,7 @@ public class TestCampaignEditor extends EditorPart {
 		Tree executionStateTree = new Tree(treeViewerComp, SWT.BORDER
 				| SWT.H_SCROLL | SWT.V_SCROLL);
 		executionStateTree.setHeaderVisible(true);
-		TreeViewer treeViewer = new TreeViewer(executionStateTree);
+		treeViewer = new TreeViewer(executionStateTree);
 
 		TreeColumn column1 = new TreeColumn(executionStateTree, SWT.LEFT);
 		executionStateTree.setLinesVisible(true);
@@ -119,7 +120,7 @@ public class TestCampaignEditor extends EditorPart {
 		column2.setWidth(100);
 		TreeColumn column3 = new TreeColumn(executionStateTree, SWT.RIGHT);
 		column3.setAlignment(SWT.LEFT);
-		column3.setText("Remarks");
+		column3.setText("LastExecuted");
 		column3.setWidth(100);
 
 		treeViewer.setContentProvider(new TestCampaignContentProvider());
@@ -147,7 +148,7 @@ public class TestCampaignEditor extends EditorPart {
 				} catch (CoreException ex) {
 					StatusManager.getManager().handle(ex, Activator.PLUGIN_ID);
 				}
-				
+				treeViewer.refresh();
 				
 			}
 		});

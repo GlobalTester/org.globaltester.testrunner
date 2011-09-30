@@ -4,7 +4,8 @@ import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.globaltester.testrunner.testframework.TestCampaign;
-import org.globaltester.testspecification.testframework.TestCase;
+import org.globaltester.testrunner.testframework.TestCampaignElement;
+import org.globaltester.testrunner.testframework.TestExecution;
 
 public class TestCampaignTableLabelProvider implements ITableLabelProvider {
 
@@ -17,14 +18,21 @@ public class TestCampaignTableLabelProvider implements ITableLabelProvider {
 		case 0:
 			if (element instanceof TestCampaign)
 				return ((TestCampaign) element).getName();
-			if (element instanceof TestCase)
-				return ((TestCase) element).getTestCaseID();
+			if (element instanceof TestCampaignElement)
+				return ((TestCampaignElement) element).getExecutable()
+						.getName();
 			return element.toString();
-		case 1:
+		case 1: // Result
 			break;
-		case 2:
-			if (element instanceof TestCase)
-				return ((TestCase) element).getIFile().getFullPath().toOSString();
+		case 2: // Last executed
+			if (element instanceof TestCampaignElement) {
+				TestExecution lastExec = ((TestCampaignElement) element)
+						.getLastExecution();
+				if (lastExec != null) {
+					return lastExec.getTime();
+				}
+			}
+			break;
 		}
 		return null;
 	}
