@@ -117,4 +117,9 @@ public class TestCampaignElement {
 		return spec;
 	}
 
+	public TestExecution getLastExecution() {
+		// TODO Auto-generated method stub
+		return lastExecution;
+	}
+
 }

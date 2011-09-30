@@ -3,6 +3,7 @@ package org.globaltester.testrunner.testframework;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.globaltester.core.GtDateHelper;
 import org.globaltester.smartcardshell.ScriptRunner;
 import org.globaltester.testrunner.GtTestCampaignProject;
 import org.jdom.Element;
@@ -30,6 +31,7 @@ public abstract class TestExecution {
 	IFile iFile;
 	protected IFile specFile;
 	private TestExecution previousExecution;
+	private String executionTime;
 
 	/**
 	 * Constructor referencing the workspace file which describes the test
@@ -80,8 +82,30 @@ public abstract class TestExecution {
 	 *            is still valid, if true code is only executed if no previous
 	 *            execution is still valid
 	 */
-	public abstract void execute(ScriptRunner sr, Context cx,
-			boolean forceExecution);
+	public void execute(ScriptRunner sr, Context cx,
+			boolean forceExecution){
+		//set the execution time
+		boolean reExecution = executionTime == null;
+		executionTime = GtDateHelper.getCurrentTimeString();
+		
+		//forward the execution to the implementing class
+		execute(sr, cx, forceExecution, reExecution);
+	}
+
+	/**
+	 * (Re)Execute the code associated with this test execution
+	 * 
+	 * @param sr
+	 *            ScriptRunner to execut JS code in
+	 * @param cx
+	 *            Context to execute JS code in
+	 * @param forceExecution
+	 *            if true the code is executed regardles if previous execution
+	 *            is still valid, if true code is only executed if no previous
+	 *            execution is still valid
+	 */
+	protected abstract void execute(ScriptRunner sr, Context cx,
+			boolean forceExecution, boolean reExecution);
 
 	/**
 	 * extract metadata from XML Element that is common for all TestExecutoin
@@ -152,6 +176,10 @@ public abstract class TestExecution {
 	 */
 	public TestExecution getPreviousExecution() {
 		return previousExecution;
+	}
+
+	public String getTime() {
+		return executionTime;
 	}
 
 }

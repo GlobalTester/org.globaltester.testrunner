@@ -108,7 +108,7 @@ public class TestCaseExecution extends TestExecution {
 	}
 
 	@Override
-	public void execute(ScriptRunner sr, Context cx, boolean forceExecution) {
+	protected void execute(ScriptRunner sr, Context cx, boolean forceExecution, boolean reExecution) {
 		//make sure that failures are counted for each test case seperately
 		ResultFactory.reset();
 		
