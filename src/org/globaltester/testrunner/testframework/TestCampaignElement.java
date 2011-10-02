@@ -118,7 +118,6 @@ public class TestCampaignElement {
 	}
 
 	public TestExecution getLastExecution() {
-		// TODO Auto-generated method stub
 		return lastExecution;
 	}
 

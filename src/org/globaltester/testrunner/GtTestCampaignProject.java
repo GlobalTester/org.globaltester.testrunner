@@ -2,7 +2,9 @@ package org.globaltester.testrunner;
 
 import java.io.File;
 import java.net.URI;
+import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Iterator;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -15,6 +17,8 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.globaltester.core.resources.GtResourceHelper;
+import org.globaltester.interfaces.ITreeChangeListener;
+import org.globaltester.interfaces.ITreeObservable;
 import org.globaltester.logging.logger.GTLogger;
 import org.globaltester.logging.logger.GtErrorLogger;
 import org.globaltester.testrunner.testframework.TestCampaign;
@@ -27,7 +31,7 @@ import org.globaltester.testspecification.testframework.TestExecutableFactory;
  * @author amay
  * 
  */
-public class GtTestCampaignProject {
+public class GtTestCampaignProject implements ITreeObservable {
 
 	private static final String SPEC_FOLDER = "TestSpecification";
 	private static final String CONFIG_FOLDER = "DUTconfiguration";
@@ -38,6 +42,7 @@ public class GtTestCampaignProject {
 	private IProject iProject; // IProject that is represented by this
 								// instance
 	private TestCampaign testCampaign;
+	private HashSet<ITreeChangeListener> treeChangeListeners = new HashSet<ITreeChangeListener>();
 
 	/**
 	 * Create a GlobalTester TestSpecification Project. This includes creation
@@ -328,6 +333,27 @@ public class GtTestCampaignProject {
 
 	public void doSave() throws CoreException {
 		testCampaign.storeToIFile(getTestCampaignIFile());
+	}
+
+	@Override
+	public void removeTreeChangeListener(ITreeChangeListener oldListener) {
+		treeChangeListeners.remove(oldListener);
+	}
+
+	@Override
+	public void addTreeChangeListener(ITreeChangeListener newListener) {
+		treeChangeListeners.add(newListener);
+	}
+	
+	public void notifyTreeChangeListeners(boolean structureChanged,
+			Object[] changedElements, String[] properties){
+		Iterator<ITreeChangeListener> listenerIter = treeChangeListeners.iterator();
+		while (listenerIter.hasNext()) {
+			ITreeChangeListener currentListener = (ITreeChangeListener) listenerIter
+					.next();
+			
+			currentListener.notifyTreeChange(this, structureChanged, changedElements, properties);
+		}
 	}
 
 }

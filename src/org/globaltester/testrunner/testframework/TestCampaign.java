@@ -90,7 +90,10 @@ public class TestCampaign {
 		
 		
 		// TODO invalidate all results(or check earlier and allow user to create a copy)
-
+		
+		//notify viewers of parent about this change
+		project.notifyTreeChangeListeners(true,
+				new Object[]{this, newElement}, null);
 	}
 	
 	public String getName() {
@@ -139,6 +142,10 @@ public class TestCampaign {
 		
 		//save the new state
 		project.doSave();
+		
+		//notify viewers of parent about this change
+		project.notifyTreeChangeListeners(false,
+				elements.toArray(), new String[]{"lastExecution"});
 
 	}
 
