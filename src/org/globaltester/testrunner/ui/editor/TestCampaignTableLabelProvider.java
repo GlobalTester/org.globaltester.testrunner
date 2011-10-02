@@ -44,6 +44,7 @@ public class TestCampaignTableLabelProvider implements ITableLabelProvider {
 	}
 
 	public boolean isLabelProperty(Object element, String property) {
+		if ((element instanceof TestCampaignElement)&&("lastExecution".equals(property))) return true;
 		return false;
 	}
 

@@ -148,7 +148,6 @@ public class TestCampaignEditor extends EditorPart {
 				} catch (CoreException ex) {
 					StatusManager.getManager().handle(ex, Activator.PLUGIN_ID);
 				}
-				treeViewer.refresh();
 				
 			}
 		});
