@@ -332,7 +332,7 @@ public class GtTestCampaignProject implements ITreeObservable {
 	}
 
 	public void doSave() throws CoreException {
-		testCampaign.storeToIFile(getTestCampaignIFile());
+		testCampaign.doSave();
 	}
 
 	@Override

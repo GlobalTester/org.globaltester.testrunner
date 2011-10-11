@@ -17,7 +17,7 @@ import org.mozilla.javascript.Context;
  * 
  */
 public abstract class TestExecution {
-	
+
 	// Constants defining status of specific testexecution
 	public static final int STATUS_PASSED = 0;
 	public static final int STATUS_FAILURE = Failure.FAILURE;
@@ -27,11 +27,11 @@ public abstract class TestExecution {
 	public static final int STATUS_ABORTED = 5;
 	public static final int STATUS_SKIPPED = 6;
 	public static final int STATUS_RESUMED = 7;
-	
+
 	IFile iFile;
 	protected IFile specFile;
 	private TestExecution previousExecution;
-	private String executionTime;
+	private String executionTime = null;
 
 	/**
 	 * Constructor referencing the workspace file which describes the test
@@ -45,15 +45,15 @@ public abstract class TestExecution {
 	 */
 	public TestExecution(IFile iFile) throws CoreException {
 		this.iFile = iFile;
-		if(iFile.exists()){
-			//read current state from file
+		if (iFile.exists()) {
+			// read current state from file
 			initFromIFile();
 		} else {
-			//create the IFile
+			// create the IFile
 			createIFile();
 		}
 	}
-	
+
 	/**
 	 * Initialize all values required for this instance form the already set
 	 * variable iFile
@@ -61,9 +61,10 @@ public abstract class TestExecution {
 	protected abstract void initFromIFile();
 
 	/**
-	 * Store the current state to the resource iFile
+	 * Store the current state to the resource iFile. This should also save the
+	 * referenced previous executions.
 	 */
-	protected abstract void storeToIFile();
+	protected abstract void doSave();
 
 	/**
 	 * Create the resource iFile with initial content
@@ -82,13 +83,12 @@ public abstract class TestExecution {
 	 *            is still valid, if true code is only executed if no previous
 	 *            execution is still valid
 	 */
-	public void execute(ScriptRunner sr, Context cx,
-			boolean forceExecution){
-		//set the execution time
-		boolean reExecution = executionTime == null;
+	public void execute(ScriptRunner sr, Context cx, boolean forceExecution) {
+		// set the execution time
+		boolean reExecution = executionTime != null;
 		executionTime = GtDateHelper.getCurrentTimeString();
-		
-		//forward the execution to the implementing class
+
+		// forward the execution to the implementing class
 		execute(sr, cx, forceExecution, reExecution);
 	}
 
@@ -118,25 +118,34 @@ public abstract class TestExecution {
 				.getTextTrim();
 		specFile = iFile.getProject().getFile(specFileName);
 
+		Element execTimeElem = root.getChild("ExecutionTime");
+		if (execTimeElem != null) {
+			executionTime = execTimeElem.getTextTrim();
+		}
+
 		// TODO define and extract additional required meta data
-		// TODO handle reference to original specification resource
+
 	}
-	
+
 	/**
-	 * dump metadata from XML Element that is common for all TestExecutoin
-	 * types
+	 * dump metadata from XML Element that is common for all TestExecutoin types
 	 * 
 	 * @param root
 	 */
 	void dumpCommonMetaData(Element root) {
 		Element specFileElement = new Element("SpecificationResource");
-		specFileElement.addContent(specFile.getProjectRelativePath().toString());
+		specFileElement
+				.addContent(specFile.getProjectRelativePath().toString());
 		root.addContent(specFileElement);
 
-		// TODO define and extract additional required meta data
-		// TODO handle reference to original specification resource
-	}
+		if (executionTime != null) {
+			Element executionTimeElement = new Element("ExecutionTime");
+			executionTimeElement.addContent(executionTime);
+			root.addContent(executionTimeElement);
+		}
 
+		// TODO define and extract additional required meta data
+	}
 
 	/**
 	 * 
@@ -152,20 +161,21 @@ public abstract class TestExecution {
 	public IFile getSpecFile() {
 		return specFile;
 	}
-	
-
 
 	/**
 	 * Returns the GtTestProject instance this TestExecution is associated with
+	 * 
 	 * @return
-	 * @throws CoreException 
+	 * @throws CoreException
 	 */
-	protected GtTestCampaignProject getGtTestCampaignProject() throws CoreException {
+	protected GtTestCampaignProject getGtTestCampaignProject()
+			throws CoreException {
 		return GtTestCampaignProject.getProjectForResource(iFile);
 	}
 
 	/**
-	 * @param previousExecution the previousExecution to set
+	 * @param previousExecution
+	 *            the previousExecution to set
 	 */
 	public void setPreviousExecution(TestExecution previousExecution) {
 		this.previousExecution = previousExecution;

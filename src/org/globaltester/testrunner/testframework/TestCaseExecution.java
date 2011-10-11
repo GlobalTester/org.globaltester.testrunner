@@ -37,7 +37,7 @@ public class TestCaseExecution extends TestExecution {
 		initFromTestCase();
 
 		//store this configuration
-		storeToIFile();
+		doSave();
 	}
 
 	/**
@@ -55,7 +55,7 @@ public class TestCaseExecution extends TestExecution {
 	}
 
 	@Override
-	protected void storeToIFile() {
+	protected void doSave() {
 		Element root = new Element("TestCaseExecution");
 		dumpCommonMetaData(root);
 		

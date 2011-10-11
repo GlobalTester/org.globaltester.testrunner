@@ -81,6 +81,22 @@ public class TestCampaign {
 		
 		//write to file
 		XMLHelper.saveDoc(iFile, root);
+		
+	}
+
+	/**
+	 * Save this TEstCampaign and its children in the workspace
+	 * @throws CoreException 
+	 */
+	public void doSave() throws CoreException {	
+		// save this
+		storeToIFile(project.getTestCampaignIFile());
+		
+		// save the last executions of associated TestCampaignElements
+		for (Iterator<TestCampaignElement> elemIter = elements.iterator(); elemIter
+				.hasNext();) {
+			elemIter.next().getLastExecution().doSave();
+		}
 	}
 
 	public void addExecutable(TestExecutable origTestExecutable) throws CoreException {
