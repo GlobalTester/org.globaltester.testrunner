@@ -1,11 +1,15 @@
 package org.globaltester.testrunner.ui.editor;
 
+import java.text.DateFormat;
+import java.util.Date;
+
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
+import org.globaltester.testrunner.testframework.AbstractTestExecution;
+import org.globaltester.testrunner.testframework.FileTestExecution;
 import org.globaltester.testrunner.testframework.TestCampaign;
 import org.globaltester.testrunner.testframework.TestCampaignElement;
-import org.globaltester.testrunner.testframework.TestExecution;
 
 public class TestCampaignTableLabelProvider implements ITableLabelProvider {
 
@@ -23,13 +27,17 @@ public class TestCampaignTableLabelProvider implements ITableLabelProvider {
 						.getName();
 			return element.toString();
 		case 1: // Result
+			if (element instanceof TestCampaignElement)
+				element = ((TestCampaignElement) element).getLastExecution();
+			if (element instanceof FileTestExecution)
+				return ((FileTestExecution)element).getResult().getText();
 			break;
 		case 2: // Last executed
 			if (element instanceof TestCampaignElement) {
-				TestExecution lastExec = ((TestCampaignElement) element)
+				AbstractTestExecution lastExec = ((TestCampaignElement) element)
 						.getLastExecution();
 				if (lastExec != null) {
-					return lastExec.getTime();
+					return DateFormat.getDateTimeInstance().format(new Date(lastExec.getLastExecutionStartTime()));
 				}
 			}
 			break;
