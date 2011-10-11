@@ -15,7 +15,7 @@ public class TestCampaignElement {
 	public static final String XML_ELEM_LAST_EXEC = "LastExecution";
 	private TestCampaign parent;
 	private TestExecutable spec;
-	private TestExecution lastExecution;
+	private FileTestExecution lastExecution;
 
 	public TestCampaignElement(TestCampaign testCampaign, TestExecutable origTestSpec) throws CoreException {
 		parent = testCampaign;
@@ -83,7 +83,7 @@ public class TestCampaignElement {
 			Context cx, boolean forceExecution) {
 		
 		//create a new TestExecution this TestCampaignElement
-		TestExecution testExecution = null;
+		FileTestExecution testExecution = null;
 		try {
 			testExecution = TestExecutionFactory.createExecution(this);
 		} catch (CoreException e) {
@@ -117,7 +117,7 @@ public class TestCampaignElement {
 		return spec;
 	}
 
-	public TestExecution getLastExecution() {
+	public FileTestExecution getLastExecution() {
 		return lastExecution;
 	}
 

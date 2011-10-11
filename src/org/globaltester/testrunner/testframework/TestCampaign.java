@@ -95,7 +95,10 @@ public class TestCampaign {
 		// save the last executions of associated TestCampaignElements
 		for (Iterator<TestCampaignElement> elemIter = elements.iterator(); elemIter
 				.hasNext();) {
-			elemIter.next().getLastExecution().doSave();
+			FileTestExecution curLastExec = elemIter.next().getLastExecution();
+			if (curLastExec != null){
+				curLastExec.doSave();
+			}
 		}
 	}
 

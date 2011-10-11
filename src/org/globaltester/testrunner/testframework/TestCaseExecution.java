@@ -5,7 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.globaltester.core.xml.XMLHelper;
 import org.globaltester.logging.logger.TestLogger;
@@ -17,7 +16,7 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.mozilla.javascript.Context;
 
-public class TestCaseExecution extends TestExecution {
+public class TestCaseExecution extends FileTestExecution {
 
 	private LinkedList<TestStepExecution> testStepExecutions;
 
@@ -44,7 +43,6 @@ public class TestCaseExecution extends TestExecution {
 	 * create all required execution instances from test case. E.g. TestStepExecutions
 	 */
 	private void initFromTestCase() {
-		// TODO Auto-generated method stub
 		testStepExecutions = new LinkedList<TestStepExecution>();
 		List<TestStep> testSteps = getTestCase().getTestSteps();
 		for (Iterator<TestStep> testStepIter = testSteps.iterator(); testStepIter
@@ -53,15 +51,6 @@ public class TestCaseExecution extends TestExecution {
 		}
 		
 	}
-
-	@Override
-	protected void doSave() {
-		Element root = new Element("TestCaseExecution");
-		dumpCommonMetaData(root);
-		
-		XMLHelper.saveDoc(iFile, root);
-
-	}
 	
 	@Override
 	protected void createIFile() {
@@ -69,24 +58,6 @@ public class TestCaseExecution extends TestExecution {
 			Element root = new Element("TestCaseExecution");			
 			XMLHelper.saveDoc(iFile, root);
 		}
-	}
-
-	@Override
-	protected void initFromIFile() {
-		Assert.isNotNull(iFile);
-		Document doc = XMLHelper.readDocument(iFile);
-		Element root = doc.getRootElement();
-
-		// check that root element has correct name
-		Assert.isTrue(root.getName().equals("TestCaseExecution"),
-				"Root element is not TestCaseExecution");
-
-		// extract meta data
-		extractCommonMetaData(root);
-		
-		//create execution instances from testcase
-		initFromTestCase();
-
 	}
 
 	/**
@@ -144,6 +115,17 @@ public class TestCaseExecution extends TestExecution {
 			throw new RuntimeException("Could not create TestCase for "
 					+ testCaseResource, e);
 		}
+	}
+
+	@Override
+	protected String getXmlRootElementName() {
+		return "TestCaseExecution";
+	}
+	
+	@Override
+	void extractFromXml(Element root) {
+		super.extractFromXml(root);
+		initFromTestCase();
 	}
 
 }

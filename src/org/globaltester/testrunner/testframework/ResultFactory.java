@@ -35,4 +35,9 @@ public class ResultFactory {
 		failureID = 1;
 	}
 
+	public static Result newEmptyResult() {
+		// FIXME return an result "not run"
+		return new Result();
+	}
+
 }

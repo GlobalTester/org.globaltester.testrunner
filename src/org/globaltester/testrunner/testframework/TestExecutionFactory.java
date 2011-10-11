@@ -9,7 +9,7 @@ import org.globaltester.testspecification.testframework.TestExecutable;
 
 public class TestExecutionFactory {
 
-	private static Hashtable<IFile, TestExecution> instances = new Hashtable<IFile, TestExecution>();
+	private static Hashtable<IFile, FileTestExecution> instances = new Hashtable<IFile, FileTestExecution>();
 
 	/**
 	 * Return the instance representing the state of the given IFile
@@ -18,10 +18,10 @@ public class TestExecutionFactory {
 	 * @return
 	 * @throws CoreException
 	 */
-	public static TestExecution getInstance(IFile iFile) throws CoreException {
+	public static FileTestExecution getInstance(IFile iFile) throws CoreException {
 
 		if (!instances.containsKey(iFile)) {
-			TestExecution newExecutionInstance = null;
+			FileTestExecution newExecutionInstance = null;
 
 			if (TestCaseExecution.isFileRepresentation(iFile)) {
 				newExecutionInstance = new TestCaseExecution(iFile);
@@ -37,7 +37,7 @@ public class TestExecutionFactory {
 		return instances.get(iFile);
 	}
 
-	public static TestExecution createExecution(TestExecutable testExecutable,
+	public static FileTestExecution createExecution(TestExecutable testExecutable,
 			TestCampaign testCampaign) throws CoreException {
 
 		IFile executionFile = testCampaign.getProject().getStateIFile(testExecutable);
@@ -52,7 +52,7 @@ public class TestExecutionFactory {
 				+ testExecutable);
 	}
 
-	public static TestExecution createExecution(
+	public static FileTestExecution createExecution(
 			TestCampaignElement testCampaignElement) throws CoreException {
 		//TODO handle multiple TetCampaignElements referencing the same SPEC 
 		return createExecution(testCampaignElement.getExecutable(), testCampaignElement.getParent());

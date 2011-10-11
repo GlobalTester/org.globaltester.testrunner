@@ -120,13 +120,13 @@ public class TestStepExecutor {
 //					}
 //					*/
 //				} else { // if (jseo instanceof GPError)
-					return generateFailure(TestExecution.STATUS_FAILURE, jse.toString(), 0);
+					return generateFailure(FileTestExecution.STATUS_FAILURE, jse.toString(), 0);
 //				}
 //				TestLogger.info("");
 			} else {
 				// this execption is thrown e. g. by ECMA exceptions
 				// this migtht be a following error, so handle it as warning
-				generateFailure(TestExecution.STATUS_WARNING, ex.toString(), 0);
+				generateFailure(FileTestExecution.STATUS_WARNING, ex.toString(), 0);
 			}
 		}
 		

@@ -11,15 +11,10 @@ import org.globaltester.testspecification.testframework.TestStep;
 import org.jdom.Element;
 import org.mozilla.javascript.Context;
 
-public class TestStepExecution {
+public class TestStepExecution extends AbstractTestExecution {
 
 	private TestStep testStep;
-	Result testStepResult;
-
-	public Result getResult() {
-		return testStepResult;
-	}
-
+	
 	List<Result> expResultsExecutionResults;
 
 	/**
@@ -30,7 +25,8 @@ public class TestStepExecution {
 		testStep = step;
 	}
 
-	public void execute(ScriptRunner sr, Context cx, boolean forceExecution) {
+	@Override
+	public void execute(ScriptRunner sr, Context cx, boolean forceExecution, boolean reExecution) {
 		//log TestStep ID and Command
 		TestLogger.info("TestStep "+ testStep.getId());
 		Element commandElem = testStep.getCommand();
@@ -57,10 +53,10 @@ public class TestStepExecution {
 		//execute the test step itself
 		String techCommandCode = testStep.getTechnicalCommand();
 		if ((techCommandCode != null) && (techCommandCode.trim().length() > 0)) {
-			testStepResult = stepExecutor.execute(techCommandCode, testStep.getId()+" - Command");
+			result = stepExecutor.execute(techCommandCode, testStep.getId()+" - Command");
 		} else {
 			//if no code can be executed the result of the step itself is always ok
-			testStepResult = new Result();
+			result = new Result();
 		}
 		
 		//execute all ExpectedResults
