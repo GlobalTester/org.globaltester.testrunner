@@ -142,6 +142,9 @@ public class TestCampaignEditor extends EditorPart {
 					//execute tests
 					input.getTestCampaign().executeTests();
 					
+					//store data
+					input.getGtTestCampaignProject().doSave();
+					
 					//refresh the workspace
 					ResourcesPlugin.getWorkspace().getRoot().refreshLocal(IResource.DEPTH_INFINITE, null);
 					
