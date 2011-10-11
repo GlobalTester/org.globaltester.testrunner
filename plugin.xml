@@ -11,4 +11,20 @@
          </run>
       </runtime>
    </extension>
+   <extension
+         point="org.eclipse.core.contenttype.contentTypes">
+      <content-type
+            file-extensions="xml"
+            id="org.globaltester.testrunner.contenttypes.TestCampaign"
+            name="GlobalTester TestCampaign"
+            priority="normal">
+         <describer
+               class="org.eclipse.core.runtime.content.XMLRootElementContentDescriber2">
+            <parameter
+                  name="element"
+                  value="TestCampaign">
+            </parameter>
+         </describer>
+      </content-type>
+   </extension>
 </plugin>
