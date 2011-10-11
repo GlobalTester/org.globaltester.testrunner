@@ -243,7 +243,7 @@ public class GtTestCampaignProject implements ITreeObservable {
 	 * @throws CoreException
 	 */
 	public IFile getTestCampaignIFile() throws CoreException {
-		IFile file = getIProject().getFile("project.xml");
+		IFile file = getIProject().getFile("testCampaign.xml");
 		return file;
 	}
 
