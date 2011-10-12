@@ -127,7 +127,7 @@ public class TestCampaignEditor extends EditorPart {
 		column2.setWidth(120);
 		TreeColumn column3 = new TreeColumn(executionStateTree, SWT.RIGHT);
 		column3.setAlignment(SWT.LEFT);
-		column3.setText("Result");
+		column3.setText("Status");
 		column3.setWidth(120);
 		TreeColumn column4 = new TreeColumn(executionStateTree, SWT.RIGHT);
 		column4.setAlignment(SWT.LEFT);

@@ -35,11 +35,17 @@ public class TestCampaignTableLabelProvider implements ITableLabelProvider {
 				}
 			}
 			break;
-		case 2: // Result
+		case 2: // Status
 			if (element instanceof TestCampaignElement)
 				element = ((TestCampaignElement) element).getLastExecution();
 			if (element instanceof FileTestExecution)
-				return ((FileTestExecution)element).getResult().getText();
+				return ((FileTestExecution)element).getResult().getStatus().toString();
+			break;
+		case 3: // Comment
+			if (element instanceof TestCampaignElement)
+				element = ((TestCampaignElement) element).getLastExecution();
+			if (element instanceof FileTestExecution)
+				return ((FileTestExecution)element).getResult().getComment();
 			break;
 		}
 		return null;
