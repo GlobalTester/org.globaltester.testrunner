@@ -26,13 +26,7 @@ public class TestCampaignTableLabelProvider implements ITableLabelProvider {
 				return ((TestCampaignElement) element).getExecutable()
 						.getName();
 			return element.toString();
-		case 1: // Result
-			if (element instanceof TestCampaignElement)
-				element = ((TestCampaignElement) element).getLastExecution();
-			if (element instanceof FileTestExecution)
-				return ((FileTestExecution)element).getResult().getText();
-			break;
-		case 2: // Last executed
+		case 1: // Last executed
 			if (element instanceof TestCampaignElement) {
 				AbstractTestExecution lastExec = ((TestCampaignElement) element)
 						.getLastExecution();
@@ -40,6 +34,12 @@ public class TestCampaignTableLabelProvider implements ITableLabelProvider {
 					return DateFormat.getDateTimeInstance().format(new Date(lastExec.getLastExecutionStartTime()));
 				}
 			}
+			break;
+		case 2: // Result
+			if (element instanceof TestCampaignElement)
+				element = ((TestCampaignElement) element).getLastExecution();
+			if (element instanceof FileTestExecution)
+				return ((FileTestExecution)element).getResult().getText();
 			break;
 		}
 		return null;

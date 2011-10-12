@@ -120,15 +120,19 @@ public class TestCampaignEditor extends EditorPart {
 		executionStateTree.setLinesVisible(true);
 		column1.setAlignment(SWT.LEFT);
 		column1.setText("Testcase/TestStep");
-		column1.setWidth(160);
+		column1.setWidth(250);
 		TreeColumn column2 = new TreeColumn(executionStateTree, SWT.RIGHT);
 		column2.setAlignment(SWT.LEFT);
-		column2.setText("Result");
-		column2.setWidth(100);
+		column2.setText("LastExecuted");
+		column2.setWidth(120);
 		TreeColumn column3 = new TreeColumn(executionStateTree, SWT.RIGHT);
 		column3.setAlignment(SWT.LEFT);
-		column3.setText("LastExecuted");
-		column3.setWidth(100);
+		column3.setText("Result");
+		column3.setWidth(120);
+		TreeColumn column4 = new TreeColumn(executionStateTree, SWT.RIGHT);
+		column4.setAlignment(SWT.LEFT);
+		column4.setText("Comment");
+		column4.setWidth(300);
 
 		treeViewer.setContentProvider(new TestCampaignContentProvider());
 		treeViewer.setLabelProvider(new TestCampaignTableLabelProvider());
