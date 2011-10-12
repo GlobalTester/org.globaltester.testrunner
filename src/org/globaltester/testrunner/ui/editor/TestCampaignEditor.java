@@ -18,6 +18,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
@@ -32,6 +33,7 @@ public class TestCampaignEditor extends EditorPart {
 	public static final String ID = "org.globaltester.testrunner.ui.testcampaigneditor";
 	private TestCampaignEditorInput input;
 	private TreeViewer treeViewer;
+	private boolean dirty = false;
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
@@ -41,6 +43,7 @@ public class TestCampaignEditor extends EditorPart {
 		} catch (CoreException e) {
 			StatusManager.getManager().handle(e, Activator.PLUGIN_ID);
 		}
+		setDirty(false);
 	}
 
 	@Override
@@ -66,14 +69,14 @@ public class TestCampaignEditor extends EditorPart {
 		this.input = (TestCampaignEditorInput) input;
 		setSite(site);
 		setInput(input);
+		setDirty(false);
 
 		setPartName(this.input.getName());
 	}
 
 	@Override
 	public boolean isDirty() {
-		// TODO Auto-generated method stub
-		return false;
+		return dirty;
 	}
 
 	@Override
@@ -143,13 +146,13 @@ public class TestCampaignEditor extends EditorPart {
 		btnExecute.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				try {
-					//execute tests
+					// execute tests
 					input.getTestCampaign().executeTests();
 					
-					//store data
-					input.getGtTestCampaignProject().doSave();
+					// flag the editor as dirty, so that changes can be saved
+					setDirty(true);
 					
-					//refresh the workspace
+					// refresh the workspace
 					ResourcesPlugin.getWorkspace().getRoot().refreshLocal(IResource.DEPTH_INFINITE, null);
 					
 				} catch (CoreException ex) {
@@ -180,5 +183,10 @@ public class TestCampaignEditor extends EditorPart {
 		// TODO Auto-generated method stub
 
 	}
+	
+	public void setDirty(boolean dirty) {
+        this.dirty = dirty;
+        firePropertyChange(IEditorPart.PROP_DIRTY);
+    }
 
 }

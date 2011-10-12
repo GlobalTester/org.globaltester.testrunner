@@ -13,7 +13,6 @@ public class TestCampaignEditorInput implements IEditorInput {
 	private GtTestCampaignProject project;
 	
 	public TestCampaignEditorInput(FileEditorInput input) throws CoreException {
-		// TODO Auto-generated constructor stub
 		project = GtTestCampaignProject.getProjectForResource(input.getFile());
 	}
 
@@ -26,8 +25,7 @@ public class TestCampaignEditorInput implements IEditorInput {
 
 	@Override
 	public boolean exists() {
-		// TODO check whether the corresponding file exists
-		return true;
+		return project.getIProject().exists();
 	}
 
 	@Override
