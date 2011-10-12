@@ -2,6 +2,7 @@ package org.globaltester.testrunner.testframework;
 
 import org.globaltester.logging.logger.TestLogger;
 import org.globaltester.smartcardshell.ScriptRunner;
+import org.globaltester.testrunner.testframework.Result.Status;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.JavaScriptException;
 import org.mozilla.javascript.Scriptable;
@@ -131,7 +132,7 @@ public class TestStepExecutor {
 		}
 		
 		//if no error occurred return a new positive result 
-		return new Result();
+		return new Result(Status.PASSED);
 	}
 		
 

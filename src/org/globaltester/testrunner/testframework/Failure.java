@@ -106,6 +106,7 @@ public class Failure extends Result implements Serializable {
 	 */
 	public Failure(int id, int rating, int lineScript, int lineLogFile,
 			String failureText, String expectedValue, String receivedValue) {
+		super(Status.FAILURE);
 		if ((rating != Failure.FAILURE) && (rating != Failure.WARNING))
 			throw new RuntimeException("Failure rating must be either FAILURE or WARNING");
 		this.id = id;

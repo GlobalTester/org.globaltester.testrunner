@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.globaltester.logging.logger.TestLogger;
 import org.globaltester.smartcardshell.ScriptRunner;
+import org.globaltester.testrunner.testframework.Result.Status;
 import org.globaltester.testspecification.testframework.ExpectedResult;
 import org.globaltester.testspecification.testframework.TestStep;
 import org.jdom.Element;
@@ -56,7 +57,7 @@ public class TestStepExecution extends AbstractTestExecution {
 			result = stepExecutor.execute(techCommandCode, testStep.getId()+" - Command");
 		} else {
 			//if no code can be executed the result of the step itself is always ok
-			result = new Result();
+			result = new Result(Status.PASSED);
 		}
 		
 		//execute all ExpectedResults
@@ -81,7 +82,7 @@ public class TestStepExecution extends AbstractTestExecution {
 				curExecutionResult = stepExecutor.execute(techResultCode, testStep.getId()+" - Expected Result "+curResult.getId());
 			} else {
 				//if no code can be executed the result of the result is always ok
-				curExecutionResult = new Result();
+				curExecutionResult = new Result(Status.PASSED);
 			}
 			expResultsExecutionResults.add(curExecutionResult);
 			
