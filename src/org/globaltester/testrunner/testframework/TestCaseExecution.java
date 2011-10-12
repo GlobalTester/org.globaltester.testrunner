@@ -90,12 +90,15 @@ public class TestCaseExecution extends FileTestExecution {
 		getTestCase().dumpTestCaseInfos();
 
 		// TODO handle preconditions etc.
-
+		
 		// iterate over all test steps and execute them
 		TestLogger.info("Running TestSteps");
 		for (Iterator<TestStepExecution> testStepIter = testStepExecutions.iterator(); testStepIter
 				.hasNext();) {
-			testStepIter.next().execute(sr, cx, forceExecution);
+			TestStepExecution curStepExec = testStepIter.next();
+			curStepExec.execute(sr, cx, forceExecution);
+			
+			result.addSubResult(curStepExec.getResult());
 		}
 		
 
