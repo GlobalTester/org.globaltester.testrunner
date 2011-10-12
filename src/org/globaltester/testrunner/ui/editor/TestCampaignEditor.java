@@ -35,14 +35,17 @@ public class TestCampaignEditor extends EditorPart {
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
-		// TODO Auto-generated method stub
-
+		//TODO handle progress in monitor
+		try {
+			input.getGtTestCampaignProject().doSave();
+		} catch (CoreException e) {
+			StatusManager.getManager().handle(e, Activator.PLUGIN_ID);
+		}
 	}
 
 	@Override
 	public void doSaveAs() {
-		// TODO Auto-generated method stub
-
+		// SaveAs is not allowed, see isSaveAsAllowed()
 	}
 
 	@Override
@@ -75,7 +78,8 @@ public class TestCampaignEditor extends EditorPart {
 
 	@Override
 	public boolean isSaveAsAllowed() {
-		// TODO Auto-generated method stub
+		// savAs is not allowed as the editor reflects state of the complete
+		// project instead of only the file
 		return false;
 	}
 
