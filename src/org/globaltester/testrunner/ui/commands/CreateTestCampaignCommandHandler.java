@@ -2,6 +2,9 @@ package org.globaltester.testrunner.ui.commands;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -12,7 +15,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.TreeSelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
@@ -32,33 +35,17 @@ public class CreateTestCampaignCommandHandler extends AbstractHandler {
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		// check for dirty files and save them
 		if (!PlatformUI.getWorkbench().saveAllEditors(true)) {
+			//TODO handle this case properly
 			return null;
 		}
 
 		ISelection iSel = PlatformUI.getWorkbench().getActiveWorkbenchWindow()
 				.getSelectionService().getSelection();
-		// check type of selection
-		if (!(iSel instanceof TreeSelection)) {
-			return null;
-		}
 
-		TreeSelection treeSel = (TreeSelection) iSel;
-		// check size of selection
-		if (treeSel.size() != 1) {
-			return null;
-		}
-		//TODO configure command so that it is only enabled when a single file is selected
-
-		Object firstSelectionElement = treeSel.getFirstElement();
-		// check type of selected element
-		if (!(firstSelectionElement instanceof IFile)) {
-			return null;
-		}
-
-		//create the project
+		// try to create the project
 		GtTestCampaignProject newProject;
 		try {
-			newProject = createExecutionProject((IFile) firstSelectionElement);
+			newProject = createTestCampaignProject(getNewProjectName(), iSel);
 		} catch (CoreException e) {
 			throw new ExecutionException("ExecutionProject could not be created", e);
 		}
@@ -92,25 +79,78 @@ public class CreateTestCampaignCommandHandler extends AbstractHandler {
 		return null;
 	}
 
-	public static GtTestCampaignProject createExecutionProject(IFile testExecutableFile) throws ExecutionException, CoreException {
-		// create the new TestCampaign project
+	public static String getNewProjectName() {
+		// construct the name of the new TestCampaign project
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 		Calendar cal = Calendar.getInstance();
-		IProject iProject = GtTestCampaignProject.createProject(
-				testExecutableFile.getName() + "_" + sdf.format(cal.getTime()),
-				null);
-		GtTestCampaignProject runProject = GtTestCampaignProject.getProjectForResource(iProject);
+		String projectName = "TestCampaign_"
+				+ sdf.format(cal.getTime());
+		return projectName;
+	}
+
+	public GtTestCampaignProject createTestCampaignProject(String projectName, ISelection iSel) throws ExecutionException, CoreException {
 		
-		//add the selected resource to the list of executables
-		TestExecutable testExecutable;
-		try {
-			testExecutable = TestExecutableFactory.getInstance(testExecutableFile);
-		} catch (CoreException e) {
-			throw new ExecutionException("No TestExectubale could be created from selected Resource", e);
+		LinkedList<IFile> selectedIFiles = new LinkedList<IFile>();
+		
+		// check type of selection
+		if (iSel instanceof IStructuredSelection) {
+			Iterator<?> selectionIter = ((IStructuredSelection) iSel).iterator();
+			while (selectionIter.hasNext()) {
+				Object curElem = (Object) selectionIter.next();
+				if (curElem instanceof IFile) {
+					selectedIFiles.add((IFile) curElem);
+				}
+			}
 		}
-		runProject.getTestCampaign().addExecutable(testExecutable);
-		runProject.doSave();
 		
+		if (selectedIFiles.isEmpty()){
+			throw new ExecutionException("No TestCampaignProject could be created because selection does not contain an IFile");
+		}
+
+		return createTestCampaignProject(projectName, selectedIFiles);
+	}
+
+	
+
+	public static GtTestCampaignProject createTestCampaignProject(
+			IFile testExecutableFile) throws ExecutionException, CoreException {
+
+		// build a list containing the given testExecutableFile
+		LinkedList<IFile> listExecutableFiles = new LinkedList<IFile>();
+		listExecutableFiles.add(testExecutableFile);
+
+		// create the TestCampaignProject
+		return createTestCampaignProject(getNewProjectName(), listExecutableFiles);
+	}
+
+	public static GtTestCampaignProject createTestCampaignProject(
+			String projectName, Collection<IFile> testExecutableFiles)
+			throws ExecutionException, CoreException {
+		// create the new TestCampaign project
+		IProject iProject = GtTestCampaignProject.createProject(projectName,
+				null);
+		GtTestCampaignProject runProject = GtTestCampaignProject
+				.getProjectForResource(iProject);
+
+		// add the selected resources to the list of executables
+		Iterator<IFile> execFilesIter = testExecutableFiles.iterator();
+		while (execFilesIter.hasNext()) {
+			IFile iFile = execFilesIter.next();
+
+			TestExecutable testExecutable;
+			try {
+				testExecutable = TestExecutableFactory.getInstance(iFile);
+			} catch (CoreException e) {
+				throw new ExecutionException(
+						"No TestExectubale could be created from one of the selected resources",
+						e);
+			}
+			runProject.getTestCampaign().addExecutable(testExecutable);
+		}
+
+		// save the new project
+		runProject.doSave();
+
 		return runProject;
 	}
 

@@ -50,7 +50,7 @@ public class RunTestCommandHandler extends AbstractHandler {
 		try {
 			if((selectedResource.getProject().hasNature(GtTestSpecNature.NATURE_ID))&&(selectedResource instanceof IFile)) {
 				//create a new GtTestExecutionProject if testcase is selected from GtTestSpecificationProject
-				project = CreateTestCampaignCommandHandler.createExecutionProject((IFile) selectedResource);
+				project = CreateTestCampaignCommandHandler.createTestCampaignProject((IFile) selectedResource);
 			} else if (selectedResource.getProject().hasNature(GtTestCampaignNature.NATURE_ID)) {
 				project = GtTestCampaignProject.getProjectForResource(selectedResource);	
 			} else {
