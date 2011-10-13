@@ -10,6 +10,7 @@ import org.globaltester.testrunner.testframework.AbstractTestExecution;
 import org.globaltester.testrunner.testframework.FileTestExecution;
 import org.globaltester.testrunner.testframework.TestCampaign;
 import org.globaltester.testrunner.testframework.TestCampaignElement;
+import org.globaltester.testspecification.testframework.ITestExecutable;
 
 public class TestCampaignTableLabelProvider implements ITableLabelProvider {
 
@@ -23,8 +24,9 @@ public class TestCampaignTableLabelProvider implements ITableLabelProvider {
 			if (element instanceof TestCampaign)
 				return ((TestCampaign) element).getName();
 			if (element instanceof TestCampaignElement)
-				return ((TestCampaignElement) element).getExecutable()
-						.getName();
+				element = ((TestCampaignElement) element).getExecutable();
+			if (element instanceof ITestExecutable)
+				return ((ITestExecutable) element).getName();
 			return element.toString();
 		case 1: // Last executed
 			if (element instanceof TestCampaignElement) {

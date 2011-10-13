@@ -13,6 +13,7 @@ import org.globaltester.interfaces.ITreeChangeListener;
 import org.globaltester.interfaces.ITreeObservable;
 import org.globaltester.testrunner.GtTestCampaignProject;
 import org.globaltester.testrunner.testframework.TestCampaign;
+import org.globaltester.testrunner.testframework.TestCampaignElement;
 
 public class TestCampaignContentProvider implements ITreeContentProvider,
 		ITreeChangeListener {
@@ -25,6 +26,8 @@ public class TestCampaignContentProvider implements ITreeContentProvider,
 					.getTestCampaign() };
 		if (parentElement instanceof TestCampaign)
 			return ((TestCampaign) parentElement).getElements().toArray();
+		if (parentElement instanceof TestCampaignElement)
+			return ((TestCampaignElement) parentElement).getExecutable().getChildren().toArray();
 		return new Object[0];
 	}
 
@@ -41,6 +44,8 @@ public class TestCampaignContentProvider implements ITreeContentProvider,
 			return true;
 		if (element instanceof TestCampaign)
 			return !((TestCampaign) element).getElements().isEmpty();
+		if (element instanceof TestCampaignElement)
+			return ((TestCampaignElement) element).getExecutable().hasChildren();
 		return false;
 	}
 
