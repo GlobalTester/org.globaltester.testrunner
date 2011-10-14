@@ -22,7 +22,7 @@ import org.globaltester.interfaces.ITreeObservable;
 import org.globaltester.logging.logger.GTLogger;
 import org.globaltester.logging.logger.GtErrorLogger;
 import org.globaltester.testrunner.testframework.TestCampaign;
-import org.globaltester.testspecification.testframework.TestExecutable;
+import org.globaltester.testspecification.testframework.FileTestExecutable;
 import org.globaltester.testspecification.testframework.TestExecutableFactory;
 
 /**
@@ -256,7 +256,7 @@ public class GtTestCampaignProject implements ITreeObservable {
 	 * @return IFile inside the SPEC_FOLDER of this project
 	 * @throws CoreException
 	 */
-	public IFile getSpecificationIFile(TestExecutable executable)
+	public IFile getSpecificationIFile(FileTestExecutable executable)
 			throws CoreException {
 		String execProjName = executable.getIFile().getProject().getName();
 		String execRelPath = executable.getIFile().getProjectRelativePath()
@@ -280,7 +280,7 @@ public class GtTestCampaignProject implements ITreeObservable {
 	 * @return IFile inside the STATE_FOLDER of this project
 	 * @throws CoreException
 	 */
-	public IFile getStateIFile(TestExecutable executable) throws CoreException {
+	public IFile getStateIFile(FileTestExecutable executable) throws CoreException {
 		String execName = executable.getName();
 		String copyRelPath = GtTestCampaignProject.STATE_FOLDER
 				+ File.separator + execName;
@@ -315,7 +315,7 @@ public class GtTestCampaignProject implements ITreeObservable {
 	 * @return
 	 * @throws CoreException 
 	 */
-	public TestExecutable persistTestExecutable(TestExecutable executable) throws CoreException {
+	public FileTestExecutable persistTestExecutable(FileTestExecutable executable) throws CoreException {
 		//no further action needed if executable is already located in this GtTestCampaignProject
 		if (executable.getIFile().getProject().equals(this.iProject))
 			return executable;

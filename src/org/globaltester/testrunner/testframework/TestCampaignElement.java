@@ -5,7 +5,7 @@ import java.util.Collection;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.globaltester.smartcardshell.ScriptRunner;
-import org.globaltester.testspecification.testframework.TestExecutable;
+import org.globaltester.testspecification.testframework.FileTestExecutable;
 import org.globaltester.testspecification.testframework.TestExecutableFactory;
 import org.jdom.Element;
 import org.mozilla.javascript.Context;
@@ -16,11 +16,11 @@ public class TestCampaignElement implements IExecution {
 	public static final String XML_ELEM_SPEC = "ExecutableSpec";
 	public static final String XML_ELEM_LAST_EXEC = "LastExecution";
 	private TestCampaign parent;
-	private TestExecutable spec;
+	private FileTestExecutable spec;
 	private FileTestExecution lastExecution;
 
 	public TestCampaignElement(TestCampaign testCampaign,
-			TestExecutable origTestSpec) throws CoreException {
+			FileTestExecutable origTestSpec) throws CoreException {
 		parent = testCampaign;
 		spec = parent.getProject().persistTestExecutable(origTestSpec);
 		lastExecution = null;
@@ -116,7 +116,7 @@ public class TestCampaignElement implements IExecution {
 		return parent;
 	}
 
-	public TestExecutable getExecutable() {
+	public FileTestExecutable getExecutable() {
 		return spec;
 	}
 

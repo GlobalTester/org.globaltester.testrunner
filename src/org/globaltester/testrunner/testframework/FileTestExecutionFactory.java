@@ -5,7 +5,7 @@ import java.util.Hashtable;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.globaltester.testspecification.testframework.TestCase;
-import org.globaltester.testspecification.testframework.TestExecutable;
+import org.globaltester.testspecification.testframework.FileTestExecutable;
 
 public class FileTestExecutionFactory {
 
@@ -37,7 +37,7 @@ public class FileTestExecutionFactory {
 		return instances.get(iFile);
 	}
 
-	public static FileTestExecution createExecution(TestExecutable testExecutable,
+	public static FileTestExecution createExecution(FileTestExecutable testExecutable,
 			TestCampaign testCampaign) throws CoreException {
 
 		IFile executionFile = testCampaign.getProject().getStateIFile(testExecutable);

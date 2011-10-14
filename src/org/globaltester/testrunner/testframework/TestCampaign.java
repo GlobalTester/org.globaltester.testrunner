@@ -14,7 +14,7 @@ import org.globaltester.core.xml.XMLHelper;
 import org.globaltester.logging.logger.TestLogger;
 import org.globaltester.smartcardshell.ScriptRunner;
 import org.globaltester.testrunner.GtTestCampaignProject;
-import org.globaltester.testspecification.testframework.TestExecutable;
+import org.globaltester.testspecification.testframework.FileTestExecutable;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.mozilla.javascript.Context;
@@ -103,7 +103,7 @@ public class TestCampaign implements IExecution {
 		}
 	}
 
-	public void addExecutable(TestExecutable origTestExecutable) throws CoreException {
+	public void addExecutable(FileTestExecutable origTestExecutable) throws CoreException {
 		// create a new TestCampaignElement and add it 
 		TestCampaignElement newElement = new TestCampaignElement(this, origTestExecutable);
 		elements.add(newElement);
