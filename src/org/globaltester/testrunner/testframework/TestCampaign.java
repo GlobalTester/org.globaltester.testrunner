@@ -1,8 +1,9 @@
 package org.globaltester.testrunner.testframework;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
+import java.util.LinkedList;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -23,7 +24,7 @@ import org.mozilla.javascript.Context;
  * @author amay
  *
  */
-public class TestCampaign {
+public class TestCampaign implements IExecution {
 
 	private GtTestCampaignProject project;
 	private ArrayList<TestCampaignElement> elements = new ArrayList<TestCampaignElement>();
@@ -172,8 +173,25 @@ public class TestCampaign {
 		return project;
 	}
 
-	public List<TestCampaignElement> getElements() {
-		return elements;
+	@Override
+	public boolean hasChildren() {
+		return !elements.isEmpty();
+	}
+
+	@Override
+	public Collection<IExecution> getChildren() {
+		LinkedList<IExecution> children = new LinkedList<IExecution>();
+		
+		//add elements to list of children
+		children.addAll(elements);
+		
+		return children;
+	}
+
+	@Override
+	public IExecution getParent() {
+		// TestCampaign is a root element
+		return null;
 	}
 
 }

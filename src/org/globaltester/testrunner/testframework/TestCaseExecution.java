@@ -1,5 +1,6 @@
 package org.globaltester.testrunner.testframework;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -129,6 +130,32 @@ public class TestCaseExecution extends FileTestExecution {
 	void extractFromXml(Element root) {
 		super.extractFromXml(root);
 		initFromTestCase();
+	}
+
+	@Override
+	public boolean hasChildren() {
+		return !testStepExecutions.isEmpty();
+	}
+
+	@Override
+	public Collection<IExecution> getChildren() {
+		LinkedList<IExecution> children = new LinkedList<IExecution>();
+		
+		//add test step executions to list of children
+		children.addAll(testStepExecutions);
+		
+		return children;
+	}
+
+	@Override
+	public IExecution getParent() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getName() {
+		return getTestCase().getName();
 	}
 
 }

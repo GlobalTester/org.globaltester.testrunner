@@ -1,5 +1,6 @@
 package org.globaltester.testrunner.testframework;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -87,6 +88,30 @@ public class TestStepExecution extends AbstractTestExecution {
 			expResultsExecutionResults.add(curExecutionResult);
 			
 		}
+	}
+
+	@Override
+	public boolean hasChildren() {
+		// test step has no children
+		return false;
+	}
+
+	@Override
+	public Collection<IExecution> getChildren() {
+		// test step has no children
+		return null;
+		
+	}
+
+	@Override
+	public IExecution getParent() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getName() {
+		return testStep.getName();
 	}
 
 }

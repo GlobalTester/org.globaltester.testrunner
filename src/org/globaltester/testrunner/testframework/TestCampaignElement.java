@@ -1,5 +1,7 @@
 package org.globaltester.testrunner.testframework;
 
+import java.util.Collection;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.globaltester.smartcardshell.ScriptRunner;
@@ -8,7 +10,7 @@ import org.globaltester.testspecification.testframework.TestExecutableFactory;
 import org.jdom.Element;
 import org.mozilla.javascript.Context;
 
-public class TestCampaignElement {
+public class TestCampaignElement implements IExecution {
 
 	public static final String XML_ELEMENT = "TestCampaignElement";
 	public static final String XML_ELEM_SPEC = "ExecutableSpec";
@@ -17,21 +19,23 @@ public class TestCampaignElement {
 	private TestExecutable spec;
 	private FileTestExecution lastExecution;
 
-	public TestCampaignElement(TestCampaign testCampaign, TestExecutable origTestSpec) throws CoreException {
+	public TestCampaignElement(TestCampaign testCampaign,
+			TestExecutable origTestSpec) throws CoreException {
 		parent = testCampaign;
 		spec = parent.getProject().persistTestExecutable(origTestSpec);
 		lastExecution = null;
 	}
-	
-	public TestCampaignElement(TestCampaign testCampaign, Element xmlElem) throws CoreException {
+
+	public TestCampaignElement(TestCampaign testCampaign, Element xmlElem)
+			throws CoreException {
 		parent = testCampaign;
-		
+
 		initFromXmlElement(xmlElem);
 	}
 
 	private void initFromXmlElement(Element xmlElem) throws CoreException {
-		//TODO check the name of the given xmlElem
-		
+		// TODO check the name of the given xmlElem
+
 		// extract TestExecutable
 		Element specElem = xmlElem.getChild(XML_ELEM_SPEC);
 		if (specElem != null) {
@@ -41,7 +45,7 @@ public class TestCampaignElement {
 		} else {
 			throw new RuntimeException("TestCampaignElement can not be ");
 		}
-		
+
 		// extract the last Execution if any
 		Element lastExecElem = xmlElem.getChild(XML_ELEM_LAST_EXEC);
 		if (lastExecElem != null) {
@@ -49,40 +53,41 @@ public class TestCampaignElement {
 			IFile iFile = parent.getProject().getIProject().getFile(fileName);
 			lastExecution = TestExecutionFactory.getInstance(iFile);
 		}
-		
+
 	}
 
 	public Element getXmlRepresentation() {
-		//create XML element for this TestCampaignElement add all children and return it
+		// create XML element for this TestCampaignElement add all children and
+		// return it
 		Element xmlElem = new Element(XML_ELEMENT);
-		
-		//create XML element for the specification and add it to xmlElem
+
+		// create XML element for the specification and add it to xmlElem
 		Element specElem = new Element(XML_ELEM_SPEC);
 		specElem.addContent(spec.getIFile().getProjectRelativePath().toString());
 		xmlElem.addContent(specElem);
-		
-		
-		//create XML element for the last execution  and add it to xmlElem
-		if (lastExecution != null){
+
+		// create XML element for the last execution and add it to xmlElem
+		if (lastExecution != null) {
 			Element lastExecElem = new Element(XML_ELEM_LAST_EXEC);
-			lastExecElem.addContent(lastExecution.getIFile().getProjectRelativePath().toString());
+			lastExecElem.addContent(lastExecution.getIFile()
+					.getProjectRelativePath().toString());
 			xmlElem.addContent(lastExecElem);
 		}
-		
+
 		return xmlElem;
 	}
-	
+
 	/**
 	 * Execute the given executable and all following
+	 * 
 	 * @param curExecutable
 	 * @param sr
 	 * @param cx
 	 * @param forceExecution
 	 */
-	void execute(ScriptRunner sr,
-			Context cx, boolean forceExecution) {
-		
-		//create a new TestExecution this TestCampaignElement
+	void execute(ScriptRunner sr, Context cx, boolean forceExecution) {
+
+		// create a new TestExecution this TestCampaignElement
 		FileTestExecution testExecution = null;
 		try {
 			testExecution = TestExecutionFactory.createExecution(this);
@@ -92,24 +97,22 @@ public class TestCampaignElement {
 		}
 
 		if (testExecution != null) {
-			//register this new execution
+			// register this new execution
 			testExecution.setPreviousExecution(lastExecution);
 			lastExecution = testExecution;
-		
+
 			// TODO configure logger for individual logfiles here
-			
-			//execute the TestExecutable
+
+			// execute the TestExecutable
 			testExecution.execute(sr, cx, forceExecution);
-			
+
 			// TODO deconfigure logger for individual logfiles here
-			
+
 		}
-	
-				
-		
+
 	}
 
-	public TestCampaign getParent() {
+	public IExecution getParent() {
 		return parent;
 	}
 
@@ -119,6 +122,25 @@ public class TestCampaignElement {
 
 	public FileTestExecution getLastExecution() {
 		return lastExecution;
+	}
+
+	@Override
+	public boolean hasChildren() {
+		return (lastExecution != null) && lastExecution.hasChildren();
+	}
+
+	@Override
+	public Collection<IExecution> getChildren() {
+		if (hasChildren()) {
+			return lastExecution.getChildren();
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public String getName() {
+		return spec.getName();
 	}
 
 }

@@ -6,7 +6,7 @@ import org.globaltester.smartcardshell.ScriptRunner;
 import org.jdom.Element;
 import org.mozilla.javascript.Context;
 
-public abstract class AbstractTestExecution {
+public abstract class AbstractTestExecution implements IExecution {
 
 	protected Result result = ResultFactory.newEmptyResult();
 
@@ -100,5 +100,5 @@ public abstract class AbstractTestExecution {
 		return lastExecutionDuration;
 	}
 
-
+	
 }

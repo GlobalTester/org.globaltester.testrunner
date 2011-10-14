@@ -55,7 +55,7 @@ public class TestExecutionFactory {
 	public static FileTestExecution createExecution(
 			TestCampaignElement testCampaignElement) throws CoreException {
 		//TODO handle multiple TetCampaignElements referencing the same SPEC 
-		return createExecution(testCampaignElement.getExecutable(), testCampaignElement.getParent());
+		return createExecution(testCampaignElement.getExecutable(), (TestCampaign) testCampaignElement.getParent());
 	}
 
 }
