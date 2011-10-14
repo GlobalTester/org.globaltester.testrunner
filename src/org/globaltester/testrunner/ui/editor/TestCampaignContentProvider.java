@@ -12,9 +12,17 @@ import org.eclipse.jface.viewers.Viewer;
 import org.globaltester.interfaces.ITreeChangeListener;
 import org.globaltester.interfaces.ITreeObservable;
 import org.globaltester.testrunner.GtTestCampaignProject;
+import org.globaltester.testrunner.testframework.IExecution;
 import org.globaltester.testrunner.testframework.TestCampaign;
-import org.globaltester.testrunner.testframework.TestCampaignElement;
 
+/**
+ * ContentProvider for TreeViewer in TestCampaignEditor. Provides content
+ * elements of TestCampaign and its possible children. The returned elements
+ * will always represent the most recent IExecution of the given elements.
+ * 
+ * @author amay
+ * 
+ */
 public class TestCampaignContentProvider implements ITreeContentProvider,
 		ITreeChangeListener {
 	private Map<ITreeObservable, Set<Viewer>> listenerMapping = new HashMap<ITreeObservable, Set<Viewer>>();
@@ -24,10 +32,9 @@ public class TestCampaignContentProvider implements ITreeContentProvider,
 		if (parentElement instanceof GtTestCampaignProject)
 			return new Object[] { ((GtTestCampaignProject) parentElement)
 					.getTestCampaign() };
-		if (parentElement instanceof TestCampaign)
-			return ((TestCampaign) parentElement).getElements().toArray();
-		if (parentElement instanceof TestCampaignElement)
-			return ((TestCampaignElement) parentElement).getExecutable().getChildren().toArray();
+		if ((parentElement instanceof IExecution)
+				&& ((IExecution) parentElement).hasChildren())
+			return ((IExecution) parentElement).getChildren().toArray();
 		return new Object[0];
 	}
 
@@ -42,10 +49,8 @@ public class TestCampaignContentProvider implements ITreeContentProvider,
 	public boolean hasChildren(Object element) {
 		if (element instanceof GtTestCampaignProject)
 			return true;
-		if (element instanceof TestCampaign)
-			return !((TestCampaign) element).getElements().isEmpty();
-		if (element instanceof TestCampaignElement)
-			return ((TestCampaignElement) element).getExecutable().hasChildren();
+		if (element instanceof IExecution)
+			return ((IExecution) element).hasChildren();
 		return false;
 	}
 
@@ -63,14 +68,14 @@ public class TestCampaignContentProvider implements ITreeContentProvider,
 		// deregister this listener from oldInput
 		if (oldInput instanceof ITreeObservable) {
 			((ITreeObservable) oldInput).removeTreeChangeListener(this);
-			
+
 			// remove viewer from listenerMapping
-			if (listenerMapping.containsKey(oldInput)){
+			if (listenerMapping.containsKey(oldInput)) {
 				Set<Viewer> set = listenerMapping.get(oldInput);
-				if ((set != null) && set.contains(viewer)){
+				if ((set != null) && set.contains(viewer)) {
 					set.remove(viewer);
 				}
-				if ((set == null) || set.isEmpty()){
+				if ((set == null) || set.isEmpty()) {
 					listenerMapping.remove(oldInput);
 				}
 			}
@@ -79,9 +84,10 @@ public class TestCampaignContentProvider implements ITreeContentProvider,
 		// register this listener on newInput
 		if (newInput instanceof ITreeObservable) {
 			((ITreeObservable) newInput).addTreeChangeListener(this);
-			
+
 			// add viewer to listenerMapping to enable propagation of change
-			if (listenerMapping.containsKey(newInput) && (listenerMapping.get(newInput)!= null)) {
+			if (listenerMapping.containsKey(newInput)
+					&& (listenerMapping.get(newInput) != null)) {
 				listenerMapping.get(newInput).add(viewer);
 			} else {
 				HashSet<Viewer> set = new HashSet<Viewer>();
@@ -92,20 +98,23 @@ public class TestCampaignContentProvider implements ITreeContentProvider,
 	}
 
 	@Override
-	public void notifyTreeChange(Object notifier, boolean structureChanged, Object[] changedElements, String[] properties) {
+	public void notifyTreeChange(Object notifier, boolean structureChanged,
+			Object[] changedElements, String[] properties) {
 		if (listenerMapping.containsKey(notifier)) {
-			Iterator<Viewer> viewerIter = listenerMapping.get(notifier).iterator();
-			
+			Iterator<Viewer> viewerIter = listenerMapping.get(notifier)
+					.iterator();
+
 			while (viewerIter.hasNext()) {
 				Viewer viewer = (Viewer) viewerIter.next();
-				
-				if ((structureChanged)||!(viewer instanceof StructuredViewer)) {
+
+				if ((structureChanged) || !(viewer instanceof StructuredViewer)) {
 					viewer.refresh();
 				} else {
-					((StructuredViewer) viewer).update(changedElements, properties);
+					((StructuredViewer) viewer).update(changedElements,
+							properties);
 				}
 			}
 		}
-		
+
 	}
 }
