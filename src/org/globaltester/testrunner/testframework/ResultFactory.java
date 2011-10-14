@@ -36,7 +36,6 @@ public class ResultFactory {
 	}
 
 	public static Result newEmptyResult() {
-		// FIXME return an result "not run"
 		return new Result(Result.Status.UNDEFINED);
 	}
 
