@@ -24,7 +24,7 @@ import org.globaltester.logging.logger.GtErrorLogger;
 import org.globaltester.testrunner.GtTestCampaignProject;
 import org.globaltester.testrunner.ui.Activator;
 import org.globaltester.testrunner.ui.editor.TestCampaignEditor;
-import org.globaltester.testspecification.testframework.TestExecutable;
+import org.globaltester.testspecification.testframework.FileTestExecutable;
 import org.globaltester.testspecification.testframework.TestExecutableFactory;
 
 public class CreateTestCampaignCommandHandler extends AbstractHandler {
@@ -137,7 +137,7 @@ public class CreateTestCampaignCommandHandler extends AbstractHandler {
 		while (execFilesIter.hasNext()) {
 			IFile iFile = execFilesIter.next();
 
-			TestExecutable testExecutable;
+			FileTestExecutable testExecutable;
 			try {
 				testExecutable = TestExecutableFactory.getInstance(iFile);
 			} catch (CoreException e) {
