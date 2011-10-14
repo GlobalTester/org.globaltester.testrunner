@@ -7,7 +7,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.globaltester.testspecification.testframework.TestCase;
 import org.globaltester.testspecification.testframework.TestExecutable;
 
-public class TestExecutionFactory {
+public class FileTestExecutionFactory {
 
 	private static Hashtable<IFile, FileTestExecution> instances = new Hashtable<IFile, FileTestExecution>();
 

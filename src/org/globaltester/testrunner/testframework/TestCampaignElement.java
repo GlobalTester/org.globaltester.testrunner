@@ -51,7 +51,7 @@ public class TestCampaignElement implements IExecution {
 		if (lastExecElem != null) {
 			String fileName = lastExecElem.getTextTrim();
 			IFile iFile = parent.getProject().getIProject().getFile(fileName);
-			lastExecution = TestExecutionFactory.getInstance(iFile);
+			lastExecution = FileTestExecutionFactory.getInstance(iFile);
 		}
 
 	}
@@ -90,7 +90,7 @@ public class TestCampaignElement implements IExecution {
 		// create a new TestExecution this TestCampaignElement
 		FileTestExecution testExecution = null;
 		try {
-			testExecution = TestExecutionFactory.createExecution(this);
+			testExecution = FileTestExecutionFactory.createExecution(this);
 		} catch (CoreException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
