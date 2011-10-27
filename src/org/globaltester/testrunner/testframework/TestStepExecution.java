@@ -2,7 +2,6 @@ package org.globaltester.testrunner.testframework;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.globaltester.logging.logger.TestLogger;
@@ -17,7 +16,9 @@ public class TestStepExecution extends AbstractTestExecution {
 
 	private TestStep testStep;
 	
-	List<Result> expResultsExecutionResults;
+	Result expResultsExecutionResults;
+
+	private Result commandResult;
 
 	/**
 	 * Constructor for new TestStepExecutionInstance
@@ -55,15 +56,15 @@ public class TestStepExecution extends AbstractTestExecution {
 		//execute the test step itself
 		String techCommandCode = testStep.getTechnicalCommand();
 		if ((techCommandCode != null) && (techCommandCode.trim().length() > 0)) {
-			result = stepExecutor.execute(techCommandCode, testStep.getId()+" - Command");
+			commandResult = stepExecutor.execute(techCommandCode, testStep.getId()+" - Command");
 		} else {
 			//if no code can be executed the result of the step itself is always ok
-			result = new Result(Status.PASSED);
+			commandResult = new Result(Status.PASSED);
 		}
 		
 		//execute all ExpectedResults
 		List<ExpectedResult> expResultDefs = testStep.getExpectedResults();
-		expResultsExecutionResults = new LinkedList<Result>();
+		expResultsExecutionResults = new OrResult(Status.PASSED);
 		for (Iterator<ExpectedResult> expResultIter = expResultDefs.iterator(); expResultIter
 				.hasNext();) {
 			ExpectedResult curResult = expResultIter.next();
@@ -85,9 +86,14 @@ public class TestStepExecution extends AbstractTestExecution {
 				//if no code can be executed the result of the result is always ok
 				curExecutionResult = new Result(Status.PASSED);
 			}
-			expResultsExecutionResults.add(curExecutionResult);
-			
+			expResultsExecutionResults.addSubResult(curExecutionResult);
 		}
+		
+		
+		//evaluate results
+		result = new Result(Status.PASSED);
+		result.addSubResult(commandResult);
+		result.addSubResult(expResultsExecutionResults);
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package org.globaltester.testrunner.testframework;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -15,16 +16,18 @@ import org.jdom.Element;
  * @author amay
  * 
  */
-public class Result {
+public class Result implements Serializable{
+
+	private static final long serialVersionUID = 1690869079522455149L;
 
 	public enum Status {
 		PASSED, FAILURE, WARNING, NOT_APPLICABLE, UNDEFINED;
 
 	}
 
-	private Status status; // status this result represents
-	private String comment; // comment associated with this result
-	private ArrayList<Result> subResults = new ArrayList<Result>();
+	protected Status status; // status this result represents
+	protected String comment; // comment associated with this result
+	protected ArrayList<Result> subResults = new ArrayList<Result>();
 
 	public Result(Status newStatus) {
 		this.status = newStatus;
@@ -62,7 +65,7 @@ public class Result {
 	 * 
 	 * By default this returns the worst status given by an sub result.
 	 */
-	private void rebuildStatus() {
+	void rebuildStatus() {
 		Status tmpStatus = Status.PASSED;
 
 		//search worst status in sub results
