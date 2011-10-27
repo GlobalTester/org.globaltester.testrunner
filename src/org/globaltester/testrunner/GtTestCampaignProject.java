@@ -16,6 +16,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.globaltester.core.GtDateHelper;
 import org.globaltester.core.resources.GtResourceHelper;
 import org.globaltester.interfaces.ITreeChangeListener;
 import org.globaltester.interfaces.ITreeObservable;
@@ -272,7 +273,7 @@ public class GtTestCampaignProject implements ITreeObservable {
 	}
 
 	/**
-	 * Returns an IFile where the given TestExecution file for the given
+	 * Returns a new IFile where the given TestExecution file for the given
 	 * TestExecutable should be stored for usage by this run
 	 * 
 	 * @param executable
@@ -280,8 +281,8 @@ public class GtTestCampaignProject implements ITreeObservable {
 	 * @return IFile inside the STATE_FOLDER of this project
 	 * @throws CoreException
 	 */
-	public IFile getStateIFile(FileTestExecutable executable) throws CoreException {
-		String execName = executable.getName();
+	public IFile getNewStateIFile(FileTestExecutable executable) throws CoreException {
+		String execName = GtDateHelper.getCurrentTimeString() + "_" + executable.getName()+".xml";
 		String copyRelPath = GtTestCampaignProject.STATE_FOLDER
 				+ File.separator + execName;
 

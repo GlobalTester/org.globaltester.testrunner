@@ -40,7 +40,7 @@ public class FileTestExecutionFactory {
 	public static FileTestExecution createExecution(FileTestExecutable testExecutable,
 			TestCampaign testCampaign) throws CoreException {
 
-		IFile executionFile = testCampaign.getProject().getStateIFile(testExecutable);
+		IFile executionFile = testCampaign.getProject().getNewStateIFile(testExecutable);
 
 		if (testExecutable instanceof TestCase) {
 			TestCaseExecution tcExecution = new TestCaseExecution(
