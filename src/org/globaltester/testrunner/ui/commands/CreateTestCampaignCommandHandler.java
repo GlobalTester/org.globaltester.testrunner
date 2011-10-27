@@ -1,7 +1,5 @@
 package org.globaltester.testrunner.ui.commands;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -20,6 +18,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
+import org.globaltester.core.GtDateHelper;
 import org.globaltester.logging.logger.GtErrorLogger;
 import org.globaltester.testrunner.GtTestCampaignProject;
 import org.globaltester.testrunner.ui.Activator;
@@ -81,10 +80,8 @@ public class CreateTestCampaignCommandHandler extends AbstractHandler {
 
 	public static String getNewProjectName() {
 		// construct the name of the new TestCampaign project
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-		Calendar cal = Calendar.getInstance();
 		String projectName = "TestCampaign_"
-				+ sdf.format(cal.getTime());
+				+ GtDateHelper.getCurrentTimeString();
 		return projectName;
 	}
 
