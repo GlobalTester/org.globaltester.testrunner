@@ -1,5 +1,8 @@
 package org.globaltester.testrunner.testframework;
 
+import org.globaltester.testrunner.testframework.Result.Status;
+import org.jdom.Element;
+
 
 
 public class ResultFactory {
@@ -37,6 +40,29 @@ public class ResultFactory {
 
 	public static Result newEmptyResult() {
 		return new Result(Result.Status.UNDEFINED);
+	}
+	
+	public static Result resultFromXML(Element resultElement) {
+		Status status = null;
+		String comment = null;
+		
+		//extract status
+		Element statusElem = resultElement.getChild("Status");
+		if (statusElem != null) {
+			status = Status.valueOf(statusElem.getTextTrim());
+		}
+		if (status == null) {
+			throw new RuntimeException("XML-Element for Result does not contain valid Status Element");
+		}
+		
+		//extract comment if any
+		Element commentElem = resultElement.getChild("Comment");
+		if (commentElem != null) {
+			comment = commentElem.getTextTrim();
+		}
+		
+		//return new result
+		return new Result(status, comment);
 	}
 
 }

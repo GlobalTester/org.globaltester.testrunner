@@ -31,6 +31,10 @@ public abstract class AbstractTestExecution implements IExecution {
 		Element durationElement = new Element("LastExecutionDuration");
 		durationElement.addContent(Long.toString(lastExecutionDuration));
 		root.addContent(durationElement);
+		
+		Element resultElement = new Element("LastExecutionResult");
+		getResult().dumpToXML(resultElement);
+		root.addContent(resultElement);
 	}
 
 	/**
@@ -48,6 +52,11 @@ public abstract class AbstractTestExecution implements IExecution {
 		Element durationElem = root.getChild("LastExecutionDuration");
 		if (durationElem != null) {
 			lastExecutionDuration = Long.valueOf(durationElem.getTextTrim());
+		}
+		
+		Element resultElem = root.getChild("LastExecutionResult");
+		if (resultElem != null) {
+			result = ResultFactory.resultFromXML(resultElem);
 		}
 
 	}

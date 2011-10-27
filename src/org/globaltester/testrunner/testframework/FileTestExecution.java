@@ -144,10 +144,15 @@ public abstract class FileTestExecution extends AbstractTestExecution {
 	 * 
 	 */
 	public void doSave() {
+		//save this element
 		Element root = new Element(getXmlRootElementName());
 		dumpToXml(root);
-		
 		XMLHelper.saveDoc(iFile, root);
+		
+		//save previous executions recursively
+		if (previousExecution != null){
+			previousExecution.doSave();
+		}
 
 	}
 	

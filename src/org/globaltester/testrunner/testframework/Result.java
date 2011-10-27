@@ -3,6 +3,8 @@ package org.globaltester.testrunner.testframework;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.jdom.Element;
+
 /**
  * Represents the test result of an executable unit, e.g. of a
  * TestCaseExecution.
@@ -26,6 +28,11 @@ public class Result {
 
 	public Result(Status newStatus) {
 		this.status = newStatus;
+	}
+
+	public Result(Status newStatus, String newComment) {
+		this(newStatus);
+		setComment(comment);
 	}
 
 	public String getComment() {
@@ -73,6 +80,19 @@ public class Result {
 		//change status of this result
 		status = tmpStatus;
 
+	}
+
+	public void dumpToXML(Element root) {
+		Element statusElement = new Element("Status");
+		statusElement.addContent(status.toString());
+		root.addContent(statusElement);
+		
+		Element commentElement = new Element("Comment");
+		commentElement.addContent(status.toString());
+		root.addContent(commentElement);
+		
+		//TODO think about sub results
+		
 	}
 
 }
