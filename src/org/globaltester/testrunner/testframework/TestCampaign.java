@@ -30,6 +30,9 @@ public class TestCampaign implements IExecution {
 
 	private GtTestCampaignProject project;
 	private ArrayList<TestCampaignElement> elements = new ArrayList<TestCampaignElement>();
+	
+	private String specName = "";
+	private String specVersion = "unknown";
 
 	public TestCampaign(GtTestCampaignProject gtTestCampaignProject) {
 		this.project = gtTestCampaignProject;
@@ -49,6 +52,16 @@ public class TestCampaign implements IExecution {
 		// check that root element has correct name
 		Assert.isTrue(root.getName().equals("TestCampaign"),
 				"Root element is not TestCampaign");
+		
+		//extract meta data
+		Element specNameElem = root.getChild("SPECIFICATIONNAME");
+		if (specNameElem != null) {
+			specName = specNameElem.getTextTrim();
+		}
+		Element specVersionElem = root.getChild("SPECIFICATIONVERSION");
+		if (specVersionElem != null) {
+			specVersion = specVersionElem.getTextTrim();
+		}
 
 		// extract TestExecutables
 		@SuppressWarnings("unchecked")
@@ -74,6 +87,15 @@ public class TestCampaign implements IExecution {
 	public void storeToIFile(IFile iFile) throws CoreException {
 		Element root = new Element("TestCampaign");
 
+		//add meta data
+		Element specNameElem = new Element("SPECIFICATIONNAME");
+		specNameElem.addContent(specName);
+		root.addContent(specNameElem);
+		Element specVersionElem = new Element("SPECIFICATIONVERSION");
+		specVersionElem.addContent(specVersion);
+		root.addContent(specVersionElem);
+		
+		
 		// add TestCampaignElements to data to be stored
 		Iterator<TestCampaignElement> elemIter = elements.iterator();
 		while (elemIter.hasNext()) {
@@ -201,6 +223,22 @@ public class TestCampaign implements IExecution {
 	public IExecution getParent() {
 		// TestCampaign is a root element
 		return null;
+	}
+
+	public String getSpecName() {
+		return specName;
+	}
+
+	public void setSpecName(String newName) {
+		specName = newName;
+	}
+
+	public String getSpecVersion() {
+		return specVersion;
+	}
+
+	public void setSpecVersion(String newVersion) {
+		specVersion = newVersion;
 	}
 
 }

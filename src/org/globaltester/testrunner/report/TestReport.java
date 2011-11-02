@@ -39,6 +39,8 @@ public class TestReport {
 
 		fileName = campaign.getName();
 		
+		specName = campaign.getSpecName();
+		specVersion = campaign.getSpecVersion();
 	}
 
 	/**
