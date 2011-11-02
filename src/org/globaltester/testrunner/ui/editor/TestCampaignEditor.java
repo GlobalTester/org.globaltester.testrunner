@@ -223,6 +223,9 @@ public class TestCampaignEditor extends EditorPart {
 			}
 
 		});
+		
+		//unset dirty flag as input is just loaded from file
+		setDirty(false);
 
 	}
 
