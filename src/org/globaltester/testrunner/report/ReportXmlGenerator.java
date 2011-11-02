@@ -3,6 +3,8 @@ package org.globaltester.testrunner.report;
 import java.io.File;
 
 import org.globaltester.core.xml.XMLHelper;
+import org.globaltester.logging.logger.GtErrorLogger;
+import org.globaltester.testrunner.Activator;
 import org.jdom.Element;
 
 
@@ -258,11 +260,11 @@ public class ReportXmlGenerator {
 //		}
 //
 		Element reportTestsFailed = new Element("FAILEDTESTS");
-		reportTestsFailed.setText((new Integer(failedTests).toString()));
+		reportTestsFailed.setText(Integer.valueOf(failedTests).toString());
 		root.addContent(reportTestsFailed);
 
 		Element reportTestsPassed = new Element("PASSEDTESTS");
-		reportTestsPassed.setText((new Integer(passedTests).toString()));
+		reportTestsPassed.setText(Integer.valueOf(passedTests).toString());
 		root.addContent(reportTestsPassed);
 
 		Element reportTestSessionTime = new Element("TESTSESSIONTIME");
@@ -285,7 +287,9 @@ public class ReportXmlGenerator {
 	public static void writeXmlReport(TestReport report) {
 		// FIXME write report to disk
 		File outputFile = new File(report.getFileName("xml"));
-		outputFile.getParentFile().mkdirs();
+		if (!outputFile.getParentFile().mkdirs()){
+			GtErrorLogger.log(Activator.PLUGIN_ID, new RuntimeException("Parent directories for report could not be created"));
+		}
 		
 		Element xmlReport = ReportXmlGenerator.createXmlReport(report);
 		
