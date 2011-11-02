@@ -10,6 +10,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
@@ -31,6 +33,7 @@ import org.globaltester.core.GtDateHelper;
 import org.globaltester.testrunner.report.ReportPdfGenerator;
 import org.globaltester.testrunner.report.TestReport;
 import org.globaltester.testrunner.ui.Activator;
+import org.eclipse.swt.widgets.Text;
 
 public class TestCampaignEditor extends EditorPart {
 	public TestCampaignEditor() {
@@ -40,9 +43,14 @@ public class TestCampaignEditor extends EditorPart {
 	private TestCampaignEditorInput input;
 	private TreeViewer treeViewer;
 	private boolean dirty = false;
+	private Text txtSpecName;
+	private Text txtSpecVersion;
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
+		//flush all changed values to the input
+		input.getTestCampaign().setSpecName(txtSpecName.getText());
+		input.getTestCampaign().setSpecVersion(txtSpecVersion.getText());
 		//TODO handle progress in monitor
 		try {
 			input.getGtTestCampaignProject().doSave();
@@ -98,19 +106,40 @@ public class TestCampaignEditor extends EditorPart {
 
 		// some meta data on top of the editor
 		Composite metaDataComp = new Composite(parent, SWT.NONE);
-		metaDataComp.setLayout(new GridLayout(8, false));
+		metaDataComp.setLayout(new GridLayout(2, false));
 		metaDataComp.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
 				false, 1, 1));
-		new Label(metaDataComp, SWT.NONE);
-		new Label(metaDataComp, SWT.NONE);
-		new Label(metaDataComp, SWT.NONE);
-		new Label(metaDataComp, SWT.NONE);
-		new Label(metaDataComp, SWT.NONE);
-		new Label(metaDataComp, SWT.NONE);
-		new Label(metaDataComp, SWT.NONE);
 
-		Label lblMetadataHere = new Label(metaDataComp, SWT.NONE);
-		lblMetadataHere.setText("MetaData here");
+		Label lblSpecName = new Label(metaDataComp, SWT.NONE);
+		lblSpecName.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER,
+				false, false, 1, 1));
+		lblSpecName.setText("Specification name:");
+
+		txtSpecName = new Text(metaDataComp, SWT.BORDER);
+		txtSpecName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		txtSpecName.addModifyListener(new ModifyListener() {
+			@Override
+			public void modifyText(ModifyEvent e) {
+				setDirty(true);
+			}
+		});
+		txtSpecName.setText(input.getTestCampaign().getSpecName());
+
+		Label lblSpecificationVersion = new Label(metaDataComp, SWT.NONE);
+		lblSpecificationVersion.setLayoutData(new GridData(SWT.RIGHT,
+				SWT.CENTER, false, false, 1, 1));
+		lblSpecificationVersion.setText("Specification Version:");
+
+		txtSpecVersion = new Text(metaDataComp, SWT.BORDER);
+		txtSpecVersion.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1,
+				1));
+		txtSpecVersion.addModifyListener(new ModifyListener() {
+			@Override
+			public void modifyText(ModifyEvent e) {
+				setDirty(true);
+			}
+		});
+		txtSpecVersion.setText(input.getTestCampaign().getSpecVersion());
 
 		// main part of the editor is occupied by tree view
 		Composite treeViewerComp = new Composite(parent, SWT.NONE);
