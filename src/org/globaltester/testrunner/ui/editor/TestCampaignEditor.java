@@ -1,10 +1,13 @@
 package org.globaltester.testrunner.ui.editor;
 
+import java.io.IOException;
+
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -24,6 +27,9 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.statushandlers.StatusManager;
+import org.globaltester.core.GtDateHelper;
+import org.globaltester.testrunner.report.ReportPdfGenerator;
+import org.globaltester.testrunner.report.TestReport;
 import org.globaltester.testrunner.ui.Activator;
 
 public class TestCampaignEditor extends EditorPart {
@@ -170,12 +176,21 @@ public class TestCampaignEditor extends EditorPart {
 		btnGenerateReport.setText("Generate Report");
 		btnGenerateReport.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				// TODO integrate report generation here
-				MessageDialog
-						.openWarning(Activator.getDefault().getWorkbench()
-								.getActiveWorkbenchWindow().getShell(),
-								"GlobalTester",
-								"Report generation is not yet supported in GlobalTester3");
+				//TODO make report location user configurable
+				String baseDirName = "C:/tmp/report"
+						+ GtDateHelper.getCurrentTimeString() + "/";
+				TestReport report = new TestReport(input.getTestCampaign(),
+						baseDirName);
+
+				try {
+					// TODO output XML-Report here, if no pdf is desired
+
+					// output pdf report
+					ReportPdfGenerator.writePdfReport(report);
+				} catch (IOException ex) {
+					IStatus status = new Status(Status.ERROR, Activator.PLUGIN_ID, "PDF report could not be created", ex);
+					StatusManager.getManager().handle(status, StatusManager.SHOW);
+				}
 			}
 
 		});
@@ -192,5 +207,5 @@ public class TestCampaignEditor extends EditorPart {
         this.dirty = dirty;
         firePropertyChange(IEditorPart.PROP_DIRTY);
     }
-
+	
 }
