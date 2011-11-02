@@ -20,9 +20,11 @@ import org.jdom.Element;
 import org.mozilla.javascript.Context;
 
 /**
- * A TestCampaign defines a set of tests together with the history of their results.
+ * A TestCampaign defines a set of tests together with the history of their
+ * results.
+ * 
  * @author amay
- *
+ * 
  */
 public class TestCampaign implements IExecution {
 
@@ -36,9 +38,10 @@ public class TestCampaign implements IExecution {
 	/**
 	 * Initialize all values required for this instance form the already set
 	 * variable iFile
-	 * @throws CoreException 
+	 * 
+	 * @throws CoreException
 	 */
-	public void initFromIFile(IFile iFile) throws CoreException{
+	public void initFromIFile(IFile iFile) throws CoreException {
 		Assert.isNotNull(iFile);
 		Document doc = XMLHelper.readDocument(iFile);
 		Element root = doc.getRootElement();
@@ -49,73 +52,79 @@ public class TestCampaign implements IExecution {
 
 		// extract TestExecutables
 		@SuppressWarnings("unchecked")
-		Iterator<Element> testExecutionIter = root.getChildren(TestCampaignElement.XML_ELEMENT).iterator();
+		Iterator<Element> testExecutionIter = root.getChildren(
+				TestCampaignElement.XML_ELEMENT).iterator();
 		while (testExecutionIter.hasNext()) {
 			Element xmlElem = (Element) testExecutionIter.next();
-			TestCampaignElement curTestCampaignElement = new TestCampaignElement(this, xmlElem);
+			TestCampaignElement curTestCampaignElement = new TestCampaignElement(
+					this, xmlElem);
 			if (curTestCampaignElement != null) {
 				elements.add(curTestCampaignElement);
 			}
-			
+
 		}
 
 	}
 
 	/**
-	 * Store 
-	 * @throws CoreException 
+	 * Store
+	 * 
+	 * @throws CoreException
 	 */
 	public void storeToIFile(IFile iFile) throws CoreException {
 		Element root = new Element("TestCampaign");
-		
-		//add TestCampaignElements to data to be stored
+
+		// add TestCampaignElements to data to be stored
 		Iterator<TestCampaignElement> elemIter = elements.iterator();
 		while (elemIter.hasNext()) {
 			TestCampaignElement curElem = elemIter.next();
 			root.addContent(curElem.getXmlRepresentation());
 		}
-		
-		//create file if it does not exist yet
-		if(!iFile.exists()){
+
+		// create file if it does not exist yet
+		if (!iFile.exists()) {
 			iFile.create(null, false, null);
 		}
-		
-		//write to file
+
+		// write to file
 		XMLHelper.saveDoc(iFile, root);
-		
+
 	}
 
 	/**
 	 * Save this TEstCampaign and its children in the workspace
-	 * @throws CoreException 
+	 * 
+	 * @throws CoreException
 	 */
-	public void doSave() throws CoreException {	
+	public void doSave() throws CoreException {
 		// save this
 		storeToIFile(project.getTestCampaignIFile());
-		
+
 		// save the last executions of associated TestCampaignElements
 		for (Iterator<TestCampaignElement> elemIter = elements.iterator(); elemIter
 				.hasNext();) {
 			FileTestExecution curLastExec = elemIter.next().getLastExecution();
-			if (curLastExec != null){
+			if (curLastExec != null) {
 				curLastExec.doSave();
 			}
 		}
 	}
 
-	public void addExecutable(FileTestExecutable origTestExecutable) throws CoreException {
-		// create a new TestCampaignElement and add it 
-		TestCampaignElement newElement = new TestCampaignElement(this, origTestExecutable);
+	public void addExecutable(FileTestExecutable origTestExecutable)
+			throws CoreException {
+		// create a new TestCampaignElement and add it
+		TestCampaignElement newElement = new TestCampaignElement(this,
+				origTestExecutable);
 		elements.add(newElement);
-		
-		
-		// TODO invalidate all results(or check earlier and allow user to create a copy)
-		
-		//notify viewers of parent about this change
+
+		// TODO invalidate all results(or check earlier and allow user to create
+		// a copy)
+
+		// notify viewers of parent about this change
 		project.notifyTreeChangeListeners(true,
-				new Object[]{this, newElement}, null);
+				new Object[] { this, newElement }, null);
 	}
-	
+
 	public String getName() {
 		return project.getName();
 	}
@@ -123,7 +132,8 @@ public class TestCampaign implements IExecution {
 	/**
 	 * Execute all tests that need to be executed e.g. which do not have a valid
 	 * previous execution associated
-	 * @throws CoreException 
+	 * 
+	 * @throws CoreException
 	 */
 	public void executeTests() throws CoreException {
 
@@ -131,22 +141,21 @@ public class TestCampaign implements IExecution {
 		if (TestLogger.isInitialized()) {
 			TestLogger.shutdown();
 		}
-			// initialize test logging for this test session
-			IFolder defaultLoggingDir = project.getDefaultLoggingDir();
-			try {
-				GtResourceHelper.createWithAllParents(defaultLoggingDir);
-			} catch (CoreException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		// initialize test logging for this test session
+		IFolder defaultLoggingDir = project.getDefaultLoggingDir();
+		try {
+			GtResourceHelper.createWithAllParents(defaultLoggingDir);
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
-			TestLogger.init(project.getNewResultDir());
-		
+		TestLogger.init(project.getNewResultDir());
 
 		// init JS ScriptRunner and Context
 		Context cx = Context.enter();
-		ScriptRunner sr = new ScriptRunner(cx, project.getIProject().getLocation()
-				.toOSString());
+		ScriptRunner sr = new ScriptRunner(cx, project.getIProject()
+				.getLocation().toOSString());
 
 		// execute all included TestCampaignElements
 		for (Iterator<TestCampaignElement> elemIter = elements.iterator(); elemIter
@@ -159,13 +168,13 @@ public class TestCampaign implements IExecution {
 
 		// shutdown the TestLogger
 		TestLogger.shutdown();
-		
-		//save the new state
+
+		// save the new state
 		project.doSave();
-		
-		//notify viewers of parent about this change
-		project.notifyTreeChangeListeners(false,
-				elements.toArray(), new String[]{"lastExecution"});
+
+		// notify viewers of parent about this change
+		project.notifyTreeChangeListeners(false, elements.toArray(),
+				new String[] { "lastExecution" });
 
 	}
 
@@ -181,10 +190,10 @@ public class TestCampaign implements IExecution {
 	@Override
 	public Collection<IExecution> getChildren() {
 		LinkedList<IExecution> children = new LinkedList<IExecution>();
-		
-		//add elements to list of children
+
+		// add elements to list of children
 		children.addAll(elements);
-		
+
 		return children;
 	}
 
