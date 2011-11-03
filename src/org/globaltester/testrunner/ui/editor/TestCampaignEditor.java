@@ -205,7 +205,7 @@ public class TestCampaignEditor extends EditorPart {
 		btnGenerateReport.setText("Generate Report");
 		btnGenerateReport.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				//TODO make report location user configurable
+				//FIXME make report location user configurable
 				String baseDirName = "C:/tmp/report"
 						+ GtDateHelper.getCurrentTimeString() + "/";
 				TestReport report = new TestReport(input.getTestCampaign(),
