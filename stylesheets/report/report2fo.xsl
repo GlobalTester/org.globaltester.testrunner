@@ -112,11 +112,11 @@
                     <xsl:if test="TESTCASESTATUS='WARNING'">
                       <fo:block color="red"> <xsl:value-of select="TESTCASESTATUS" /> </fo:block>
                     </xsl:if>
-                    <xsl:if test="TESTCASESTATUS='SKIPPED'">
-                      <fo:block color="red"> <xsl:value-of select="TESTCASESTATUS" /> </fo:block>
-                    </xsl:if>
                     <xsl:if test="TESTCASESTATUS='NOT APPLICABLE'">
                       <fo:block color="blue"> <xsl:value-of select="TESTCASESTATUS" /> </fo:block>
+                    </xsl:if>
+                    <xsl:if test="TESTCASESTATUS='UNDEFINED'">
+                      <fo:block color="gray"> <xsl:value-of select="TESTCASESTATUS" /> </fo:block>
                     </xsl:if>
 
                   </fo:table-cell>
@@ -311,6 +311,9 @@
      </xsl:if>
      <xsl:if test=".='NOT APPLICABLE'">
        <fo:inline color="blue"> <xsl:apply-templates /> </fo:inline>
+     </xsl:if>
+     <xsl:if test=".='UNDEFINED'">
+       <fo:inline color="gray"> <xsl:apply-templates /> </fo:inline>
      </xsl:if>
 
    </fo:block>

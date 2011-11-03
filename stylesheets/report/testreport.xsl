@@ -14,7 +14,11 @@ xmlns:xi="http://w3.org/2001/XInclude">
  	
  		<body style="font-family:Verdana; font-size:10pt; color:black">
 		<div>
- 			 <img src="Header_GT.png"/>
+			<TABLE cellSpacing="0" cellPadding="0" border="0" frame="void">
+	 			<TR><TD>
+ 					<img src="Header_GT.png"/>
+ 				</TD></TR>
+			</TABLE>
  		</div>
 		
  		<strong style="font-family:Verdana; font-size:14pt; color:black">GlobalTester Test Report
@@ -64,17 +68,15 @@ xmlns:xi="http://w3.org/2001/XInclude">
  							</a>
   						</td>
   					</xsl:if>
- 					<xsl:if test="TESTCASESTATUS='SKIPPED'">
-  						<td valign="top" style="color:red">
+ 					<xsl:if test="TESTCASESTATUS='NOT APPLICABLE'">
+  						<td valign="top" style="color:blue">
   							<a><xsl:attribute name="href">
-  							#<xsl:value-of select="TESTCASEFAILURE/FAILUREID"/>
- 							</xsl:attribute><xsl:value-of select="TESTCASESTATUS" />
+  							</xsl:attribute><xsl:value-of select="TESTCASESTATUS" />
  							</a>
   						</td>
   					</xsl:if>
-  					
-  					<xsl:if test="TESTCASESTATUS='NOT APPLICABLE'">
-  						<td valign="top" style="color:blue">
+  					<xsl:if test="TESTCASESTATUS='UNDEFINED'">
+  						<td valign="top" style="color:gray">
   							<a><xsl:attribute name="href">
   							</xsl:attribute><xsl:value-of select="TESTCASESTATUS" />
  							</a>

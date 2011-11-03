@@ -5,6 +5,7 @@ import java.util.Collection;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.globaltester.smartcardshell.ScriptRunner;
+import org.globaltester.testrunner.testframework.Result.Status;
 import org.globaltester.testspecification.testframework.FileTestExecutable;
 import org.globaltester.testspecification.testframework.TestExecutableFactory;
 import org.jdom.Element;
@@ -141,6 +142,51 @@ public class TestCampaignElement implements IExecution {
 	@Override
 	public String getName() {
 		return spec.getName();
+	}
+
+	@Override
+	public String getComment() {
+		if (lastExecution!= null) {
+			return lastExecution.getComment();
+		}else {
+			return "";
+		}
+	}
+
+	@Override
+	public String getDescription() {
+		if (lastExecution!= null) {
+			return lastExecution.getDescription();
+		}else {
+			return "";
+		}
+	}
+
+	@Override
+	public Status getStatus() {
+		if (lastExecution!= null) {
+			return lastExecution.getStatus();
+		}else {
+			return Status.UNDEFINED;
+		}
+	}
+
+	@Override
+	public double getTime() {
+		if (lastExecution!= null) {
+			return lastExecution.getTime();
+		}else {
+			return 0;
+		}
+	}
+
+	@Override
+	public String getId() {
+		if (lastExecution!= null) {
+			return lastExecution.getId();
+		}else {
+			return "";
+		}
 	}
 
 }

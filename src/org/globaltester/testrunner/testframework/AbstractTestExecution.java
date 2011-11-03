@@ -3,6 +3,7 @@ package org.globaltester.testrunner.testframework;
 import java.util.Date;
 
 import org.globaltester.smartcardshell.ScriptRunner;
+import org.globaltester.testrunner.testframework.Result.Status;
 import org.jdom.Element;
 import org.mozilla.javascript.Context;
 
@@ -107,6 +108,11 @@ public abstract class AbstractTestExecution implements IExecution {
 	
 	public long getLastExecutionDuration() {
 		return lastExecutionDuration;
+	}
+
+	@Override
+	public Status getStatus() {
+		return result.getStatus();
 	}
 
 	

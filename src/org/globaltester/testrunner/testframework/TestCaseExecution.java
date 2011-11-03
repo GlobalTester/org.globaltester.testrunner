@@ -158,4 +158,26 @@ public class TestCaseExecution extends FileTestExecution {
 		return getTestCase().getName();
 	}
 
+	@Override
+	public String getComment() {
+		// TODO Auto-generated method stub
+		return "";
+	}
+
+	@Override
+	public String getDescription() {
+		return this.getTestCase().getTestCasePurpose();
+	}
+
+	@Override
+	public double getTime() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public String getId() {
+		return getTestCase().getTestCaseID();
+	}
+
 }

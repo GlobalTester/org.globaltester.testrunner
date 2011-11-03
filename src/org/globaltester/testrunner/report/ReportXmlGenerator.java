@@ -162,24 +162,29 @@ public class ReportXmlGenerator {
 //
 //		// Element reportTestFailure = new Element("TESTFAILURE");
 
-		Iterator<TestReportElement> elemIter = report.getElements().iterator();
+		Iterator<TestReportPart> elemIter = report.getElements().iterator();
 		while (elemIter.hasNext()) {
-			TestReportElement testReportPart = (TestReportElement) elemIter
+			TestReportPart testReportPart = (TestReportPart) elemIter
 					.next();
 			Element reportTestCase = new Element("TESTCASE");
 			Element reportTestCaseID = new Element("TESTCASEID");
 			reportTestCaseID.setText(testReportPart.getID());
 			reportTestCase.addContent(reportTestCaseID);
 			
-			Element reportTestCaseDescr = new Element("TESTCASEDESCR");
-			reportTestCaseDescr.setText(testReportPart.getDescription());
-			reportTestCase.addContent(reportTestCaseDescr);
-
 			Element reportTestCaseTime = new Element("TESTCASETIME");
 			reportTestCaseTime.setText(String.valueOf(Math
 					.rint(testReportPart.getTime()) / 1000.));
 			reportTestCase.addContent(reportTestCaseTime);
 			sessionTime = sessionTime + testReportPart.getTime();
+
+			// Element reportTestCaseLink = new Element ("TESTCASELINK");
+			//
+			// // get path to test case:
+			// String currentTestCase = (String)testCaseList.get(i);
+			// String pathTestCase = new String();
+			// pathTestCase = "file://"+workingDirectory +"//"+ currentTestCase;
+			// reportTestCaseLink.setText(pathTestCase);
+			// reportTestCase.addContent(reportTestCaseLink);
 
 			Element reportTestCaseStatus = new Element("TESTCASESTATUS");
 			reportTestCaseStatus.setText(testReportPart.getStatus().toString());
@@ -189,65 +194,15 @@ public class ReportXmlGenerator {
 			} else if (Status.FAILURE.equals(testReportPart.getStatus())) {
 				failedTests++;
 			}
+			
+			Element reportTestCaseComment = new Element("TESTCASECOMMENT");
+			reportTestCaseComment.setText(testReportPart.getComment());
+			reportTestCase.addContent(reportTestCaseComment);
 
-			//root.addContent(reportTestCase);
-		}
-//		for (int i = 0; i < testSuite.getTestCases().size(); i++) {
-//			boolean testCaseAdd = true;
-//			TestCase tc = (TestCase) testSuite.getTestCases().get(i);
-//			Element reportTestCase = new Element("TESTCASE");
-//
-//			Element reportTestCaseID = new Element("TESTCASEID");
-//			reportTestCaseID.setText(tc.getTestCaseID());
-//			reportTestCase.addContent(reportTestCaseID);
-//
-//			Element reportTestCaseTime = new Element("TESTCASETIME");
-//			reportTestCaseTime
-//					.setText(String.valueOf(Math.rint(tc.getTime()) / 1000.));
-//			reportTestCase.addContent(reportTestCaseTime);
-//			sessionTime = sessionTime + tc.getTime();
-//
-//			// Element reportTestCaseLink = new Element ("TESTCASELINK");
-//			//
-//			// // get path to test case:
-//			// String currentTestCase = (String)testCaseList.get(i);
-//			// String pathTestCase = new String();
-//			// pathTestCase = "file://"+workingDirectory +"//"+ currentTestCase;
-//			// reportTestCaseLink.setText(pathTestCase);
-//			// reportTestCase.addContent(reportTestCaseLink);
-//
-//			if (DataStore.includeForensicData()) {
-//				testCaseAdd = checkProtocolExecutionOrder(tc);
-//				checkForensicContent(tc);
-//			}
-//
-//			Element reportTestCaseStatus = new Element("TESTCASESTATUS");
-//
-//			if (!testCaseAdd) {
-//				reportTestCaseStatus
-//						.setText(TestCase.STATUS_STRINGS[TestCase.STATUS_NOT_APPLICABLE]);
-//			} else {
-//				reportTestCaseStatus.setText(TestCase.STATUS_STRINGS[tc
-//						.getStatus()]);
-//			}
-//
-//			reportTestCase.addContent(reportTestCaseStatus);
-//
-//			if (tc.getStatus() == TestCase.STATUS_PASSED) {
-//				passedTests++;
-//			}
-//			if (tc.getStatus() == TestCase.STATUS_FAILURE) {
-//				failedTests++;
-//			}
-//
-//			Element reportTestCaseComment = new Element("TESTCASECOMMENT");
-//			reportTestCaseComment.setText(tc.getComment());
-//			reportTestCase.addContent(reportTestCaseComment);
-//
-//			Element reportTestCaseDescr = new Element("TESTCASEDESCR");
-//			reportTestCaseDescr.setText(tc.getTestCaseDescr());
-//			reportTestCase.addContent(reportTestCaseDescr);
-//
+			Element reportTestCaseDescr = new Element("TESTCASEDESCR");
+			reportTestCaseDescr.setText(testReportPart.getDescription());
+			reportTestCase.addContent(reportTestCaseDescr);
+
 //			LinkedList<Failure> failureList = tc.getFailureList();
 //			if (failureList != null) {
 //				for (int j = 0; j < failureList.size(); j++) {
@@ -296,12 +251,12 @@ public class ReportXmlGenerator {
 //
 //				}
 //			}
-//
-//			addForensicContent(tc, reportTestCase, testCaseAdd);
-//			root.addContent(reportTestCase);
-//
-//		}
-//
+
+			
+			root.addContent(reportTestCase);
+
+		}
+
 		Element reportTestsFailed = new Element("FAILEDTESTS");
 		reportTestsFailed.setText(Integer.valueOf(failedTests).toString());
 		root.addContent(reportTestsFailed);

@@ -14,6 +14,7 @@ import org.globaltester.core.xml.XMLHelper;
 import org.globaltester.logging.logger.TestLogger;
 import org.globaltester.smartcardshell.ScriptRunner;
 import org.globaltester.testrunner.GtTestCampaignProject;
+import org.globaltester.testrunner.testframework.Result.Status;
 import org.globaltester.testspecification.testframework.FileTestExecutable;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -239,6 +240,36 @@ public class TestCampaign implements IExecution {
 
 	public void setSpecVersion(String newVersion) {
 		specVersion = newVersion;
+	}
+
+	@Override
+	public String getComment() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getDescription() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Status getStatus() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public double getTime() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public String getId() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

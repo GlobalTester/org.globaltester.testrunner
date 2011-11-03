@@ -120,4 +120,33 @@ public class TestStepExecution extends AbstractTestExecution {
 		return testStep.getName();
 	}
 
+	@Override
+	public String getComment() {
+		// TODO Auto-generated method stub
+		return "";
+	}
+
+	@Override
+	public String getDescription() {
+		// TODO Auto-generated method stub
+		return "";
+	}
+
+	@Override
+	public Status getStatus() {
+		// TODO Auto-generated method stub
+		return Status.UNDEFINED;
+	}
+
+	@Override
+	public double getTime() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public String getId() {
+		return testStep.getId();
+	}
+
 }

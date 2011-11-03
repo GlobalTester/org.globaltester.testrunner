@@ -35,7 +35,7 @@ public class TestReport {
 
 	private String executionTime = "unknown";
 	
-	private LinkedList<TestReportElement> elements = new LinkedList<TestReportElement>();
+	private LinkedList<TestReportPart> elements = new LinkedList<TestReportPart>();
 
 	/**
 	 * Centralizes the extraction of relevant data from the given TestCampaign
@@ -51,7 +51,7 @@ public class TestReport {
 		Iterator<IExecution> elemIter = campaign.getChildren().iterator();
 		while (elemIter.hasNext()) {
 			IExecution iExecution = (IExecution) elemIter.next();
-			elements.add(new TestReportElement(iExecution));
+			elements.add(new TestReportPart(iExecution));
 		}
 	}
 
@@ -72,9 +72,9 @@ public class TestReport {
 		
 		executionTime = origReport.executionTime;
 		
-		Iterator<TestReportElement> elemIter = origReport.elements.iterator();
+		Iterator<TestReportPart> elemIter = origReport.elements.iterator();
 		while (elemIter.hasNext()) {
-			TestReportElement testReportElement = (TestReportElement) elemIter
+			TestReportPart testReportElement = (TestReportPart) elemIter
 					.next();
 			elements.add(testReportElement);
 		}
@@ -112,7 +112,7 @@ public class TestReport {
 		return baseDir;
 	}
 	
-	public List<TestReportElement> getElements() {
+	public List<TestReportPart> getElements() {
 		return elements;
 	}
 
