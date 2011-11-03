@@ -104,19 +104,19 @@
                   </fo:table-cell>
                   <fo:table-cell padding="1pt" border="0.8pt solid black">
                     <xsl:if test="TESTCASESTATUS='PASSED'">
-                      <fo:block color="green"> <xsl:value-of select="TESTCASESTATUS" /> </fo:block>
+                      <fo:block color="green"> <fo:external-graphic src="url('icons/sts_passed.png')" content-height="50%" content-width="50%" padding-right="3pt"/> <xsl:value-of select="TESTCASESTATUS" /> </fo:block>
                     </xsl:if>
                     <xsl:if test="TESTCASESTATUS='FAILURE'">
-                      <fo:block color="red"> <xsl:value-of select="TESTCASESTATUS" /> </fo:block>
+                      <fo:block color="red"> <fo:external-graphic src="url('icons/sts_failed.png')" content-height="50%" content-width="50%" padding-right="3pt"/> <xsl:value-of select="TESTCASESTATUS" /> </fo:block>
                     </xsl:if>
                     <xsl:if test="TESTCASESTATUS='WARNING'">
-                      <fo:block color="red"> <xsl:value-of select="TESTCASESTATUS" /> </fo:block>
+                      <fo:block color="red"> <fo:external-graphic src="url('icons/sts_warning.png')" content-height="50%" content-width="50%" padding-right="3pt"/> <xsl:value-of select="TESTCASESTATUS" /> </fo:block>
                     </xsl:if>
                     <xsl:if test="TESTCASESTATUS='NOT APPLICABLE'">
-                      <fo:block color="blue"> <xsl:value-of select="TESTCASESTATUS" /> </fo:block>
+                      <fo:block color="blue"> <fo:external-graphic src="url('icons/sts_na.png')" content-height="50%" content-width="50%" padding-right="3pt"/> <xsl:value-of select="TESTCASESTATUS" /> </fo:block>
                     </xsl:if>
                     <xsl:if test="TESTCASESTATUS='UNDEFINED'">
-                      <fo:block color="gray"> <xsl:value-of select="TESTCASESTATUS" /> </fo:block>
+                      <fo:block color="gray"> <fo:external-graphic src="url('icons/sts_nye.png')" content-height="50%" content-width="50%" padding-right="3pt"/> <xsl:value-of select="TESTCASESTATUS" /> </fo:block>
                     </xsl:if>
 
                   </fo:table-cell>

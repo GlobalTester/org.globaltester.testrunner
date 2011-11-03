@@ -305,22 +305,47 @@ public class ReportXmlGenerator {
 		//store XML document to file
 		XMLHelper.saveDoc(outputFile, xmlDoc);
 
-		// copy stylesheet and required graphics
+		// copy stylesheet and header graphic
+		Bundle curBundle = Platform.getBundle(Activator.PLUGIN_ID);
+		URL url = FileLocator.find(curBundle, new Path("/"), null);
 		try {
-			Bundle curBundle = Platform.getBundle(Activator.PLUGIN_ID);
-			URL url = FileLocator.find(curBundle, new Path("/"), null);
-			IPath styleSheetPath = new Path(FileLocator.toFileURL(url).getPath())
-					.append("stylesheets/report/");
-
-			File sourcePath = styleSheetPath.toFile();
+			IPath styleSheetSourcePath = new Path(FileLocator.toFileURL(url).getPath())
+			.append("stylesheets/report/");
+			File stylesheetSource = styleSheetSourcePath.toFile();
 
 			String[] files = { "Header_GT.png", "testreport.dtd",
 					"testreport.xsl" };
 			for (String currentFile : files) {
 				try {
 					GtResourceHelper.copyFiles(
-							new File(sourcePath, currentFile), new File(
+							new File(stylesheetSource, currentFile), new File(
 									outputFile.getParent(), currentFile));
+				} catch (IOException e) {
+					GtErrorLogger.log(Activator.PLUGIN_ID, e);
+				}
+			}
+		} catch (IOException ex) {
+			GtErrorLogger.log(Activator.PLUGIN_ID, ex);
+		}
+		// copy required status icons
+		try {
+			IPath iconSourcePath = new Path(FileLocator.toFileURL(url).getPath())
+			.append("icons/");
+			File iconSource = iconSourcePath.toFile();
+			
+			File iconTarget = new File(outputFile.getParent(), "icons");
+			iconTarget.mkdir();
+
+			String[] files = { "sts_failed.png",
+					"sts_na.png",
+					"sts_nye.png",
+					"sts_passed.png",
+					"sts_warning.png" };
+			for (String currentFile : files) {
+				try {
+					GtResourceHelper.copyFiles(
+							new File(iconSource, currentFile), new File(
+									iconTarget, currentFile));
 				} catch (IOException e) {
 					GtErrorLogger.log(Activator.PLUGIN_ID, e);
 				}

@@ -47,7 +47,7 @@ xmlns:xi="http://w3.org/2001/XInclude">
   					
   					<xsl:if test="TESTCASESTATUS='PASSED'">
   						<td valign="top" style="color:green">
-  							<xsl:value-of select="TESTCASESTATUS"/>
+  							<img src="icons/sts_passed.png"/><xsl:value-of select="TESTCASESTATUS"/>
   						</td>
   					</xsl:if>
 
@@ -56,7 +56,7 @@ xmlns:xi="http://w3.org/2001/XInclude">
   							
   							<a><xsl:attribute name="href">
   							#<xsl:value-of select="TESTCASEFAILURE/FAILUREID"/>
- 							</xsl:attribute><xsl:value-of select="TESTCASESTATUS" />
+ 							</xsl:attribute><img src="icons/sts_failed.png"/><xsl:value-of select="TESTCASESTATUS" />
  							</a>
   						</td>
   					</xsl:if>
@@ -64,21 +64,21 @@ xmlns:xi="http://w3.org/2001/XInclude">
   						<td valign="top" style="color:red">
   							<a><xsl:attribute name="href">
   							#<xsl:value-of select="TESTCASEFAILURE/FAILUREID"/>
- 							</xsl:attribute><xsl:value-of select="TESTCASESTATUS" />
+ 							</xsl:attribute><img src="icons/sts_warning.png"/><xsl:value-of select="TESTCASESTATUS" />
  							</a>
   						</td>
   					</xsl:if>
  					<xsl:if test="TESTCASESTATUS='NOT APPLICABLE'">
   						<td valign="top" style="color:blue">
   							<a><xsl:attribute name="href">
-  							</xsl:attribute><xsl:value-of select="TESTCASESTATUS" />
+  							</xsl:attribute><img src="icons/sts_na.png"/><xsl:value-of select="TESTCASESTATUS" />
  							</a>
   						</td>
   					</xsl:if>
   					<xsl:if test="TESTCASESTATUS='UNDEFINED'">
   						<td valign="top" style="color:gray">
   							<a><xsl:attribute name="href">
-  							</xsl:attribute><xsl:value-of select="TESTCASESTATUS" />
+  							</xsl:attribute><img src="icons/sts_nye.png"/><xsl:value-of select="TESTCASESTATUS" />
  							</a>
   						</td>
   					</xsl:if>
