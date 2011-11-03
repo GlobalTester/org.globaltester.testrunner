@@ -13,17 +13,10 @@ xmlns:xi="http://w3.org/2001/XInclude">
 		</head>
  	
  		<body style="font-family:Verdana; font-size:10pt; color:black">
-<div>
- 		<TABLE cellSpacing="0" cellPadding="0" border="0" frame="void">
- 			<TR><TD>
- 			 <img src="GT_Logo.gif"/>
- 			</TD></TR>
-		</TABLE>
-</div>
-		<TABLE bgColor="#FFA017" height="12" width="100%" cellSpacing="0" cellPadding="0" border="0" frame="void">
- 			<TR><TD></TD></TR>
-		</TABLE>
-
+		<div>
+ 			 <img src="Header_GT.png"/>
+ 		</div>
+		
  		<strong style="font-family:Verdana; font-size:14pt; color:black">GlobalTester Test Report
  		</strong>
  

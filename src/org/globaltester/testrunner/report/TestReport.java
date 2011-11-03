@@ -1,7 +1,11 @@
 package org.globaltester.testrunner.report;
 
 import java.io.File;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
+import org.globaltester.testrunner.testframework.IExecution;
 import org.globaltester.testrunner.testframework.TestCampaign;
 
 /**
@@ -30,6 +34,8 @@ public class TestReport {
 	private String specVersion = "DummyVersion";
 
 	private String executionTime = "unknown";
+	
+	private LinkedList<TestReportElement> elements = new LinkedList<TestReportElement>();
 
 	/**
 	 * Centralizes the extraction of relevant data from the given TestCampaign
@@ -41,6 +47,12 @@ public class TestReport {
 		
 		specName = campaign.getSpecName();
 		specVersion = campaign.getSpecVersion();
+		
+		Iterator<IExecution> elemIter = campaign.getChildren().iterator();
+		while (elemIter.hasNext()) {
+			IExecution iExecution = (IExecution) elemIter.next();
+			elements.add(new TestReportElement(iExecution));
+		}
 	}
 
 	/**
@@ -59,6 +71,13 @@ public class TestReport {
 		specVersion = origReport.specVersion;
 		
 		executionTime = origReport.executionTime;
+		
+		Iterator<TestReportElement> elemIter = origReport.elements.iterator();
+		while (elemIter.hasNext()) {
+			TestReportElement testReportElement = (TestReportElement) elemIter
+					.next();
+			elements.add(testReportElement);
+		}
 	}
 
 	/**
@@ -91,6 +110,10 @@ public class TestReport {
 
 	public File getReportDir() {
 		return baseDir;
+	}
+	
+	public List<TestReportElement> getElements() {
+		return elements;
 	}
 
 	// TODO add extension for e.g. forensic results see addForensic... in GT2

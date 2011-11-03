@@ -36,8 +36,6 @@ public class ReportPdfGenerator {
 		URL url = FileLocator.find(curBundle, new Path("/"), null);
 		IPath styleSheetPath = new Path(FileLocator.toFileURL(url).getPath()).append("stylesheets/report/report2fo.xsl");
 		File styleSheet = styleSheetPath.toFile();
-		
-//		styleSheet = new File("C:/Users/amay/workspaces/gt2/GlobalTester TestManager/stylesheets/xml-fo/report2fo.xsl");
 
 		GtFopHelper.transformToPdf(src, destFile, styleSheet);
 

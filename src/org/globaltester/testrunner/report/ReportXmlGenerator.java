@@ -1,11 +1,24 @@
 package org.globaltester.testrunner.report;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.Iterator;
 
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
+import org.globaltester.core.resources.GtResourceHelper;
 import org.globaltester.core.xml.XMLHelper;
 import org.globaltester.logging.logger.GtErrorLogger;
 import org.globaltester.testrunner.Activator;
+import org.globaltester.testrunner.testframework.Result.Status;
+import org.jdom.DocType;
+import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.ProcessingInstruction;
+import org.osgi.framework.Bundle;
 
 
 /**
@@ -24,7 +37,7 @@ public class ReportXmlGenerator {
 
 		int passedTests = 0;
 		int failedTests = 0;
-		int sessionTime = 0;
+		double sessionTime = 0;
 
 		Element root = new Element("TESTREPORT");
 
@@ -148,7 +161,37 @@ public class ReportXmlGenerator {
 //		// root.addContent(reportLogFile);
 //
 //		// Element reportTestFailure = new Element("TESTFAILURE");
-//
+
+		Iterator<TestReportElement> elemIter = report.getElements().iterator();
+		while (elemIter.hasNext()) {
+			TestReportElement testReportPart = (TestReportElement) elemIter
+					.next();
+			Element reportTestCase = new Element("TESTCASE");
+			Element reportTestCaseID = new Element("TESTCASEID");
+			reportTestCaseID.setText(testReportPart.getID());
+			reportTestCase.addContent(reportTestCaseID);
+			
+			Element reportTestCaseDescr = new Element("TESTCASEDESCR");
+			reportTestCaseDescr.setText(testReportPart.getDescription());
+			reportTestCase.addContent(reportTestCaseDescr);
+
+			Element reportTestCaseTime = new Element("TESTCASETIME");
+			reportTestCaseTime.setText(String.valueOf(Math
+					.rint(testReportPart.getTime()) / 1000.));
+			reportTestCase.addContent(reportTestCaseTime);
+			sessionTime = sessionTime + testReportPart.getTime();
+
+			Element reportTestCaseStatus = new Element("TESTCASESTATUS");
+			reportTestCaseStatus.setText(testReportPart.getStatus().toString());
+			reportTestCase.addContent(reportTestCaseStatus);
+			if (Status.PASSED.equals(testReportPart.getStatus())) {
+				passedTests++;
+			} else if (Status.FAILURE.equals(testReportPart.getStatus())) {
+				failedTests++;
+			}
+
+			//root.addContent(reportTestCase);
+		}
 //		for (int i = 0; i < testSuite.getTestCases().size(); i++) {
 //			boolean testCaseAdd = true;
 //			TestCase tc = (TestCase) testSuite.getTestCases().get(i);
@@ -285,15 +328,51 @@ public class ReportXmlGenerator {
 	 * @param report
 	 */
 	public static void writeXmlReport(TestReport report) {
-		// FIXME write report to disk
+		// prepare parent directories
 		File outputFile = new File(report.getFileName("xml"));
-		if (!outputFile.getParentFile().mkdirs()){
-			GtErrorLogger.log(Activator.PLUGIN_ID, new RuntimeException("Parent directories for report could not be created"));
+		if (!outputFile.getParentFile().mkdirs()) {
+			GtErrorLogger.log(Activator.PLUGIN_ID, new RuntimeException(
+					"Parent directories for report could not be created"));
 		}
-		
-		Element xmlReport = ReportXmlGenerator.createXmlReport(report);
-		
-		XMLHelper.saveDoc(outputFile, xmlReport);
+
+		//prepare content
+		DocType type = new DocType("TESTREPORT", "testreport.dtd");
+		ProcessingInstruction pi = new ProcessingInstruction("xml-stylesheet",
+				"type=\"text/xsl\" href=\"testreport.xsl\"");
+		Element rootElement = ReportXmlGenerator.createXmlReport(report);
+
+		//create XML document
+		Document xmlDoc = new Document();
+		xmlDoc.setDocType(type);
+		xmlDoc.addContent(pi);
+		xmlDoc.setRootElement(rootElement);
+
+		//store XML document to file
+		XMLHelper.saveDoc(outputFile, xmlDoc);
+
+		// copy stylesheet and required graphics
+		try {
+			Bundle curBundle = Platform.getBundle(Activator.PLUGIN_ID);
+			URL url = FileLocator.find(curBundle, new Path("/"), null);
+			IPath styleSheetPath = new Path(FileLocator.toFileURL(url).getPath())
+					.append("stylesheets/report/");
+
+			File sourcePath = styleSheetPath.toFile();
+
+			String[] files = { "Header_GT.png", "testreport.dtd",
+					"testreport.xsl" };
+			for (String currentFile : files) {
+				try {
+					GtResourceHelper.copyFiles(
+							new File(sourcePath, currentFile), new File(
+									outputFile.getParent(), currentFile));
+				} catch (IOException e) {
+					GtErrorLogger.log(Activator.PLUGIN_ID, e);
+				}
+			}
+		} catch (IOException ex) {
+			GtErrorLogger.log(Activator.PLUGIN_ID, ex);
+		}
 	}
 	
 
