@@ -38,11 +38,20 @@
             class="org.globaltester.testrunner.ui.editor.TestCampaignEditor"
             default="true"
             extensions="xml"
+            icon="icons/testcampain.png"
             id="org.globaltester.testrunner.ui.testcampaigneditor"
             name="GT TestCampaign Editor">
          <contentTypeBinding
                contentTypeId="org.globaltester.testrunner.contenttypes.TestCampaign">
          </contentTypeBinding>
       </editor>
+   </extension>
+   <extension
+         point="org.eclipse.ui.ide.projectNatureImages">
+      <image
+            icon="icons/testcampaign_overlay.png"
+            id="org.globaltester.testrunner.ui.image1"
+            natureId="org.globaltester.testrunner.gtTestCampaignNature">
+      </image>
    </extension>
 </plugin>
