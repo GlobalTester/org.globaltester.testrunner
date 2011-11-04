@@ -9,11 +9,35 @@ import org.eclipse.swt.graphics.Image;
 import org.globaltester.testrunner.testframework.AbstractTestExecution;
 import org.globaltester.testrunner.testframework.FileTestExecution;
 import org.globaltester.testrunner.testframework.IExecution;
+import org.globaltester.testrunner.testframework.TestCampaign;
 import org.globaltester.testrunner.testframework.TestCampaignElement;
+import org.globaltester.testrunner.testframework.TestCaseExecution;
+import org.globaltester.testrunner.testframework.TestStepExecution;
+import org.globaltester.testrunner.ui.NonUiImages;
+import org.globaltester.testrunner.ui.UiImages;
 
 public class TestCampaignTableLabelProvider implements ITableLabelProvider {
 
 	public Image getColumnImage(Object element, int columnIndex) {
+		switch (columnIndex) {
+		case 0:
+			if (element instanceof TestCampaign)
+				return UiImages.CAMPAIGN_TESTSUITE_ICON.getImage();
+			if (element instanceof TestCampaignElement)
+				element = ((TestCampaignElement) element).getLastExecution();
+			if (element instanceof TestCaseExecution)
+				return UiImages.CAMPAIGN_TESTCASE_ICON.getImage();
+			if (element instanceof TestStepExecution)
+				return UiImages.CAMPAIGN_TESTSTEP_ICON.getImage();
+			break;
+		case 2: // Status
+			if (element instanceof TestCampaignElement)
+				element = ((TestCampaignElement) element).getLastExecution();
+			if (element instanceof FileTestExecution)
+				return NonUiImages.valueOf(((FileTestExecution)element).getResult().getStatus()).getImage();
+			break;
+		}
+		   
 		return null;
 	}
 
