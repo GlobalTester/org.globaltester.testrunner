@@ -38,7 +38,7 @@
             class="org.globaltester.testrunner.ui.editor.TestCampaignEditor"
             default="true"
             extensions="xml"
-            icon="icons/testcampain.png"
+            icon="icons/testcampaign.png"
             id="org.globaltester.testrunner.ui.testcampaigneditor"
             name="GT TestCampaign Editor">
          <contentTypeBinding
