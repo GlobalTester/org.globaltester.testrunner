@@ -42,7 +42,7 @@ public class OrResult extends Result {
 		}
 		
 		//set result to PASSED if no sub results are present
-		if(!subResults.isEmpty()){
+		if(subResults.isEmpty()){
 			tmpStatus = Status.PASSED;
 		}
 
