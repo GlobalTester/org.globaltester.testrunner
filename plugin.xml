@@ -14,6 +14,7 @@
    <extension
          point="org.eclipse.core.contenttype.contentTypes">
       <content-type
+            base-type="org.eclipse.core.runtime.xml"
             file-extensions="xml"
             id="org.globaltester.testrunner.contenttypes.TestCampaign"
             name="GlobalTester TestCampaign"
