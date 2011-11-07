@@ -19,7 +19,10 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.IEditorInput;
@@ -29,11 +32,9 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.statushandlers.StatusManager;
-import org.globaltester.core.GtDateHelper;
 import org.globaltester.testrunner.report.ReportPdfGenerator;
 import org.globaltester.testrunner.report.TestReport;
 import org.globaltester.testrunner.ui.Activator;
-import org.eclipse.swt.widgets.Text;
 
 public class TestCampaignEditor extends EditorPart {
 	public TestCampaignEditor() {
@@ -206,9 +207,15 @@ public class TestCampaignEditor extends EditorPart {
 		btnGenerateReport.setText("Generate Report");
 		btnGenerateReport.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				//FIXME make report location user configurable
-				String baseDirName = "C:/tmp/report"
-						+ GtDateHelper.getCurrentTimeString() + "/";
+				// ask for report location
+				DirectoryDialog dialog = new DirectoryDialog(getShell());
+				dialog.setMessage("Please select location to store the report files");
+				dialog.setFilterPath(null); // do not filter at all
+			    String baseDirName = dialog.open();
+			    
+			    
+//				String baseDirName = "C:/tmp/report"
+//						+ GtDateHelper.getCurrentTimeString() + "/";
 				TestReport report = new TestReport(input.getTestCampaign(),
 						baseDirName);
 
@@ -221,6 +228,8 @@ public class TestCampaignEditor extends EditorPart {
 					IStatus status = new Status(Status.ERROR, Activator.PLUGIN_ID, "PDF report could not be created", ex);
 					StatusManager.getManager().handle(status, StatusManager.SHOW);
 				}
+				
+				//TODO copy relevant logfiles
 			}
 
 		});
@@ -240,5 +249,9 @@ public class TestCampaignEditor extends EditorPart {
         this.dirty = dirty;
         firePropertyChange(IEditorPart.PROP_DIRTY);
     }
+
+	private Shell getShell() {
+		return treeViewer.getControl().getShell();
+	}
 	
 }
