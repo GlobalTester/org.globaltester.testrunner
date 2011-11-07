@@ -213,10 +213,8 @@ public class TestCampaignEditor extends EditorPart {
 				dialog.setFilterPath(null); // do not filter at all
 			    String baseDirName = dialog.open();
 			    
-			    
-//				String baseDirName = "C:/tmp/report"
-//						+ GtDateHelper.getCurrentTimeString() + "/";
-				TestReport report = new TestReport(input.getTestCampaign(),
+			    //create report
+			    TestReport report = new TestReport(input.getTestCampaign(),
 						baseDirName);
 
 				try {
