@@ -49,7 +49,7 @@
    <extension
          point="org.eclipse.ui.ide.projectNatureImages">
       <image
-            icon="icons/testcampaign_overlay.png"
+            icon="icons/ovr_testcampaign.png"
             id="org.globaltester.testrunner.ui.image1"
             natureId="org.globaltester.testrunner.gtTestCampaignNature">
       </image>
