@@ -285,9 +285,9 @@ public class ReportXmlGenerator {
 	public static void writeXmlReport(TestReport report) {
 		// prepare parent directories
 		File outputFile = new File(report.getFileName("xml"));
-		if (!outputFile.getParentFile().mkdirs()) {
+		if (!outputFile.getParentFile().exists()) {
 			GtErrorLogger.log(Activator.PLUGIN_ID, new RuntimeException(
-					"Parent directories for report could not be created"));
+					"Parent directories for report is not present"));
 		}
 
 		//prepare content
