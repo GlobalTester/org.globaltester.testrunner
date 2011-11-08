@@ -7,6 +7,7 @@ import java.util.LinkedList;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.globaltester.core.resources.GtResourceHelper;
@@ -159,6 +160,7 @@ public class TestCampaign implements IExecution {
 	 * @throws CoreException
 	 */
 	public void executeTests() throws CoreException {
+		//TODO make this method capable of handling a IProgressMonitor
 
 		// (re)initialize the TestLogger
 		if (TestLogger.isInitialized()) {
@@ -198,6 +200,9 @@ public class TestCampaign implements IExecution {
 		// notify viewers of parent about this change
 		project.notifyTreeChangeListeners(false, elements.toArray(),
 				new String[] { "lastExecution" });
+		
+		// refresh the project in workspace
+		project.getIProject().refreshLocal(IResource.DEPTH_INFINITE, null);
 
 	}
 
