@@ -2,12 +2,11 @@ package org.globaltester.testrunner.ui.editor;
 
 import java.io.IOException;
 
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -186,19 +185,23 @@ public class TestCampaignEditor extends EditorPart {
 		btnExecute.setText("Execute");
 		btnExecute.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				try {
-					// execute tests
-					input.getTestCampaign().executeTests();
-					
-					// flag the editor as dirty, so that changes can be saved
-					setDirty(true);
-					
-					// refresh the workspace
-					ResourcesPlugin.getWorkspace().getRoot().refreshLocal(IResource.DEPTH_INFINITE, null);
-					
-				} catch (CoreException ex) {
-					StatusManager.getManager().handle(ex, Activator.PLUGIN_ID);
-				}
+				Job job = new Job("Test execution") {
+					protected IStatus run(IProgressMonitor monitor) {
+						monitor.beginTask("Execution started...", 10);
+						// execute tests
+						try {
+							input.getTestCampaign().executeTests();
+						} catch (CoreException e) {
+							StatusManager.getManager().handle(e,
+									Activator.PLUGIN_ID);
+						}
+
+						monitor.done();
+						return Status.OK_STATUS;
+					}
+				};
+				job.setUser(true);
+				job.schedule();	
 				
 			}
 		});

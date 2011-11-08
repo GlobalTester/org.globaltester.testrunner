@@ -9,6 +9,7 @@ import java.util.Set;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.swt.widgets.Display;
 import org.globaltester.interfaces.ITreeChangeListener;
 import org.globaltester.interfaces.ITreeObservable;
 import org.globaltester.testrunner.GtTestCampaignProject;
@@ -100,21 +101,35 @@ public class TestCampaignContentProvider implements ITreeContentProvider,
 	@Override
 	public void notifyTreeChange(Object notifier, boolean structureChanged,
 			Object[] changedElements, String[] properties) {
-		if (listenerMapping.containsKey(notifier)) {
-			Iterator<Viewer> viewerIter = listenerMapping.get(notifier)
-					.iterator();
+		
+		final Object fNotifier = notifier;
+		final boolean fStructureChanged = structureChanged;
+		final Object[] fChangedElements = changedElements;
+		final String[] fProperties = properties;
+		
+		
+		Display.getDefault().asyncExec(new Runnable() {
+			@Override
+			public void run() {
 
-			while (viewerIter.hasNext()) {
-				Viewer viewer = (Viewer) viewerIter.next();
+				if (listenerMapping.containsKey(fNotifier)) {
+					Iterator<Viewer> viewerIter = listenerMapping.get(fNotifier)
+							.iterator();
 
-				if ((structureChanged) || !(viewer instanceof StructuredViewer)) {
-					viewer.refresh();
-				} else {
-					((StructuredViewer) viewer).update(changedElements,
-							properties);
+					while (viewerIter.hasNext()) {
+						Viewer viewer = (Viewer) viewerIter.next();
+
+						if ((fStructureChanged)
+								|| !(viewer instanceof StructuredViewer)) {
+							viewer.refresh();
+						} else {
+							((StructuredViewer) viewer).update(fChangedElements,
+									fProperties);
+						}
+					}
 				}
 			}
-		}
+		});
 
 	}
 }
