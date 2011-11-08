@@ -36,7 +36,6 @@
          point="org.eclipse.ui.editors">
       <editor
             class="org.globaltester.testrunner.ui.editor.TestCampaignEditor"
-            extensions="xml"
             icon="icons/testcampaign.png"
             id="org.globaltester.testrunner.ui.testcampaigneditor"
             name="GT TestCampaign Editor">
