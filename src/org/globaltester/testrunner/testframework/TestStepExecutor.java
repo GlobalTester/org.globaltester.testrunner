@@ -3,6 +3,7 @@ package org.globaltester.testrunner.testframework;
 import org.globaltester.logging.logger.TestLogger;
 import org.globaltester.smartcardshell.ScriptRunner;
 import org.globaltester.testrunner.testframework.Result.Status;
+import org.globaltester.util.StringUtil;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.JavaScriptException;
@@ -24,6 +25,9 @@ public class TestStepExecutor {
 	}
 
 	public Result execute(String code, String sourceName) {
+		//unindent code
+		code = StringUtil.formatCode(code);
+		
 		//get and execute the code
 		TestLogger.trace("Code block to be executed: \n" + code);
 		try {
