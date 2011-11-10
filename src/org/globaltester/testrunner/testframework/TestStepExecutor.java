@@ -29,7 +29,8 @@ public class TestStepExecutor {
 		code = StringUtil.formatCode(code);
 		
 		//get and execute the code
-		TestLogger.trace("Code block to be executed: \n" + code);
+		String codeFormat = String.format(TestLogger.DEFAULTFORMAT, "Code:");
+		TestLogger.trace(codeFormat + "\n" + code);
 		try {
 			scriptRunner.executeCommand(context, code, sourceName, -1);
 		} catch (EvaluatorException ex) {

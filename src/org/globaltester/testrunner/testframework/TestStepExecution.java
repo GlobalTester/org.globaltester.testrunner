@@ -31,23 +31,23 @@ public class TestStepExecution extends AbstractTestExecution {
 	@Override
 	public void execute(ScriptRunner sr, Context cx, boolean forceExecution, boolean reExecution) {
 		//log TestStep ID and Command
-		TestLogger.info("TestStep "+ testStep.getId());
+		TestLogger.info(String.format(TestLogger.DEFAULTFORMAT, "TestStep: "+ testStep.getId()));
 		Element commandElem = testStep.getCommand();
 		String command = commandElem.getTextNormalize();
 		Element commandTextElem = commandElem.getChild("Text", commandElem.getNamespace());
 		if (commandTextElem != null) {
 			command = command + commandTextElem.getTextNormalize();
 		}
-		TestLogger.info("Command: "+command);
+		TestLogger.info(String.format(TestLogger.DEFAULTFORMAT, "Command: "+command));
 		Element commandApduElem = commandElem.getChild("APDU", commandElem.getNamespace());
 		if (commandApduElem != null) {
-			TestLogger.info("APDU: \n"+commandApduElem.getTextNormalize());
+			TestLogger.info(String.format(TestLogger.DEFAULTFORMAT, "APDU: \n"+commandApduElem.getTextNormalize()));
 		}
 		
 		//log TestStep descriptions
 		Iterator<String> descrIter = testStep.getDescriptions().iterator();
 		while (descrIter.hasNext()) {
-			TestLogger.debug("   * "+descrIter.next());			
+			TestLogger.debug(String.format(TestLogger.DEFAULTFORMAT, "Description: "+descrIter.next()));			
 		}
 		
 		//init the executor with context and script runner
@@ -69,12 +69,12 @@ public class TestStepExecution extends AbstractTestExecution {
 				.hasNext();) {
 			ExpectedResult curResult = expResultIter.next();
 			
-			TestLogger.info("ExpectedResult " + curResult.getId() + " (TestStep "+ testStep.getId()+")");
+			TestLogger.info(String.format(TestLogger.DEFAULTFORMAT, "ExpectedResult: " + curResult.getId() + " (TestStep "+ testStep.getId()+")"));
 			
 			//log ExpectedResult descriptions
 			descrIter = curResult.getDescriptions().iterator();
 			while (descrIter.hasNext()) {
-				TestLogger.debug("   * "+descrIter.next());			
+				TestLogger.debug(String.format(TestLogger.DEFAULTFORMAT, "Description: "+descrIter.next()));
 			}
 			
 			//execute the current expected result
