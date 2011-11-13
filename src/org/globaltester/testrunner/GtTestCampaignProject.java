@@ -35,7 +35,6 @@ import org.globaltester.testspecification.testframework.TestExecutableFactory;
 public class GtTestCampaignProject implements ITreeObservable {
 
 	private static final String SPEC_FOLDER = "TestSpecification";
-	private static final String CONFIG_FOLDER = "DUTconfiguration";
 	private static final String STATE_FOLDER = "ExecutionState";
 	private static final String RESULT_FOLDER = "TestResults";
 
@@ -65,7 +64,7 @@ public class GtTestCampaignProject implements ITreeObservable {
 		try {
 			addGtTestCampaignNature(project);
 
-			String[] paths = { CONFIG_FOLDER, STATE_FOLDER, SPEC_FOLDER,
+			String[] paths = { STATE_FOLDER, SPEC_FOLDER,
 					RESULT_FOLDER };
 			addToProjectStructure(project, paths);
 		} catch (CoreException e) {
@@ -303,7 +302,7 @@ public class GtTestCampaignProject implements ITreeObservable {
 
 	public IFolder getDefaultLoggingDir() {
 		return getIProject().getFolder(
-				RESULT_FOLDER + File.separator + "Logging");
+				RESULT_FOLDER);
 	}
 
 	/**
