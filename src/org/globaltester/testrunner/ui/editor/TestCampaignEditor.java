@@ -34,6 +34,7 @@ import org.eclipse.ui.statushandlers.StatusManager;
 import org.globaltester.testrunner.report.ReportPdfGenerator;
 import org.globaltester.testrunner.report.TestReport;
 import org.globaltester.testrunner.ui.Activator;
+import org.globaltester.testrunner.ui.UiImages;
 
 public class TestCampaignEditor extends EditorPart {
 	public TestCampaignEditor() {
@@ -183,6 +184,7 @@ public class TestCampaignEditor extends EditorPart {
 
 		Button btnExecute = new Button(buttonAreaComp, SWT.NONE);
 		btnExecute.setText("Execute");
+		btnExecute.setImage(UiImages.EXECUTE_ICON.getImage());
 		btnExecute.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				Job job = new Job("Test execution") {

@@ -16,7 +16,8 @@ public enum UiImages {
  
 	CAMPAIGN_TESTSUITE_ICON("icons/campaign_testsuite.png"),
 	CAMPAIGN_TESTCASE_ICON("icons/campaign_testcase.png"),
-	CAMPAIGN_TESTSTEP_ICON("icons/campaign_teststep.png");
+	CAMPAIGN_TESTSTEP_ICON("icons/campaign_teststep.png"),
+	EXECUTE_ICON("icons/execute.png");
  
         // add more image enumerations here...
  

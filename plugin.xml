@@ -20,12 +20,14 @@
             locationURI="popup:org.globaltester.core.ui.views.GlobalTesterNavigator.PopupMenu?after=group.edit">
          <command
                commandId="org.globaltester.testrunner.ui.commands.RunTestCommand"
+               icon="icons/execute.png"
                label="Run Test"
                style="push"
                tooltip="Some tooltip text">
          </command>
          <command
                commandId="org.globaltester.testrunner.ui.commands.CreateTestCampaignCommand"
+               icon="icons/testcampaign.png"
                label="Create TestCampaign"
                style="push"
                tooltip="Some tooltip text">
