@@ -210,6 +210,7 @@ public class TestCampaignEditor extends EditorPart {
 
 		Button btnGenerateReport = new Button(buttonAreaComp, SWT.NONE);
 		btnGenerateReport.setText("Generate Report");
+		btnGenerateReport.setImage(UiImages.RESULT_ICON.getImage());
 		btnGenerateReport.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				// ask for report location
