@@ -219,21 +219,26 @@ public class TestCampaignEditor extends EditorPart {
 				dialog.setFilterPath(null); // do not filter at all
 			    String baseDirName = dialog.open();
 			    
-			    //create report
-			    TestReport report = new TestReport(input.getTestCampaign(),
-						baseDirName);
+				if (baseDirName != null) {
+					// create report
+					TestReport report = new TestReport(input.getTestCampaign(),
+							baseDirName);
 
-				try {
-					// TODO output XML-Report here, if no pdf is desired
+					try {
+						// TODO output XML-Report here, if no pdf is desired
 
-					// output pdf report
-					ReportPdfGenerator.writePdfReport(report);
-				} catch (IOException ex) {
-					IStatus status = new Status(Status.ERROR, Activator.PLUGIN_ID, "PDF report could not be created", ex);
-					StatusManager.getManager().handle(status, StatusManager.SHOW);
+						// output pdf report
+						ReportPdfGenerator.writePdfReport(report);
+					} catch (IOException ex) {
+						IStatus status = new Status(Status.ERROR,
+								Activator.PLUGIN_ID,
+								"PDF report could not be created", ex);
+						StatusManager.getManager().handle(status,
+								StatusManager.SHOW);
+					}
+
+					// TODO copy relevant logfiles
 				}
-				
-				//TODO copy relevant logfiles
 			}
 
 		});
