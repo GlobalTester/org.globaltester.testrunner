@@ -71,7 +71,7 @@ public class TestCampaignEditor extends EditorPart {
 			throws PartInitException {
 		if ((input instanceof FileEditorInput)) {
 			try {
-				input = new TestCampaignEditorInput((FileEditorInput) input);
+				input = new TestCampaignEditorInput(((FileEditorInput) input).getFile());
 			} catch (CoreException e) {
 				throw new RuntimeException(
 						"Wrong Input - No TestCampaignEditorInput can be created from selected resource");

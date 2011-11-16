@@ -1,47 +1,30 @@
 package org.globaltester.testrunner.ui.editor;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IPersistableElement;
 import org.eclipse.ui.part.FileEditorInput;
 import org.globaltester.testrunner.GtTestCampaignProject;
 import org.globaltester.testrunner.testframework.TestCampaign;
+import org.globaltester.testrunner.ui.UiImages;
 
-public class TestCampaignEditorInput implements IEditorInput {
+public class TestCampaignEditorInput extends FileEditorInput {
 
 	private GtTestCampaignProject project;
-	
-	public TestCampaignEditorInput(FileEditorInput input) throws CoreException {
-		project = GtTestCampaignProject.getProjectForResource(input.getFile());
-	}
 
-	@SuppressWarnings("rawtypes")	// is required by interface
-	@Override
-	public Object getAdapter(Class adapter) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean exists() {
-		return project.getIProject().exists();
+	public TestCampaignEditorInput(IFile file) throws CoreException {
+		super(GtTestCampaignProject.getProjectForResource(file).getTestCampaignIFile());
+		project = GtTestCampaignProject.getProjectForResource(file);
 	}
 
 	@Override
 	public ImageDescriptor getImageDescriptor() {
-		// TODO IMAGE
-		return ImageDescriptor.getMissingImageDescriptor();
+		return UiImages.TESTCAMPAIGN.getImageDescriptor();
 	}
 
 	@Override
 	public String getName() {
 		return project.getName();
-	}
-
-	@Override
-	public IPersistableElement getPersistable() {
-		return null;
 	}
 
 	@Override

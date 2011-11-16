@@ -14,6 +14,7 @@ public enum UiImages {
 	 * http://blogs.itemis.de/wendehal/2010/07/08/pretty-elegant-way-to-provide-images-in-eclipse-ui-plug-ins/
 	 */
  
+	TESTCAMPAIGN("icons/testcampaign.png"),
 	CAMPAIGN_TESTSUITE_ICON("icons/campaign_testsuite.png"),
 	CAMPAIGN_TESTCASE_ICON("icons/campaign_testcase.png"),
 	CAMPAIGN_TESTSTEP_ICON("icons/campaign_teststep.png"),
