@@ -22,19 +22,16 @@ import org.globaltester.core.GtDateHelper;
 import org.globaltester.logging.logger.GtErrorLogger;
 import org.globaltester.testrunner.GtTestCampaignProject;
 import org.globaltester.testrunner.ui.Activator;
-import org.globaltester.testrunner.ui.editor.TestCampaignEditor;
 import org.globaltester.testspecification.testframework.FileTestExecutable;
 import org.globaltester.testspecification.testframework.TestExecutableFactory;
 
 public class CreateTestCampaignCommandHandler extends AbstractHandler {
 
-	
-	
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		// check for dirty files and save them
 		if (!PlatformUI.getWorkbench().saveAllEditors(true)) {
-			//TODO handle this case properly
+			// TODO handle this case properly
 			return null;
 		}
 
@@ -44,38 +41,42 @@ public class CreateTestCampaignCommandHandler extends AbstractHandler {
 		// try to create the project
 		GtTestCampaignProject newProject;
 		try {
-			newProject = createTestCampaignProject(getNewProjectName(), iSel);
+			newProject = createTestCampaignProject(iSel);
 		} catch (CoreException e) {
-			throw new ExecutionException("ExecutionProject could not be created", e);
+			throw new ExecutionException(
+					"ExecutionProject could not be created", e);
 		}
-		
-		//open the new TestCampaign in the Test Campaign Editor
-		IFile file = newProject.getIProject().getFile("project.xml");
-		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+
+		// open the new TestCampaign in the Test Campaign Editor
+		openInEditor(newProject);
+
+		return null;
+	}
+
+	static void openInEditor(GtTestCampaignProject newProject) {
+
 		try {
-			//TODO remove the hard coded reference to the TestCampaignEditor, use system default instead after configuring it as default
-			IDE.openEditor(page, file, TestCampaignEditor.ID);
+			IFile file = newProject.getTestCampaignIFile();
+
+			IWorkbenchPage page = PlatformUI.getWorkbench()
+					.getActiveWorkbenchWindow().getActivePage();
+
+			IDE.openEditor(page, file);
 		} catch (PartInitException e) {
 			// opening new project in editor failed
 			// log CoreException to eclipse log
 			GtErrorLogger.log(Activator.PLUGIN_ID, e);
-			
-			// users most probably will ignore this behavior and open editor manually, so do not open annoying dialog
-		}
 
-		// refresh the workspace
-		try {
-			ResourcesPlugin.getWorkspace().getRoot()
-					.refreshLocal(IResource.DEPTH_INFINITE, null);
+			// users most probably will ignore this behavior and open editor
+			// manually, so do not open annoying dialog
 		} catch (CoreException e) {
-			// refresh workspace failed
+			// opening new project in editor failed
 			// log CoreException to eclipse log
 			GtErrorLogger.log(Activator.PLUGIN_ID, e);
-			
-			// users most probably will ignore this behavior and refresh manually, so do not open annoying dialog
-		}
 
-		return null;
+			// users most probably will ignore this behavior and open editor
+			// manually, so do not open annoying dialog
+		}
 	}
 
 	public static String getNewProjectName() {
@@ -85,13 +86,16 @@ public class CreateTestCampaignCommandHandler extends AbstractHandler {
 		return projectName;
 	}
 
-	public GtTestCampaignProject createTestCampaignProject(String projectName, ISelection iSel) throws ExecutionException, CoreException {
-		
+	public static GtTestCampaignProject createTestCampaignProject(
+			String projectName, ISelection iSel) throws ExecutionException,
+			CoreException {
+
 		LinkedList<IFile> selectedIFiles = new LinkedList<IFile>();
-		
+
 		// check type of selection
 		if (iSel instanceof IStructuredSelection) {
-			Iterator<?> selectionIter = ((IStructuredSelection) iSel).iterator();
+			Iterator<?> selectionIter = ((IStructuredSelection) iSel)
+					.iterator();
 			while (selectionIter.hasNext()) {
 				Object curElem = (Object) selectionIter.next();
 				if (curElem instanceof IFile) {
@@ -99,15 +103,14 @@ public class CreateTestCampaignCommandHandler extends AbstractHandler {
 				}
 			}
 		}
-		
-		if (selectedIFiles.isEmpty()){
-			throw new ExecutionException("No TestCampaignProject could be created because selection does not contain an IFile");
+
+		if (selectedIFiles.isEmpty()) {
+			throw new ExecutionException(
+					"No TestCampaignProject could be created because selection does not contain an IFile");
 		}
 
 		return createTestCampaignProject(projectName, selectedIFiles);
 	}
-
-	
 
 	public static GtTestCampaignProject createTestCampaignProject(
 			IFile testExecutableFile) throws ExecutionException, CoreException {
@@ -117,7 +120,8 @@ public class CreateTestCampaignCommandHandler extends AbstractHandler {
 		listExecutableFiles.add(testExecutableFile);
 
 		// create the TestCampaignProject
-		return createTestCampaignProject(getNewProjectName(), listExecutableFiles);
+		return createTestCampaignProject(getNewProjectName(),
+				listExecutableFiles);
 	}
 
 	public static GtTestCampaignProject createTestCampaignProject(
@@ -148,7 +152,25 @@ public class CreateTestCampaignCommandHandler extends AbstractHandler {
 		// save the new project
 		runProject.doSave();
 
+		// refresh the workspace
+		try {
+			ResourcesPlugin.getWorkspace().getRoot()
+					.refreshLocal(IResource.DEPTH_INFINITE, null);
+		} catch (CoreException e) {
+			// refresh workspace failed
+			// log CoreException to eclipse log
+			GtErrorLogger.log(Activator.PLUGIN_ID, e);
+
+			// users most probably will ignore this behavior and refresh
+			// manually, so do not open annoying dialog
+		}
+
 		return runProject;
+	}
+
+	public static GtTestCampaignProject createTestCampaignProject(
+			ISelection iSel) throws ExecutionException, CoreException {
+		return createTestCampaignProject(getNewProjectName(), iSel);
 	}
 
 }
