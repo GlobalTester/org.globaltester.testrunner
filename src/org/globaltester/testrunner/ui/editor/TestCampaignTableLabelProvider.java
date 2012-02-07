@@ -12,7 +12,7 @@ import org.globaltester.testrunner.testframework.IExecution;
 import org.globaltester.testrunner.testframework.TestCampaign;
 import org.globaltester.testrunner.testframework.TestCampaignElement;
 import org.globaltester.testrunner.testframework.TestCaseExecution;
-import org.globaltester.testrunner.testframework.TestStepExecution;
+import org.globaltester.testrunner.testframework.ActionStepExecution;
 import org.globaltester.testrunner.ui.NonUiImages;
 import org.globaltester.testrunner.ui.UiImages;
 
@@ -27,7 +27,7 @@ public class TestCampaignTableLabelProvider implements ITableLabelProvider {
 				element = ((TestCampaignElement) element).getLastExecution();
 			if (element instanceof TestCaseExecution)
 				return UiImages.CAMPAIGN_TESTCASE_ICON.getImage();
-			if (element instanceof TestStepExecution)
+			if (element instanceof ActionStepExecution)
 				return UiImages.CAMPAIGN_TESTSTEP_ICON.getImage();
 			break;
 		case 2: // Status
