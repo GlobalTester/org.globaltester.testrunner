@@ -10,6 +10,8 @@ import org.eclipse.core.runtime.CoreException;
 import org.globaltester.core.xml.XMLHelper;
 import org.globaltester.logging.logger.TestLogger;
 import org.globaltester.smartcardshell.ScriptRunner;
+import org.globaltester.testspecification.testframework.PostCondition;
+import org.globaltester.testspecification.testframework.PreCondition;
 import org.globaltester.testspecification.testframework.TestCase;
 import org.globaltester.testspecification.testframework.TestExecutableFactory;
 import org.globaltester.testspecification.testframework.TestStep;
@@ -19,7 +21,9 @@ import org.mozilla.javascript.Context;
 
 public class TestCaseExecution extends FileTestExecution {
 
-	private LinkedList<TestStepExecution> testStepExecutions;
+	private LinkedList<ActionStepExecution> preConExecutions;
+	private LinkedList<ActionStepExecution> testStepExecutions;
+	private LinkedList<ActionStepExecution> postConExecutions;
 
 	protected TestCaseExecution(IFile iFile) throws CoreException {
 		super(iFile);
@@ -44,11 +48,28 @@ public class TestCaseExecution extends FileTestExecution {
 	 * create all required execution instances from test case. E.g. TestStepExecutions
 	 */
 	private void initFromTestCase() {
-		testStepExecutions = new LinkedList<TestStepExecution>();
+		//create execution objects for Preconditions
+		preConExecutions = new LinkedList<ActionStepExecution>();
+		List<PreCondition> preCons = getTestCase().getPreConditions();
+		for (Iterator<PreCondition> testStepIter = preCons.iterator(); testStepIter
+		.hasNext();) {
+			preConExecutions.add(new PreConditionExecution(testStepIter.next()));
+		}
+		
+		//create execution objects for TestSteps
+		testStepExecutions = new LinkedList<ActionStepExecution>();
 		List<TestStep> testSteps = getTestCase().getTestSteps();
 		for (Iterator<TestStep> testStepIter = testSteps.iterator(); testStepIter
 		.hasNext();) {
 			testStepExecutions.add(new TestStepExecution(testStepIter.next()));
+		}
+		
+		//create exectuiont objects for Postconditions
+		postConExecutions = new LinkedList<ActionStepExecution>();
+		List<PostCondition> postCons = getTestCase().getPostConditions();
+		for (Iterator<PostCondition> postConIter = postCons.iterator(); postConIter
+		.hasNext();) {
+			postConExecutions.add(new PostConditionExecution(postConIter.next()));
 		}
 		
 	}
@@ -90,20 +111,36 @@ public class TestCaseExecution extends FileTestExecution {
 		TestLogger.initTestExecutable(getTestCase().getTestCaseID());
 		getTestCase().dumpTestCaseInfos();
 
-		// TODO handle preconditions etc.
+		// iterate over all preconditions and execute them
+		TestLogger.info("Running Preconditions");
+		for (Iterator<ActionStepExecution> preConIter = preConExecutions.iterator(); preConIter
+				.hasNext();) {
+			ActionStepExecution curStepExec = preConIter.next();
+			curStepExec.execute(sr, cx, forceExecution);
+			
+			result.addSubResult(curStepExec.getResult());
+		}
 		
 		// iterate over all test steps and execute them
 		TestLogger.info("Running TestSteps");
-		for (Iterator<TestStepExecution> testStepIter = testStepExecutions.iterator(); testStepIter
+		for (Iterator<ActionStepExecution> testStepIter = testStepExecutions.iterator(); testStepIter
 				.hasNext();) {
-			TestStepExecution curStepExec = testStepIter.next();
+			ActionStepExecution curStepExec = testStepIter.next();
 			curStepExec.execute(sr, cx, forceExecution);
 			
 			result.addSubResult(curStepExec.getResult());
 		}
 		
 
-		// TODO handle postconditions etc.
+		// iterate over all postconditions and execute them
+		TestLogger.info("Running Postconditions");
+		for (Iterator<ActionStepExecution> postConIter = postConExecutions.iterator(); postConIter
+				.hasNext();) {
+			ActionStepExecution curStepExec = postConIter.next();
+			curStepExec.execute(sr, cx, forceExecution);
+			
+			result.addSubResult(curStepExec.getResult());
+		}
 
 		// dump execution information to logfile
 		TestLogger.shutdownTestExecutableLogger();
@@ -134,7 +171,11 @@ public class TestCaseExecution extends FileTestExecution {
 
 	@Override
 	public boolean hasChildren() {
-		return !testStepExecutions.isEmpty();
+		if ((preConExecutions != null) && (!preConExecutions.isEmpty())) return true;
+		if ((testStepExecutions != null) && (!testStepExecutions.isEmpty())) return true;
+		if ((postConExecutions != null) && (!postConExecutions.isEmpty())) return true;
+		
+		return false;
 	}
 
 	@Override
@@ -142,7 +183,9 @@ public class TestCaseExecution extends FileTestExecution {
 		LinkedList<IExecution> children = new LinkedList<IExecution>();
 		
 		//add test step executions to list of children
+		children.addAll(preConExecutions);
 		children.addAll(testStepExecutions);
+		children.addAll(postConExecutions);
 		
 		return children;
 	}

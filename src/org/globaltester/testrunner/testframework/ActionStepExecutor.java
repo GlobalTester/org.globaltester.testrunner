@@ -13,13 +13,13 @@ import org.mozilla.javascript.WrappedException;
 
 import de.cardcontact.scdp.gp.GPError;
 
-public class TestStepExecutor {
+public class ActionStepExecutor {
 	private static final int LOGFILELINE = 0; //TODO remove this dummy and add the corresponding log file lines where possible
 
 	private ScriptRunner scriptRunner;
 	private Context context;
 	
-	public TestStepExecutor(ScriptRunner sr, Context cx) {
+	public ActionStepExecutor(ScriptRunner sr, Context cx) {
 		scriptRunner= sr;
 		context = cx;
 	}
