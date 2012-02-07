@@ -33,15 +33,17 @@ public abstract class ActionStepExecution extends AbstractTestExecution {
 		//log TestStep ID and Command
 		TestLogger.info(String.format(TestLogger.DEFAULTFORMAT, "TestStep: "+ testStep.getId()));
 		Element commandElem = testStep.getCommand();
-		String command = commandElem.getTextNormalize();
-		Element commandTextElem = commandElem.getChild("Text", commandElem.getNamespace());
-		if (commandTextElem != null) {
-			command = command + commandTextElem.getTextNormalize();
-		}
-		TestLogger.info(String.format(TestLogger.DEFAULTFORMAT, "Command: "+command));
-		Element commandApduElem = commandElem.getChild("APDU", commandElem.getNamespace());
-		if (commandApduElem != null) {
-			TestLogger.info(String.format(TestLogger.DEFAULTFORMAT, "APDU: \n"+commandApduElem.getTextNormalize()));
+		if (commandElem != null) {
+			String command = commandElem.getTextNormalize();
+			Element commandTextElem = commandElem.getChild("Text", commandElem.getNamespace());
+			if (commandTextElem != null) {
+				command = command + commandTextElem.getTextNormalize();
+			}
+			TestLogger.info(String.format(TestLogger.DEFAULTFORMAT, "Command: "+command));
+			Element commandApduElem = commandElem.getChild("APDU", commandElem.getNamespace());
+			if (commandApduElem != null) {
+				TestLogger.info(String.format(TestLogger.DEFAULTFORMAT, "APDU: \n"+commandApduElem.getTextNormalize()));
+			}
 		}
 		
 		//log TestStep descriptions
