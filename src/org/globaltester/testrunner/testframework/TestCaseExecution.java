@@ -51,25 +51,31 @@ public class TestCaseExecution extends FileTestExecution {
 		//create execution objects for Preconditions
 		preConExecutions = new LinkedList<ActionStepExecution>();
 		List<PreCondition> preCons = getTestCase().getPreConditions();
-		for (Iterator<PreCondition> testStepIter = preCons.iterator(); testStepIter
-		.hasNext();) {
-			preConExecutions.add(new PreConditionExecution(testStepIter.next()));
+		if (preCons != null) {
+			for (Iterator<PreCondition> testStepIter = preCons.iterator(); testStepIter
+			.hasNext();) {
+				preConExecutions.add(new PreConditionExecution(testStepIter.next()));
+			}
 		}
 		
 		//create execution objects for TestSteps
 		testStepExecutions = new LinkedList<ActionStepExecution>();
 		List<TestStep> testSteps = getTestCase().getTestSteps();
-		for (Iterator<TestStep> testStepIter = testSteps.iterator(); testStepIter
-		.hasNext();) {
-			testStepExecutions.add(new TestStepExecution(testStepIter.next()));
+		if (testSteps != null) {
+			for (Iterator<TestStep> testStepIter = testSteps.iterator(); testStepIter
+			.hasNext();) {
+				testStepExecutions.add(new TestStepExecution(testStepIter.next()));
+			}
 		}
 		
 		//create exectuiont objects for Postconditions
 		postConExecutions = new LinkedList<ActionStepExecution>();
 		List<PostCondition> postCons = getTestCase().getPostConditions();
-		for (Iterator<PostCondition> postConIter = postCons.iterator(); postConIter
-		.hasNext();) {
-			postConExecutions.add(new PostConditionExecution(postConIter.next()));
+		if (postCons != null) {
+			for (Iterator<PostCondition> postConIter = postCons.iterator(); postConIter
+			.hasNext();) {
+				postConExecutions.add(new PostConditionExecution(postConIter.next()));
+			}
 		}
 		
 	}
