@@ -35,6 +35,32 @@
       </menuContribution>
    </extension>
    <extension
+		point="org.eclipse.ui.actionSets">
+   
+		<actionSet
+			id="org.globaltester.testrunner.ui.commands.RunTestCommand"
+			label="GT Action Set"
+			visible="true">
+			
+			<action
+         		icon="icons/execute.png"
+         		class="org.globaltester.testrunner.ui.commands.RunTestCommandHandler"
+         		id="org.globaltester.testrunner.ui.commands.RunTestCommandHandler"
+         		label="Run Test"
+         		toolbarPath="GlobalTester Group"
+         		tooltip="Run Test"/>
+		
+			<action
+         		icon="icons/testcampaign.png"
+         		class="org.globaltester.testrunner.ui.commands.CreateTestCampaignCommandHandler"
+         		id="org.globaltester.testrunner.ui.commands.CreateTestCampaignCommandHandler"
+         		label="Create Testcampaign"
+         		toolbarPath="GlobalTester Group"
+         		tooltip="Create Testcampaign"/>
+		</actionSet>
+	</extension>
+   
+   <extension
          point="org.eclipse.ui.editors">
       <editor
             class="org.globaltester.testrunner.ui.editor.TestCampaignEditor"
