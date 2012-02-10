@@ -4,9 +4,11 @@ import java.util.Collection;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
+import org.globaltester.logging.logger.TestLogger;
 import org.globaltester.smartcardshell.ScriptRunner;
 import org.globaltester.testrunner.testframework.Result.Status;
 import org.globaltester.testspecification.testframework.FileTestExecutable;
+import org.globaltester.testspecification.testframework.TestCase;
 import org.globaltester.testspecification.testframework.TestExecutableFactory;
 import org.jdom.Element;
 import org.mozilla.javascript.Context;
@@ -101,17 +103,35 @@ public class TestCampaignElement implements IExecution {
 			// register this new execution
 			testExecution.setPreviousExecution(lastExecution);
 			lastExecution = testExecution;
+			
+			//get TestCase
+			TestCase testCase;
+			IFile testCaseResource = testExecution.getSpecFile();
+			try {
+				testCase = (TestCase) TestExecutableFactory
+						.getInstance(testCaseResource);
+			} catch (CoreException e) {
+				throw new RuntimeException("Could not create TestCase for "
+						+ testCaseResource, e);
+			}
 
-			// TODO configure logger for individual logfiles here
+			// dump execution information to logfile
+			TestLogger.initTestExecutable(testExecution.getId());
+			testCase.dumpTestCaseInfos();
 
 			// execute the TestExecutable
 			testExecution.execute(sr, cx, forceExecution);
 
-			// TODO deconfigure logger for individual logfiles here
+			// dump execution information to logfile
+			TestLogger.shutdownTestExecutableLogger();
 
 		}
 
 	}
+	
+
+	
+	
 
 	public IExecution getParent() {
 		return parent;

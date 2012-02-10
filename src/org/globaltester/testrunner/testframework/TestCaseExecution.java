@@ -113,9 +113,9 @@ public class TestCaseExecution extends FileTestExecution {
 		
 		// TODO use variable forceExecution
 
-		// dump execution information to logfile
-		TestLogger.initTestExecutable(getTestCase().getTestCaseID());
-		getTestCase().dumpTestCaseInfos();
+//		// dump execution information to logfile
+//		TestLogger.initTestExecutable(getTestCase().getTestCaseID());
+//		getTestCase().dumpTestCaseInfos();
 
 		// iterate over all preconditions and execute them
 		TestLogger.info("Running Preconditions");
@@ -148,8 +148,8 @@ public class TestCaseExecution extends FileTestExecution {
 			result.addSubResult(curStepExec.getResult());
 		}
 
-		// dump execution information to logfile
-		TestLogger.shutdownTestExecutableLogger();
+//		// dump execution information to logfile
+//		TestLogger.shutdownTestExecutableLogger();
 
 	}
 
