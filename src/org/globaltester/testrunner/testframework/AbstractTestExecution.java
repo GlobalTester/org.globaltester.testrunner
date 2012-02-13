@@ -15,6 +15,7 @@ public abstract class AbstractTestExecution implements IExecution {
 	protected long lastExecutionStartTime = 0;
 	protected long lastExecutionDuration = 0;
 	private String logFileName;
+	private int logFileLine;
 
 	public Result getResult() {
 		return result;
@@ -26,6 +27,14 @@ public abstract class AbstractTestExecution implements IExecution {
 	
 	public String getLogFileName(){
 		return logFileName;
+	}
+	
+	public void setLogFileLine(int logFileLine){
+		this.logFileLine = logFileLine;
+	}
+	
+	public int getLogFileLine(){
+		return logFileLine;
 	}
 
 	/**
