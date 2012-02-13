@@ -32,6 +32,8 @@ public abstract class FileTestExecution extends AbstractTestExecution {
 	protected IFile specFile;
 	private FileTestExecution previousExecution;
 	
+	
+	
 	/**
 	 * Constructor referencing the workspace file which describes the test
 	 * execution. All required data is extracted from the workspace file and its
@@ -133,6 +135,7 @@ public abstract class FileTestExecution extends AbstractTestExecution {
 		this.previousExecution = previousExecution;
 	}
 
+	
 	/**
 	 * @return the previousExecution
 	 */

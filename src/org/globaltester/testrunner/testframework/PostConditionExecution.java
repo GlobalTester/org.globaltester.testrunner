@@ -7,8 +7,8 @@ public class PostConditionExecution extends ActionStepExecution {
 	/**
 	 * @param actionStep	PostCondition this execution instance should execute
 	 */
-	public PostConditionExecution(PostCondition actionStep) {
-		super(actionStep);
+	public PostConditionExecution(PostCondition actionStep, IExecution parent) {
+		super(actionStep, parent);
 	}
 
 }

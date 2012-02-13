@@ -36,6 +36,8 @@ public class TestCampaign implements IExecution {
 	private String specName = "";
 	private String specVersion = "unknown";
 
+	private String logFileName;
+	
 	public TestCampaign(GtTestCampaignProject gtTestCampaignProject) {
 		this.project = gtTestCampaignProject;
 	}
@@ -176,6 +178,7 @@ public class TestCampaign implements IExecution {
 		}
 
 		TestLogger.init(project.getNewResultDir());
+		logFileName = TestLogger.getLogFileName();
 
 		// init JS ScriptRunner and Context
 		Context cx = Context.enter();
@@ -204,6 +207,10 @@ public class TestCampaign implements IExecution {
 		// refresh the project in workspace
 		project.getIProject().refreshLocal(IResource.DEPTH_INFINITE, null);
 
+	}
+	
+	public String getLogFileName(){
+		return logFileName;
 	}
 
 	public GtTestCampaignProject getProject() {

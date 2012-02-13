@@ -14,9 +14,18 @@ public abstract class AbstractTestExecution implements IExecution {
 	// store time and duration of last execution
 	protected long lastExecutionStartTime = 0;
 	protected long lastExecutionDuration = 0;
+	private String logFileName;
 
 	public Result getResult() {
 		return result;
+	}
+	
+	public void setLogFileName(String logFileName){
+		this.logFileName = logFileName;
+	}
+	
+	public String getLogFileName(){
+		return logFileName;
 	}
 
 	/**

@@ -117,6 +117,7 @@ public class TestCampaignElement implements IExecution {
 
 			// dump execution information to logfile
 			TestLogger.initTestExecutable(testExecution.getId());
+			testExecution.setLogFileName(TestLogger.getLogFileName());
 			testCase.dumpTestCaseInfos();
 
 			// execute the TestExecutable
@@ -124,14 +125,11 @@ public class TestCampaignElement implements IExecution {
 
 			// dump execution information to logfile
 			TestLogger.shutdownTestExecutableLogger();
+			
 
 		}
 
 	}
-	
-
-	
-	
 
 	public IExecution getParent() {
 		return parent;

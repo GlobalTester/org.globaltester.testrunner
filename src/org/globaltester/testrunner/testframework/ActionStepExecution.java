@@ -20,12 +20,15 @@ public abstract class ActionStepExecution extends AbstractTestExecution {
 
 	private Result commandResult;
 
+	private IExecution parent;
+
 	/**
 	 * Constructor for new TestStepExecutionInstance
 	 * @param step	TestStep this execution instance should execute
 	 */
-	protected ActionStepExecution(ActionStep step) {
+	protected ActionStepExecution(ActionStep step, IExecution parentExecution) {
 		testStep = step;
+		parent = parentExecution;
 	}
 
 	@Override
@@ -113,8 +116,7 @@ public abstract class ActionStepExecution extends AbstractTestExecution {
 
 	@Override
 	public IExecution getParent() {
-		// TODO Auto-generated method stub
-		return null;
+		return parent;
 	}
 
 	@Override

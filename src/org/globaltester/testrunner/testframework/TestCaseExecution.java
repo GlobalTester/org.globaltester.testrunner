@@ -54,7 +54,7 @@ public class TestCaseExecution extends FileTestExecution {
 		if (preCons != null) {
 			for (Iterator<PreCondition> testStepIter = preCons.iterator(); testStepIter
 			.hasNext();) {
-				preConExecutions.add(new PreConditionExecution(testStepIter.next()));
+				preConExecutions.add(new PreConditionExecution(testStepIter.next(), this));
 			}
 		}
 		
@@ -64,7 +64,7 @@ public class TestCaseExecution extends FileTestExecution {
 		if (testSteps != null) {
 			for (Iterator<TestStep> testStepIter = testSteps.iterator(); testStepIter
 			.hasNext();) {
-				testStepExecutions.add(new TestStepExecution(testStepIter.next()));
+				testStepExecutions.add(new TestStepExecution(testStepIter.next(), this));
 			}
 		}
 		
@@ -74,7 +74,7 @@ public class TestCaseExecution extends FileTestExecution {
 		if (postCons != null) {
 			for (Iterator<PostCondition> postConIter = postCons.iterator(); postConIter
 			.hasNext();) {
-				postConExecutions.add(new PostConditionExecution(postConIter.next()));
+				postConExecutions.add(new PostConditionExecution(postConIter.next(), this));
 			}
 		}
 		
@@ -122,6 +122,7 @@ public class TestCaseExecution extends FileTestExecution {
 		for (Iterator<ActionStepExecution> preConIter = preConExecutions.iterator(); preConIter
 				.hasNext();) {
 			ActionStepExecution curStepExec = preConIter.next();
+			curStepExec.setLogFileName(TestLogger.getLogFileName());
 			curStepExec.execute(sr, cx, forceExecution);
 			
 			result.addSubResult(curStepExec.getResult());
@@ -133,6 +134,7 @@ public class TestCaseExecution extends FileTestExecution {
 				.hasNext();) {
 			ActionStepExecution curStepExec = testStepIter.next();
 			curStepExec.execute(sr, cx, forceExecution);
+			curStepExec.setLogFileName(TestLogger.getLogFileName());
 			
 			result.addSubResult(curStepExec.getResult());
 		}
@@ -144,6 +146,7 @@ public class TestCaseExecution extends FileTestExecution {
 				.hasNext();) {
 			ActionStepExecution curStepExec = postConIter.next();
 			curStepExec.execute(sr, cx, forceExecution);
+			curStepExec.setLogFileName(TestLogger.getLogFileName());
 			
 			result.addSubResult(curStepExec.getResult());
 		}

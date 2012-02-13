@@ -7,8 +7,8 @@ public class TestStepExecution extends ActionStepExecution {
 	/**
 	 * @param actionStep	TestStep this execution instance should execute
 	 */
-	public TestStepExecution(TestStep actionStep) {
-		super(actionStep);
+	public TestStepExecution(TestStep actionStep, IExecution parent) {
+		super(actionStep, parent);
 	}
 
 }

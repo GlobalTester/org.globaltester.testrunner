@@ -7,8 +7,8 @@ public class PreConditionExecution extends ActionStepExecution {
 	/**
 	 * @param actionStep	PreCondition this execution instance should execute
 	 */
-	public PreConditionExecution(PreCondition actionStep) {
-		super(actionStep);
+	public PreConditionExecution(PreCondition actionStep, IExecution parent) {
+		super(actionStep, parent);
 	}
 
 }
