@@ -66,6 +66,8 @@ import org.globaltester.testrunner.testframework.TestCampaignElement;
 import org.globaltester.testrunner.testframework.TestStepExecution;
 import org.globaltester.testrunner.ui.Activator;
 import org.globaltester.testrunner.ui.UiImages;
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.IDocument;
 
 public class TestCampaignEditor extends EditorPart{
 	public TestCampaignEditor() {
@@ -82,6 +84,7 @@ public class TestCampaignEditor extends EditorPart{
 	private Action actionShowTestCase;
 	private Action actionShowLog;
 	private Action doubleClickAction;
+	
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
@@ -427,7 +430,8 @@ public class TestCampaignEditor extends EditorPart{
 			}
 		};
 	}
-
+	
+	
 
 	/**
 	 * Show files from local workspace in editor
@@ -453,24 +457,67 @@ public class TestCampaignEditor extends EditorPart{
 		}
 	}
 
-
+	
 	/**
 	 * Show files from local workspace in editor
 	 * 
 	 * @param fileName
 	 * @return Editor
 	 */
-	private void showFile(String fileName) {
+	private ITextEditor showFile(String fileName) {
 
+		IEditorPart editor;
+		ITextEditor textEditor = null;
 		IPath path = new Path(fileName);
+		IWorkbench workbench = PlatformUI.getWorkbench();
+		IWorkbenchWindow window = workbench.getWorkbenchWindows()[0];
+		IWorkbenchPage page = window.getActivePage();
 
 		// file exists in local workspace
 		IFile file = ResourcesPlugin.getWorkspace().getRoot()
-		.getFileForLocation(path);
-		showFile(file);
+				.getFileForLocation(path);
+		try {
+			if (file != null && file.exists()) {
+				editor = IDE.openEditor(page, file, true);
+				textEditor = (ITextEditor) editor.getAdapter(ITextEditor.class);
+			}
+		} catch (Exception ex) {
+			GTLogger.getInstance().error(ex);
+		}
+		return textEditor;
+
 	}
 
+	/**
+	 * Show files from local workspace in editor and highlight special line
+	 * 
+	 * @param fileName
+	 *            name of file
+	 * @param line
+	 *            line to be highlighted
+	 * @return Editor
+	 */
+	private void showFile(String fileName, int line) {
 
+		if (fileName == null)
+			return;
+
+		ITextEditor textEditor = showFile(fileName);
+
+		if (line > 0) {
+			try {
+				line--; // document starts with 0
+				IDocument document = textEditor.getDocumentProvider()
+						.getDocument(textEditor.getEditorInput());
+
+				textEditor.selectAndReveal(document.getLineOffset(line),
+						document.getLineLength(line));
+
+			} catch (BadLocationException e) {
+				// invalid text position -> do nothing
+			}
+		}
+	}
 
 
 	@Override

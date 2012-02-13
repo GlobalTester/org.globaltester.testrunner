@@ -18,4 +18,5 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Export-Package: org.globaltester.testrunner.ui,
  org.globaltester.testrunner.ui.commands
-Import-Package: org.eclipse.ui.texteditor
+Import-Package: org.eclipse.jface.text,
+ org.eclipse.ui.texteditor
