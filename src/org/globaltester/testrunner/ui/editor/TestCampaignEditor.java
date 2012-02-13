@@ -372,8 +372,9 @@ public class TestCampaignEditor extends EditorPart{
 					}
 					else if(obj instanceof TestStepExecution){
 						String logFileName = ((TestStepExecution) obj).getLogFileName();
+						int logFileLine = ((TestStepExecution) obj).getLogFileLine();
 						try{
-							showFile(logFileName);
+							showFile(logFileName, logFileLine);
 						}
 						catch(Exception e){
 							//TODO: open dialog that informs about non-existing logfile
@@ -383,8 +384,9 @@ public class TestCampaignEditor extends EditorPart{
 						IExecution ie = ((PreConditionExecution) obj).getParent();
 						FileTestExecution fte = (FileTestExecution) ie;
 						String logFileName = fte.getLogFileName();
+						int logFileLine = ((PreConditionExecution) obj).getLogFileLine();
 						try{
-							showFile(logFileName);
+							showFile(logFileName, logFileLine);
 						}
 						catch(Exception e){
 							//TODO: open dialog that informs about non-existing logfile
@@ -394,8 +396,9 @@ public class TestCampaignEditor extends EditorPart{
 						IExecution ie = ((PostConditionExecution) obj).getParent();
 						FileTestExecution fte = (FileTestExecution) ie;
 						String logFileName = fte.getLogFileName();
+						int logFileLine = ((PostConditionExecution) obj).getLogFileLine();
 						try{
-							showFile(logFileName);
+							showFile(logFileName, logFileLine);
 						}
 						catch(Exception e){
 							//TODO: open dialog that informs about non-existing logfile
