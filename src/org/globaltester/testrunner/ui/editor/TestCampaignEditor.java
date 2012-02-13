@@ -2,10 +2,13 @@ package org.globaltester.testrunner.ui.editor;
 
 import java.io.IOException;
 
-
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
@@ -15,14 +18,12 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
@@ -32,31 +33,41 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
-import org.eclipse.swt.events.MouseListener;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchActionConstants;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.statushandlers.StatusManager;
+import org.eclipse.ui.texteditor.ITextEditor;
+import org.globaltester.logging.logger.GTLogger;
 import org.globaltester.logging.preferences.PreferenceConstants;
 import org.globaltester.testrunner.report.ReportPdfGenerator;
 import org.globaltester.testrunner.report.TestReport;
+import org.globaltester.testrunner.testframework.FileTestExecution;
+import org.globaltester.testrunner.testframework.IExecution;
+import org.globaltester.testrunner.testframework.PostConditionExecution;
+import org.globaltester.testrunner.testframework.PreConditionExecution;
+import org.globaltester.testrunner.testframework.TestCampaign;
+import org.globaltester.testrunner.testframework.TestCampaignElement;
+import org.globaltester.testrunner.testframework.TestStepExecution;
 import org.globaltester.testrunner.ui.Activator;
 import org.globaltester.testrunner.ui.UiImages;
-import org.eclipse.jface.action.IMenuListener;
 
-public class TestCampaignEditor extends EditorPart {
+public class TestCampaignEditor extends EditorPart{
 	public TestCampaignEditor() {
 	}
 
@@ -66,7 +77,7 @@ public class TestCampaignEditor extends EditorPart {
 	private boolean dirty = false;
 	private Text txtSpecName;
 	private Text txtSpecVersion;
-	
+
 	// some actions defined for this view
 	private Action actionShowTestCase;
 	private Action actionShowLog;
@@ -93,13 +104,13 @@ public class TestCampaignEditor extends EditorPart {
 
 	@Override
 	public void init(IEditorSite site, IEditorInput input)
-			throws PartInitException {
+	throws PartInitException {
 		if ((input instanceof FileEditorInput)) {
 			try {
 				input = new TestCampaignEditorInput(((FileEditorInput) input).getFile());
 			} catch (CoreException e) {
 				throw new RuntimeException(
-						"Wrong Input - No TestCampaignEditorInput can be created from selected resource");
+				"Wrong Input - No TestCampaignEditorInput can be created from selected resource");
 			}
 		}
 		if (!(input instanceof TestCampaignEditorInput)) {
@@ -231,7 +242,7 @@ public class TestCampaignEditor extends EditorPart {
 				};
 				job.setUser(true);
 				job.schedule();	
-				
+
 			}
 		});
 
@@ -244,8 +255,8 @@ public class TestCampaignEditor extends EditorPart {
 				DirectoryDialog dialog = new DirectoryDialog(getShell());
 				dialog.setMessage("Please select location to store the report files");
 				dialog.setFilterPath(null); // do not filter at all
-			    String baseDirName = dialog.open();
-			    
+				String baseDirName = dialog.open();
+
 				if (baseDirName != null) {
 					// create report
 					TestReport report = new TestReport(input.getTestCampaign(),
@@ -269,13 +280,13 @@ public class TestCampaignEditor extends EditorPart {
 			}
 
 		});
-		
+
 		//unset dirty flag as input is just loaded from file
 		setDirty(false);
 
 	}
-	
-	
+
+
 	private void hookContextMenu() {
 		MenuManager menuMgr = new MenuManager("#PopupMenu");
 		menuMgr.setRemoveAllWhenShown(true);
@@ -288,22 +299,15 @@ public class TestCampaignEditor extends EditorPart {
 		treeViewer.getControl().setMenu(menu);
 		getSite().registerContextMenu(menuMgr, treeViewer);
 	}
-	
+
 	private void fillContextMenu(IMenuManager manager) {
 		manager.add(actionShowTestCase);
-
-		//check, if single log files are created
-		IPreferencesService prefService = Platform.getPreferencesService();
-		boolean manualDirSettings = prefService.getBoolean(org.globaltester.logging.Activator.PLUGIN_ID,
-				PreferenceConstants.P_TEST_LOG_SINGLE_TESTCASES, false, null);
-		if (manualDirSettings) {
-			manager.add(actionShowLog);
-		}
+		manager.add(actionShowLog);
 
 		// Other plug-ins can contribute there actions here
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 	}
-	
+
 	/**
 	 * Define actions of this view
 	 * 
@@ -315,10 +319,19 @@ public class TestCampaignEditor extends EditorPart {
 			public void run() {
 				ISelection selection = treeViewer.getSelection();
 				Object obj = ((IStructuredSelection) selection)
-						.getFirstElement();
+				.getFirstElement();
 				if (obj != null) {
-//					TestResult testResult = (TestResult) obj;
-//					showFile(testResult.getFileName(), 0);
+					if(obj instanceof TestCampaignElement){
+						FileTestExecution fte = ((TestCampaignElement) obj).getLastExecution();
+						IFile file = fte.getSpecFile();
+						showFile(file);
+					}
+					else if(obj instanceof TestStepExecution){
+						IExecution ie = ((TestStepExecution)obj).getParent();
+						FileTestExecution fte = (FileTestExecution) ie;
+						IFile file = fte.getSpecFile();
+						showFile(file);
+					}
 				}
 			}
 		};
@@ -334,10 +347,57 @@ public class TestCampaignEditor extends EditorPart {
 			public void run() {
 				ISelection selection = treeViewer.getSelection();
 				Object obj = ((IStructuredSelection) selection)
-						.getFirstElement();
+				.getFirstElement();
 				if (obj != null) {
-//					TestResult testResult = (TestResult) obj;
-//					showFile(testResult.getLogFileName(), 0);
+					if(obj instanceof TestCampaignElement){
+						String logFileName = ((TestCampaignElement) obj).getLastExecution().getLogFileName();
+						try{
+							showFile(logFileName);
+						}
+						catch(Exception e){
+							//TODO: open dialog that informs about non-existing logfile
+						}
+					}
+					else if(obj instanceof TestCampaign){
+						String logFileName = ((TestCampaign) obj).getLogFileName();
+						try{
+							showFile(logFileName);
+						}
+						catch(Exception e){
+							//TODO: open dialog that informs about non-existing logfile
+						}
+					}
+					else if(obj instanceof TestStepExecution){
+						String logFileName = ((TestStepExecution) obj).getLogFileName();
+						try{
+							showFile(logFileName);
+						}
+						catch(Exception e){
+							//TODO: open dialog that informs about non-existing logfile
+						}
+					}
+					else if(obj instanceof PreConditionExecution){
+						IExecution ie = ((PreConditionExecution) obj).getParent();
+						FileTestExecution fte = (FileTestExecution) ie;
+						String logFileName = fte.getLogFileName();
+						try{
+							showFile(logFileName);
+						}
+						catch(Exception e){
+							//TODO: open dialog that informs about non-existing logfile
+						}
+					}
+					else if(obj instanceof PostConditionExecution){
+						IExecution ie = ((PostConditionExecution) obj).getParent();
+						FileTestExecution fte = (FileTestExecution) ie;
+						String logFileName = fte.getLogFileName();
+						try{
+							showFile(logFileName);
+						}
+						catch(Exception e){
+							//TODO: open dialog that informs about non-existing logfile
+						}
+					}
 				}
 			}
 		};
@@ -350,39 +410,82 @@ public class TestCampaignEditor extends EditorPart {
 
 		// double click -> show test case
 		doubleClickAction = new Action() {
-			
+
 			public void run() {
-//				int customizedDoubleClick = store.getInt(PreferenceConstants.P_DOUBLECLICKRESULTVIEW);
+				//				int customizedDoubleClick = store.getInt(PreferenceConstants.P_DOUBLECLICKRESULTVIEW);
 				ISelection selection = treeViewer.getSelection();
 				Object obj = ((IStructuredSelection) selection)
-						.getFirstElement();
+				.getFirstElement();
 				if (obj != null) {
-//					TestResult testResult = (TestResult) obj;
-//					if (customizedDoubleClick == 1) {
-//						showFile(testResult.getLogFileName(), 0);
-//					} else {
-//						showFile(testResult.getFileName(), 0);
-//					}
+					//					TestResult testResult = (TestResult) obj;
+					//					if (customizedDoubleClick == 1) {
+					//						showFile(testResult.getLogFileName(), 0);
+					//					} else {
+					//						showFile(testResult.getFileName(), 0);
+					//					}
 				}
 			}
 		};
 	}
-	
-	
+
+
+	/**
+	 * Show files from local workspace in editor
+	 * 
+	 * @param fileName
+	 * @return Editor
+	 */
+	private void showFile(IFile file) {
+
+		IEditorPart editor;
+		ITextEditor textEditor = null;
+		IWorkbench workbench = PlatformUI.getWorkbench();
+		IWorkbenchWindow window = workbench.getWorkbenchWindows()[0];
+		IWorkbenchPage page = window.getActivePage();
+
+		try {
+			if (file != null && file.exists()) {
+				editor = IDE.openEditor(page, file, true);
+				textEditor = (ITextEditor) editor.getAdapter(ITextEditor.class);
+			}
+		} catch (Exception ex) {
+			GTLogger.getInstance().error(ex);
+		}
+	}
+
+
+	/**
+	 * Show files from local workspace in editor
+	 * 
+	 * @param fileName
+	 * @return Editor
+	 */
+	private void showFile(String fileName) {
+
+		IPath path = new Path(fileName);
+
+		// file exists in local workspace
+		IFile file = ResourcesPlugin.getWorkspace().getRoot()
+		.getFileForLocation(path);
+		showFile(file);
+	}
+
+
+
 
 	@Override
 	public void setFocus() {
 		// TODO Auto-generated method stub
 
 	}
-	
+
 	public void setDirty(boolean dirty) {
-        this.dirty = dirty;
-        firePropertyChange(IEditorPart.PROP_DIRTY);
-    }
+		this.dirty = dirty;
+		firePropertyChange(IEditorPart.PROP_DIRTY);
+	}
 
 	private Shell getShell() {
 		return treeViewer.getControl().getShell();
 	}
-	
+
 }
