@@ -23,14 +23,14 @@
                icon="icons/execute.png"
                label="Run Test"
                style="push"
-               tooltip="Create a new TestCampaing form selection and execute it">
+               tooltip="Create a new TestCampaign form selection and execute it">
          </command>
          <command
                commandId="org.globaltester.testrunner.ui.commands.CreateTestCampaignCommand"
                icon="icons/testcampaign.png"
                label="Create TestCampaign"
                style="push"
-               tooltip="Create a new TestCampaing form selection and open it">
+               tooltip="Create a new TestCampaign form selection and open it">
          </command>
       </menuContribution>
    </extension>
@@ -45,14 +45,14 @@
                    icon="icons/execute.png"
                    label="Run Test"
                    style="push"
-                   tooltip="Create a new TestCampaing form selection and execute it">
+                   tooltip="Create a new TestCampaign form selection and execute it">
                  </command>
                  <command
                    commandId="org.globaltester.testrunner.ui.commands.CreateTestCampaignCommand"
                    icon="icons/testcampaign.png"
                    label="Create TestCampaign"
                    style="push"
-                   tooltip="Create a new TestCampaing form selection and open it">
+                   tooltip="Create a new TestCampaign form selection and open it">
                  </command>
             </toolbar>
         </menuContribution>
