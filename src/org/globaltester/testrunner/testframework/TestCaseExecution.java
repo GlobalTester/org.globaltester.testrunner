@@ -1,11 +1,5 @@
 package org.globaltester.testrunner.testframework;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.LineNumberReader;
-import java.io.Reader;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -120,31 +114,17 @@ public class TestCaseExecution extends FileTestExecution {
 		// TODO use variable forceExecution
 
 //		// dump execution information to logfile
-//		TestLogger.initTestExecutable(getTestCase().getTestCaseID());
-//		getTestCase().dumpTestCaseInfos();
+		getTestCase().dumpTestCaseInfos();
 
 		// iterate over all preconditions and execute them
 		TestLogger.info("Running Preconditions");
-		LineNumberReader lnr;
 		
 		
 		for (Iterator<ActionStepExecution> preConIter = preConExecutions.iterator(); preConIter
 				.hasNext();) {
 			ActionStepExecution curStepExec = preConIter.next();
 			curStepExec.setLogFileName(TestLogger.getLogFileName());
-			//count line numbers
-			try {
-				lnr = new LineNumberReader(new FileReader(new File(TestLogger.getLogFileName())));
-				lnr.skip(Long.MAX_VALUE);
-				curStepExec.setLogFileLine(lnr.getLineNumber());
-				TestLogger.info("LineNumber: " + lnr.getLineNumber());
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			curStepExec.setLogFileLine(TestLogger.getLogFileLine());
 			curStepExec.execute(sr, cx, forceExecution);
 			
 			result.addSubResult(curStepExec.getResult());
@@ -157,19 +137,7 @@ public class TestCaseExecution extends FileTestExecution {
 			ActionStepExecution curStepExec = testStepIter.next();
 			curStepExec.execute(sr, cx, forceExecution);
 			curStepExec.setLogFileName(TestLogger.getLogFileName());
-			//count line numbers
-			try {
-				lnr = new LineNumberReader(new FileReader(new File(TestLogger.getLogFileName())));
-				lnr.skip(Long.MAX_VALUE);
-				curStepExec.setLogFileLine(lnr.getLineNumber());
-				TestLogger.info("LineNumber: " + lnr.getLineNumber());
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			curStepExec.setLogFileLine(TestLogger.getLogFileLine());
 			
 			result.addSubResult(curStepExec.getResult());
 		}
@@ -182,26 +150,10 @@ public class TestCaseExecution extends FileTestExecution {
 			ActionStepExecution curStepExec = postConIter.next();
 			curStepExec.execute(sr, cx, forceExecution);
 			curStepExec.setLogFileName(TestLogger.getLogFileName());
-			//count line numbers
-			try {
-				lnr = new LineNumberReader(new FileReader(new File(TestLogger.getLogFileName())));
-				lnr.skip(Long.MAX_VALUE);
-				curStepExec.setLogFileLine(lnr.getLineNumber());
-				TestLogger.info("LineNumber: " + lnr.getLineNumber());
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			curStepExec.setLogFileLine(TestLogger.getLogFileLine());
 			
 			result.addSubResult(curStepExec.getResult());
 		}
-
-//		// dump execution information to logfile
-//		TestLogger.shutdownTestExecutableLogger();
-
 	}
 
 	private TestCase getTestCase() {

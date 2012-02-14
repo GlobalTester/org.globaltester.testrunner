@@ -8,7 +8,6 @@ import org.globaltester.logging.logger.TestLogger;
 import org.globaltester.smartcardshell.ScriptRunner;
 import org.globaltester.testrunner.testframework.Result.Status;
 import org.globaltester.testspecification.testframework.FileTestExecutable;
-import org.globaltester.testspecification.testframework.TestCase;
 import org.globaltester.testspecification.testframework.TestExecutableFactory;
 import org.jdom.Element;
 import org.mozilla.javascript.Context;
@@ -104,21 +103,9 @@ public class TestCampaignElement implements IExecution {
 			testExecution.setPreviousExecution(lastExecution);
 			lastExecution = testExecution;
 			
-			//get TestCase
-			TestCase testCase;
-			IFile testCaseResource = testExecution.getSpecFile();
-			try {
-				testCase = (TestCase) TestExecutableFactory
-						.getInstance(testCaseResource);
-			} catch (CoreException e) {
-				throw new RuntimeException("Could not create TestCase for "
-						+ testCaseResource, e);
-			}
-
 			// dump execution information to logfile
 			TestLogger.initTestExecutable(testExecution.getId());
 			testExecution.setLogFileName(TestLogger.getLogFileName());
-			testCase.dumpTestCaseInfos();
 
 			// execute the TestExecutable
 			testExecution.execute(sr, cx, forceExecution);
