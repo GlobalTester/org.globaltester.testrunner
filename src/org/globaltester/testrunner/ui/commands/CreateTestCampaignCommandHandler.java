@@ -14,11 +14,9 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.ide.IDE;
 import org.globaltester.core.GtDateHelper;
+import org.globaltester.core.ui.GtUiHelper;
 import org.globaltester.logging.logger.GtErrorLogger;
 import org.globaltester.testrunner.GtTestCampaignProject;
 import org.globaltester.testrunner.ui.Activator;
@@ -48,35 +46,17 @@ public class CreateTestCampaignCommandHandler extends AbstractHandler {
 		}
 
 		// open the new TestCampaign in the Test Campaign Editor
-		openInEditor(newProject);
-
-		return null;
-	}
-
-	static void openInEditor(GtTestCampaignProject newProject) {
-
 		try {
-			IFile file = newProject.getTestCampaignIFile();
-
-			IWorkbenchPage page = PlatformUI.getWorkbench()
-					.getActiveWorkbenchWindow().getActivePage();
-
-			IDE.openEditor(page, file);
-		} catch (PartInitException e) {
-			// opening new project in editor failed
-			// log CoreException to eclipse log
-			GtErrorLogger.log(Activator.PLUGIN_ID, e);
-
-			// users most probably will ignore this behavior and open editor
-			// manually, so do not open annoying dialog
+			GtUiHelper.openInEditor(newProject.getTestCampaignIFile());
 		} catch (CoreException e) {
-			// opening new project in editor failed
-			// log CoreException to eclipse log
+			// log Exception to eclipse log
 			GtErrorLogger.log(Activator.PLUGIN_ID, e);
 
 			// users most probably will ignore this behavior and open editor
 			// manually, so do not open annoying dialog
 		}
+
+		return null;
 	}
 
 	public static String getNewProjectName() {
