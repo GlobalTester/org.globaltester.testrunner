@@ -12,12 +12,9 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
@@ -28,14 +25,8 @@ import org.globaltester.testrunner.ui.Activator;
 import org.globaltester.testspecification.testframework.FileTestExecutable;
 import org.globaltester.testspecification.testframework.TestExecutableFactory;
 
-public class CreateTestCampaignCommandHandler extends AbstractHandler implements IWorkbenchWindowActionDelegate {
+public class CreateTestCampaignCommandHandler extends AbstractHandler {
 
-	/**
-	 * Constructor of CreateTestCampaignCommandHandler
-	 */
-	public CreateTestCampaignCommandHandler() {
-	}
-	
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		// check for dirty files and save them
@@ -180,24 +171,6 @@ public class CreateTestCampaignCommandHandler extends AbstractHandler implements
 	public static GtTestCampaignProject createTestCampaignProject(
 			ISelection iSel) throws ExecutionException, CoreException {
 		return createTestCampaignProject(getNewProjectName(), iSel);
-	}
-
-	@Override
-	public void run(IAction action) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void selectionChanged(IAction action, ISelection selection) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void init(IWorkbenchWindow window) {
-		// TODO Auto-generated method stub
-		
 	}
 
 }
