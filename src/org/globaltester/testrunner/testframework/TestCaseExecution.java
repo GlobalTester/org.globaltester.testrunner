@@ -135,9 +135,9 @@ public class TestCaseExecution extends FileTestExecution {
 		for (Iterator<ActionStepExecution> testStepIter = testStepExecutions.iterator(); testStepIter
 				.hasNext();) {
 			ActionStepExecution curStepExec = testStepIter.next();
-			curStepExec.execute(sr, cx, forceExecution);
 			curStepExec.setLogFileName(TestLogger.getLogFileName());
 			curStepExec.setLogFileLine(TestLogger.getLogFileLine());
+			curStepExec.execute(sr, cx, forceExecution);
 			
 			result.addSubResult(curStepExec.getResult());
 		}
@@ -148,9 +148,9 @@ public class TestCaseExecution extends FileTestExecution {
 		for (Iterator<ActionStepExecution> postConIter = postConExecutions.iterator(); postConIter
 				.hasNext();) {
 			ActionStepExecution curStepExec = postConIter.next();
-			curStepExec.execute(sr, cx, forceExecution);
 			curStepExec.setLogFileName(TestLogger.getLogFileName());
 			curStepExec.setLogFileLine(TestLogger.getLogFileLine());
+			curStepExec.execute(sr, cx, forceExecution);
 			
 			result.addSubResult(curStepExec.getResult());
 		}
