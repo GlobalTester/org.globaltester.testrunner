@@ -23,5 +23,9 @@ public interface IExecution {
 	public abstract double getTime();
 
 	public abstract String getId();
+	
+	public abstract String getLogFileName();
+	
+	public abstract int getLogFileLine();
 
 }

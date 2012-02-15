@@ -105,7 +105,7 @@ public class TestCampaignElement implements IExecution {
 			
 			// dump execution information to logfile
 			TestLogger.initTestExecutable(testExecution.getId());
-			testExecution.setLogFileName(TestLogger.getLogFileName());
+			testExecution.setLogFileName(TestLogger.getTestCaseLogFileName());
 
 			// execute the TestExecutable
 			testExecution.execute(sr, cx, forceExecution);
@@ -192,6 +192,17 @@ public class TestCampaignElement implements IExecution {
 		}else {
 			return "";
 		}
+	}
+
+	@Override
+	public String getLogFileName() {
+		return getLastExecution().getLogFileName();
+	}
+
+	@Override
+	public int getLogFileLine() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }

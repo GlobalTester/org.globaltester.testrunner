@@ -123,8 +123,6 @@ public class TestCaseExecution extends FileTestExecution {
 		for (Iterator<ActionStepExecution> preConIter = preConExecutions.iterator(); preConIter
 				.hasNext();) {
 			ActionStepExecution curStepExec = preConIter.next();
-			curStepExec.setLogFileName(TestLogger.getLogFileName());
-			curStepExec.setLogFileLine(TestLogger.getLogFileLine());
 			curStepExec.execute(sr, cx, forceExecution);
 			
 			result.addSubResult(curStepExec.getResult());
@@ -135,8 +133,6 @@ public class TestCaseExecution extends FileTestExecution {
 		for (Iterator<ActionStepExecution> testStepIter = testStepExecutions.iterator(); testStepIter
 				.hasNext();) {
 			ActionStepExecution curStepExec = testStepIter.next();
-			curStepExec.setLogFileName(TestLogger.getLogFileName());
-			curStepExec.setLogFileLine(TestLogger.getLogFileLine());
 			curStepExec.execute(sr, cx, forceExecution);
 			
 			result.addSubResult(curStepExec.getResult());
@@ -148,8 +144,6 @@ public class TestCaseExecution extends FileTestExecution {
 		for (Iterator<ActionStepExecution> postConIter = postConExecutions.iterator(); postConIter
 				.hasNext();) {
 			ActionStepExecution curStepExec = postConIter.next();
-			curStepExec.setLogFileName(TestLogger.getLogFileName());
-			curStepExec.setLogFileLine(TestLogger.getLogFileLine());
 			curStepExec.execute(sr, cx, forceExecution);
 			
 			result.addSubResult(curStepExec.getResult());

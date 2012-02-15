@@ -2,6 +2,7 @@ package org.globaltester.testrunner.testframework;
 
 import java.util.Date;
 
+import org.globaltester.logging.logger.TestLogger;
 import org.globaltester.smartcardshell.ScriptRunner;
 import org.globaltester.testrunner.testframework.Result.Status;
 import org.jdom.Element;
@@ -27,10 +28,6 @@ public abstract class AbstractTestExecution implements IExecution {
 	
 	public String getLogFileName(){
 		return logFileName;
-	}
-	
-	public void setLogFileLine(int logFileLine){
-		this.logFileLine = logFileLine;
 	}
 	
 	public int getLogFileLine(){
@@ -95,6 +92,10 @@ public abstract class AbstractTestExecution implements IExecution {
 	public void execute(ScriptRunner sr, Context cx, boolean forceExecution) {
 		// set the execution time
 		boolean reExecution = lastExecutionStartTime != 0;
+		
+		//set the log file
+		logFileName = TestLogger.getTestCaseLogFileName();
+		logFileLine = TestLogger.getLogFileLine();
 
 		lastExecutionStartTime = new Date().getTime();
 

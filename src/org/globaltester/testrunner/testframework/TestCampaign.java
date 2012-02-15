@@ -284,4 +284,10 @@ public class TestCampaign implements IExecution {
 		return null;
 	}
 
+	@Override
+	public int getLogFileLine() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }
