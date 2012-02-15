@@ -51,6 +51,14 @@ public abstract class AbstractTestExecution implements IExecution {
 		Element resultElement = new Element("LastExecutionResult");
 		getResult().dumpToXML(resultElement);
 		root.addContent(resultElement);
+		
+		Element logFileNameElement = new Element("LastExecutionLogFileName");
+		logFileNameElement.addContent(logFileName);
+		root.addContent(logFileNameElement);
+		
+		Element logFileLineElement = new Element("LastExecutionLogFileLine");
+		logFileLineElement.addContent(Long.toString(logFileLine));
+		root.addContent(logFileLineElement);
 	}
 
 	/**
@@ -73,6 +81,16 @@ public abstract class AbstractTestExecution implements IExecution {
 		Element resultElem = root.getChild("LastExecutionResult");
 		if (resultElem != null) {
 			result = ResultFactory.resultFromXML(resultElem);
+		}
+		
+		Element logFileNameElement = root.getChild("LastExecutionLogFileName");
+		if (logFileNameElement != null) {
+			logFileName = logFileNameElement.getTextTrim();
+		}
+		
+		Element logFileLineElement = root.getChild("LastExecutionLogFile");
+		if (logFileLineElement != null) {
+			logFileLine = Integer.valueOf(logFileLineElement.getTextTrim());
 		}
 
 	}
