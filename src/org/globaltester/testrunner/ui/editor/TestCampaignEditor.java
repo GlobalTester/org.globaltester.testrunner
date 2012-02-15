@@ -58,6 +58,7 @@ import org.eclipse.ui.texteditor.ITextEditor;
 import org.globaltester.logging.logger.GTLogger;
 import org.globaltester.testrunner.report.ReportPdfGenerator;
 import org.globaltester.testrunner.report.TestReport;
+import org.globaltester.testrunner.testframework.ActionStepExecution;
 import org.globaltester.testrunner.testframework.FileTestExecution;
 import org.globaltester.testrunner.testframework.IExecution;
 import org.globaltester.testrunner.testframework.PostConditionExecution;
@@ -306,7 +307,6 @@ public class TestCampaignEditor extends EditorPart{
 	private void fillContextMenu(IMenuManager manager) {
 		manager.add(actionShowTestCase);
 		manager.add(actionShowLog);
-		manager.add(doubleClickAction);
 		
 		// Other plug-ins can contribute there actions here
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
@@ -316,30 +316,17 @@ public class TestCampaignEditor extends EditorPart{
 		ISelection selection = treeViewer.getSelection();
 		Object obj = ((IStructuredSelection) selection)
 		.getFirstElement();
+		FileTestExecution fte = null;
 		if (obj != null) {
 			if(obj instanceof TestCampaignElement){
-				FileTestExecution fte = ((TestCampaignElement) obj).getLastExecution();
-				IFile file = fte.getSpecFile();
-				showFile(file);
+				fte = ((TestCampaignElement) obj).getLastExecution();
 			}
-			else if(obj instanceof TestStepExecution){
-				IExecution ie = ((TestStepExecution)obj).getParent();
-				FileTestExecution fte = (FileTestExecution) ie;
-				IFile file = fte.getSpecFile();
-				showFile(file);
+			if((obj instanceof TestStepExecution) || (obj instanceof PreConditionExecution) || (obj instanceof PostConditionExecution)){
+				IExecution ie = ((IExecution)obj).getParent();
+				fte = (FileTestExecution) ie;
 			}
-			else if(obj instanceof PreConditionExecution){
-				IExecution ie = ((PreConditionExecution)obj).getParent();
-				FileTestExecution fte = (FileTestExecution) ie;
-				IFile file = fte.getSpecFile();
-				showFile(file);
-			}
-			else if(obj instanceof PostConditionExecution){
-				IExecution ie = ((PostConditionExecution)obj).getParent();
-				FileTestExecution fte = (FileTestExecution) ie;
-				IFile file = fte.getSpecFile();
-				showFile(file);
-			}
+			IFile file = fte.getSpecFile();
+			showFile(file, 0);
 		}
 	}
 
@@ -348,57 +335,16 @@ public class TestCampaignEditor extends EditorPart{
 		Object obj = ((IStructuredSelection) selection)
 		.getFirstElement();
 		if (obj != null) {
-			if(obj instanceof TestCampaignElement){
-				String logFileName = ((TestCampaignElement) obj).getLastExecution().getLogFileName();
-				try{
-					showFile(logFileName);
-				}
-				catch(Exception e){
-					//TODO: open dialog that informs about non-existing logfile
-				}
+			String logFileName = ((IExecution) obj).getLogFileName();
+			int logFileLine = 0;
+			if((obj instanceof TestStepExecution) || (obj instanceof PreConditionExecution) || (obj instanceof PostConditionExecution)){
+				logFileLine = ((IExecution) obj).getLogFileLine();
 			}
-			else if(obj instanceof TestCampaign){
-				String logFileName = ((TestCampaign) obj).getLogFileName();
-				try{
-					showFile(logFileName);
-				}
-				catch(Exception e){
-					//TODO: open dialog that informs about non-existing logfile
-				}
+			try{
+				showFile(logFileName, logFileLine);
 			}
-			else if(obj instanceof TestStepExecution){
-				String logFileName = ((TestStepExecution) obj).getLogFileName();
-				int logFileLine = ((TestStepExecution) obj).getLogFileLine();
-				try{
-					showFile(logFileName, logFileLine);
-				}
-				catch(Exception e){
-					//TODO: open dialog that informs about non-existing logfile
-				}
-			}
-			else if(obj instanceof PreConditionExecution){
-				IExecution ie = ((PreConditionExecution) obj).getParent();
-				FileTestExecution fte = (FileTestExecution) ie;
-				String logFileName = fte.getLogFileName();
-				int logFileLine = ((PreConditionExecution) obj).getLogFileLine();
-				try{
-					showFile(logFileName, logFileLine);
-				}
-				catch(Exception e){
-					//TODO: open dialog that informs about non-existing logfile
-				}
-			}
-			else if(obj instanceof PostConditionExecution){
-				IExecution ie = ((PostConditionExecution) obj).getParent();
-				FileTestExecution fte = (FileTestExecution) ie;
-				String logFileName = fte.getLogFileName();
-				int logFileLine = ((PostConditionExecution) obj).getLogFileLine();
-				try{
-					showFile(logFileName, logFileLine);
-				}
-				catch(Exception e){
-					//TODO: open dialog that informs about non-existing logfile
-				}
+			catch(Exception e){
+				//TODO: open dialog that informs about non-existing logfile
 			}
 		}
 	}
@@ -456,76 +402,31 @@ public class TestCampaignEditor extends EditorPart{
 
 
 	/**
-	 * Show files from local workspace in editor
+	 * Show files from local workspace in and editor and highlight special line
 	 * 
-	 * @param fileName
-	 * @return Editor
+	 * @param file			the IFile to be opened
+	 * @param line			line to be highlighted
 	 */
-	private void showFile(IFile file) {
+	private void showFile(IFile file, int line) {
 
-		IEditorPart editor;
-		ITextEditor textEditor = null;
-		IWorkbench workbench = PlatformUI.getWorkbench();
-		IWorkbenchWindow window = workbench.getWorkbenchWindows()[0];
-		IWorkbenchPage page = window.getActivePage();
-
-		try {
-			if (file != null && file.exists()) {
-				editor = IDE.openEditor(page, file, true);
-				textEditor = (ITextEditor) editor.getAdapter(ITextEditor.class);
-			}
-		} catch (Exception ex) {
-			GTLogger.getInstance().error(ex);
-		}
-	}
-
-
-	/**
-	 * Show files from local workspace in editor
-	 * 
-	 * @param fileName
-	 * @return Editor
-	 */
-	private ITextEditor showFile(String fileName) {
-
-		IEditorPart editor;
-		ITextEditor textEditor = null;
-		IPath path = new Path(fileName);
-		IWorkbench workbench = PlatformUI.getWorkbench();
-		IWorkbenchWindow window = workbench.getWorkbenchWindows()[0];
-		IWorkbenchPage page = window.getActivePage();
-
-		// file exists in local workspace
-		IFile file = ResourcesPlugin.getWorkspace().getRoot()
-		.getFileForLocation(path);
-		try {
-			if (file != null && file.exists()) {
-				editor = IDE.openEditor(page, file, true);
-				textEditor = (ITextEditor) editor.getAdapter(ITextEditor.class);
-			}
-		} catch (Exception ex) {
-			GTLogger.getInstance().error(ex);
-		}
-		return textEditor;
-
-	}
-
-	/**
-	 * Show files from local workspace in editor and highlight special line
-	 * 
-	 * @param fileName
-	 *            name of file
-	 * @param line
-	 *            line to be highlighted
-	 * @return Editor
-	 */
-	private void showFile(String fileName, int line) {
-
-		if (fileName == null)
+		if (file == null)
 			return;
+		
+		IEditorPart editor;
+		ITextEditor textEditor = null;
+		IWorkbench workbench = PlatformUI.getWorkbench();
+		IWorkbenchWindow window = workbench.getWorkbenchWindows()[0];
+		IWorkbenchPage page = window.getActivePage();
 
-		ITextEditor textEditor = showFile(fileName);
-
+		try {
+			if (file != null && file.exists()) {
+				editor = IDE.openEditor(page, file, true);
+				textEditor = (ITextEditor) editor.getAdapter(ITextEditor.class);
+			}
+		} catch (Exception ex) {
+			GTLogger.getInstance().error(ex);
+		}
+		
 		if (line > 0) {
 			try {
 				line--; // document starts with 0
@@ -541,11 +442,29 @@ public class TestCampaignEditor extends EditorPart{
 		}
 	}
 
+	/**
+	 * Show files from local workspace in an editor and highlight special line
+	 * 
+	 * @param fileName				name of file to be opened
+	 * @param line					line to be highlighted
+	 */
+	private void showFile(String fileName, int line) {
+
+		if (fileName == null)
+			return;
+		
+		IPath path = new Path(fileName);
+		// file exists in local workspace
+		IFile file = ResourcesPlugin.getWorkspace().getRoot()
+		.getFileForLocation(path);
+
+		showFile(file, line);
+	}
+
 
 	@Override
 	public void setFocus() {
 		// TODO Auto-generated method stub
-
 	}
 
 	public void setDirty(boolean dirty) {
