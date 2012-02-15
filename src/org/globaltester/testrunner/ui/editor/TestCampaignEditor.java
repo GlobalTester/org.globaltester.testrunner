@@ -9,6 +9,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
@@ -16,6 +17,7 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -56,14 +58,13 @@ import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.statushandlers.StatusManager;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.globaltester.logging.logger.GTLogger;
+import org.globaltester.logging.preferences.PreferenceConstants;
 import org.globaltester.testrunner.report.ReportPdfGenerator;
 import org.globaltester.testrunner.report.TestReport;
-import org.globaltester.testrunner.testframework.ActionStepExecution;
 import org.globaltester.testrunner.testframework.FileTestExecution;
 import org.globaltester.testrunner.testframework.IExecution;
 import org.globaltester.testrunner.testframework.PostConditionExecution;
 import org.globaltester.testrunner.testframework.PreConditionExecution;
-import org.globaltester.testrunner.testframework.TestCampaign;
 import org.globaltester.testrunner.testframework.TestCampaignElement;
 import org.globaltester.testrunner.testframework.TestStepExecution;
 import org.globaltester.testrunner.ui.Activator;
@@ -84,7 +85,6 @@ public class TestCampaignEditor extends EditorPart{
 	private Action actionShowTestCase;
 	private Action actionShowLog;
 	private Action doubleClickAction;
-
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
@@ -385,7 +385,14 @@ public class TestCampaignEditor extends EditorPart{
 		doubleClickAction = new Action() {
 
 			public void run(){
-				openTestCase();
+				int customizedDoubleClick = Platform.getPreferencesService().getInt(org.globaltester.logging.Activator.PLUGIN_ID,
+						PreferenceConstants.P_DOUBLECLICKRESULTVIEW, 0, null);
+				if(customizedDoubleClick == 0) {
+					openTestCase();
+				}
+				else{
+					openLogFile();
+				}
 			}
 		};
 	}
