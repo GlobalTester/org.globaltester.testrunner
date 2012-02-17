@@ -45,7 +45,7 @@ public abstract class ActionStepExecution extends AbstractTestExecution {
 			TestLogger.info(String.format(TestLogger.DEFAULTFORMAT, "Command: "+command));
 			Element commandApduElem = commandElem.getChild("APDU", commandElem.getNamespace());
 			if (commandApduElem != null) {
-				TestLogger.info(String.format(TestLogger.DEFAULTFORMAT, "APDU: \n"+commandApduElem.getTextNormalize()));
+				TestLogger.info(String.format(TestLogger.DEFAULTFORMAT, "APDU: "+commandApduElem.getTextNormalize()));
 			}
 		}
 		
