@@ -10,6 +10,12 @@ import org.mozilla.javascript.Context;
 
 public abstract class AbstractTestExecution implements IExecution {
 
+	private static final String XML_TAG_LAST_EXECUTION_LOG_FILE_LINE = "LastExecutionLogFileLine";
+	private static final String XML_TAG_LAST_EXECUTION_LOG_FILE_NAME = "LastExecutionLogFileName";
+	private static final String XML_TAG_LAST_EXECUTION_RESULT = "LastExecutionResult";
+	private static final String XML_TAG_LAST_EXECUTION_DURATION = "LastExecutionDuration";
+	private static final String XML_TAG_LAST_EXECUTION_START_TIME = "LastExecutionStartTime";
+
 	protected Result result = ResultFactory.newEmptyResult();
 
 	// store time and duration of last execution
@@ -40,23 +46,23 @@ public abstract class AbstractTestExecution implements IExecution {
 	 * @param root
 	 */
 	void dumpToXml(Element root) {
-		Element startTimeElement = new Element("LastExecutionStartTime");
+		Element startTimeElement = new Element(XML_TAG_LAST_EXECUTION_START_TIME);
 		startTimeElement.addContent(Long.toString(lastExecutionStartTime));
 		root.addContent(startTimeElement);
 
-		Element durationElement = new Element("LastExecutionDuration");
+		Element durationElement = new Element(XML_TAG_LAST_EXECUTION_DURATION);
 		durationElement.addContent(Long.toString(lastExecutionDuration));
 		root.addContent(durationElement);
 		
-		Element resultElement = new Element("LastExecutionResult");
+		Element resultElement = new Element(XML_TAG_LAST_EXECUTION_RESULT);
 		getResult().dumpToXML(resultElement);
 		root.addContent(resultElement);
 		
-		Element logFileNameElement = new Element("LastExecutionLogFileName");
+		Element logFileNameElement = new Element(XML_TAG_LAST_EXECUTION_LOG_FILE_NAME);
 		logFileNameElement.addContent(logFileName);
 		root.addContent(logFileNameElement);
 		
-		Element logFileLineElement = new Element("LastExecutionLogFileLine");
+		Element logFileLineElement = new Element(XML_TAG_LAST_EXECUTION_LOG_FILE_LINE);
 		logFileLineElement.addContent(Long.toString(logFileLine));
 		root.addContent(logFileLineElement);
 	}
@@ -68,27 +74,27 @@ public abstract class AbstractTestExecution implements IExecution {
 	 */
 	void extractFromXml(Element root) {
 
-		Element timeElem = root.getChild("LastExecutionStartTime");
+		Element timeElem = root.getChild(XML_TAG_LAST_EXECUTION_START_TIME);
 		if (timeElem != null) {
 			lastExecutionStartTime = Long.valueOf(timeElem.getTextTrim());
 		}
 		
-		Element durationElem = root.getChild("LastExecutionDuration");
+		Element durationElem = root.getChild(XML_TAG_LAST_EXECUTION_DURATION);
 		if (durationElem != null) {
 			lastExecutionDuration = Long.valueOf(durationElem.getTextTrim());
 		}
 		
-		Element resultElem = root.getChild("LastExecutionResult");
+		Element resultElem = root.getChild(XML_TAG_LAST_EXECUTION_RESULT);
 		if (resultElem != null) {
 			result = ResultFactory.resultFromXML(resultElem);
 		}
 		
-		Element logFileNameElement = root.getChild("LastExecutionLogFileName");
+		Element logFileNameElement = root.getChild(XML_TAG_LAST_EXECUTION_LOG_FILE_NAME);
 		if (logFileNameElement != null) {
 			logFileName = logFileNameElement.getTextTrim();
 		}
 		
-		Element logFileLineElement = root.getChild("LastExecutionLogFile");
+		Element logFileLineElement = root.getChild(XML_TAG_LAST_EXECUTION_LOG_FILE_LINE);
 		if (logFileLineElement != null) {
 			logFileLine = Integer.valueOf(logFileLineElement.getTextTrim());
 		}
