@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.cheatsheets.cheatSheetContent">
+      <cheatsheet
+            category="org.globaltester.core.doc.userGuide"
+            composite="false"
+            contentFile="cheatsheets/user/runTestCases.xml"
+            id="org.globaltester.testrunner.doc.cheatsheet.runTestCases"
+            name="Run TestCases">
+      </cheatsheet>
+   </extension>
+
+</plugin>

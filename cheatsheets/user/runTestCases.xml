@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cheatsheet
+      title="Run TestCases">
+   <intro>
+   <description>
+     In a few steps, this cheat sheet will guide you through the run and evaluation of TestCases.
+      </description>
+   </intro>
+   <item
+         title="Create TestCampaign">
+      <description>
+        In your <b>TestSpecification</b>, select one or more TestCases. Right-click your mouse.
+        You can either choose <b>&quot;RunTest&quot;</b> or <b>&quot;Create TestCampaign&quot;</b>.
+        If you choose &quot;RunTest&quot;, a TestCampaign will be created and run directly.
+      </description>
+   </item>
+   <item
+         title="Run TestCampaign">
+      <description>
+         You can (re-) run your TestCampaign by clicking the <b>&quot;Execute&quot;</b> button.
+      </description>
+   </item>
+   <item
+         title="Generate Report">
+      <description>
+        You can generate a report of your run by clicking the <b>&quot;Generate Report&quot;</b> button.
+        A folder browser will open where you can choose the folder you want the report to be saved in.
+      </description>
+   </item>
+   <item
+         title="View TestCases and TestSteps">
+      <description>
+       In the TestCampaignEditor in the column <b>&quot;TestCase/TestStep&quot;</b> the whole TestCampaign structure will be shown as a tree.
+       You can double-click with your mouse on the single TestCases or TestSteps, and the TestCase will open in an editor. 
+      </description>
+   </item>
+   <item
+         title="View LogFiles">
+      <description>
+       	In the TestCampaignEditor in the column <b>&quot;TestCase/TestStep&quot;</b> the whole TestCampaign structure will be shown as a tree.
+       	You can open a LogFile to an item if you right-click on it with your mouse, then choose <b>&quot;Show LogFile&quot;</b>.
+       	If you select the TestCampaign, the log file for it including all testcases and teststeps will open in an editor.
+       	If you have selected &quot;Add separate logfile for each testcase&quot; in the GlobalTester Preferences and select a TestCase, 
+       	the log file for this TestCase will open.
+       	If you have selected &quot;Add separate logfile for each testcase&quot; in the GlobalTester Preferences and select a TestStep,
+       	the log file for this TestCase will open with the line number of the beginning of the TestStep highlighted.
+      </description>
+   </item>
+   <item
+         title="Browse TestCampaign Executions">
+      <description>
+         
+      </description>
+   </item>
+   <item
+         title="Status of TestCase Execution in TestCampaign Execution">
+      <description>
+         In the TestCampaignEditor in the column <b>&quot;Status&quot;</b>
+         the status of the TestCase execution will be shown. It is either <b>&quot;FAILURE&quot;</b> (red), <b>&quot;WARNING&quot;</b> (yellow), or just green. 
+      </description>
+   </item>
+   
+
+</cheatsheet>
