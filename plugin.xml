@@ -11,5 +11,18 @@
             name="Run TestCases">
       </cheatsheet>
    </extension>
+   <extension
+         point="org.eclipse.help.toc">
+      <toc
+            file="toc/user/toc.xml"
+            primary="true">
+      </toc>
+      <toc
+            file="toc/user/gettingstarted.xml">
+      </toc>
+      <toc
+            file="toc/user/concepts.xml">
+      </toc>
+   </extension>
 
 </plugin>
