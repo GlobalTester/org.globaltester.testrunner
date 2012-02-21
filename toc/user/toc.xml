@@ -9,4 +9,8 @@
    <topic label="" link_to="../org.globaltester.core.doc/toc/user/toc.xml#concepts">
       <anchor id="userguide_concepts"/>
    </topic>
+   
+   <topic label="" link_to="../org.globaltester.core.doc/toc/user/toc.xml#reference">
+      <anchor id="userguide_reference"/>
+   </topic>
 </toc>
