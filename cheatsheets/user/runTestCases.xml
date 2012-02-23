@@ -4,20 +4,67 @@
    <intro>
    <description>
      In a few steps, this cheat sheet will guide you through the run and evaluation of TestCases.
+     You will need a card reader and an ePassport. You can also use an nPA, but then switch any
+     statements regarding nPA with ePassport and vice-versa.
       </description>
    </intro>
    <item
-         title="Create TestCampaign">
+         title="Prepare first Test Setup">
       <description>
-        In your <b>TestSpecification</b>, select one or more TestCases. Right-click your mouse.
-        You can either choose <b>&quot;RunTest&quot;</b> or <b>&quot;Create TestCampaign&quot;</b>.
-        If you choose &quot;RunTest&quot;, a TestCampaign will be created and run directly.
+         Make sure your card reader is connected to you computer. First, do not put your ePassport on it.
+         If your card reader just had to be connected, start GlobalTester 3 again.
       </description>
    </item>
    <item
-         title="Run TestCampaign">
+         title="Import your TestSpecification">
       <description>
-         You can (re-) run your TestCampaign by clicking the <b>&quot;Execute&quot;</b> button.
+         If not already done, import the &quot;GlobalTester Sample TestSpecification&quot;.
+      </description>
+   </item>
+   <item
+         title="Create and run TestCampaign">
+      <description>
+        In your &quot;GlobalTester Sample TestSpecification&quot;, select the TestCases &quot;SelectApplication_nPA.xml&quot;
+        and &quot;SelectApplication_ePassport.xml&quot;.
+        Right-click your mouse, and choose <b>&quot;RunTest&quot;</b>.
+        A TestCampaign will be created and run directly.
+        Both TestCases will have a &quot;FAILURE&quot; in their &quot;Status&quot;-column in the TestCampaign editor.
+      </description>
+   </item>
+    <item
+         title="Try to find the Error in your Log File">
+      <description>
+        Right-click with your mouse on the TestCampaign in the TestCampaign editor, and choose &quot;Show log file&quot;.
+        The log file will open. Have a close look at it.
+        You can find your error in the TestCase execution by looking for &quot;@FailureID1&quot;, &quot;@FailureID2&quot;, etc.
+        Usually &quot;@FailureID1&quot; is the essential source of error; here it is the missing &quot;card&quot; reference
+        (because you have no card placed on your reader).
+      </description>
+   </item>
+   
+   <item
+         title="Run TestCampaign with different Setup">
+      <description>
+      	Now put your ePassport on the card reader.
+        You can (re-) run your TestCampaign by clicking the <b>&quot;Execute&quot;</b> button.
+        This time the &quot;SelectApplication_nPA&quot; execution will be a failure as well,
+        but the &quot;SelectApplication_ePassport&quot; execution will be declared as &quot;PASSED&quot;.
+      </description>
+   </item>
+   <item
+         title="Evaluate Log File again...">
+      <description>
+        Open the log file. For the &quot;SelectApplication_ePassport&quot; log, you can see the communication between the card and the reader.
+        The command APDU is syntax highlighted by the GlobalTester APDU hover function.
+        When you hover over it, you can see information about the command APDU.
+        The response APDU is shown as well, and its status word is extracted.
+      </description>
+   </item>
+   <item
+         title="... and again.">
+      <description>
+        This time there is a &quot;card&quot; reference, so there is also a command APDU in the &quot;SelectApplication_nPA&quot; execution.
+        The response APDU is only the status word &quot;6a82&quot;, because there is no nPA related eID application on your card.
       </description>
    </item>
    <item
@@ -28,37 +75,10 @@
       </description>
    </item>
    <item
-         title="View TestCases and TestSteps">
-      <description>
-       In the TestCampaignEditor in the column <b>&quot;TestCase/TestStep&quot;</b> the whole TestCampaign structure will be shown as a tree.
-       You can double-click with your mouse on the single TestCases or TestSteps, and the TestCase will open in an editor. 
-      </description>
-   </item>
-   <item
-         title="View LogFiles">
-      <description>
-       	In the TestCampaignEditor in the column <b>&quot;TestCase/TestStep&quot;</b> the whole TestCampaign structure will be shown as a tree.
-       	You can open a LogFile to an item if you right-click on it with your mouse, then choose <b>&quot;Show LogFile&quot;</b>.
-       	If you select the TestCampaign, the log file for it including all testcases and teststeps will open in an editor.
-       	If you have selected &quot;Add separate logfile for each testcase&quot; in the GlobalTester Preferences and select a TestCase, 
-       	the log file for this TestCase will open.
-       	If you have selected &quot;Add separate logfile for each testcase&quot; in the GlobalTester Preferences and select a TestStep,
-       	the log file for this TestCase will open with the line number of the beginning of the TestStep highlighted.
-      </description>
-   </item>
-   <item
          title="Browse TestCampaign Executions">
       <description>
-         
+         TODO
       </description>
    </item>
-   <item
-         title="Status of TestCase Execution in TestCampaign Execution">
-      <description>
-         In the TestCampaignEditor in the column <b>&quot;Status&quot;</b>
-         the status of the TestCase execution will be shown. It is either <b>&quot;FAILURE&quot;</b> (red), <b>&quot;WARNING&quot;</b> (yellow), or just green. 
-      </description>
-   </item>
-   
 
 </cheatsheet>
