@@ -201,8 +201,7 @@ public class TestCampaignElement implements IExecution {
 
 	@Override
 	public int getLogFileLine() {
-		// TODO Auto-generated method stub
-		return 0;
+		return getLastExecution().getLogFileLine();
 	}
 
 }

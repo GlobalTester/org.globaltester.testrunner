@@ -119,9 +119,6 @@ public abstract class AbstractTestExecution implements IExecution {
 		
 		//set the log file
 		logFileName = TestLogger.getTestCaseLogFileName();
-		if(logFileName.equals("")){
-			logFileName = TestLogger.getLogFileName();
-		}
 		logFileLine = TestLogger.getLogFileLine();
 
 		lastExecutionStartTime = new Date().getTime();
