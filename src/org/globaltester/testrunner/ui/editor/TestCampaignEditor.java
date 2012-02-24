@@ -337,9 +337,7 @@ public class TestCampaignEditor extends EditorPart{
 		if (obj != null) {
 			String logFileName = ((IExecution) obj).getLogFileName();
 			int logFileLine = 0;
-			if((obj instanceof TestStepExecution) || (obj instanceof PreConditionExecution) || (obj instanceof PostConditionExecution)){
 				logFileLine = ((IExecution) obj).getLogFileLine();
-			}
 			try{
 				showFile(logFileName, logFileLine);
 			}
