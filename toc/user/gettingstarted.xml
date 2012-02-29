@@ -2,6 +2,6 @@
 <?NLS TYPE="org.eclipse.help.toc"?>
 
 <toc label="Getting Started" link_to="../org.globaltester.core.doc/toc/user/toc.xml#gettingstarted"> 
-	<topic label="Run TestCases"  href="html/user/gettingstarted/UserGuide_RunTestCases.html"> 
+	<topic label="Execute TestCases"  href="html/user/gettingstarted/UserGuide_ExecuteTestCases.html"> 
 	</topic>
 </toc>

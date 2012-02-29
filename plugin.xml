@@ -6,8 +6,8 @@
       <cheatsheet
             category="org.globaltester.core.doc.userGuide"
             composite="false"
-            contentFile="cheatsheets/user/runTestCases.xml"
-            id="org.globaltester.testrunner.doc.cheatsheet.runTestCases"
+            contentFile="cheatsheets/user/executeTestCases.xml"
+            id="org.globaltester.testrunner.doc.cheatsheet.executeTestCases"
             name="Execute TestCases">
       </cheatsheet>
    </extension>

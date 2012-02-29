@@ -3,7 +3,7 @@
       title="Execute TestCases">
    <intro>
    <description>
-     In a few steps, this cheat sheet will guide you through the execution of TestCases and evaluation of their results.
+     In a few steps, this cheat sheet will guide you through the execution of TestCases and evaluation of the respective results.
      You will need a card reader and an ePassport. You can also use an nPA, but then switch any
      statements regarding nPA with ePassport and vice-versa.
       </description>
@@ -34,9 +34,9 @@
     <item
          title="Try to find the Error in your Log File">
       <description>
-      	In the TestCampaign editor, you can see a tree view displaying the TestCampaign execution structured in its TestCase executions and Test Steps executions.
-        Right-click with your mouse on the root of the tree view which is labeled <b>&quot;TestCampaign_date&quot;</b> (where date is in the format yyyymmddhhmmss) 
-        , and choose <b>&quot;Show log file&quot;</b>.
+      	In the TestCampaign editor, you can see a tree view displaying the last execution of the TestCampaign structured in its TestCase and Test Steps.
+        Right-click with your mouse on the root of the tree view which corresponds to the last execution of the TestCampaign,
+        and choose <b>&quot;Show log file&quot;</b>.
         The log file will open. Have a close look at it.<br></br>
         You can find your error in the TestCase execution by looking for &quot;@FailureID1&quot;, &quot;@FailureID2&quot;, etc.
         The lines in the  log file where they appear will have a red marker.
@@ -85,7 +85,7 @@
       <description>
          TODO
       </description>
-      <onCompletion>Congratulations! You have just learned how to execute TestCases and evaluate their results!</onCompletion>
+      <onCompletion>Congratulations! You have just learned how to execute TestCases and evaluate the respective results!</onCompletion>
    </item>
    
 
