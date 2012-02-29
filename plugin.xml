@@ -8,7 +8,7 @@
             composite="false"
             contentFile="cheatsheets/user/runTestCases.xml"
             id="org.globaltester.testrunner.doc.cheatsheet.runTestCases"
-            name="Run TestCases">
+            name="Execute TestCases">
       </cheatsheet>
    </extension>
    <extension

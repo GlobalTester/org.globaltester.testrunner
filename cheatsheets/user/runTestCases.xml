@@ -3,13 +3,13 @@
       title="Execute TestCases">
    <intro>
    <description>
-     In a few steps, this cheat sheet will guide you through the execution and evaluation of TestCases.
+     In a few steps, this cheat sheet will guide you through the execution of TestCases and evaluation of their results.
      You will need a card reader and an ePassport. You can also use an nPA, but then switch any
      statements regarding nPA with ePassport and vice-versa.
       </description>
    </intro>
    <item
-         title="Prepare first Test Setup">
+         title="Setup Test Environment">
       <description>
          Make sure your card reader is connected to you computer. First, do not put your ePassport on it.
          If your card reader just had to be connected, start GlobalTester 3 again.
@@ -26,19 +26,21 @@
       <description>
         In your &quot;GlobalTester Sample TestSpecification&quot;, select the TestCases &quot;SelectApplication_nPA.xml&quot;
         and &quot;SelectApplication_ePassport.xml&quot;.
-        Right-click your mouse, and choose <b>&quot;RunTest&quot;</b>.
-        A TestCampaign will be created and execute directly.
+        Right-click your mouse, and choose <b>&quot;RunTest&quot;</b>.<br></br>
+        A TestCampaign will be created and executed directly.
         Both TestCases will have a &quot;FAILURE&quot; - note in their &quot;Status&quot;-column in the TestCampaign editor.
       </description>
    </item>
     <item
          title="Try to find the Error in your Log File">
       <description>
-        Right-click with your mouse on the TestCampaign in the TestCampaign editor, and choose &quot;Show log file&quot;.
+      	In the TestCampaign editor, you can see a tree view displaying the TestCampaign execution structured in its TestCase executions and Test Steps executions.
+        Right-click with your mouse on the root of the tree view which is labeled <b>&quot;TestCampaign_date&quot;</b> (where date is in the format yyyymmddhhmmss) 
+        , and choose <b>&quot;Show log file&quot;</b>.
         The log file will open. Have a close look at it.<br></br>
         You can find your error in the TestCase execution by looking for &quot;@FailureID1&quot;, &quot;@FailureID2&quot;, etc.
         The lines in the  log file where they appear will have a red marker.
-        If you click on it with your mouse, the line where the failure is reported will open and be highlighted.<br></br>
+        If you click on it, the line where the failure is reported will open and be highlighted.<br></br>
         Usually &quot;@FailureID1&quot; is the essential source of error; here it is the missing &quot;card&quot; reference
         (because you have no card placed on your reader).
       </description>
@@ -58,7 +60,7 @@
       <description>
         Open the log file of the &quot;SelectApplication_ePassport&quot; execution.
         You can now see the communication between the card and the reader.
-        The command APDU is syntax highlighted by the GlobalTester APDU hover function.
+        The command APDU is syntax highlighted.
         When you hover over it, you can see information about the command APDU.
         The response APDU is shown as well, and its status word is extracted.
       </description>
@@ -83,7 +85,7 @@
       <description>
          TODO
       </description>
-      <onCompletion> Congratulations! You have just learned how to execute and evaluate TestCases! </onCompletion>
+      <onCompletion>Congratulations! You have just learned how to execute TestCases and evaluate their results!</onCompletion>
    </item>
    
 
