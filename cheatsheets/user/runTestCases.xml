@@ -83,6 +83,8 @@
       <description>
          TODO
       </description>
+      <onCompletion> Congratulations! You have just learned how to execute and evaluate TestCases! </onCompletion>
    </item>
+   
 
 </cheatsheet>
