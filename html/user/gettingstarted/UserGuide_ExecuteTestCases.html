@@ -11,51 +11,106 @@
 	In order to get a quick overview, you can also use the Cheat Sheet.
 	</p>
 	
-	<h2>Create TestCampaign</h2>
+	<h2>Setup Test Environment</h2>
 	<p>
-	In your <b>TestSpecification</b>, select one or more TestCases. Right-click your mouse.
-    You can either choose <b>&quot;RunTest&quot;</b> or <b>&quot;Create TestCampaign&quot;</b>.
-    If you choose &quot;RunTest&quot;, a TestCampaign will be created and executed directly.
+	 Make sure your card reader is connected to you computer.<br></br>
+	 If you have to connect it first and GlobalTester 3 is running,
+	 GlobalTester 3 will not be able to recognize and embed it into its functionality, so please start GlobalTester 3 again.<br></br>
+	 Place your card on the reader.
+	</p>
+	
+	<h2>Import your TestSpecification</h2>
+	<p>
+	If not already done, import one or more
+	<a href="../../../../org.globaltester.testspecification.doc/html/user/gettingstarted/UserGuide_ImportOfATestSpec.html">TestSpecification(s)</a>.
+	</p>
+	
+	<h2>Create and execute TestCampaign</h2>
+	<p>
+	There are two possibilities to create a <a href="../concepts/TestCampaign.html">TestCampaign</a>:
+	<ol>
+	<li>Create a TestCampaign and execute it, or</li>
+	<li>Select TestCases to execute (this will create a TestCampaign as well).</li>
+	</ol>
+	<p>
+	<h3>Create a TestCampaign and execute it</h3>
+	<p>
+	  In the TestSpecification(s) you have chosen, select the TestCases you want to execute.
+	  Right-click your mouse, and choose <b>&quot;Create TestCampaign&quot;</b>.
+	  A TestCampaign will be created and opened in the TestCampaign Editor.
+	  It consists of your selected TestCases, the execution states, the log files documenting the test results,
+	  and the subset of the TestSpecification(s) you have chosen (i.e. the TestCases you have chosen).<br></br>
+	  You can (re-) execute your TestCampaign by clicking the <b>&quot;Execute&quot;</b> button.	
+	</p>
+	<h3>Select TestCases to execute</h3>
+	<p>
+	 In the TestSpecification(s) you have chosen, select the TestCases you want to execute.
+	 Right-click your mouse, and this time choose <b>&quot;RunTest&quot;</b>.<br></br>
+     A TestCampaign will be created and executed directly.
+     Of course you can execute it again by clicking the <b>&quot;Execute&quot;</b> button.
+	</p>
+	
+	<h2>Evaluate Log File(s)</h2>
+	<p>
+	Each execution of a TestCampaign will have an own <a href="../concepts/LogFiles.html">log file</a>.
+	There, the logging of all executed TestCases will be reported.
+	You can see the communication between the card and the reader.<br></br>
+	If you have selected &quot;Add separate logfile for each testcase&quot; in the Logging-Preferences,
+	each executed TestCase will have its own log file.<br></br>
+	You can easily access the log files:
+	<ul>
+	<li>In the TestCampaign editor, you can see a tree view displaying the last execution of the TestCampaign structured in its TestCase and Test Steps.
+    Right-click with your mouse on the root of the tree view which corresponds to the last execution of the TestCampaign,
+    and choose <b>&quot;Show log file&quot;</b>.<br></br>
+    The log file of the last execution of the TestCampaign will open.</li>
+	<li>If you have selected the option for single log files, you can open it by right-clicking on a TestCase and choosing &quot;Show log file&quot;.</li>
+	<li>If you right-click on an ActionStep (i.e. PreCondition, TestStep, or PostCondition),
+	the log file (for the last execution of the TestCampaign or of the single TestCase if selected)
+	will open with the line highlighted in which the log of the ActionStep begins. </li>
+	</ul>
+	</p>
+	<p>
+	If you have a <b>&quot;Failure&quot;</b> reported in the TestCampaign editor, 
+	you can find the error in the TestCase execution by looking for &quot;@FailureID1&quot;, &quot;@FailureID2&quot;, etc.
+    The lines in the  log file where they appear will have a red marker.
+    When you click on it, the line where the failure is reported will be highlighted in the opening log file.<br></br>
+    Usually &quot;@FailureID1&quot; is the essential source of error.
+    For example, if you have no card placed on you reader, it will be the missing &quot;card&quot; reference.
     </p>
-
-	<h2>Execute TestCampaign</h2>
-	<p>
-	You can (re-) execute your TestCampaign by clicking the <b>&quot;Execute&quot;</b> button.
-	</p>
-	
-	<h2>Generate Report</h2>
-	<p>
-	You can generate a report of your execution by clicking the <b>&quot;Generate Report&quot;</b> button.
-    A folder browser will open where you can choose the folder you want the report to be saved in.
-	</p>
-	
-	<h2>View TestCases and TestSteps</h2>
-	<p>
-	In the TestCampaignEditor in the column <b>&quot;TestCase/TestStep&quot;</b> the whole TestCampaign structure will be shown as a tree.
-    You can double-click with your mouse on the single TestCases or TestSteps, and the TestCase will open in an editor. 
-	</p>
-	
-	<h2>View LogFiles</h2>
-	<p>
-	In the TestCampaignEditor in the column <b>&quot;TestCase/TestStep&quot;</b> the whole TestCampaign structure will be shown as a tree.
-    You can open a LogFile to an item if you right-click on it with your mouse, then choose <b>&quot;Show LogFile&quot;</b>.
-    If you select the TestCampaign, the log file for it including all testcases and teststeps will open in an editor.
-    If you have selected &quot;Add separate logfile for each testcase&quot; in the GlobalTester Preferences and select a TestCase, 
-    the log file for this TestCase will open.
-    If you have selected &quot;Add separate logfile for each testcase&quot; in the GlobalTester Preferences and select a TestStep,
-    the log file for this TestCase will open with the line number of the beginning of the TestStep highlighted.
-    </p>
-    
-    <h2>Browse TestCampaign Executions</h2>
     <p>
-    TODO
-    </p>
+    The APDU commands are syntax highlighted, and if you hover over it with your mouse, the APDU command is declared in its parts.
+	You see the information
+	<ul>
+	<li>Which ISO Case command is used</li>
+	<li>CLA byte (indicates plain APDU or Secure Messaging)</li>
+	<li>INS (declares which command the APDU is)</li>
+	<li>P1 and P2 (possible protocols, etc.)</li>
+	<li>LC byte(s)</li>
+	<li>LE byte(s)</li>
+	</ul>
+	</p>
+	<p>
+	The response APDUs are also highlighted and thus can be easily spotted.
+	Status words are extracted and interpreted.<br></br>
+	They can be checked, and be another source for a &quot;Failure&quot; report.
+    </p>´
     
-    <h2>Status of TestCase Execution in TestCampaign Execution</h2>
+    <h2>Generate Report</h2>
     <p>
-    In the TestCampaignEditor in the column <b>&quot;Status&quot;</b>
-    the status of the TestCase execution will be shown. It is either <b>&quot;FAILURE&quot;</b> (red), <b>&quot;WARNING&quot;</b> (yellow), or just green.
+    You can generate a report of your execution by clicking the <b>&quot;Generate Report&quot;</b> button.
+    A folder browser will open where you can choose the folder you want the report to be saved in.<br></br>
+    The test report will comprise
+    <ul>
+    <li><b>Test summary</b>: specifies the tilte and the version of the TestSpecification.</li>
+    <li><b>Test setup</b></li>
+    <li><b>Test statistics</b>: lists the date of the execution, execution time, and the numbers of passed and failed tests.</li>
+    <li><b>Overview of executed test cases</b>: 
+    lists all TestCase IDs, their Description, the time of the execution, and the result (reported as &quot;Passed&quot;, &quot;Failure&quot;, or &quot;Unknown&quot;)</li>
+    <li><b>Test case results</b></li>
+    </ul>
     </p>
 	
+	<h2>Browse TestCampaign Executions</h2>
+	TODO
 </body>
 </html>
