@@ -11,6 +11,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.globaltester.cardconfiguration.CardConfig;
+import org.globaltester.cardconfiguration.CardConfigManager;
 import org.globaltester.core.resources.GtResourceHelper;
 import org.globaltester.core.xml.XMLHelper;
 import org.globaltester.logging.logger.TestLogger;
@@ -36,6 +37,7 @@ public class TestCampaign implements IExecution {
 	
 	private String specName = "";
 	private String specVersion = "unknown";
+	private String cardConfigName = "";
 
 	private String logFileName;
 	
@@ -66,6 +68,10 @@ public class TestCampaign implements IExecution {
 		Element specVersionElem = root.getChild("SPECIFICATIONVERSION");
 		if (specVersionElem != null) {
 			specVersion = specVersionElem.getTextTrim();
+		}
+		Element cardConfigElem = root.getChild("CARDCONFIGURATION");
+		if (cardConfigElem != null) {
+			cardConfigName = cardConfigElem.getTextTrim();
 		}
 
 		// extract TestExecutables
@@ -99,6 +105,9 @@ public class TestCampaign implements IExecution {
 		Element specVersionElem = new Element("SPECIFICATIONVERSION");
 		specVersionElem.addContent(specVersion);
 		root.addContent(specVersionElem);
+		Element cardConfigElem = new Element("CARDCONFIGURATION");
+		cardConfigElem.addContent(cardConfigName);
+		root.addContent(cardConfigElem);
 		
 		
 		// add TestCampaignElements to data to be stored
@@ -208,10 +217,13 @@ public class TestCampaign implements IExecution {
 	}
 	
 	private CardConfig getCardConfig() {
-		// FIXME AMY  handle current CardConfig properly
-		return new CardConfig();
+		return CardConfigManager.get(cardConfigName);
 	}
-
+	
+	public void setCardConfig(CardConfig conf) {
+		cardConfigName = conf.getName();
+	}
+	
 	public String getLogFileName(){
 		return logFileName;
 	}
