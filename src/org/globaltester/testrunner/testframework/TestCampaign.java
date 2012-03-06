@@ -10,6 +10,7 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+import org.globaltester.cardconfiguration.CardConfig;
 import org.globaltester.core.resources.GtResourceHelper;
 import org.globaltester.core.xml.XMLHelper;
 import org.globaltester.logging.logger.TestLogger;
@@ -162,7 +163,7 @@ public class TestCampaign implements IExecution {
 	 * @throws CoreException
 	 */
 	public void executeTests() throws CoreException {
-		//TODO make this method capable of handling a IProgressMonitor
+		//FIXME make this method capable of handling a IProgressMonitor
 
 		// (re)initialize the TestLogger
 		if (TestLogger.isInitialized()) {
@@ -170,13 +171,8 @@ public class TestCampaign implements IExecution {
 		}
 		// initialize test logging for this test session
 		IFolder defaultLoggingDir = project.getDefaultLoggingDir();
-		try {
-			GtResourceHelper.createWithAllParents(defaultLoggingDir);
-		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
+		GtResourceHelper.createWithAllParents(defaultLoggingDir);
+		
 		TestLogger.init(project.getNewResultDir());
 		logFileName = TestLogger.getLogFileName();
 
@@ -184,6 +180,8 @@ public class TestCampaign implements IExecution {
 		Context cx = Context.enter();
 		ScriptRunner sr = new ScriptRunner(cx, project.getIProject()
 				.getLocation().toOSString());
+		sr.init(cx);
+		sr.initCard(cx, "card", getCardConfig());
 
 		// execute all included TestCampaignElements
 		for (Iterator<TestCampaignElement> elemIter = elements.iterator(); elemIter
@@ -209,6 +207,11 @@ public class TestCampaign implements IExecution {
 
 	}
 	
+	private CardConfig getCardConfig() {
+		// FIXME AMY  handle current CardConfig properly
+		return new CardConfig();
+	}
+
 	public String getLogFileName(){
 		return logFileName;
 	}
