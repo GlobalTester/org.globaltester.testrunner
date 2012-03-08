@@ -17,7 +17,6 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -57,6 +56,8 @@ import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.statushandlers.StatusManager;
 import org.eclipse.ui.texteditor.ITextEditor;
+import org.globaltester.cardconfiguration.ui.CardConfigSelectionEditor;
+import org.globaltester.cardconfiguration.ui.ICardSelectionListener;
 import org.globaltester.logging.logger.GTLogger;
 import org.globaltester.logging.preferences.PreferenceConstants;
 import org.globaltester.testrunner.report.ReportPdfGenerator;
@@ -70,12 +71,13 @@ import org.globaltester.testrunner.testframework.TestStepExecution;
 import org.globaltester.testrunner.ui.Activator;
 import org.globaltester.testrunner.ui.UiImages;
 
-public class TestCampaignEditor extends EditorPart{
+public class TestCampaignEditor extends EditorPart implements ICardSelectionListener {
 	public TestCampaignEditor() {
 	}
 
 	public static final String ID = "org.globaltester.testrunner.ui.testcampaigneditor";
 	private TestCampaignEditorInput input;
+	private CardConfigSelectionEditor cardConfigManager;
 	private TreeViewer treeViewer;
 	private boolean dirty = false;
 	private Text txtSpecName;
@@ -85,13 +87,20 @@ public class TestCampaignEditor extends EditorPart{
 	private Action actionShowTestCase;
 	private Action actionShowLog;
 	private Action doubleClickAction;
+	
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
+		//TODO handle progress in monitor
+		
+		//save selectedCardConfiguration
+		cardConfigManager.doSave();
+		
 		//flush all changed values to the input
 		input.getTestCampaign().setSpecName(txtSpecName.getText());
 		input.getTestCampaign().setSpecVersion(txtSpecVersion.getText());
-		//TODO handle progress in monitor
+		input.getTestCampaign().setCardConfig(cardConfigManager.getSelectedConfig());
+		
 		try {
 			input.getGtTestCampaignProject().doSave();
 		} catch (CoreException e) {
@@ -130,7 +139,7 @@ public class TestCampaignEditor extends EditorPart{
 
 	@Override
 	public boolean isDirty() {
-		return dirty;
+		return dirty || cardConfigManager.isDirty();
 	}
 
 	@Override
@@ -146,9 +155,8 @@ public class TestCampaignEditor extends EditorPart{
 
 		// some meta data on top of the editor
 		Composite metaDataComp = new Composite(parent, SWT.NONE);
+		metaDataComp.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		metaDataComp.setLayout(new GridLayout(2, false));
-		metaDataComp.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
-				false, 1, 1));
 
 		Label lblSpecName = new Label(metaDataComp, SWT.NONE);
 		lblSpecName.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER,
@@ -180,11 +188,17 @@ public class TestCampaignEditor extends EditorPart{
 			}
 		});
 		txtSpecVersion.setText(input.getTestCampaign().getSpecVersion());
+		
+		//selection and Editor for CardConfiguration
+		Composite cardConfigComp = new Composite(parent, SWT.NONE);
+		cardConfigComp.setLayout(new GridLayout(1, false));
+		cardConfigComp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+		cardConfigManager = new CardConfigSelectionEditor(cardConfigComp, this);
+		
 
 		// main part of the editor is occupied by tree view
 		Composite treeViewerComp = new Composite(parent, SWT.NONE);
-		treeViewerComp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
-				true, 1, 1));
+		treeViewerComp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		treeViewerComp.setLayout(new FillLayout(SWT.HORIZONTAL));
 		Tree executionStateTree = new Tree(treeViewerComp, SWT.BORDER
 				| SWT.H_SCROLL | SWT.V_SCROLL);
@@ -220,9 +234,8 @@ public class TestCampaignEditor extends EditorPart{
 
 		// below a little button area to control execution and report generation
 		Composite buttonAreaComp = new Composite(parent, SWT.NONE);
+		buttonAreaComp.setLayoutData(new GridData(SWT.RIGHT, SWT.BOTTOM, true, false, 1, 1));
 		buttonAreaComp.setLayout(new FillLayout(SWT.HORIZONTAL));
-		buttonAreaComp.setLayoutData(new GridData(SWT.RIGHT, SWT.BOTTOM, true,
-				false, 1, 1));
 
 		Button btnExecute = new Button(buttonAreaComp, SWT.NONE);
 		btnExecute.setText("Execute");
@@ -481,4 +494,15 @@ public class TestCampaignEditor extends EditorPart{
 		return treeViewer.getControl().getShell();
 	}
 
+	@Override
+	public void cardConfigSelectionChanged() {
+		setDirty(true);
+	}
+
+	@Override
+	public void selectedCardConfigDirty(boolean dirty) {
+		if (dirty) {
+			setDirty(true);
+		}
+	}
 }
