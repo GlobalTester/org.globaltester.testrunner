@@ -396,7 +396,7 @@ public class TestCampaignEditor extends EditorPart implements ICardSelectionList
 		doubleClickAction = new Action() {
 
 			public void run(){
-				int customizedDoubleClick = Platform.getPreferencesService().getInt(org.globaltester.logging.Activator.PLUGIN_ID,
+				int customizedDoubleClick = Platform.getPreferencesService().getInt(org.globaltester.testrunner.Activator.PLUGIN_ID,
 						PreferenceConstants.P_DOUBLECLICKRESULTVIEW, 0, null);
 				if(customizedDoubleClick == 0) {
 					openTestCase();
