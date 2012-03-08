@@ -79,4 +79,13 @@
             natureId="org.globaltester.testrunner.gtTestCampaignNature">
       </image>
    </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="org.globaltester.core.ui.preferences.GlobalTesterPreferencePage"
+            class="org.globaltester.testrunner.ui.preferences.GlobalTesterPreferencePageTestrunner"
+            id="orgorg.globaltester.testrunner.ui.preferences.GlobalTesterPreferencePageTestrunner.globaltester.testrunner.ui.PreferencePage"
+            name="TestRunner">
+      </page>
+   </extension>
 </plugin>
