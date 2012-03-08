@@ -1,8 +1,6 @@
 package org.globaltester.testrunner.ui.preferences;
 
 import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -14,15 +12,14 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
-import org.globaltester.logging.Activator;
-import org.globaltester.logging.preferences.PreferenceConstants;
+import org.globaltester.testrunner.Activator;
+import org.globaltester.testrunner.preferences.PreferenceConstants;
 
 public class GlobalTesterPreferencePageTestrunner extends
 FieldEditorPreferencePage implements IWorkbenchPreferencePage{
 
 	Group testOptionsGroup;
 	Group customizationGroup;
-	BooleanFieldEditor bfeTestSingleTestcaseLogging;
 	
 	
 	public GlobalTesterPreferencePageTestrunner() {
@@ -47,24 +44,11 @@ FieldEditorPreferencePage implements IWorkbenchPreferencePage{
 
 		Composite container = new Composite(this.getFieldEditorParent(),
 				SWT.NONE);
-		GridData containerData = new GridData(GridData.FILL, GridData.FILL,
-				true, false);
-		containerData.horizontalSpan = 1;
 
-		container.setLayoutData(containerData);
 		GridLayout layout = new GridLayout(1, false);
 		container.setLayout(layout);
 		GridData gd = new GridData(GridData.FILL, GridData.FILL, true, false);
 		gd.horizontalSpan = 4;
-		testOptionsGroup = new Group(container, SWT.NONE);
-		testOptionsGroup.setLayoutData(gd);
-		testOptionsGroup.setLayout(new GridLayout(2, false));
-
-		
-		bfeTestSingleTestcaseLogging = new BooleanFieldEditor(
-				PreferenceConstants.P_TEST_LOG_SINGLE_TESTCASES,
-				"Add separate logfile for each testcase", testOptionsGroup);
-		addField(bfeTestSingleTestcaseLogging);
 		
 		customizationGroup = new Group(container, SWT.NONE);
 		customizationGroup.setText("Customization");
@@ -81,7 +65,7 @@ FieldEditorPreferencePage implements IWorkbenchPreferencePage{
 		
 		
 		ComboFieldEditor cfeDoubleClickResultView = new ComboFieldEditor(PreferenceConstants.P_DOUBLECLICKRESULTVIEW, 
-				"Double Click in Result View shows: ", doubleClicks, customizationGroup);
+				"Double Click in TestCampaign editor shows: ", doubleClicks, customizationGroup);
 		
 		addField(cfeDoubleClickResultView);
 
@@ -95,9 +79,6 @@ FieldEditorPreferencePage implements IWorkbenchPreferencePage{
 		return result;
 	}
 	
-	
-	public void propertyChange(org.eclipse.jface.util.PropertyChangeEvent event) {
-		super.propertyChange(event);
-	}
 
+	
 }
