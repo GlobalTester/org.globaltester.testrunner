@@ -59,7 +59,6 @@ import org.eclipse.ui.texteditor.ITextEditor;
 import org.globaltester.cardconfiguration.ui.CardConfigSelectionEditor;
 import org.globaltester.cardconfiguration.ui.ICardSelectionListener;
 import org.globaltester.logging.logger.GTLogger;
-import org.globaltester.logging.preferences.PreferenceConstants;
 import org.globaltester.testrunner.report.ReportPdfGenerator;
 import org.globaltester.testrunner.report.TestReport;
 import org.globaltester.testrunner.testframework.FileTestExecution;
@@ -338,8 +337,13 @@ public class TestCampaignEditor extends EditorPart implements ICardSelectionList
 				IExecution ie = ((IExecution)obj).getParent();
 				fte = (FileTestExecution) ie;
 			}
-			IFile file = fte.getSpecFile();
-			showFile(file, 0);
+			try{
+				IFile file = fte.getSpecFile();
+				showFile(file, 0);
+			}
+			catch(NullPointerException e){
+				//OK for TestCampaigns
+			}
 		}
 	}
 
@@ -397,7 +401,7 @@ public class TestCampaignEditor extends EditorPart implements ICardSelectionList
 
 			public void run(){
 				int customizedDoubleClick = Platform.getPreferencesService().getInt(org.globaltester.testrunner.Activator.PLUGIN_ID,
-						PreferenceConstants.P_DOUBLECLICKRESULTVIEW, 0, null);
+						org.globaltester.testrunner.preferences.PreferenceConstants.P_DOUBLECLICKRESULTVIEW, 0, null);
 				if(customizedDoubleClick == 0) {
 					openTestCase();
 				}
