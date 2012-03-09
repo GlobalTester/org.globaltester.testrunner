@@ -7,10 +7,10 @@ import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
 /**
- * This class stores the properties of the plugin Class used to initialize
- * default preference values
+ * This class stores the properties of the plug-in Class used to initialize
+ * default preference values.
  * 
- * @author amay
+ * @author lvelten
  * 
  */
 

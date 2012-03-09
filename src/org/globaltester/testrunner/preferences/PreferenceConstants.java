@@ -1,9 +1,9 @@
 package org.globaltester.testrunner.preferences;
 /**
- * This class stores the properties of the plugin Constant definitions for
- * plug-in preferences
+ * This class stores the properties of the plug-in Constant definitions for
+ * plug-in preferences.
  * 
- * @author amay
+ * @author lvelten
  * 
  */
 
