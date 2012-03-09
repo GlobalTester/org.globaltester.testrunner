@@ -15,6 +15,12 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.globaltester.testrunner.Activator;
 import org.globaltester.testrunner.preferences.PreferenceConstants;
 
+/**
+ * This class implements the Preference Page for the plug-in testrunner
+ * @author lvelten
+ *
+ */
+
 public class GlobalTesterPreferencePageTestrunner extends
 FieldEditorPreferencePage implements IWorkbenchPreferencePage{
 
