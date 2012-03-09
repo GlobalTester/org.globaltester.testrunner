@@ -65,6 +65,7 @@ import org.globaltester.testrunner.testframework.FileTestExecution;
 import org.globaltester.testrunner.testframework.IExecution;
 import org.globaltester.testrunner.testframework.PostConditionExecution;
 import org.globaltester.testrunner.testframework.PreConditionExecution;
+import org.globaltester.testrunner.testframework.TestCampaign;
 import org.globaltester.testrunner.testframework.TestCampaignElement;
 import org.globaltester.testrunner.testframework.TestStepExecution;
 import org.globaltester.testrunner.ui.Activator;
@@ -329,7 +330,7 @@ public class TestCampaignEditor extends EditorPart implements ICardSelectionList
 		Object obj = ((IStructuredSelection) selection)
 		.getFirstElement();
 		FileTestExecution fte = null;
-		if (obj != null) {
+		if ((obj != null) && (!(obj instanceof TestCampaign))) {
 			if(obj instanceof TestCampaignElement){
 				fte = ((TestCampaignElement) obj).getLastExecution();
 			}
@@ -337,13 +338,9 @@ public class TestCampaignEditor extends EditorPart implements ICardSelectionList
 				IExecution ie = ((IExecution)obj).getParent();
 				fte = (FileTestExecution) ie;
 			}
-			try{
-				IFile file = fte.getSpecFile();
-				showFile(file, 0);
-			}
-			catch(NullPointerException e){
-				//OK for TestCampaigns
-			}
+
+			IFile file = fte.getSpecFile();
+			showFile(file, 0);
 		}
 	}
 
