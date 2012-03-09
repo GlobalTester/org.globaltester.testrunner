@@ -35,6 +35,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
@@ -330,7 +331,14 @@ public class TestCampaignEditor extends EditorPart implements ICardSelectionList
 		Object obj = ((IStructuredSelection) selection)
 		.getFirstElement();
 		FileTestExecution fte = null;
+		
+		if(obj instanceof TestCampaign){
+			MessageBox dialog = new MessageBox(getShell(), SWT.APPLICATION_MODAL);
+			dialog.setMessage("Open TestCase is not available for TestCampaigns");
+			dialog.open();
+		}
 		if ((obj != null) && (!(obj instanceof TestCampaign))) {
+			
 			if(obj instanceof TestCampaignElement){
 				fte = ((TestCampaignElement) obj).getLastExecution();
 			}
@@ -351,15 +359,23 @@ public class TestCampaignEditor extends EditorPart implements ICardSelectionList
 		if (obj != null) {
 			String logFileName = ((IExecution) obj).getLogFileName();
 			int logFileLine = 0;
-				logFileLine = ((IExecution) obj).getLogFileLine();
-			try{
+			logFileLine = ((IExecution) obj).getLogFileLine();
+			if((logFileName == "") || (logFileName == null)){
 				showFile(logFileName, logFileLine);
 			}
-			catch(Exception e){
-				//TODO: open dialog that informs about non-existing logfile
+			else{
+				MessageBox dialog = new MessageBox(getShell(), SWT.APPLICATION_MODAL);
+				dialog.setMessage("There exists no log file for your selection");
+				dialog.open();
 			}
 		}
+		else{
+			MessageBox dialog = new MessageBox(getShell(), SWT.APPLICATION_MODAL);
+			dialog.setMessage("There exists no object for your selection");
+			dialog.open();
+		}
 	}
+	
 
 	/**
 	 * Define actions of this view
