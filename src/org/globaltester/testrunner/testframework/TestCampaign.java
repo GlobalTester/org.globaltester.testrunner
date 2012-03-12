@@ -3,25 +3,20 @@ package org.globaltester.testrunner.testframework;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.List;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.globaltester.cardconfiguration.CardConfig;
 import org.globaltester.cardconfiguration.CardConfigManager;
-import org.globaltester.core.resources.GtResourceHelper;
 import org.globaltester.core.xml.XMLHelper;
-import org.globaltester.logging.logger.TestLogger;
-import org.globaltester.smartcardshell.ScriptRunner;
 import org.globaltester.testrunner.GtTestCampaignProject;
 import org.globaltester.testrunner.testframework.Result.Status;
 import org.globaltester.testspecification.testframework.FileTestExecutable;
 import org.jdom.Document;
 import org.jdom.Element;
-import org.mozilla.javascript.Context;
 
 /**
  * A TestCampaign defines a set of tests together with the history of their
@@ -37,9 +32,8 @@ public class TestCampaign implements IExecution {
 	
 	private String specName = "";
 	private String specVersion = "unknown";
-	private String cardConfigName = "";
-
-	private String logFileName;
+	
+	private TestCampaignExecution lastExecution = null;
 	
 	public TestCampaign(GtTestCampaignProject gtTestCampaignProject) {
 		this.project = gtTestCampaignProject;
@@ -61,19 +55,23 @@ public class TestCampaign implements IExecution {
 				"Root element is not TestCampaign");
 		
 		//extract meta data
-		Element specNameElem = root.getChild("SPECIFICATIONNAME");
+		Element specNameElem = root.getChild("SpecificationName");
 		if (specNameElem != null) {
 			specName = specNameElem.getTextTrim();
 		}
-		Element specVersionElem = root.getChild("SPECIFICATIONVERSION");
+		Element specVersionElem = root.getChild("SpecificationVersion");
 		if (specVersionElem != null) {
 			specVersion = specVersionElem.getTextTrim();
 		}
-		Element cardConfigElem = root.getChild("CARDCONFIGURATION");
-		if (cardConfigElem != null) {
-			cardConfigName = cardConfigElem.getTextTrim();
+		
+		// extract the last Execution if any
+		Element lastExecElem = root.getChild("LastExecution");
+		if (lastExecElem != null) {
+			String fileName = lastExecElem.getTextTrim();
+			IFile lastExecIFile = project.getIProject().getFile(fileName);
+			lastExecution = (TestCampaignExecution) FileTestExecutionFactory.getInstance(lastExecIFile);
 		}
-
+		
 		// extract TestExecutables
 		@SuppressWarnings("unchecked")
 		Iterator<Element> testExecutionIter = root.getChildren(
@@ -87,6 +85,8 @@ public class TestCampaign implements IExecution {
 			}
 
 		}
+		
+		
 
 	}
 
@@ -99,16 +99,20 @@ public class TestCampaign implements IExecution {
 		Element root = new Element("TestCampaign");
 
 		//add meta data
-		Element specNameElem = new Element("SPECIFICATIONNAME");
+		Element specNameElem = new Element("SpecificationName");
 		specNameElem.addContent(specName);
 		root.addContent(specNameElem);
-		Element specVersionElem = new Element("SPECIFICATIONVERSION");
+		Element specVersionElem = new Element("SpecificationVersion");
 		specVersionElem.addContent(specVersion);
 		root.addContent(specVersionElem);
-		Element cardConfigElem = new Element("CARDCONFIGURATION");
-		cardConfigElem.addContent(cardConfigName);
-		root.addContent(cardConfigElem);
 		
+		// add the last execution
+		if (lastExecution != null) {
+			Element lastExecElem = new Element("LastExecution");
+			lastExecElem.addContent(lastExecution.getIFile()
+					.getProjectRelativePath().toString());
+			root.addContent(lastExecElem);
+		}
 		
 		// add TestCampaignElements to data to be stored
 		Iterator<TestCampaignElement> elemIter = elements.iterator();
@@ -171,38 +175,29 @@ public class TestCampaign implements IExecution {
 	 * 
 	 * @throws CoreException
 	 */
-	public void executeTests() throws CoreException {
+	public void executeTests(CardConfig cardConfig) throws CoreException {
 		//FIXME make this method capable of handling a IProgressMonitor
 
-		// (re)initialize the TestLogger
-		if (TestLogger.isInitialized()) {
-			TestLogger.shutdown();
-		}
-		// initialize test logging for this test session
-		IFolder defaultLoggingDir = project.getDefaultLoggingDir();
-		GtResourceHelper.createWithAllParents(defaultLoggingDir);
-		
-		TestLogger.init(project.getNewResultDir());
-		logFileName = TestLogger.getLogFileName();
-
-		// init JS ScriptRunner and Context
-		Context cx = Context.enter();
-		ScriptRunner sr = new ScriptRunner(cx, project.getIProject()
-				.getLocation().toOSString());
-		sr.init(cx);
-		sr.initCard(cx, "card", getCardConfig());
-
-		// execute all included TestCampaignElements
-		for (Iterator<TestCampaignElement> elemIter = elements.iterator(); elemIter
-				.hasNext();) {
-			elemIter.next().execute(sr, cx, false);
+		// create a new TestExecution this TestCampaignElement
+		TestCampaignExecution currentExecution = null;
+		try {
+			currentExecution = FileTestExecutionFactory.createExecution(this);
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
-		// close JS context
-		Context.exit();
+		if (currentExecution != null) {
+			// register this new execution
+			currentExecution.setPreviousExecution(lastExecution);
+			lastExecution = currentExecution;
+			
+			currentExecution.setCardConfig(cardConfig);
+			
+			// execute the TestExecutable
+			currentExecution.execute();
 
-		// shutdown the TestLogger
-		TestLogger.shutdown();
+		}
 
 		// save the new state
 		project.doSave();
@@ -216,16 +211,11 @@ public class TestCampaign implements IExecution {
 
 	}
 	
-	private CardConfig getCardConfig() {
-		return CardConfigManager.get(cardConfigName);
-	}
-	
-	public void setCardConfig(CardConfig conf) {
-		cardConfigName = conf.getName();
-	}
-	
 	public String getLogFileName(){
-		return logFileName;
+		if (lastExecution != null) {
+			return lastExecution.getLogFileName();
+		}
+		return "";
 	}
 
 	public GtTestCampaignProject getProject() {
@@ -239,7 +229,7 @@ public class TestCampaign implements IExecution {
 
 	@Override
 	public Collection<IExecution> getChildren() {
-		LinkedList<IExecution> children = new LinkedList<IExecution>();
+		ArrayList<IExecution> children = new ArrayList<IExecution>();
 
 		// add elements to list of children
 		children.addAll(elements);
@@ -271,38 +261,72 @@ public class TestCampaign implements IExecution {
 
 	@Override
 	public String getComment() {
-		// TODO Auto-generated method stub
-		return null;
+		if (lastExecution!= null) {
+			return lastExecution.getComment();
+		}else {
+			return "";
+		}
 	}
 
 	@Override
 	public String getDescription() {
-		// TODO Auto-generated method stub
-		return null;
+		if (lastExecution!= null) {
+			return lastExecution.getDescription();
+		}else {
+			return "";
+		}
 	}
 
 	@Override
 	public Status getStatus() {
-		// TODO Auto-generated method stub
-		return null;
+		if (lastExecution!= null) {
+			return lastExecution.getStatus();
+		}else {
+			return Status.UNDEFINED;
+		}
 	}
 
 	@Override
 	public double getTime() {
-		// TODO Auto-generated method stub
-		return 0;
+		if (lastExecution!= null) {
+			return lastExecution.getTime();
+		}else {
+			return 0;
+		}
 	}
 
 	@Override
 	public String getId() {
-		// TODO Auto-generated method stub
-		return null;
+		if (lastExecution!= null) {
+			return lastExecution.getId();
+		}else {
+			return "";
+		}
 	}
 
 	@Override
 	public int getLogFileLine() {
-		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	public TestCampaignExecution getLastExecution() {
+		return lastExecution;
+	}
+
+	public CardConfig getCardConfig() {
+		if (lastExecution != null) {
+			return lastExecution.getCardConfig(); 
+		}
+		return CardConfigManager.getDefaultConfig();
+	}
+
+	public List<TestCampaignElement> getTestCampaignElements() {
+		ArrayList<TestCampaignElement> children = new ArrayList<TestCampaignElement>();
+
+		// add elements to list of children
+		children.addAll(elements);
+
+		return children;
 	}
 
 }

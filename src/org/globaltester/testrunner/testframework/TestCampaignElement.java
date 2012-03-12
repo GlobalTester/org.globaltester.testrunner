@@ -19,13 +19,12 @@ public class TestCampaignElement implements IExecution {
 	public static final String XML_ELEM_LAST_EXEC = "LastExecution";
 	private TestCampaign parent;
 	private FileTestExecutable spec;
-	private FileTestExecution lastExecution;
+	private FileTestExecution lastExecution = null;
 
 	public TestCampaignElement(TestCampaign testCampaign,
 			FileTestExecutable origTestSpec) throws CoreException {
 		parent = testCampaign;
 		spec = parent.getProject().persistTestExecutable(origTestSpec);
-		lastExecution = null;
 	}
 
 	public TestCampaignElement(TestCampaign testCampaign, Element xmlElem)
@@ -86,8 +85,9 @@ public class TestCampaignElement implements IExecution {
 	 * @param sr
 	 * @param cx
 	 * @param forceExecution
+	 * @return 
 	 */
-	void execute(ScriptRunner sr, Context cx, boolean forceExecution) {
+	FileTestExecution execute(ScriptRunner sr, Context cx, boolean forceExecution) {
 
 		// create a new TestExecution this TestCampaignElement
 		FileTestExecution testExecution = null;
@@ -115,6 +115,8 @@ public class TestCampaignElement implements IExecution {
 			
 
 		}
+		
+		return testExecution;
 
 	}
 

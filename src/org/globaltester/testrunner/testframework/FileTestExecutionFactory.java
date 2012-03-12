@@ -25,6 +25,8 @@ public class FileTestExecutionFactory {
 
 			if (TestCaseExecution.isFileRepresentation(iFile)) {
 				newExecutionInstance = new TestCaseExecution(iFile);
+			} else if (TestCampaignExecution.isFileRepresentation(iFile)) {
+				newExecutionInstance = new TestCampaignExecution(iFile);
 			}
 
 			if (newExecutionInstance != null) {
@@ -40,11 +42,11 @@ public class FileTestExecutionFactory {
 	public static FileTestExecution createExecution(FileTestExecutable testExecutable,
 			TestCampaign testCampaign) throws CoreException {
 
-		IFile executionFile = testCampaign.getProject().getNewStateIFile(testExecutable);
+		IFile stateFile = testCampaign.getProject().getNewStateIFile(testExecutable);
 
 		if (testExecutable instanceof TestCase) {
 			TestCaseExecution tcExecution = new TestCaseExecution(
-					executionFile, (TestCase) testExecutable);
+					stateFile, (TestCase) testExecutable);
 			return tcExecution;
 		}
 
@@ -56,6 +58,13 @@ public class FileTestExecutionFactory {
 			TestCampaignElement testCampaignElement) throws CoreException {
 		//TODO handle multiple TetCampaignElements referencing the same SPEC 
 		return createExecution(testCampaignElement.getExecutable(), (TestCampaign) testCampaignElement.getParent());
+	}
+
+	public static TestCampaignExecution createExecution(
+			TestCampaign testCampaign) throws CoreException {
+		IFile stateFile = testCampaign.getProject().getNewCampaignStateIFile();
+
+		return new TestCampaignExecution(stateFile, testCampaign);
 	}
 
 }

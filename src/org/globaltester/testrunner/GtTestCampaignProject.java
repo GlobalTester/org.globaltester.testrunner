@@ -23,6 +23,7 @@ import org.globaltester.interfaces.ITreeObservable;
 import org.globaltester.logging.logger.GTLogger;
 import org.globaltester.logging.logger.GtErrorLogger;
 import org.globaltester.testrunner.testframework.TestCampaign;
+import org.globaltester.testrunner.testframework.TestCampaignExecution;
 import org.globaltester.testspecification.testframework.FileTestExecutable;
 import org.globaltester.testspecification.testframework.TestExecutableFactory;
 
@@ -282,6 +283,17 @@ public class GtTestCampaignProject implements ITreeObservable {
 	 */
 	public IFile getNewStateIFile(FileTestExecutable executable) throws CoreException {
 		String execName = GtDateHelper.getCurrentTimeString() + "_" + executable.getName()+".xml";
+
+		return getNewStateIFile(execName);
+	}
+	
+	public IFile getNewCampaignStateIFile() throws CoreException {
+		String execName = GtDateHelper.getCurrentTimeString() + "_" + getName()+".xml";
+
+		return getNewStateIFile(execName);
+	}
+	
+	private IFile getNewStateIFile(String execName) throws CoreException {
 		String copyRelPath = GtTestCampaignProject.STATE_FOLDER
 				+ File.separator + execName;
 
@@ -354,6 +366,10 @@ public class GtTestCampaignProject implements ITreeObservable {
 			
 			currentListener.notifyTreeChange(this, structureChanged, changedElements, properties);
 		}
+	}
+
+	public TestCampaignExecution getLastExecution() {
+		return getTestCampaign().getLastExecution();
 	}
 
 }
