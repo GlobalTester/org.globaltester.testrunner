@@ -157,6 +157,12 @@ public abstract class AbstractTestExecution implements IExecution {
 	public Status getStatus() {
 		return result.getStatus();
 	}
+	
+	/**
+	 * Return the name of the XML root element describing an instance
+	 * @return
+	 */
+	protected abstract String getXmlRootElementName();
 
 	
 }

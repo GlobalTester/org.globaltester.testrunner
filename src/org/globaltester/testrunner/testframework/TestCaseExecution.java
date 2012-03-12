@@ -171,7 +171,7 @@ public class TestCaseExecution extends FileTestExecution {
 		super.extractFromXml(root);
 		initFromTestCase();
 		
-		//FIXME extract the information stored in rootElement about ActionSteps 
+		//FIXME MBK extract the information stored in rootElement about ActionSteps 
 	}
 
 	@Override
@@ -235,21 +235,30 @@ public class TestCaseExecution extends FileTestExecution {
 		for (Iterator<ActionStepExecution> preConIter = preConExecutions
 				.iterator(); preConIter.hasNext();) {
 			ActionStepExecution curStepExec = preConIter.next();
-			curStepExec.dumpToXml(root);
+			
+			Element curStepElem = new Element(curStepExec.getXmlRootElementName());
+			curStepExec.dumpToXml(curStepElem);
+			root.addContent(curStepElem);
 		}
 
 		// iterate over all test steps and dump them
 		for (Iterator<ActionStepExecution> testStepIter = testStepExecutions
 				.iterator(); testStepIter.hasNext();) {
 			ActionStepExecution curStepExec = testStepIter.next();
-			curStepExec.dumpToXml(root);
+			
+			Element curStepElem = new Element(curStepExec.getXmlRootElementName());
+			curStepExec.dumpToXml(curStepElem);
+			root.addContent(curStepElem);
 		}
 
 		// iterate over all postconditions and dump them
 		for (Iterator<ActionStepExecution> postConIter = postConExecutions
 				.iterator(); postConIter.hasNext();) {
 			ActionStepExecution curStepExec = postConIter.next();
-			curStepExec.dumpToXml(root);
+			
+			Element curStepElem = new Element(curStepExec.getXmlRootElementName());
+			curStepExec.dumpToXml(curStepElem);
+			root.addContent(curStepElem);
 		}
 
 	}

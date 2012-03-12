@@ -158,12 +158,5 @@ public abstract class FileTestExecution extends AbstractTestExecution {
 		}
 
 	}
-	
-	/**
-	 * Return the name of the XML root element describing an instance
-	 * @return
-	 */
-	protected abstract String getXmlRootElementName();
-
 
 }

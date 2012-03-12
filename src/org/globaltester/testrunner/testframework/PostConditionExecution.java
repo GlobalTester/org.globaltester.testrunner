@@ -11,4 +11,9 @@ public class PostConditionExecution extends ActionStepExecution {
 		super(actionStep, parent);
 	}
 
+	@Override
+	protected String getXmlRootElementName() {
+		return "PostConditionExecution";
+	}
+
 }
