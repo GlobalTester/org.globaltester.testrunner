@@ -35,6 +35,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
@@ -57,8 +58,9 @@ import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.statushandlers.StatusManager;
 import org.eclipse.ui.texteditor.ITextEditor;
-import org.globaltester.cardconfiguration.ui.CardConfigSelectionEditor;
-import org.globaltester.cardconfiguration.ui.ICardSelectionListener;
+import org.globaltester.cardconfiguration.CardConfig;
+import org.globaltester.cardconfiguration.ui.CardConfigEditorWidget;
+import org.globaltester.cardconfiguration.ui.CardConfigSelector;
 import org.globaltester.logging.logger.GTLogger;
 import org.globaltester.testrunner.report.ReportPdfGenerator;
 import org.globaltester.testrunner.report.TestReport;
@@ -72,17 +74,18 @@ import org.globaltester.testrunner.testframework.TestStepExecution;
 import org.globaltester.testrunner.ui.Activator;
 import org.globaltester.testrunner.ui.UiImages;
 
-public class TestCampaignEditor extends EditorPart implements ICardSelectionListener {
+public class TestCampaignEditor extends EditorPart {
 	public TestCampaignEditor() {
 	}
 
 	public static final String ID = "org.globaltester.testrunner.ui.testcampaigneditor";
 	private TestCampaignEditorInput input;
-	private CardConfigSelectionEditor cardConfigManager;
+	private CardConfigEditorWidget cardConfigViewer;
 	private TreeViewer treeViewer;
 	private boolean dirty = false;
 	private Text txtSpecName;
 	private Text txtSpecVersion;
+	private CardConfigSelector cardConfigSelector;
 
 	// some actions defined for this view
 	private Action actionShowTestCase;
@@ -95,12 +98,11 @@ public class TestCampaignEditor extends EditorPart implements ICardSelectionList
 		//TODO handle progress in monitor
 		
 		//save selectedCardConfiguration
-		cardConfigManager.doSave();
+		cardConfigViewer.doSave();
 		
 		//flush all changed values to the input
 		input.getTestCampaign().setSpecName(txtSpecName.getText());
 		input.getTestCampaign().setSpecVersion(txtSpecVersion.getText());
-		input.getTestCampaign().setCardConfig(cardConfigManager.getSelectedConfig());
 		
 		try {
 			input.getGtTestCampaignProject().doSave();
@@ -140,7 +142,7 @@ public class TestCampaignEditor extends EditorPart implements ICardSelectionList
 
 	@Override
 	public boolean isDirty() {
-		return dirty || cardConfigManager.isDirty();
+		return dirty;
 	}
 
 	@Override
@@ -190,19 +192,23 @@ public class TestCampaignEditor extends EditorPart implements ICardSelectionList
 		});
 		txtSpecVersion.setText(input.getTestCampaign().getSpecVersion());
 		
-		//selection and Editor for CardConfiguration
-		Composite cardConfigComp = new Composite(parent, SWT.NONE);
-		cardConfigComp.setLayout(new GridLayout(1, false));
-		cardConfigComp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-		cardConfigManager = new CardConfigSelectionEditor(cardConfigComp, this);
+		Group grpExecutionresults = new Group(parent, SWT.NONE);
+		grpExecutionresults.setLayout(new GridLayout(1, false));
+		grpExecutionresults.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1));
+		grpExecutionresults.setText("ExecutionResults");
 		
-
-		// main part of the editor is occupied by tree view
-		Composite treeViewerComp = new Composite(parent, SWT.NONE);
-		treeViewerComp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-		treeViewerComp.setLayout(new FillLayout(SWT.HORIZONTAL));
-		Tree executionStateTree = new Tree(treeViewerComp, SWT.BORDER
+		//selection and Editor for CardConfiguration
+		Composite cardConfigComp = new Composite(grpExecutionresults, SWT.NONE);
+		cardConfigComp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1));
+		cardConfigComp.setLayout(new GridLayout(1, false));
+		cardConfigViewer = new CardConfigEditorWidget(cardConfigComp);
+		cardConfigViewer.setEditable(false);
+		cardConfigViewer.setInput(input.getTestCampaign().getCardConfig());
+		
+		Tree executionStateTree = new Tree(grpExecutionresults, SWT.BORDER
 				| SWT.H_SCROLL | SWT.V_SCROLL);
+		executionStateTree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		executionStateTree.setSize(811, 45);
 		executionStateTree.setHeaderVisible(true);
 		treeViewer = new TreeViewer(executionStateTree);
 
@@ -211,14 +217,14 @@ public class TestCampaignEditor extends EditorPart implements ICardSelectionList
 		columnName.setAlignment(SWT.LEFT);
 		columnName.setText("Testcase/TestStep");
 		columnName.setWidth(250);
-		TreeColumn columnLastExec = new TreeColumn(executionStateTree, SWT.RIGHT);
+		TreeColumn columnLastExec = new TreeColumn(executionStateTree,
+				SWT.RIGHT);
 		columnLastExec.setAlignment(SWT.LEFT);
 		columnLastExec.setText("LastExecuted");
 		columnLastExec.setWidth(120);
 		TreeColumn columnStatus = new TreeColumn(executionStateTree, SWT.RIGHT);
 		columnStatus.setAlignment(SWT.LEFT);
 		columnStatus.setText("Status");
-		//TODO make column show only Icon and put text in tooltip
 		columnStatus.setWidth(120);
 		TreeColumn columnComment = new TreeColumn(executionStateTree, SWT.RIGHT);
 		columnComment.setAlignment(SWT.LEFT);
@@ -229,40 +235,16 @@ public class TestCampaignEditor extends EditorPart implements ICardSelectionList
 		treeViewer.setLabelProvider(new TestCampaignTableLabelProvider());
 		treeViewer.setInput(input.getGtTestCampaignProject());
 		treeViewer.expandAll();
+
 		makeActions();
 		hookContextMenu();
 		hookDoubleClickAction();
 
-		// below a little button area to control execution and report generation
-		Composite buttonAreaComp = new Composite(parent, SWT.NONE);
-		buttonAreaComp.setLayoutData(new GridData(SWT.RIGHT, SWT.BOTTOM, true, false, 1, 1));
+		// below a little button area to report generation and maybe later other
+		// tasks
+		Composite buttonAreaComp = new Composite(grpExecutionresults, SWT.NONE);
+		buttonAreaComp.setLayoutData(new GridData(SWT.LEFT, SWT.BOTTOM, true, false, 1, 1));
 		buttonAreaComp.setLayout(new FillLayout(SWT.HORIZONTAL));
-
-		Button btnExecute = new Button(buttonAreaComp, SWT.NONE);
-		btnExecute.setText("Execute");
-		btnExecute.setImage(UiImages.EXECUTE_ICON.getImage());
-		btnExecute.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				Job job = new Job("Test execution") {
-					protected IStatus run(IProgressMonitor monitor) {
-						monitor.beginTask("Execution started...", 10);
-						// execute tests
-						try {
-							input.getTestCampaign().executeTests();
-						} catch (CoreException e) {
-							StatusManager.getManager().handle(e,
-									Activator.PLUGIN_ID);
-						}
-
-						monitor.done();
-						return Status.OK_STATUS;
-					}
-				};
-				job.setUser(true);
-				job.schedule();	
-
-			}
-		});
 
 		Button btnGenerateReport = new Button(buttonAreaComp, SWT.NONE);
 		btnGenerateReport.setText("Generate Report");
@@ -297,6 +279,49 @@ public class TestCampaignEditor extends EditorPart implements ICardSelectionList
 				}
 			}
 
+		});
+
+		// Group Execution control
+		Group grpExecutionControl = new Group(parent, SWT.NONE);
+		grpExecutionControl.setText("Execution control");
+		grpExecutionControl.setLayout(new GridLayout(2, false));
+		grpExecutionControl.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+
+		Composite compCardConfigSelector = new Composite(grpExecutionControl, SWT.NONE);
+		compCardConfigSelector.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+		cardConfigSelector = new CardConfigSelector(compCardConfigSelector);
+		new Label(grpExecutionControl, SWT.NONE);
+		
+		Button btnExecute = new Button(grpExecutionControl, SWT.NONE);
+		btnExecute.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true,
+				false, 1, 1));
+		btnExecute.setSize(52, 25);
+		btnExecute.setText("Execute");
+		btnExecute.setImage(UiImages.EXECUTE_ICON.getImage());
+		btnExecute.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				Job job = new Job("Test execution") {
+
+					protected IStatus run(IProgressMonitor monitor) {
+						monitor.beginTask("Execution started...", 10);
+						// execute tests
+						try {
+							CardConfig cardConfig = cardConfigSelector
+									.getSelectedConfig();
+							input.getTestCampaign().executeTests(cardConfig);
+						} catch (CoreException e) {
+							StatusManager.getManager().handle(e,
+									Activator.PLUGIN_ID);
+						}
+
+						monitor.done();
+						return Status.OK_STATUS;
+					}
+				};
+				job.setUser(true);
+				job.schedule();
+
+			}
 		});
 
 		//unset dirty flag as input is just loaded from file
@@ -336,8 +361,7 @@ public class TestCampaignEditor extends EditorPart implements ICardSelectionList
 			MessageBox dialog = new MessageBox(getShell(), SWT.APPLICATION_MODAL);
 			dialog.setMessage("Open TestCase is not available for TestCampaigns");
 			dialog.open();
-		}
-		if ((obj != null) && (!(obj instanceof TestCampaign))) {
+		} else if (obj != null) {
 			
 			if(obj instanceof TestCampaignElement){
 				fte = ((TestCampaignElement) obj).getLastExecution();
@@ -346,7 +370,6 @@ public class TestCampaignEditor extends EditorPart implements ICardSelectionList
 				IExecution ie = ((IExecution)obj).getParent();
 				fte = (FileTestExecution) ie;
 			}
-
 			IFile file = fte.getSpecFile();
 			showFile(file, 0);
 		}
@@ -356,26 +379,23 @@ public class TestCampaignEditor extends EditorPart implements ICardSelectionList
 		ISelection selection = treeViewer.getSelection();
 		Object obj = ((IStructuredSelection) selection)
 		.getFirstElement();
-		if (obj != null) {
+		if (obj instanceof IExecution) {
 			String logFileName = ((IExecution) obj).getLogFileName();
 			int logFileLine = 0;
 			logFileLine = ((IExecution) obj).getLogFileLine();
 			if((logFileName == "") || (logFileName == null)){
 				showFile(logFileName, logFileLine);
-			}
-			else{
+			} else {
 				MessageBox dialog = new MessageBox(getShell(), SWT.APPLICATION_MODAL);
 				dialog.setMessage("There exists no log file for your selection");
 				dialog.open();
 			}
-		}
-		else{
+		} else {
 			MessageBox dialog = new MessageBox(getShell(), SWT.APPLICATION_MODAL);
-			dialog.setMessage("There exists no object for your selection");
+			dialog.setMessage("Element in selection is not an IExecution");
 			dialog.open();
 		}
 	}
-	
 
 	/**
 	 * Define actions of this view
@@ -502,24 +522,12 @@ public class TestCampaignEditor extends EditorPart implements ICardSelectionList
 		// TODO Auto-generated method stub
 	}
 
-	public void setDirty(boolean dirty) {
+	private void setDirty(boolean dirty) {
 		this.dirty = dirty;
 		firePropertyChange(IEditorPart.PROP_DIRTY);
 	}
 
 	private Shell getShell() {
 		return treeViewer.getControl().getShell();
-	}
-
-	@Override
-	public void cardConfigSelectionChanged() {
-		setDirty(true);
-	}
-
-	@Override
-	public void selectedCardConfigDirty(boolean dirty) {
-		if (dirty) {
-			setDirty(true);
-		}
 	}
 }

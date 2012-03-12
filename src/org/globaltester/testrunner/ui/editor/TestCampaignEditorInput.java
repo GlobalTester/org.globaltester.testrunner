@@ -6,6 +6,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.part.FileEditorInput;
 import org.globaltester.testrunner.GtTestCampaignProject;
 import org.globaltester.testrunner.testframework.TestCampaign;
+import org.globaltester.testrunner.testframework.TestCampaignExecution;
 import org.globaltester.testrunner.ui.UiImages;
 
 public class TestCampaignEditorInput extends FileEditorInput {
@@ -38,6 +39,10 @@ public class TestCampaignEditorInput extends FileEditorInput {
 
 	public TestCampaign getTestCampaign() {
 		return project.getTestCampaign();
+	}
+
+	public TestCampaignExecution getLastExecution() {
+		return project.getLastExecution();
 	}
 
 }

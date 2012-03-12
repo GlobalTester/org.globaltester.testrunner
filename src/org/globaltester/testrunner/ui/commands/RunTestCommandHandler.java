@@ -8,6 +8,8 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.PlatformUI;
+import org.globaltester.cardconfiguration.CardConfig;
+import org.globaltester.cardconfiguration.CardConfigManager;
 import org.globaltester.core.ui.GtUiHelper;
 import org.globaltester.logging.logger.GtErrorLogger;
 import org.globaltester.testrunner.GtTestCampaignProject;
@@ -26,17 +28,20 @@ public class RunTestCommandHandler extends AbstractHandler {
 				.getActiveWorkbenchWindow().getSelectionService().getSelection();
 		
 		//try to create a TestCampaignProject from current selection
-		GtTestCampaignProject campaingProject;
+		GtTestCampaignProject campaingProject = null;
 		try {
 			campaingProject = CreateTestCampaignCommandHandler.createTestCampaignProject(iSel);
 		} catch (CoreException e) {
 			throw new ExecutionException("TestCampaign could not be created from current selection", e);
 		}
 		
-		//execute all unexecuted tests
+		// FIXME AMY CardConfig get the relevant CardConfig to use
+		CardConfig cardConfig = CardConfigManager.getDefaultConfig();
+		
+		//execute the TestCampaign
 		try {
 			if (campaingProject != null) {
-				campaingProject.getTestCampaign().executeTests();
+				campaingProject.getTestCampaign().executeTests(cardConfig);
 			}
 		} catch (CoreException e) {
 			throw new ExecutionException("Test execution failed", e);
