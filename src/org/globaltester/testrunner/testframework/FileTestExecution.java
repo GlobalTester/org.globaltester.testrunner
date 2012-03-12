@@ -31,9 +31,7 @@ public abstract class FileTestExecution extends AbstractTestExecution {
 	IFile iFile;
 	protected IFile specFile;
 	private FileTestExecution previousExecution;
-	
-	
-	
+
 	/**
 	 * Constructor referencing the workspace file which describes the test
 	 * execution. All required data is extracted from the workspace file and its
@@ -67,7 +65,7 @@ public abstract class FileTestExecution extends AbstractTestExecution {
 		// check that root element has correct name
 		String xmlRootName = getXmlRootElementName();
 		Assert.isTrue(root.getName().equals(xmlRootName),
-				"Root element is not "+xmlRootName);
+				"Root element is not " + xmlRootName);
 
 		// extract meta data
 		extractFromXml(root);
@@ -80,25 +78,49 @@ public abstract class FileTestExecution extends AbstractTestExecution {
 
 	@Override
 	void extractFromXml(Element root) {
-		//extract all elements of parent class
+		// extract all elements of parent class
 		super.extractFromXml(root);
-		
-		//extract SpecificationResource
+
+		// extract SpecificationResource
 		String specFileName = root.getChild("SpecificationResource")
 				.getTextTrim();
 		specFile = iFile.getProject().getFile(specFileName);
+
+		try {
+			// extract previous execution
+			Element prevExecFileElement = root.getChild("PreviousExecution");
+			if (prevExecFileElement != null) {
+				String prevExecFileName = root.getChild("PreviousExecution")
+						.getTextTrim();
+
+				previousExecution = FileTestExecutionFactory.getInstance(iFile
+						.getProject().getFile(prevExecFileName));
+
+			}
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	void dumpToXml(Element root) {
-		//dump all elements of parent class
+		// dump all elements of parent class
 		super.dumpToXml(root);
-		
-		//dump ref to specification resource
+
+		// dump ref to specification resource
 		Element specFileElement = new Element("SpecificationResource");
 		specFileElement
 				.addContent(specFile.getProjectRelativePath().toString());
 		root.addContent(specFileElement);
+
+		// dump previous execution
+		if (previousExecution != null) {
+			Element prevExecElement = new Element("PreviousExecution");
+			prevExecElement.addContent(previousExecution.getIFile()
+					.getProjectRelativePath().toString());
+			root.addContent(prevExecElement);
+		}
 	}
 
 	/**
@@ -135,25 +157,24 @@ public abstract class FileTestExecution extends AbstractTestExecution {
 		this.previousExecution = previousExecution;
 	}
 
-	
 	/**
 	 * @return the previousExecution
 	 */
 	public FileTestExecution getPreviousExecution() {
 		return previousExecution;
 	}
-	
+
 	/**
 	 * 
 	 */
 	public void doSave() {
-		//save this element
+		// save this element
 		Element root = new Element(getXmlRootElementName());
 		dumpToXml(root);
 		XMLHelper.saveDoc(iFile, root);
-		
-		//save previous executions recursively
-		if (previousExecution != null){
+
+		// save previous executions recursively
+		if (previousExecution != null) {
 			previousExecution.doSave();
 		}
 
