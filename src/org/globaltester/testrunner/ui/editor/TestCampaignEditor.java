@@ -1,6 +1,7 @@
 package org.globaltester.testrunner.ui.editor;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -29,6 +30,7 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -36,9 +38,9 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
@@ -69,12 +71,12 @@ import org.globaltester.testrunner.testframework.IExecution;
 import org.globaltester.testrunner.testframework.PostConditionExecution;
 import org.globaltester.testrunner.testframework.PreConditionExecution;
 import org.globaltester.testrunner.testframework.TestCampaign;
-import org.globaltester.testrunner.testframework.TestCampaignElement;
+import org.globaltester.testrunner.testframework.TestCampaignExecution;
 import org.globaltester.testrunner.testframework.TestStepExecution;
 import org.globaltester.testrunner.ui.Activator;
 import org.globaltester.testrunner.ui.UiImages;
 
-public class TestCampaignEditor extends EditorPart {
+public class TestCampaignEditor extends EditorPart implements SelectionListener {
 	public TestCampaignEditor() {
 	}
 
@@ -91,6 +93,10 @@ public class TestCampaignEditor extends EditorPart {
 	private Action actionShowTestCase;
 	private Action actionShowLog;
 	private Action doubleClickAction;
+	private Button btnStepBack;
+	private Button btnStepForward;
+	private Button btnNewest;
+	private int indexOfCurrentExecution;
 	
 
 	@Override
@@ -197,6 +203,20 @@ public class TestCampaignEditor extends EditorPart {
 		grpExecutionresults.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1));
 		grpExecutionresults.setText("ExecutionResults");
 		
+		// history
+
+		Composite historyComp = new Composite(grpExecutionresults, SWT.NONE);
+		historyComp.setLayout(new GridLayout(3, false));
+		btnStepBack = new Button(historyComp, SWT.NONE);
+		btnStepBack.setText("Previous execution");
+		btnStepForward = new Button(historyComp, SWT.NONE);
+		btnStepForward.setText("Next execution");
+		btnStepForward.addSelectionListener(this);
+		btnStepBack.addSelectionListener(this);
+		btnNewest = new Button(historyComp, SWT.NONE);
+		btnNewest.setText("Newest execution");
+		btnNewest.addSelectionListener(this);		
+		
 		//selection and Editor for CardConfiguration
 		Composite cardConfigComp = new Composite(grpExecutionresults, SWT.NONE);
 		cardConfigComp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1));
@@ -211,7 +231,7 @@ public class TestCampaignEditor extends EditorPart {
 		executionStateTree.setSize(811, 45);
 		executionStateTree.setHeaderVisible(true);
 		treeViewer = new TreeViewer(executionStateTree);
-
+		
 		TreeColumn columnName = new TreeColumn(executionStateTree, SWT.LEFT);
 		executionStateTree.setLinesVisible(true);
 		columnName.setAlignment(SWT.LEFT);
@@ -233,7 +253,7 @@ public class TestCampaignEditor extends EditorPart {
 
 		treeViewer.setContentProvider(new TestCampaignContentProvider());
 		treeViewer.setLabelProvider(new TestCampaignTableLabelProvider());
-		treeViewer.setInput(input.getGtTestCampaignProject());
+		treeViewer.setInput(input.getCurrentTestCampaignExecution());
 		treeViewer.expandAll();
 
 		makeActions();
@@ -259,7 +279,7 @@ public class TestCampaignEditor extends EditorPart {
 
 				if (baseDirName != null) {
 					// create report
-					TestReport report = new TestReport(input.getTestCampaign(),
+					TestReport report = new TestReport(input.getCurrentTestCampaignExecution(),
 							baseDirName);
 
 					try {
@@ -313,7 +333,6 @@ public class TestCampaignEditor extends EditorPart {
 							StatusManager.getManager().handle(e,
 									Activator.PLUGIN_ID);
 						}
-
 						monitor.done();
 						return Status.OK_STATUS;
 					}
@@ -363,8 +382,8 @@ public class TestCampaignEditor extends EditorPart {
 			dialog.open();
 		} else if (obj != null) {
 			
-			if(obj instanceof TestCampaignElement){
-				fte = ((TestCampaignElement) obj).getLastExecution();
+			if(obj instanceof TestCampaignExecution){
+				fte = ((TestCampaignExecution) obj).getPreviousExecution();
 			}
 			if((obj instanceof TestStepExecution) || (obj instanceof PreConditionExecution) || (obj instanceof PostConditionExecution)){
 				IExecution ie = ((IExecution)obj).getParent();
@@ -529,5 +548,33 @@ public class TestCampaignEditor extends EditorPart {
 
 	private Shell getShell() {
 		return treeViewer.getControl().getShell();
+	}
+
+	@Override
+	public void widgetSelected(SelectionEvent e) {
+		List<TestCampaignExecution> executions = input.getTestCampaign().getCampaignExecutions();
+		if (e.getSource() == btnStepBack){
+			if (indexOfCurrentExecution < executions.size()-1){
+				indexOfCurrentExecution++;
+				treeViewer.setInput(executions.get(indexOfCurrentExecution));
+				treeViewer.expandAll();
+			}
+		} else if (e.getSource() == btnNewest){
+			indexOfCurrentExecution = 0;
+			treeViewer.setInput(executions.get(indexOfCurrentExecution));
+			treeViewer.expandAll();
+		} else if (e.getSource() == btnStepForward){
+			if (indexOfCurrentExecution > 0){
+				indexOfCurrentExecution--;
+				treeViewer.setInput(executions.get(indexOfCurrentExecution));
+				treeViewer.expandAll();
+			}
+		}
+	}
+
+	@Override
+	public void widgetDefaultSelected(SelectionEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -6,15 +6,15 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.widgets.Display;
 import org.globaltester.interfaces.ITreeChangeListener;
 import org.globaltester.interfaces.ITreeObservable;
-import org.globaltester.testrunner.GtTestCampaignProject;
 import org.globaltester.testrunner.testframework.IExecution;
-import org.globaltester.testrunner.testframework.TestCampaign;
+import org.globaltester.testrunner.testframework.TestCampaignExecution;
 
 /**
  * ContentProvider for TreeViewer in TestCampaignEditor. Provides content
@@ -27,12 +27,9 @@ import org.globaltester.testrunner.testframework.TestCampaign;
 public class TestCampaignContentProvider implements ITreeContentProvider,
 		ITreeChangeListener {
 	private Map<ITreeObservable, Set<Viewer>> listenerMapping = new HashMap<ITreeObservable, Set<Viewer>>();
-
+	
 	@Override
 	public Object[] getChildren(Object parentElement) {
-		if (parentElement instanceof GtTestCampaignProject)
-			return new Object[] { ((GtTestCampaignProject) parentElement)
-					.getTestCampaign() };
 		if ((parentElement instanceof IExecution)
 				&& ((IExecution) parentElement).hasChildren())
 			return ((IExecution) parentElement).getChildren().toArray();
@@ -41,15 +38,18 @@ public class TestCampaignContentProvider implements ITreeContentProvider,
 
 	@Override
 	public Object getParent(Object element) {
-		if (element instanceof TestCampaign)
-			return ((TestCampaign) element).getProject();
+		if (element instanceof TestCampaignExecution){
+			try {
+				return ((TestCampaignExecution) element).getGtTestCampaignProject();
+			} catch (CoreException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}}
 		return null;
 	}
 
 	@Override
 	public boolean hasChildren(Object element) {
-		if (element instanceof GtTestCampaignProject)
-			return true;
 		if (element instanceof IExecution)
 			return ((IExecution) element).hasChildren();
 		return false;
