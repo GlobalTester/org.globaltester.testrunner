@@ -45,8 +45,4 @@ public class TestCampaignEditorInput extends FileEditorInput {
 		return project.getTestCampaign().getCurrentExecution();
 	}
 
-	public TestCampaignExecution getLastExecution() {
-		return project.getLastExecution();
-	}
-
 }
