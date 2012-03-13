@@ -48,6 +48,7 @@ public class TestCampaignExecution extends FileTestExecution {
 			//extract test case executions
 			Element fileNames = root.getChild("FileNames");
 			if (fileNames != null) {
+				@SuppressWarnings("unchecked")
 				List<Element> children = fileNames.getChildren("FileName");
 				for (Element child : children) {
 					String filename = child.getTextTrim();
