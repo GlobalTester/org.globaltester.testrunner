@@ -23,8 +23,83 @@ public class TestCampaignExecution extends FileTestExecution {
 	List<IExecution> elementExecutions = new ArrayList<IExecution>();
 	private CardConfig cardConfig;
 
+	private FileTestExecution previousExecution;
+	
+	@Override
+	void extractFromXml(Element root) {
+		// TODO Auto-generated method stub
+		super.extractFromXml(root);
+
+		try {
+			// extract previous execution
+			Element prevExecFileElement = root.getChild("PreviousExecution");
+
+			if (prevExecFileElement != null) {
+				String prevExecFileName = prevExecFileElement.getTextTrim();
+
+				previousExecution = FileTestExecutionFactory.getInstance(iFile
+					.getProject().getFile(prevExecFileName));
+			}
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			//extract test case executions
+			Element fileNames = root.getChild("FileNames");
+			if (fileNames != null) {
+				List<Element> children = fileNames.getChildren("FileName");
+				for (Element child : children) {
+					String filename = child.getTextTrim();
+					FileTestExecution fileTestExecution;
+
+					fileTestExecution = FileTestExecutionFactory
+							.getInstance(iFile.getProject().getFile(filename));
+
+					if (fileTestExecution instanceof TestCaseExecution) {
+						elementExecutions
+								.add(((TestCaseExecution) fileTestExecution));
+					}
+				}
+			}
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	void dumpToXml(Element root) {
+		// TODO Auto-generated method stub
+		super.dumpToXml(root);
+		
+		// dump previous execution
+		if (previousExecution != null) {
+			Element prevExecElement = new Element("PreviousExecution");
+			prevExecElement.addContent(previousExecution.getIFile()
+					.getProjectRelativePath().toString());
+			root.addContent(prevExecElement);
+		}
+		// dump filenames for children
+		
+		Element fileNames = new Element("FileNames");
+		root.addContent(fileNames);
+		
+		Iterator<IExecution> iter = this.getChildren().iterator();
+		while (iter.hasNext()){
+			IExecution current = iter.next();
+			if (current instanceof TestCaseExecution){
+				Element childElement = new Element("FileName");
+				childElement.addContent(((TestCaseExecution) current).getIFile().getProjectRelativePath().toString());
+				fileNames.addContent(childElement);
+			}
+		}
+		
+	}
+
 	public TestCampaignExecution(IFile iFile) throws CoreException {
 		super(iFile);
+		initFromIFile();
 	}
 
 	protected TestCampaignExecution(IFile iFile, TestCampaign testCampaign)
@@ -52,7 +127,7 @@ public class TestCampaignExecution extends FileTestExecution {
 
 	@Override
 	public IExecution getParent() {
-		return getTestCampaign();
+		return null;
 	}
 
 	@Override
@@ -96,7 +171,7 @@ public class TestCampaignExecution extends FileTestExecution {
 		}
 	}
 
-	private TestCampaign getTestCampaign() {
+	public TestCampaign getTestCampaign() {
 		try {
 			return getGtTestCampaignProject().getTestCampaign();
 		} catch (CoreException e) {
@@ -113,7 +188,12 @@ public class TestCampaignExecution extends FileTestExecution {
 	@Override
 	protected void execute(ScriptRunner sr, Context cx, boolean forceExecution,
 			boolean reExecution) {
-		// TODO Auto-generated method stub
+		// execute all included TestCampaignElements
+		List<TestCampaignElement> elements = getTestCampaign().getTestCampaignElements();
+		for (Iterator<TestCampaignElement> elemIter = elements.iterator(); elemIter
+				.hasNext();) {
+			elementExecutions.add(elemIter.next().execute(sr, cx, false));
+		}
 
 	}
 
@@ -138,8 +218,9 @@ public class TestCampaignExecution extends FileTestExecution {
 	public CardConfig getCardConfig() {
 		return cardConfig;
 	}
-
+	
 	public void execute() throws CoreException {
+		
 		// (re)initialize the TestLogger
 		if (TestLogger.isInitialized()) {
 			TestLogger.shutdown();
@@ -149,7 +230,7 @@ public class TestCampaignExecution extends FileTestExecution {
 		IFolder defaultLoggingDir = project.getDefaultLoggingDir();
 		GtResourceHelper.createWithAllParents(defaultLoggingDir);
 		
-		TestLogger.init(project.getNewResultDir());
+		TestLogger.init(project.getNewResultDir());	
 		setLogFileName(TestLogger.getLogFileName());
 
 		// init JS ScriptRunner and Context
@@ -158,26 +239,50 @@ public class TestCampaignExecution extends FileTestExecution {
 				.getLocation().toOSString());
 		sr.init(cx);
 		sr.initCard(cx, "card", cardConfig);
+		
+		execute(sr, cx, false);
 
-		// execute all included TestCampaignElements
-		List<TestCampaignElement> elements = getTestCampaign().getTestCampaignElements();
-		for (Iterator<TestCampaignElement> elemIter = elements.iterator(); elemIter
-				.hasNext();) {
-			elementExecutions.add(elemIter.next().execute(sr, cx, false));
-		}
 
 		// close JS context
 		Context.exit();
 
 		// shutdown the TestLogger
 		TestLogger.shutdown();
+	}
 
+	/**
+	 * @param previousExecution
+	 *            the previousExecution to set
+	 */
+	public void setPreviousExecution(FileTestExecution previousExecution) {
+		this.previousExecution = previousExecution;
+	}
+
+	/**
+	 * @return the previousExecution
+	 */
+	public FileTestExecution getPreviousExecution() {
+		return previousExecution;
+	}
+	@Override
+	public void doSave() {
+		super.doSave();
 		
+		// save element executions
+		for (IExecution element : elementExecutions){
+			if (element instanceof TestCaseExecution){
+				((TestCaseExecution) element).doSave();
+			}
+		}
+		
+		// save previous executions recursively
+		if (previousExecution != null) {
+			previousExecution.doSave();
+		}
 	}
 
 	public void setCardConfig(CardConfig newCardConfig) {
 		this.cardConfig = newCardConfig;
 		
 	}
-
 }

@@ -275,7 +275,7 @@ public class GtTestCampaignProject implements ITreeObservable {
 	}
 
 	public TestCampaignExecution getLastExecution() {
-		return getTestCampaign().getLastExecution();
+		return getTestCampaign().getCurrentExecution();
 	}
 
 }

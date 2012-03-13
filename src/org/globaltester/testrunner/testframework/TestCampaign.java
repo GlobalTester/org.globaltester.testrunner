@@ -1,8 +1,8 @@
 package org.globaltester.testrunner.testframework;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
@@ -13,7 +13,6 @@ import org.globaltester.cardconfiguration.CardConfig;
 import org.globaltester.cardconfiguration.CardConfigManager;
 import org.globaltester.core.xml.XMLHelper;
 import org.globaltester.testrunner.GtTestCampaignProject;
-import org.globaltester.testrunner.testframework.Result.Status;
 import org.globaltester.testspecification.testframework.FileTestExecutable;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -25,7 +24,7 @@ import org.jdom.Element;
  * @author amay
  * 
  */
-public class TestCampaign implements IExecution {
+public class TestCampaign {
 
 	private GtTestCampaignProject project;
 	private ArrayList<TestCampaignElement> elements = new ArrayList<TestCampaignElement>();
@@ -33,10 +32,11 @@ public class TestCampaign implements IExecution {
 	private String specName = "";
 	private String specVersion = "unknown";
 	
-	private TestCampaignExecution lastExecution = null;
+	private LinkedList<TestCampaignExecution> executions = null;
 	
 	public TestCampaign(GtTestCampaignProject gtTestCampaignProject) {
 		this.project = gtTestCampaignProject;
+		this.executions = new LinkedList<TestCampaignExecution>();
 	}
 
 	/**
@@ -63,13 +63,21 @@ public class TestCampaign implements IExecution {
 		if (specVersionElem != null) {
 			specVersion = specVersionElem.getTextTrim();
 		}
-		
-		// extract the last Execution if any
+
+		// extract the last executions, if any
 		Element lastExecElem = root.getChild("LastExecution");
 		if (lastExecElem != null) {
 			String fileName = lastExecElem.getTextTrim();
 			IFile lastExecIFile = project.getIProject().getFile(fileName);
-			lastExecution = (TestCampaignExecution) FileTestExecutionFactory.getInstance(lastExecIFile);
+			TestCampaignExecution lastExecution = (TestCampaignExecution) FileTestExecutionFactory
+					.getInstance(lastExecIFile);
+
+			executions.add(lastExecution);
+			while (lastExecution.getPreviousExecution() != null) {
+				lastExecution = (TestCampaignExecution) lastExecution
+						.getPreviousExecution();
+				executions.add(lastExecution);
+			}
 		}
 		
 		// extract TestExecutables
@@ -106,10 +114,10 @@ public class TestCampaign implements IExecution {
 		specVersionElem.addContent(specVersion);
 		root.addContent(specVersionElem);
 		
-		// add the last execution
-		if (lastExecution != null) {
+		// add the newest execution
+		if (executions.size() > 0){
 			Element lastExecElem = new Element("LastExecution");
-			lastExecElem.addContent(lastExecution.getIFile()
+			lastExecElem.addContent(executions.getFirst().getIFile()
 					.getProjectRelativePath().toString());
 			root.addContent(lastExecElem);
 		}
@@ -140,13 +148,9 @@ public class TestCampaign implements IExecution {
 		// save this
 		storeToIFile(project.getTestCampaignIFile());
 
-		// save the last executions of associated TestCampaignElements
-		for (Iterator<TestCampaignElement> elemIter = elements.iterator(); elemIter
-				.hasNext();) {
-			FileTestExecution curLastExec = elemIter.next().getLastExecution();
-			if (curLastExec != null) {
-				curLastExec.doSave();
-			}
+		// save the newest exection
+		if (executions.size() > 0){
+			executions.getFirst().doSave();
 		}
 	}
 
@@ -187,18 +191,17 @@ public class TestCampaign implements IExecution {
 			e.printStackTrace();
 		}
 
-		if (currentExecution != null) {
+		if (executions.size() > 0) {
 			// register this new execution
-			currentExecution.setPreviousExecution(lastExecution);
-			lastExecution = currentExecution;
-			
-			currentExecution.setCardConfig(cardConfig);
-			
-			// execute the TestExecutable
-			currentExecution.execute();
-
+			currentExecution.setPreviousExecution(executions.getFirst());
 		}
+		executions.addFirst(currentExecution);
 
+		currentExecution.setCardConfig(cardConfig);
+
+		// execute the TestExecutable
+		currentExecution.execute();
+		
 		// save the new state
 		project.doSave();
 
@@ -212,35 +215,14 @@ public class TestCampaign implements IExecution {
 	}
 	
 	public String getLogFileName(){
-		if (lastExecution != null) {
-			return lastExecution.getLogFileName();
+		if (executions.size() > 0) {
+			return executions.getFirst().getLogFileName();
 		}
 		return "";
 	}
 
 	public GtTestCampaignProject getProject() {
 		return project;
-	}
-
-	@Override
-	public boolean hasChildren() {
-		return !elements.isEmpty();
-	}
-
-	@Override
-	public Collection<IExecution> getChildren() {
-		ArrayList<IExecution> children = new ArrayList<IExecution>();
-
-		// add elements to list of children
-		children.addAll(elements);
-
-		return children;
-	}
-
-	@Override
-	public IExecution getParent() {
-		// TestCampaign is a root element
-		return null;
 	}
 
 	public String getSpecName() {
@@ -259,63 +241,9 @@ public class TestCampaign implements IExecution {
 		specVersion = newVersion;
 	}
 
-	@Override
-	public String getComment() {
-		if (lastExecution!= null) {
-			return lastExecution.getComment();
-		}else {
-			return "";
-		}
-	}
-
-	@Override
-	public String getDescription() {
-		if (lastExecution!= null) {
-			return lastExecution.getDescription();
-		}else {
-			return "";
-		}
-	}
-
-	@Override
-	public Status getStatus() {
-		if (lastExecution!= null) {
-			return lastExecution.getStatus();
-		}else {
-			return Status.UNDEFINED;
-		}
-	}
-
-	@Override
-	public double getTime() {
-		if (lastExecution!= null) {
-			return lastExecution.getTime();
-		}else {
-			return 0;
-		}
-	}
-
-	@Override
-	public String getId() {
-		if (lastExecution!= null) {
-			return lastExecution.getId();
-		}else {
-			return "";
-		}
-	}
-
-	@Override
-	public int getLogFileLine() {
-		return 0;
-	}
-
-	public TestCampaignExecution getLastExecution() {
-		return lastExecution;
-	}
-
 	public CardConfig getCardConfig() {
-		if (lastExecution != null) {
-			return lastExecution.getCardConfig(); 
+		if (executions.size() > 0) {
+			return executions.getFirst().getCardConfig(); 
 		}
 		return CardConfigManager.getDefaultConfig();
 	}
@@ -329,4 +257,16 @@ public class TestCampaign implements IExecution {
 		return children;
 	}
 
+	public TestCampaignExecution getCurrentExecution() {
+		if (executions.size() >0){
+			return executions.getFirst();
+		} else {
+			return null;
+		}
+	}
+
+	public List<TestCampaignExecution> getCampaignExecutions(){
+		return executions;
+	}
+	
 }

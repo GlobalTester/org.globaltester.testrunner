@@ -30,7 +30,6 @@ public abstract class FileTestExecution extends AbstractTestExecution {
 
 	IFile iFile;
 	protected IFile specFile;
-	private FileTestExecution previousExecution;
 
 	/**
 	 * Constructor referencing the workspace file which describes the test
@@ -44,10 +43,7 @@ public abstract class FileTestExecution extends AbstractTestExecution {
 	 */
 	public FileTestExecution(IFile iFile) throws CoreException {
 		this.iFile = iFile;
-		if (iFile.exists()) {
-			// read current state from file
-			initFromIFile();
-		} else {
+		if (!iFile.exists()) {
 			// create the IFile
 			createIFile();
 		}
@@ -57,6 +53,7 @@ public abstract class FileTestExecution extends AbstractTestExecution {
 	 * Initialize all values required for this instance form the already set
 	 * variable iFile
 	 */
+	
 	protected void initFromIFile() {
 		Assert.isNotNull(iFile);
 		Document doc = XMLHelper.readDocument(iFile);
@@ -86,21 +83,6 @@ public abstract class FileTestExecution extends AbstractTestExecution {
 				.getTextTrim();
 		specFile = iFile.getProject().getFile(specFileName);
 
-		try {
-			// extract previous execution
-			Element prevExecFileElement = root.getChild("PreviousExecution");
-			if (prevExecFileElement != null) {
-				String prevExecFileName = root.getChild("PreviousExecution")
-						.getTextTrim();
-
-				previousExecution = FileTestExecutionFactory.getInstance(iFile
-						.getProject().getFile(prevExecFileName));
-
-			}
-		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 	@Override
@@ -114,13 +96,7 @@ public abstract class FileTestExecution extends AbstractTestExecution {
 				.addContent(specFile.getProjectRelativePath().toString());
 		root.addContent(specFileElement);
 
-		// dump previous execution
-		if (previousExecution != null) {
-			Element prevExecElement = new Element("PreviousExecution");
-			prevExecElement.addContent(previousExecution.getIFile()
-					.getProjectRelativePath().toString());
-			root.addContent(prevExecElement);
-		}
+
 	}
 
 	/**
@@ -144,24 +120,9 @@ public abstract class FileTestExecution extends AbstractTestExecution {
 	 * @return
 	 * @throws CoreException
 	 */
-	protected GtTestCampaignProject getGtTestCampaignProject()
+	public GtTestCampaignProject getGtTestCampaignProject()
 			throws CoreException {
 		return GtTestCampaignProject.getProjectForResource(iFile);
-	}
-
-	/**
-	 * @param previousExecution
-	 *            the previousExecution to set
-	 */
-	public void setPreviousExecution(FileTestExecution previousExecution) {
-		this.previousExecution = previousExecution;
-	}
-
-	/**
-	 * @return the previousExecution
-	 */
-	public FileTestExecution getPreviousExecution() {
-		return previousExecution;
 	}
 
 	/**
@@ -173,10 +134,6 @@ public abstract class FileTestExecution extends AbstractTestExecution {
 		dumpToXml(root);
 		XMLHelper.saveDoc(iFile, root);
 
-		// save previous executions recursively
-		if (previousExecution != null) {
-			previousExecution.doSave();
-		}
 
 	}
 

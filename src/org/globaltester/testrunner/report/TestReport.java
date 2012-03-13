@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.globaltester.testrunner.testframework.IExecution;
 import org.globaltester.testrunner.testframework.TestCampaign;
+import org.globaltester.testrunner.testframework.TestCampaignExecution;
 
 /**
  * Represents a test report with fixed values stored from the results of a
@@ -41,14 +42,14 @@ public class TestReport {
 	 * Centralizes the extraction of relevant data from the given TestCampaign
 	 * @param campaign
 	 */
-	private TestReport(TestCampaign campaign) {
-
+	private TestReport(TestCampaignExecution campaignExec) {
+		TestCampaign campaign = campaignExec.getTestCampaign();
 		fileName = campaign.getName();
 		
 		specName = campaign.getSpecName();
 		specVersion = campaign.getSpecVersion();
 		
-		Iterator<IExecution> elemIter = campaign.getChildren().iterator();
+		Iterator<IExecution> elemIter = campaignExec.getChildren().iterator();
 		while (elemIter.hasNext()) {
 			IExecution iExecution = (IExecution) elemIter.next();
 			elements.add(new TestReportPart(iExecution));
@@ -84,11 +85,11 @@ public class TestReport {
 	 * Create a new report from the given TestCampaign and prepares to output
 	 * to disk.
 	 * 
-	 * @param testCampaign
+	 * @param testCampaignExecution
 	 * @param baseDirName
 	 */
-	public TestReport(TestCampaign testCampaign, String baseDirName) {
-		this(testCampaign);
+	public TestReport(TestCampaignExecution testCampaignExecution, String baseDirName) {
+		this(testCampaignExecution);
 		this.baseDir = new File(baseDirName);
 	}
 

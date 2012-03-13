@@ -1,35 +1,31 @@
 package org.globaltester.testrunner.testframework;
 
-import java.util.Collection;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.globaltester.logging.logger.TestLogger;
 import org.globaltester.smartcardshell.ScriptRunner;
-import org.globaltester.testrunner.testframework.Result.Status;
 import org.globaltester.testspecification.testframework.FileTestExecutable;
 import org.globaltester.testspecification.testframework.TestExecutableFactory;
 import org.jdom.Element;
 import org.mozilla.javascript.Context;
 
-public class TestCampaignElement implements IExecution {
+public class TestCampaignElement {
 
 	public static final String XML_ELEMENT = "TestCampaignElement";
 	public static final String XML_ELEM_SPEC = "ExecutableSpec";
 	public static final String XML_ELEM_LAST_EXEC = "LastExecution";
-	private TestCampaign parent;
+	private TestCampaign campaign;
 	private FileTestExecutable spec;
-	private FileTestExecution lastExecution = null;
 
 	public TestCampaignElement(TestCampaign testCampaign,
 			FileTestExecutable origTestSpec) throws CoreException {
-		parent = testCampaign;
-		spec = parent.getProject().persistTestExecutable(origTestSpec);
+		campaign = testCampaign;
+		spec = campaign.getProject().persistTestExecutable(origTestSpec);
 	}
 
 	public TestCampaignElement(TestCampaign testCampaign, Element xmlElem)
 			throws CoreException {
-		parent = testCampaign;
+		campaign = testCampaign;
 
 		initFromXmlElement(xmlElem);
 	}
@@ -41,19 +37,19 @@ public class TestCampaignElement implements IExecution {
 		Element specElem = xmlElem.getChild(XML_ELEM_SPEC);
 		if (specElem != null) {
 			String fileName = specElem.getTextTrim();
-			IFile iFile = parent.getProject().getIProject().getFile(fileName);
+			IFile iFile = campaign.getProject().getIProject().getFile(fileName);
 			spec = TestExecutableFactory.getInstance(iFile);
 		} else {
 			throw new RuntimeException("TestCampaignElement can not be ");
 		}
 
 		// extract the last Execution if any
-		Element lastExecElem = xmlElem.getChild(XML_ELEM_LAST_EXEC);
-		if (lastExecElem != null) {
-			String fileName = lastExecElem.getTextTrim();
-			IFile iFile = parent.getProject().getIProject().getFile(fileName);
-			lastExecution = FileTestExecutionFactory.getInstance(iFile);
-		}
+//		Element lastExecElem = xmlElem.getChild(XML_ELEM_LAST_EXEC);
+//		if (lastExecElem != null) {
+//			String fileName = lastExecElem.getTextTrim();
+//			IFile iFile = parent.getProject().getIProject().getFile(fileName);
+//			lastExecution = FileTestExecutionFactory.getInstance(iFile);
+//		}
 
 	}
 
@@ -68,12 +64,12 @@ public class TestCampaignElement implements IExecution {
 		xmlElem.addContent(specElem);
 
 		// create XML element for the last execution and add it to xmlElem
-		if (lastExecution != null) {
-			Element lastExecElem = new Element(XML_ELEM_LAST_EXEC);
-			lastExecElem.addContent(lastExecution.getIFile()
-					.getProjectRelativePath().toString());
-			xmlElem.addContent(lastExecElem);
-		}
+//		if (lastExecution != null) {
+//			Element lastExecElem = new Element(XML_ELEM_LAST_EXEC);
+//			lastExecElem.addContent(lastExecution.getIFile()
+//					.getProjectRelativePath().toString());
+//			xmlElem.addContent(lastExecElem);
+//		}
 
 		return xmlElem;
 	}
@@ -99,9 +95,6 @@ public class TestCampaignElement implements IExecution {
 		}
 
 		if (testExecution != null) {
-			// register this new execution
-			testExecution.setPreviousExecution(lastExecution);
-			lastExecution = testExecution;
 			
 			// dump execution information to logfile
 			TestLogger.initTestExecutable(testExecution.getId());
@@ -112,7 +105,6 @@ public class TestCampaignElement implements IExecution {
 
 			// dump execution information to logfile
 			TestLogger.shutdownTestExecutableLogger();
-			
 
 		}
 		
@@ -120,90 +112,12 @@ public class TestCampaignElement implements IExecution {
 
 	}
 
-	public IExecution getParent() {
-		return parent;
-	}
-
 	public FileTestExecutable getExecutable() {
 		return spec;
 	}
-
-	public FileTestExecution getLastExecution() {
-		return lastExecution;
-	}
-
-	@Override
-	public boolean hasChildren() {
-		return (lastExecution != null) && lastExecution.hasChildren();
-	}
-
-	@Override
-	public Collection<IExecution> getChildren() {
-		if (hasChildren()) {
-			return lastExecution.getChildren();
-		} else {
-			return null;
-		}
-	}
-
-	@Override
-	public String getName() {
-		return spec.getName();
-	}
-
-	@Override
-	public String getComment() {
-		if (lastExecution!= null) {
-			return lastExecution.getComment();
-		}else {
-			return "";
-		}
-	}
-
-	@Override
-	public String getDescription() {
-		if (lastExecution!= null) {
-			return lastExecution.getDescription();
-		}else {
-			return "";
-		}
-	}
-
-	@Override
-	public Status getStatus() {
-		if (lastExecution!= null) {
-			return lastExecution.getStatus();
-		}else {
-			return Status.UNDEFINED;
-		}
-	}
-
-	@Override
-	public double getTime() {
-		if (lastExecution!= null) {
-			return lastExecution.getTime();
-		}else {
-			return 0;
-		}
-	}
-
-	@Override
-	public String getId() {
-		if (lastExecution!= null) {
-			return lastExecution.getId();
-		}else {
-			return "";
-		}
-	}
-
-	@Override
-	public String getLogFileName() {
-		return getLastExecution().getLogFileName();
-	}
-
-	@Override
-	public int getLogFileLine() {
-		return getLastExecution().getLogFileLine();
+	
+	public TestCampaign getTestCampaign(){
+		return campaign;
 	}
 
 }

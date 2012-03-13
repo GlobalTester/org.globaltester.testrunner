@@ -116,13 +116,13 @@ public abstract class AbstractTestExecution implements IExecution {
 	public void execute(ScriptRunner sr, Context cx, boolean forceExecution) {
 		// set the execution time
 		boolean reExecution = lastExecutionStartTime != 0;
-		
-		//set the log file
-		logFileName = TestLogger.getTestCaseLogFileName();
-		logFileLine = TestLogger.getLogFileLine();
 
 		lastExecutionStartTime = new Date().getTime();
 
+		//set the log file
+		logFileName = TestLogger.getTestCaseLogFileName();
+		logFileLine = TestLogger.getLogFileLine();
+		
 		// forward the execution to the implementing class
 		execute(sr, cx, forceExecution, reExecution);
 

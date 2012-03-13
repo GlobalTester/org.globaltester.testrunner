@@ -148,6 +148,7 @@ public class TestCaseExecution extends FileTestExecution {
 			
 			result.addSubResult(curStepExec.getResult());
 		}
+		
 	}
 
 	private TestCase getTestCase() {
