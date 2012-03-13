@@ -30,6 +30,12 @@ public class TestCampaignExecution extends FileTestExecution {
 		// TODO Auto-generated method stub
 		super.extractFromXml(root);
 
+		// extract cardConfig
+		Element cardConfigElement = root.getChild("CardConfiguration");
+		if (cardConfigElement != null) {
+			cardConfig = new CardConfig(cardConfigElement);
+		}
+		
 		try {
 			// extract previous execution
 			Element prevExecFileElement = root.getChild("PreviousExecution");
@@ -74,6 +80,13 @@ public class TestCampaignExecution extends FileTestExecution {
 		// TODO Auto-generated method stub
 		super.dumpToXml(root);
 		
+		// dump cardConfig
+		if (cardConfig != null) {
+			Element cardConfigElement = new Element("CardConfiguration");
+			cardConfig.dumpToXml(cardConfigElement);
+			root.addContent(cardConfigElement);
+		}
+		
 		// dump previous execution
 		if (previousExecution != null) {
 			Element prevExecElement = new Element("PreviousExecution");
@@ -81,8 +94,8 @@ public class TestCampaignExecution extends FileTestExecution {
 					.getProjectRelativePath().toString());
 			root.addContent(prevExecElement);
 		}
-		// dump filenames for children
 		
+		// dump filenames for children
 		Element fileNames = new Element("FileNames");
 		root.addContent(fileNames);
 		
