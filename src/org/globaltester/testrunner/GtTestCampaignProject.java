@@ -6,16 +6,13 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.globaltester.core.GtDateHelper;
 import org.globaltester.core.resources.GtResourceHelper;
 import org.globaltester.interfaces.ITreeChangeListener;
@@ -46,7 +43,7 @@ public class GtTestCampaignProject implements ITreeObservable {
 	private HashSet<ITreeChangeListener> treeChangeListeners = new HashSet<ITreeChangeListener>();
 
 	/**
-	 * Create a GlobalTester TestSpecification Project. This includes creation
+	 * Create a GlobalTester TestCampaign Project. This includes creation
 	 * of the Eclipse project, adding the according nature and creating the
 	 * initial folder structure.
 	 * 
@@ -61,13 +58,13 @@ public class GtTestCampaignProject implements ITreeObservable {
 		Assert.isNotNull(projectName);
 		Assert.isTrue(projectName.trim().length() > 0);
 
-		IProject project = createEmptyProject(projectName, location);
+		IProject project = GtResourceHelper.createEmptyProject(projectName, location);
 		try {
-			addGtTestCampaignNature(project);
+			GtResourceHelper.addNature(project, GtTestCampaignNature.NATURE_ID);
 
 			String[] paths = { STATE_FOLDER, SPEC_FOLDER,
 					RESULT_FOLDER };
-			addToProjectStructure(project, paths);
+			GtResourceHelper.addToProjectStructure(project, paths);
 		} catch (CoreException e) {
 			e.printStackTrace();
 			project = null;
@@ -87,97 +84,6 @@ public class GtTestCampaignProject implements ITreeObservable {
 		}
 
 		return project;
-	}
-
-	/**
-	 * Create an empty project
-	 * 
-	 * @param projectName
-	 *            name of the project to be created
-	 * @param location
-	 *            location where the project shall be created. If empty the
-	 *            default workspace location will be used.
-	 * 
-	 */
-	// TODO refactor this to GtResourceHelper
-	private static IProject createEmptyProject(String projectName, URI location) {
-		IProject newProject = ResourcesPlugin.getWorkspace().getRoot()
-				.getProject(projectName);
-
-		if (!newProject.exists()) {
-			URI projectLocation = location;
-			IProjectDescription desc = newProject.getWorkspace()
-					.newProjectDescription(newProject.getName());
-			if (location != null
-					&& ResourcesPlugin.getWorkspace().getRoot()
-							.getLocationURI().equals(location)) {
-				projectLocation = null;
-			}
-
-			desc.setLocationURI(projectLocation);
-			try {
-				newProject.create(desc, null);
-				if (!newProject.isOpen()) {
-					newProject.open(null);
-				}
-			} catch (CoreException e) {
-				e.printStackTrace();
-			}
-		}
-
-		return newProject;
-	}
-
-	// TODO refactor this to GtResourceHelper
-	private static void createFolder(IFolder folder) throws CoreException {
-		IContainer parent = folder.getParent();
-		if (parent instanceof IFolder) {
-			createFolder((IFolder) parent);
-		}
-		if (!folder.exists()) {
-			folder.create(false, true, null);
-		}
-	}
-
-	/**
-	 * Create a folder structure from given paths.
-	 * 
-	 * @param project
-	 *            project to create the folders inside
-	 * @param paths
-	 *            array of relative paths of the folders to be created
-	 * @throws CoreException
-	 */
-	// TODO refactor this to GtResourceHelper
-	private static void addToProjectStructure(IProject project, String[] paths)
-			throws CoreException {
-		for (String currentPath : paths) {
-			IFolder currentFolder = project.getFolder(currentPath);
-			createFolder(currentFolder);
-		}
-	}
-
-	/**
-	 * Add the GtTestCampaignNature to the given project.
-	 * 
-	 * @param project
-	 *            project to add the nature to
-	 * @throws CoreException
-	 */
-	// TODO refactor this to GtResourceHelper
-	private static void addGtTestCampaignNature(IProject project)
-			throws CoreException {
-		if (!project.hasNature(GtTestCampaignNature.NATURE_ID)) {
-			IProjectDescription description = project.getDescription();
-			String[] prevNatures = description.getNatureIds();
-			String[] newNatures = new String[prevNatures.length + 1];
-			System.arraycopy(prevNatures, 0, newNatures, 0, prevNatures.length);
-			newNatures[prevNatures.length] = GtTestCampaignNature.NATURE_ID;
-			description.setNatureIds(newNatures);
-
-			IProgressMonitor monitor = null;
-			project.setDescription(description, monitor);
-		}
 	}
 
 	public static GtTestCampaignProject getProjectForResource(
