@@ -556,20 +556,19 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener 
 		if (e.getSource() == btnStepBack){
 			if (indexOfCurrentExecution < executions.size()-1){
 				indexOfCurrentExecution++;
-				treeViewer.setInput(executions.get(indexOfCurrentExecution));
-				treeViewer.expandAll();
 			}
 		} else if (e.getSource() == btnNewest){
 			indexOfCurrentExecution = 0;
-			treeViewer.setInput(executions.get(indexOfCurrentExecution));
-			treeViewer.expandAll();
 		} else if (e.getSource() == btnStepForward){
 			if (indexOfCurrentExecution > 0){
 				indexOfCurrentExecution--;
-				treeViewer.setInput(executions.get(indexOfCurrentExecution));
-				treeViewer.expandAll();
 			}
 		}
+
+		TestCampaignExecution executionToDisplay = executions.get(indexOfCurrentExecution);
+		cardConfigViewer.setInput(executionToDisplay.getCardConfig());
+		treeViewer.setInput(executionToDisplay);
+		treeViewer.expandAll();
 	}
 
 	@Override
