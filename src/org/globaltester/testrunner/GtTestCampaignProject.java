@@ -20,7 +20,6 @@ import org.globaltester.interfaces.ITreeObservable;
 import org.globaltester.logging.logger.GTLogger;
 import org.globaltester.logging.logger.GtErrorLogger;
 import org.globaltester.testrunner.testframework.TestCampaign;
-import org.globaltester.testrunner.testframework.TestCampaignExecution;
 import org.globaltester.testspecification.testframework.FileTestExecutable;
 import org.globaltester.testspecification.testframework.TestExecutableFactory;
 
@@ -272,10 +271,6 @@ public class GtTestCampaignProject implements ITreeObservable {
 			
 			currentListener.notifyTreeChange(this, structureChanged, changedElements, properties);
 		}
-	}
-
-	public TestCampaignExecution getLastExecution() {
-		return getTestCampaign().getCurrentExecution();
 	}
 
 }
