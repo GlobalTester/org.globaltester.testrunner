@@ -19,7 +19,6 @@ import org.jdom.Element;
 import org.mozilla.javascript.Context;
 
 public class TestCampaignExecution extends FileTestExecution {
-	// FIXME AMY CardConfig implement TestCampaignExecution
 	List<IExecution> elementExecutions = new ArrayList<IExecution>();
 	private CardConfig cardConfig;
 
@@ -27,7 +26,6 @@ public class TestCampaignExecution extends FileTestExecution {
 	
 	@Override
 	void extractFromXml(Element root) {
-		// TODO Auto-generated method stub
 		super.extractFromXml(root);
 
 		// extract cardConfig
@@ -77,7 +75,6 @@ public class TestCampaignExecution extends FileTestExecution {
 
 	@Override
 	void dumpToXml(Element root) {
-		// TODO Auto-generated method stub
 		super.dumpToXml(root);
 		
 		// dump cardConfig
