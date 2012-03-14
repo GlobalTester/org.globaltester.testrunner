@@ -197,7 +197,7 @@ public class TestCampaign {
 		}
 		executions.addFirst(currentExecution);
 
-		currentExecution.setCardConfig(cardConfig);
+		currentExecution.setCardConfig(cardConfig.getCloneForExecution());
 
 		// execute the TestExecutable
 		currentExecution.execute();
