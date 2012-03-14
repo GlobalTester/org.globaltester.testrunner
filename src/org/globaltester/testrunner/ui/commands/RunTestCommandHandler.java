@@ -7,9 +7,11 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.window.Window;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.handlers.HandlerUtil;
 import org.globaltester.cardconfiguration.CardConfig;
-import org.globaltester.cardconfiguration.CardConfigManager;
+import org.globaltester.cardconfiguration.ui.CardConfigSelectorDialog;
 import org.globaltester.core.ui.GtUiHelper;
 import org.globaltester.logging.logger.GtErrorLogger;
 import org.globaltester.testrunner.GtTestCampaignProject;
@@ -35,8 +37,16 @@ public class RunTestCommandHandler extends AbstractHandler {
 			throw new ExecutionException("TestCampaign could not be created from current selection", e);
 		}
 		
-		// FIXME AMY CardConfig get the relevant CardConfig to use
-		CardConfig cardConfig = CardConfigManager.getDefaultConfig();
+		CardConfig cardConfig = getCardConfigFromSelection(iSel);
+		if (cardConfig == null) {
+			//FIXME AMY CardConfig get the relevant CardConfig to use
+			CardConfigSelectorDialog dialog = new CardConfigSelectorDialog(HandlerUtil.getActiveWorkbenchWindow(event).getShell());
+			if (dialog.open() != Window.OK) {
+				return null;
+			}
+			cardConfig = dialog.getSelectedCardConfig();
+		}
+		
 		
 		//execute the TestCampaign
 		try {
@@ -65,6 +75,11 @@ public class RunTestCommandHandler extends AbstractHandler {
 			// manually, so do not open annoying dialog
 		}
 
+		return null;
+	}
+
+	private CardConfig getCardConfigFromSelection(ISelection iSel) {
+		// FIXME AMY get cardConfig from current selection
 		return null;
 	}
 

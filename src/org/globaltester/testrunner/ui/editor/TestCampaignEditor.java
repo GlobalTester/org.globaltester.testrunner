@@ -222,6 +222,7 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener 
 		cardConfigComp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1));
 		cardConfigComp.setLayout(new GridLayout(1, false));
 		cardConfigViewer = new CardConfigEditorWidget(cardConfigComp);
+		cardConfigViewer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 		cardConfigViewer.setEditable(false);
 		cardConfigViewer.setInput(input.getTestCampaign().getCardConfig());
 		
@@ -307,11 +308,10 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener 
 		grpExecutionControl.setLayout(new GridLayout(2, false));
 		grpExecutionControl.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 
-		Composite compCardConfigSelector = new Composite(grpExecutionControl, SWT.NONE);
-		compCardConfigSelector.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-		cardConfigSelector = new CardConfigSelector(compCardConfigSelector);
-		new Label(grpExecutionControl, SWT.NONE);
+		cardConfigSelector = new CardConfigSelector(grpExecutionControl);
+		cardConfigSelector.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 		
+		new Label(grpExecutionControl, SWT.NONE);
 		Button btnExecute = new Button(grpExecutionControl, SWT.NONE);
 		btnExecute.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true,
 				false, 1, 1));
