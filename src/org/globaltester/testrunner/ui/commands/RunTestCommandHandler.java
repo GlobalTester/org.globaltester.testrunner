@@ -1,8 +1,11 @@
 package org.globaltester.testrunner.ui.commands;
 
+import java.util.LinkedList;
+
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -11,6 +14,8 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.globaltester.cardconfiguration.CardConfig;
+import org.globaltester.cardconfiguration.CardConfigManager;
+import org.globaltester.cardconfiguration.GtCardConfigNature;
 import org.globaltester.cardconfiguration.ui.CardConfigSelectorDialog;
 import org.globaltester.core.ui.GtUiHelper;
 import org.globaltester.logging.logger.GtErrorLogger;
@@ -37,9 +42,8 @@ public class RunTestCommandHandler extends AbstractHandler {
 			throw new ExecutionException("TestCampaign could not be created from current selection", e);
 		}
 		
-		CardConfig cardConfig = getCardConfigFromSelection(iSel);
+		CardConfig cardConfig = getFirstCardConfigFromSelection(iSel);
 		if (cardConfig == null) {
-			//FIXME AMY CardConfig get the relevant CardConfig to use
 			CardConfigSelectorDialog dialog = new CardConfigSelectorDialog(HandlerUtil.getActiveWorkbenchWindow(event).getShell());
 			if (dialog.open() != Window.OK) {
 				return null;
@@ -78,8 +82,18 @@ public class RunTestCommandHandler extends AbstractHandler {
 		return null;
 	}
 
-	private CardConfig getCardConfigFromSelection(ISelection iSel) {
-		// FIXME AMY get cardConfig from current selection
+	private CardConfig getFirstCardConfigFromSelection(ISelection iSel) {
+		LinkedList<IResource> iResources = GtUiHelper.getSelectedIResource(iSel, IResource.class);
+		for (IResource iFile : iResources) {
+			IProject iProject = iFile.getProject();
+			try {
+				if (iProject.hasNature(GtCardConfigNature.NATURE_ID)){
+					return CardConfigManager.get(iProject.getName());
+				}
+			} catch (CoreException e) {
+				GtErrorLogger.log(Activator.PLUGIN_ID, e);
+			}
+		}
 		return null;
 	}
 

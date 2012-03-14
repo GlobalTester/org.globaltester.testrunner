@@ -13,7 +13,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.PlatformUI;
 import org.globaltester.core.GtDateHelper;
 import org.globaltester.core.ui.GtUiHelper;
@@ -70,20 +69,7 @@ public class CreateTestCampaignCommandHandler extends AbstractHandler {
 			String projectName, ISelection iSel) throws ExecutionException,
 			CoreException {
 
-		LinkedList<IFile> selectedIFiles = new LinkedList<IFile>();
-
-		// check type of selection
-		if (iSel instanceof IStructuredSelection) {
-			Iterator<?> selectionIter = ((IStructuredSelection) iSel)
-					.iterator();
-			while (selectionIter.hasNext()) {
-				Object curElem = (Object) selectionIter.next();
-				if (curElem instanceof IFile) {
-					selectedIFiles.add((IFile) curElem);
-				}
-			}
-		}
-
+		LinkedList<IFile> selectedIFiles = GtUiHelper.getSelectedIResource(iSel, IFile.class);
 		if (selectedIFiles.isEmpty()) {
 			throw new ExecutionException(
 					"No TestCampaignProject could be created because selection does not contain an IFile");
