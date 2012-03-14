@@ -308,7 +308,7 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener 
 		grpExecutionControl.setLayout(new GridLayout(2, false));
 		grpExecutionControl.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 
-		cardConfigSelector = new CardConfigSelector(grpExecutionControl);
+		cardConfigSelector = new CardConfigSelector(grpExecutionControl, CardConfigSelector.ALL_BUTTONS);
 		cardConfigSelector.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 		
 		new Label(grpExecutionControl, SWT.NONE);
