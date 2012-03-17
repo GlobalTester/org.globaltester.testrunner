@@ -403,11 +403,11 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener 
 			int logFileLine = 0;
 			logFileLine = ((IExecution) obj).getLogFileLine();
 			if((logFileName == "") || (logFileName == null)){
-				showFile(logFileName, logFileLine);
-			} else {
 				MessageBox dialog = new MessageBox(getShell(), SWT.APPLICATION_MODAL);
 				dialog.setMessage("There exists no log file for your selection");
-				dialog.open();
+				dialog.open();	
+			} else {
+				showFile(logFileName, logFileLine);
 			}
 		} else {
 			MessageBox dialog = new MessageBox(getShell(), SWT.APPLICATION_MODAL);
