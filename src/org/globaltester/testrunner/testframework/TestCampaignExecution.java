@@ -22,7 +22,7 @@ public class TestCampaignExecution extends FileTestExecution {
 	List<IExecution> elementExecutions = new ArrayList<IExecution>();
 	private CardConfig cardConfig;
 
-	private FileTestExecution previousExecution;
+	private TestCampaignExecution previousExecution;
 	
 	@Override
 	void extractFromXml(Element root) {
@@ -40,9 +40,11 @@ public class TestCampaignExecution extends FileTestExecution {
 
 			if (prevExecFileElement != null) {
 				String prevExecFileName = prevExecFileElement.getTextTrim();
-
-				previousExecution = FileTestExecutionFactory.getInstance(iFile
-					.getProject().getFile(prevExecFileName));
+				FileTestExecution execution = FileTestExecutionFactory.getInstance(iFile
+						.getProject().getFile(prevExecFileName));
+				if (execution instanceof TestCampaignExecution){
+					previousExecution = (TestCampaignExecution) execution;
+				}
 			}
 		} catch (CoreException e) {
 			// TODO Auto-generated catch block
@@ -265,14 +267,14 @@ public class TestCampaignExecution extends FileTestExecution {
 	 * @param previousExecution
 	 *            the previousExecution to set
 	 */
-	public void setPreviousExecution(FileTestExecution previousExecution) {
+	public void setPreviousExecution(TestCampaignExecution previousExecution) {
 		this.previousExecution = previousExecution;
 	}
 
 	/**
 	 * @return the previousExecution
 	 */
-	public FileTestExecution getPreviousExecution() {
+	public TestCampaignExecution getPreviousExecution() {
 		return previousExecution;
 	}
 	@Override

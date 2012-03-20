@@ -43,14 +43,6 @@ public class TestCampaignElement {
 			throw new RuntimeException("TestCampaignElement can not be ");
 		}
 
-		// extract the last Execution if any
-//		Element lastExecElem = xmlElem.getChild(XML_ELEM_LAST_EXEC);
-//		if (lastExecElem != null) {
-//			String fileName = lastExecElem.getTextTrim();
-//			IFile iFile = parent.getProject().getIProject().getFile(fileName);
-//			lastExecution = FileTestExecutionFactory.getInstance(iFile);
-//		}
-
 	}
 
 	public Element getXmlRepresentation() {
@@ -62,14 +54,6 @@ public class TestCampaignElement {
 		Element specElem = new Element(XML_ELEM_SPEC);
 		specElem.addContent(spec.getIFile().getProjectRelativePath().toString());
 		xmlElem.addContent(specElem);
-
-		// create XML element for the last execution and add it to xmlElem
-//		if (lastExecution != null) {
-//			Element lastExecElem = new Element(XML_ELEM_LAST_EXEC);
-//			lastExecElem.addContent(lastExecution.getIFile()
-//					.getProjectRelativePath().toString());
-//			xmlElem.addContent(lastExecElem);
-//		}
 
 		return xmlElem;
 	}

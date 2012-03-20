@@ -74,7 +74,7 @@ public class TestCampaign {
 
 			executions.add(lastExecution);
 			while (lastExecution.getPreviousExecution() != null) {
-				lastExecution = (TestCampaignExecution) lastExecution
+				lastExecution = lastExecution
 						.getPreviousExecution();
 				executions.add(lastExecution);
 			}
@@ -148,7 +148,7 @@ public class TestCampaign {
 		// save this
 		storeToIFile(project.getTestCampaignIFile());
 
-		// save the newest exection
+		// save the newest exection, which causes all executions to be saved recursively
 		if (executions.size() > 0){
 			executions.getFirst().doSave();
 		}
