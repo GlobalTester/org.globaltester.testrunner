@@ -60,7 +60,7 @@ public class TestCampaignEditorInput extends FileEditorInput {
 	 * 
 	 */
 	public void stepForward(){
-		if (indexOfCurrentExecution > 0){
+		if (isStepForwardsPossible()){
 			indexOfCurrentExecution--;
 		}
 	}
@@ -71,23 +71,17 @@ public class TestCampaignEditorInput extends FileEditorInput {
 	 * 
 	 */
 	public void stepBackward(){
-		if (indexOfCurrentExecution < executions.size()-1){
+		if (isStepBackwardsPossible()){
 			indexOfCurrentExecution++;
 		}
 	}
 
-	public boolean stepForwardsPossible(){
-		if (indexOfCurrentExecution == 0){
-			return false;
-		}
-		return true;
+	public boolean isStepForwardsPossible(){
+		return indexOfCurrentExecution > 0;
 	}
 	
-	public boolean stepBackwardsPossible(){
-		if (indexOfCurrentExecution == executions.size()-1){
-			return false;
-		}
-		return true;
+	public boolean isStepBackwardsPossible(){
+		return indexOfCurrentExecution < executions.size() -1;
 	}
 	
 	public TestCampaignExecution getCurrentlyDisplayedTestCampaignExecution(){

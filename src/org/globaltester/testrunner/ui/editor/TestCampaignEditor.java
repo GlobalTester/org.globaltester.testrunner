@@ -143,7 +143,7 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 		setInput(input);
 		setDirty(false);
 		setPartName(this.input.getName());
-		this.input.getGtTestCampaignProject().getIProject().getWorkspace().addResourceChangeListener(this);
+		ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
 	}
 
 	@Override
@@ -562,14 +562,9 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 				treeViewer.setInput(toDisplay);
 				treeViewer.expandAll();
 				// set buttons according to displayed TestCampaignExecution
-				btnStepBack.setEnabled(input.stepBackwardsPossible());
-				if (input.stepForwardsPossible()) {
-					btnStepForward.setEnabled(true);
-					btnNewest.setEnabled(true);
-				} else {
-					btnNewest.setEnabled(false);
-					btnStepForward.setEnabled(false);
-				}
+				btnStepBack.setEnabled(input.isStepBackwardsPossible());
+				btnStepForward.setEnabled(input.isStepForwardsPossible());
+				btnNewest.setEnabled(input.isStepForwardsPossible());				
 			}
 		});		
 		
