@@ -11,7 +11,6 @@ import org.globaltester.testrunner.testframework.FileTestExecution;
 import org.globaltester.testrunner.testframework.IExecution;
 import org.globaltester.testrunner.testframework.TestCampaign;
 import org.globaltester.testrunner.testframework.TestCampaignElement;
-import org.globaltester.testrunner.testframework.TestCampaignExecution;
 import org.globaltester.testrunner.testframework.TestCaseExecution;
 import org.globaltester.testrunner.testframework.ActionStepExecution;
 import org.globaltester.testrunner.ui.NonUiImages;

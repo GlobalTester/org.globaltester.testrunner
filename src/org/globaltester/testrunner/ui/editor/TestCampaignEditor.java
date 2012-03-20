@@ -3,6 +3,9 @@ package org.globaltester.testrunner.ui.editor;
 import java.io.IOException;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -76,9 +79,7 @@ import org.globaltester.testrunner.testframework.TestStepExecution;
 import org.globaltester.testrunner.ui.Activator;
 import org.globaltester.testrunner.ui.UiImages;
 
-public class TestCampaignEditor extends EditorPart implements SelectionListener {
-	public TestCampaignEditor() {
-	}
+public class TestCampaignEditor extends EditorPart implements SelectionListener, IResourceChangeListener {
 
 	public static final String ID = "org.globaltester.testrunner.ui.testcampaigneditor";
 	private TestCampaignEditorInput input;
@@ -141,8 +142,8 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener 
 		setSite(site);
 		setInput(input);
 		setDirty(false);
-
 		setPartName(this.input.getName());
+		this.input.getGtTestCampaignProject().getIProject().getWorkspace().addResourceChangeListener(this);
 	}
 
 	@Override
@@ -548,40 +549,63 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener 
 		return treeViewer.getControl().getShell();
 	}
 
+	/**
+	 * Updates the editor with the current displayed TestCampaignExecution using the display thread.
+	 */
+	private void updateEditor() {
+		PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+			
+			@Override
+			public void run() {
+				TestCampaignExecution toDisplay = input.getCurrentlyDisplayedTestCampaignExecution();
+				cardConfigViewer.setInput(toDisplay.getCardConfig());
+				treeViewer.setInput(toDisplay);
+				treeViewer.expandAll();
+				// set buttons according to displayed TestCampaignExecution
+				btnStepBack.setEnabled(input.stepBackwardsPossible());
+				if (input.stepForwardsPossible()) {
+					btnStepForward.setEnabled(true);
+					btnNewest.setEnabled(true);
+				} else {
+					btnNewest.setEnabled(false);
+					btnStepForward.setEnabled(false);
+				}
+			}
+		});		
+		
+	}
+	
 	@Override
 	public void widgetSelected(SelectionEvent e) {
-		TestCampaignExecution toDisplay = null;
-		if (e.getSource() == btnNewest) {
-			toDisplay = input.getCurrentTestCampaignExecution();
-			btnNewest.setEnabled(false);
-			btnStepBack.setEnabled(true);
-			btnStepForward.setEnabled(false);
-		} else {
-			if (e.getSource() == btnStepBack) {
-				if (!input.stepBackward()){
-					btnStepBack.setEnabled(false);
-				}
-				btnStepForward.setEnabled(true);
-				btnNewest.setEnabled(true);
-			} else if (e.getSource() == btnStepForward) {
-				if (!input.stepForward()){
-					btnStepForward.setEnabled(false);
-					btnNewest.setEnabled(false);
-				} else {
-					btnNewest.setEnabled(true);
-				}
-				btnStepBack.setEnabled(true);
-			}
-			toDisplay = input.getCurrentlyDisplayedTestCampaignExecution();
+		if (e.getSource() == btnNewest){
+			input.stepToNewest();
+		} else if (e.getSource() == btnStepBack){
+			input.stepBackward();
+		} else if (e.getSource() == btnStepForward){
+			input.stepForward();
 		}
-		cardConfigViewer.setInput(toDisplay.getCardConfig());
-		treeViewer.setInput(toDisplay);
-		treeViewer.expandAll();
+		updateEditor();
 	}
 
 	@Override
 	public void widgetDefaultSelected(SelectionEvent e) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void resourceChanged(IResourceChangeEvent event) {
+		IResourceDelta rootDelta = event.getDelta();
+		if (rootDelta != null) {
+			// find delta for the current TestCampaignExecution
+			IResourceDelta campaignExecutionDelta = rootDelta
+					.findMember(input.getCurrentTestCampaignExecution()
+							.getIFile().getFullPath());
+			// update if ressource was a TestCampaignExecution
+			if (campaignExecutionDelta != null) {
+				input.stepToNewest();
+				updateEditor();
+			}
+		}
 	}
 }

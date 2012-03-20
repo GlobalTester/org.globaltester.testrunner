@@ -47,41 +47,45 @@ public class TestCampaignEditorInput extends FileEditorInput {
 	}
 	
 	public TestCampaignExecution getCurrentTestCampaignExecution() {
-		TestCampaignExecution result = project.getTestCampaign().getCurrentExecution();
-		indexOfCurrentExecution = executions.indexOf(result);
 		return project.getTestCampaign().getCurrentExecution();
+	}
+	
+	public void stepToNewest(){
+		indexOfCurrentExecution = executions.indexOf(project.getTestCampaign().getCurrentExecution());
 	}
 	
 	/**
 	 * 
 	 * Makes a step forward in the list of TestCampaignExecutions
 	 * 
-	 * @return true if there is another step possible in this direction
 	 */
-	public boolean stepForward(){
+	public void stepForward(){
 		if (indexOfCurrentExecution > 0){
 			indexOfCurrentExecution--;
-			// check if end of list
-			if (indexOfCurrentExecution == 0){
-				return false;
-			}
 		}
-		return true;
 	}
 	
 	/**
 	 * 
-	 * Makes a step backwards in the list of TestCampaignExecutions
+	 * Makes a step backwards in the list of TestCampaignExecution
 	 * 
-	 * @return true if there is another step possible in this direction
 	 */
-	public boolean stepBackward(){
+	public void stepBackward(){
 		if (indexOfCurrentExecution < executions.size()-1){
 			indexOfCurrentExecution++;
-			// check if end of list
-			if (indexOfCurrentExecution == executions.size()-1){
-				return false;
-			}
+		}
+	}
+
+	public boolean stepForwardsPossible(){
+		if (indexOfCurrentExecution == 0){
+			return false;
+		}
+		return true;
+	}
+	
+	public boolean stepBackwardsPossible(){
+		if (indexOfCurrentExecution == executions.size()-1){
+			return false;
 		}
 		return true;
 	}
