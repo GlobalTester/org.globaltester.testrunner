@@ -24,9 +24,6 @@ public class TestCampaignTableLabelProvider implements ITableLabelProvider {
 		case 0:
 			if (element instanceof TestCampaign)
 				return UiImages.CAMPAIGN_TESTSUITE_ICON.getImage();
-			if (element instanceof TestCampaignExecution){
-				return UiImages.EXECUTE_ICON.getImage();
-			}
 			if (element instanceof TestCaseExecution)
 				return UiImages.CAMPAIGN_TESTCASE_ICON.getImage();
 			if (element instanceof ActionStepExecution)
@@ -46,9 +43,6 @@ public class TestCampaignTableLabelProvider implements ITableLabelProvider {
 	public String getColumnText(Object element, int columnIndex) {
 		switch (columnIndex) {
 		case 0:
-			if (element instanceof TestCampaignExecution) {
-				return "Execution";
-			}
 			if (element instanceof IExecution)
 				return ((IExecution) element).getName();
 			return element.toString();

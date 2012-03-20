@@ -96,7 +96,6 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener 
 	private Button btnStepBack;
 	private Button btnStepForward;
 	private Button btnNewest;
-	private int indexOfCurrentExecution;
 	
 
 	@Override
@@ -256,6 +255,9 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener 
 		treeViewer.setLabelProvider(new TestCampaignTableLabelProvider());
 		treeViewer.setInput(input.getCurrentTestCampaignExecution());
 		treeViewer.expandAll();
+		
+		btnStepForward.setEnabled(false);
+		btnNewest.setEnabled(false);
 
 		makeActions();
 		hookContextMenu();
@@ -280,9 +282,13 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener 
 
 				if (baseDirName != null) {
 					// create report
-					TestReport report = new TestReport(input.getCurrentTestCampaignExecution(),
-							baseDirName);
 
+					List<TestCampaignExecution> executions = input
+							.getTestCampaign().getCampaignExecutions();
+
+					TestReport report = new TestReport(input
+							.getCurrentlyDisplayedTestCampaignExecution(),
+							baseDirName);
 					try {
 						// TODO output XML-Report here, if no pdf is desired
 
@@ -552,22 +558,32 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener 
 
 	@Override
 	public void widgetSelected(SelectionEvent e) {
-		List<TestCampaignExecution> executions = input.getTestCampaign().getCampaignExecutions();
-		if (e.getSource() == btnStepBack){
-			if (indexOfCurrentExecution < executions.size()-1){
-				indexOfCurrentExecution++;
+		TestCampaignExecution toDisplay = null;
+		if (e.getSource() == btnNewest) {
+			toDisplay = input.getCurrentTestCampaignExecution();
+			btnNewest.setEnabled(false);
+			btnStepBack.setEnabled(true);
+			btnStepForward.setEnabled(false);
+		} else {
+			if (e.getSource() == btnStepBack) {
+				if (!input.stepBackward()){
+					btnStepBack.setEnabled(false);
+				}
+				btnStepForward.setEnabled(true);
+				btnNewest.setEnabled(true);
+			} else if (e.getSource() == btnStepForward) {
+				if (!input.stepForward()){
+					btnStepForward.setEnabled(false);
+					btnNewest.setEnabled(false);
+				} else {
+					btnNewest.setEnabled(true);
+				}
+				btnStepBack.setEnabled(true);
 			}
-		} else if (e.getSource() == btnNewest){
-			indexOfCurrentExecution = 0;
-		} else if (e.getSource() == btnStepForward){
-			if (indexOfCurrentExecution > 0){
-				indexOfCurrentExecution--;
-			}
+			toDisplay = input.getCurrentlyDisplayedTestCampaignExecution();
 		}
-
-		TestCampaignExecution executionToDisplay = executions.get(indexOfCurrentExecution);
-		cardConfigViewer.setInput(executionToDisplay.getCardConfig());
-		treeViewer.setInput(executionToDisplay);
+		cardConfigViewer.setInput(toDisplay.getCardConfig());
+		treeViewer.setInput(toDisplay);
 		treeViewer.expandAll();
 	}
 
