@@ -148,7 +148,7 @@ public class TestCampaign {
 		// save this
 		storeToIFile(project.getTestCampaignIFile());
 
-		// save the newest exection, which causes all executions to be saved recursively
+		// save the newest execution, which causes all executions to be saved recursively
 		if (executions.size() > 0){
 			executions.getFirst().doSave();
 		}
