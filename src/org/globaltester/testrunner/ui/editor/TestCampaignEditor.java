@@ -1,7 +1,6 @@
 package org.globaltester.testrunner.ui.editor;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -63,6 +62,7 @@ import org.eclipse.ui.texteditor.ITextEditor;
 import org.globaltester.cardconfiguration.CardConfig;
 import org.globaltester.cardconfiguration.ui.CardConfigEditorWidget;
 import org.globaltester.cardconfiguration.ui.CardConfigSelector;
+import org.globaltester.core.ui.GtUiHelper;
 import org.globaltester.logging.logger.GTLogger;
 import org.globaltester.testrunner.report.ReportPdfGenerator;
 import org.globaltester.testrunner.report.TestReport;
@@ -282,13 +282,10 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener 
 
 				if (baseDirName != null) {
 					// create report
-
-					List<TestCampaignExecution> executions = input
-							.getTestCampaign().getCampaignExecutions();
-
 					TestReport report = new TestReport(input
 							.getCurrentlyDisplayedTestCampaignExecution(),
 							baseDirName);
+
 					try {
 						// TODO output XML-Report here, if no pdf is desired
 
@@ -400,25 +397,16 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener 
 		}
 	}
 
-	private void openLogFile(){
+	private void openLogFile() {
 		ISelection selection = treeViewer.getSelection();
-		Object obj = ((IStructuredSelection) selection)
-		.getFirstElement();
+		Object obj = ((IStructuredSelection) selection).getFirstElement();
 		if (obj instanceof IExecution) {
 			String logFileName = ((IExecution) obj).getLogFileName();
-			int logFileLine = 0;
-			logFileLine = ((IExecution) obj).getLogFileLine();
-			if((logFileName == "") || (logFileName == null)){
-				MessageBox dialog = new MessageBox(getShell(), SWT.APPLICATION_MODAL);
-				dialog.setMessage("There exists no log file for your selection");
-				dialog.open();	
-			} else {
-				showFile(logFileName, logFileLine);
-			}
+			int logFileLine = ((IExecution) obj).getLogFileLine();
+			openFileOrShowErrorMessage(logFileName, logFileLine);
 		} else {
-			MessageBox dialog = new MessageBox(getShell(), SWT.APPLICATION_MODAL);
-			dialog.setMessage("Element in selection is not an IExecution");
-			dialog.open();
+			GtUiHelper.openErrorDialog(getShell(),
+					"Selected element is not an IExecution");
 		}
 	}
 
@@ -482,16 +470,13 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener 
 
 
 	/**
-	 * Show files from local workspace in and editor and highlight special line
+	 * Show files from local workspace in and editor and select given line
 	 * 
 	 * @param file			the IFile to be opened
 	 * @param line			line to be highlighted
 	 */
 	private void showFile(IFile file, int line) {
 
-		if (file == null)
-			return;
-		
 		IEditorPart editor;
 		ITextEditor textEditor = null;
 		IWorkbench workbench = PlatformUI.getWorkbench();
@@ -502,12 +487,16 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener 
 			if (file != null && file.exists()) {
 				editor = IDE.openEditor(page, file, true);
 				textEditor = (ITextEditor) editor.getAdapter(ITextEditor.class);
+			} else {
+				GtUiHelper.openErrorDialog(getShell(),
+						"File does not exist, thus can not be displayed.");
+				return;
 			}
-		} catch (Exception ex) {
+		} catch (PartInitException ex) {
 			GTLogger.getInstance().error(ex);
 		}
-		
-		if (line > 0) {
+
+		if ((line > 0) && (textEditor != null)) {
 			try {
 				line--; // document starts with 0
 				IDocument document = textEditor.getDocumentProvider()
@@ -523,15 +512,18 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener 
 	}
 
 	/**
-	 * Show files from local workspace in an editor and highlight special line
+	 * Show files from local workspace in an editor and select given line
 	 * 
 	 * @param fileName				name of file to be opened
 	 * @param line					line to be highlighted
 	 */
-	private void showFile(String fileName, int line) {
+	private void openFileOrShowErrorMessage(String fileName, int line) {
 
-		if (fileName == null)
+		if ((fileName == null) || (fileName == "")) {
+			GtUiHelper.openErrorDialog(getShell(),
+					"No file name given, thus file can not be displayed.");
 			return;
+		}
 		
 		IPath path = new Path(fileName);
 		// file exists in local workspace
