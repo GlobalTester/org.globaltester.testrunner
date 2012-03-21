@@ -10,7 +10,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.globaltester.cardconfiguration.CardConfig;
-import org.globaltester.cardconfiguration.CardConfigManager;
 import org.globaltester.core.xml.XMLHelper;
 import org.globaltester.testrunner.GtTestCampaignProject;
 import org.globaltester.testspecification.testframework.FileTestExecutable;
@@ -239,13 +238,6 @@ public class TestCampaign {
 
 	public void setSpecVersion(String newVersion) {
 		specVersion = newVersion;
-	}
-
-	public CardConfig getCardConfig() {
-		if (executions.size() > 0) {
-			return executions.getFirst().getCardConfig(); 
-		}
-		return CardConfigManager.getDefaultConfig();
 	}
 
 	public List<TestCampaignElement> getTestCampaignElements() {
