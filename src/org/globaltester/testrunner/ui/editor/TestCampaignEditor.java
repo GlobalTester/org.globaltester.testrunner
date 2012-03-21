@@ -224,7 +224,6 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 		cardConfigViewer = new CardConfigEditorWidget(cardConfigComp);
 		cardConfigViewer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 		cardConfigViewer.setEditable(false);
-		cardConfigViewer.setInput(input.getTestCampaign().getCardConfig());
 		
 		Tree executionStateTree = new Tree(grpExecutionresults, SWT.BORDER
 				| SWT.H_SCROLL | SWT.V_SCROLL);
@@ -346,6 +345,8 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 
 			}
 		});
+		
+		updateEditor();
 
 		//unset dirty flag as input is just loaded from file
 		setDirty(false);
