@@ -98,13 +98,9 @@ public class GtTestCampaignProject implements ITreeObservable {
 	}
 
 	private GtTestCampaignProject(IProject iProject) throws CoreException {
-		try {
-			Assert.isTrue(iProject.hasNature(GtTestCampaignNature.NATURE_ID),
+		Assert.isTrue(iProject.hasNature(GtTestCampaignNature.NATURE_ID),
 					"Project does not use GtTestCampaignNature");
-		} catch (CoreException e) {
-			Assert.isTrue(false, "Project nature can not be checked");
-		}
-
+		
 		this.iProject = iProject;
 
 		this.testCampaign = new TestCampaign(this);
