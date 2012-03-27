@@ -1,5 +1,6 @@
 package org.globaltester.testrunner.testframework;
 
+import java.text.DateFormat;
 import java.util.Date;
 
 import org.globaltester.logging.logger.TestLogger;
@@ -147,6 +148,11 @@ public abstract class AbstractTestExecution implements IExecution {
 
 	public long getLastExecutionStartTime() {
 		return lastExecutionStartTime;
+	}
+
+	public String getLastExecutionStartTimeAsString() {
+		return DateFormat.getDateTimeInstance().format(
+				new Date(getLastExecutionStartTime()));
 	}
 	
 	public long getLastExecutionDuration() {
