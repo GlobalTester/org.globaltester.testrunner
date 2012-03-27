@@ -37,6 +37,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Group;
@@ -80,7 +81,7 @@ import org.globaltester.testrunner.ui.Activator;
 import org.globaltester.testrunner.ui.UiImages;
 
 public class TestCampaignEditor extends EditorPart implements SelectionListener, IResourceChangeListener {
-
+	
 	public static final String ID = "org.globaltester.testrunner.ui.testcampaigneditor";
 	private TestCampaignEditorInput input;
 	private CardConfigEditorWidget cardConfigViewer;
@@ -94,7 +95,9 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 	private Action actionShowTestCase;
 	private Action actionShowLog;
 	private Action doubleClickAction;
+	private Button btnOldest;
 	private Button btnStepBack;
+	private Combo cmbExecutionSelector;
 	private Button btnStepForward;
 	private Button btnNewest;
 	
@@ -206,16 +209,26 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 		// history
 
 		Composite historyComp = new Composite(grpExecutionresults, SWT.NONE);
-		historyComp.setLayout(new GridLayout(3, false));
+		historyComp.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+		historyComp.setLayout(new GridLayout(5, false));
+		btnOldest = new Button(historyComp, SWT.NONE);
+		btnOldest.setText("|<<");
 		btnStepBack = new Button(historyComp, SWT.NONE);
-		btnStepBack.setText("Previous execution");
+		btnStepBack.setText("<");
+		cmbExecutionSelector = new Combo(historyComp, SWT.NONE);
+		cmbExecutionSelector.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		cmbExecutionSelector.addSelectionListener(this);
 		btnStepForward = new Button(historyComp, SWT.NONE);
-		btnStepForward.setText("Next execution");
+		btnStepForward.setText(">");
 		btnStepForward.addSelectionListener(this);
+		
+		btnStepForward.setEnabled(false);
 		btnStepBack.addSelectionListener(this);
 		btnNewest = new Button(historyComp, SWT.NONE);
-		btnNewest.setText("Newest execution");
+		btnNewest.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		btnNewest.setText(">>|");
 		btnNewest.addSelectionListener(this);		
+		btnNewest.setEnabled(false);
 		
 		//selection and Editor for CardConfiguration
 		Composite cardConfigComp = new Composite(grpExecutionresults, SWT.NONE);
@@ -255,9 +268,6 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 		treeViewer.setLabelProvider(new TestCampaignTableLabelProvider());
 		treeViewer.setInput(input.getCurrentTestCampaignExecution());
 		treeViewer.expandAll();
-		
-		btnStepForward.setEnabled(false);
-		btnNewest.setEnabled(false);
 
 		makeActions();
 		hookContextMenu();
@@ -565,9 +575,14 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 					treeViewer.expandAll();
 				}
 				// set buttons according to displayed TestCampaignExecution
+				btnOldest.setEnabled(input.isStepBackwardsPossible());
 				btnStepBack.setEnabled(input.isStepBackwardsPossible());
 				btnStepForward.setEnabled(input.isStepForwardsPossible());
-				btnNewest.setEnabled(input.isStepForwardsPossible());				
+				btnNewest.setEnabled(input.isStepForwardsPossible());
+				
+				//set input for Combo and select current displayed
+				cmbExecutionSelector.setItems(input.getArrayOfTestCampaignExecutions());
+				cmbExecutionSelector.select(input.getIndexOfCurrentlyDisplayedTestCampaignExecution());
 			}
 		});		
 		
@@ -577,11 +592,15 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 	public void widgetSelected(SelectionEvent e) {
 		if (e.getSource() == btnNewest){
 			input.stepToNewest();
+		} else if (e.getSource() == btnOldest){
+			input.stepToOldest();
 		} else if (e.getSource() == btnStepBack){
 			input.stepBackward();
 		} else if (e.getSource() == btnStepForward){
 			input.stepForward();
-		}
+		} else if (e.getSource() == cmbExecutionSelector){
+			input.stepToIndex(cmbExecutionSelector.getSelectionIndex());
+		} 
 		updateEditor();
 	}
 

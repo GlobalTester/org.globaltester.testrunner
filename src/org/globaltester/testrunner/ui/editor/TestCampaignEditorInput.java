@@ -16,9 +16,10 @@ public class TestCampaignEditorInput extends FileEditorInput {
 	private GtTestCampaignProject project;
 	private int indexOfCurrentExecution;
 	List<TestCampaignExecution> executions;
-	
+
 	public TestCampaignEditorInput(IFile file) throws CoreException {
-		super(GtTestCampaignProject.getProjectForResource(file).getTestCampaignIFile());
+		super(GtTestCampaignProject.getProjectForResource(file)
+				.getTestCampaignIFile());
 		project = GtTestCampaignProject.getProjectForResource(file);
 		executions = project.getTestCampaign().getCampaignExecutions();
 	}
@@ -42,56 +43,93 @@ public class TestCampaignEditorInput extends FileEditorInput {
 		return project;
 	}
 
-	public TestCampaign getTestCampaign(){
+	public TestCampaign getTestCampaign() {
 		return project.getTestCampaign();
 	}
-	
+
 	public TestCampaignExecution getCurrentTestCampaignExecution() {
 		return project.getTestCampaign().getCurrentExecution();
 	}
-	
-	public void stepToNewest(){
-		indexOfCurrentExecution = executions.indexOf(project.getTestCampaign().getCurrentExecution());
+
+	public void stepToNewest() {
+		indexOfCurrentExecution = executions.indexOf(project.getTestCampaign()
+				.getCurrentExecution());
 	}
-	
+
+	public void stepToOldest() {
+		indexOfCurrentExecution = executions.size() - 1;
+	}
+
+	public void stepToIndex(int newIndex) {
+		if ((newIndex >= 0) && (newIndex < executions.size())) {
+			indexOfCurrentExecution = newIndex;
+		}
+	}
+
 	/**
 	 * 
 	 * Makes a step forward in the list of TestCampaignExecutions
 	 * 
 	 */
-	public void stepForward(){
-		if (isStepForwardsPossible()){
+	public void stepForward() {
+		if (isStepForwardsPossible()) {
 			indexOfCurrentExecution--;
 		}
 	}
-	
+
 	/**
 	 * 
 	 * Makes a step backwards in the list of TestCampaignExecution
 	 * 
 	 */
-	public void stepBackward(){
-		if (isStepBackwardsPossible()){
+	public void stepBackward() {
+		if (isStepBackwardsPossible()) {
 			indexOfCurrentExecution++;
 		}
 	}
 
-	public boolean isStepForwardsPossible(){
+	public boolean isStepForwardsPossible() {
 		return indexOfCurrentExecution > 0;
 	}
-	
-	public boolean isStepBackwardsPossible(){
-		return indexOfCurrentExecution < executions.size() -1;
+
+	public boolean isStepBackwardsPossible() {
+		return indexOfCurrentExecution < executions.size() - 1;
 	}
-	
+
 	/**
-	 * @return the currently displayed execution or null if there is no execution yet
+	 * @return the currently displayed execution or null if there is no
+	 *         execution yet
 	 */
-	public TestCampaignExecution getCurrentlyDisplayedTestCampaignExecution(){
-		if (executions.size() > indexOfCurrentExecution){
+	public TestCampaignExecution getCurrentlyDisplayedTestCampaignExecution() {
+		if (executions.size() > indexOfCurrentExecution) {
 			return executions.get(indexOfCurrentExecution);
 		}
 		return null;
+	}
+
+	/**
+	 * Calculates a an Array of String containig lables representing the
+	 * TestCampaignExecutions while mentioning name execution start time and (if
+	 * present) the associated comment.
+	 * 
+	 * @return
+	 */
+	public String[] getArrayOfTestCampaignExecutions() {
+		String[] execStrings = new String[executions.size()];
+		for (int i = 0; i < executions.size(); i++) {
+			TestCampaignExecution curExec = executions.get(i);
+			execStrings[i] = curExec.getName() + " ("
+					+ curExec.getLastExecutionStartTimeAsString() + ")";
+			String comment = curExec.getComment();
+			if ((comment != null) && (comment.trim().length() > 0)) {
+				execStrings[i] += "// " + comment.trim();
+			}
+		}
+		return execStrings;
+	}
+
+	public int getIndexOfCurrentlyDisplayedTestCampaignExecution() {
+		return indexOfCurrentExecution;
 	}
 
 }
