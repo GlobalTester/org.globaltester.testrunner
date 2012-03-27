@@ -559,9 +559,11 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 			@Override
 			public void run() {
 				TestCampaignExecution toDisplay = input.getCurrentlyDisplayedTestCampaignExecution();
-				cardConfigViewer.setInput(toDisplay.getCardConfig());
-				treeViewer.setInput(toDisplay);
-				treeViewer.expandAll();
+				if (toDisplay != null) {
+					cardConfigViewer.setInput(toDisplay.getCardConfig());
+					treeViewer.setInput(toDisplay);
+					treeViewer.expandAll();
+				}
 				// set buttons according to displayed TestCampaignExecution
 				btnStepBack.setEnabled(input.isStepBackwardsPossible());
 				btnStepForward.setEnabled(input.isStepForwardsPossible());
@@ -593,14 +595,18 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 	public void resourceChanged(IResourceChangeEvent event) {
 		IResourceDelta rootDelta = event.getDelta();
 		if (rootDelta != null) {
-			// find delta for the current TestCampaignExecution
-			IResourceDelta campaignExecutionDelta = rootDelta
-					.findMember(input.getCurrentTestCampaignExecution()
-							.getIFile().getFullPath());
-			// update if ressource was a TestCampaignExecution
-			if (campaignExecutionDelta != null) {
-				input.stepToNewest();
-				updateEditor();
+			TestCampaignExecution execution = input
+					.getCurrentTestCampaignExecution();
+			if (execution != null) {
+				// find delta for the current TestCampaignExecution
+				IResourceDelta campaignExecutionDelta = rootDelta
+						.findMember(input.getCurrentTestCampaignExecution()
+								.getIFile().getFullPath());
+				// update if ressource was a TestCampaignExecution
+				if (campaignExecutionDelta != null) {
+					input.stepToNewest();
+					updateEditor();
+				}
 			}
 		}
 	}

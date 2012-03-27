@@ -84,8 +84,14 @@ public class TestCampaignEditorInput extends FileEditorInput {
 		return indexOfCurrentExecution < executions.size() -1;
 	}
 	
+	/**
+	 * @return the currently displayed execution or null if there is no execution yet
+	 */
 	public TestCampaignExecution getCurrentlyDisplayedTestCampaignExecution(){
-		return executions.get(indexOfCurrentExecution);
+		if (executions.size() > indexOfCurrentExecution){
+			return executions.get(indexOfCurrentExecution);
+		}
+		return null;
 	}
 
 }
