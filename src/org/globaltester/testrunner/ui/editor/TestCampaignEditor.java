@@ -70,13 +70,11 @@ import org.globaltester.core.ui.GtUiHelper;
 import org.globaltester.logging.logger.GTLogger;
 import org.globaltester.testrunner.report.ReportPdfGenerator;
 import org.globaltester.testrunner.report.TestReport;
+import org.globaltester.testrunner.testframework.ActionStepExecution;
 import org.globaltester.testrunner.testframework.FileTestExecution;
 import org.globaltester.testrunner.testframework.IExecution;
-import org.globaltester.testrunner.testframework.PostConditionExecution;
-import org.globaltester.testrunner.testframework.PreConditionExecution;
 import org.globaltester.testrunner.testframework.TestCampaign;
 import org.globaltester.testrunner.testframework.TestCampaignExecution;
-import org.globaltester.testrunner.testframework.TestStepExecution;
 import org.globaltester.testrunner.ui.Activator;
 import org.globaltester.testrunner.ui.UiImages;
 
@@ -396,16 +394,18 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 			dialog.setMessage("Open TestCase is not available for TestCampaigns");
 			dialog.open();
 		} else if (obj != null) {
-			
-			if(obj instanceof TestCampaignExecution){
-				fte = ((TestCampaignExecution) obj).getPreviousExecution();
+			if (obj instanceof FileTestExecution) {
+				fte = (FileTestExecution) obj;
+			} else if (obj instanceof ActionStepExecution) {
+				IExecution ie = ((ActionStepExecution) obj).getParent();
+				if (obj instanceof FileTestExecution) {
+					fte = (FileTestExecution) ie;
+				}
 			}
-			if((obj instanceof TestStepExecution) || (obj instanceof PreConditionExecution) || (obj instanceof PostConditionExecution)){
-				IExecution ie = ((IExecution)obj).getParent();
-				fte = (FileTestExecution) ie;
+			if (fte != null) {
+				IFile file = fte.getSpecFile();
+				showFile(file, 0);
 			}
-			IFile file = fte.getSpecFile();
-			showFile(file, 0);
 		}
 	}
 
