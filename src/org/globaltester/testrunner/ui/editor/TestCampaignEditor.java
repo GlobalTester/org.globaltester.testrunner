@@ -398,6 +398,7 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 				fte = (FileTestExecution) obj;
 			} else if (obj instanceof ActionStepExecution) {
 				IExecution ie = ((ActionStepExecution) obj).getParent();
+				fte = (FileTestExecution) ie;
 				if (obj instanceof FileTestExecution) {
 					fte = (FileTestExecution) ie;
 				}
