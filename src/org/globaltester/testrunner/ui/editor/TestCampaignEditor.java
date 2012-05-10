@@ -20,8 +20,11 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.viewers.ColumnPixelData;
+import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
@@ -188,7 +191,7 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 		Label lblSpecificationVersion = new Label(metaDataComp, SWT.NONE);
 		lblSpecificationVersion.setLayoutData(new GridData(SWT.RIGHT,
 				SWT.CENTER, false, false, 1, 1));
-		lblSpecificationVersion.setText("Specification Version:");
+		lblSpecificationVersion.setText("Specification version:");
 
 		txtSpecVersion = new Text(metaDataComp, SWT.BORDER);
 		txtSpecVersion.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1,
@@ -204,7 +207,7 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 		Group grpExecutionresults = new Group(parent, SWT.NONE);
 		grpExecutionresults.setLayout(new GridLayout(1, false));
 		grpExecutionresults.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1));
-		grpExecutionresults.setText("ExecutionResults");
+		grpExecutionresults.setText("Execution results");
 		
 		// history
 
@@ -238,7 +241,9 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 		cardConfigViewer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 		cardConfigViewer.setEditable(false);
 		
-		Tree executionStateTree = new Tree(grpExecutionresults, SWT.BORDER
+		Composite execStateTreeComp = new Composite(grpExecutionresults, SWT.NONE);
+		execStateTreeComp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
+		Tree executionStateTree = new Tree(execStateTreeComp, SWT.BORDER
 				| SWT.H_SCROLL | SWT.V_SCROLL);
 		executionStateTree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		executionStateTree.setSize(811, 45);
@@ -249,20 +254,24 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 		executionStateTree.setLinesVisible(true);
 		columnName.setAlignment(SWT.LEFT);
 		columnName.setText("Testcase/TestStep");
-		columnName.setWidth(250);
 		TreeColumn columnLastExec = new TreeColumn(executionStateTree,
 				SWT.RIGHT);
 		columnLastExec.setAlignment(SWT.LEFT);
-		columnLastExec.setText("LastExecuted");
-		columnLastExec.setWidth(120);
+		columnLastExec.setText("Last executed");
 		TreeColumn columnStatus = new TreeColumn(executionStateTree, SWT.RIGHT);
 		columnStatus.setAlignment(SWT.LEFT);
 		columnStatus.setText("Status");
-		columnStatus.setWidth(120);
 		TreeColumn columnComment = new TreeColumn(executionStateTree, SWT.RIGHT);
 		columnComment.setAlignment(SWT.LEFT);
 		columnComment.setText("Comment");
-		columnComment.setWidth(300);
+		
+		//set column widths
+		TreeColumnLayout execStateTreeLayout = new TreeColumnLayout();
+		execStateTreeComp.setLayout( execStateTreeLayout );
+		execStateTreeLayout.setColumnData( columnName, new ColumnWeightData( 50 ) );
+		execStateTreeLayout.setColumnData( columnLastExec, new ColumnPixelData( 120 ) );
+		execStateTreeLayout.setColumnData( columnStatus, new ColumnPixelData( 80 ) );
+		execStateTreeLayout.setColumnData( columnComment, new ColumnWeightData( 100 ) );
 
 		treeViewer.setContentProvider(new TestCampaignContentProvider());
 		treeViewer.setLabelProvider(new TestCampaignTableLabelProvider());
@@ -330,6 +339,8 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 		btnExecute.setSize(52, 25);
 		btnExecute.setText("Execute");
 		btnExecute.setImage(UiImages.EXECUTE_ICON.getImage());
+		new Label(grpExecutionControl, SWT.NONE);
+		new Label(grpExecutionControl, SWT.NONE);
 		btnExecute.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				Job job = new Job("Test execution") {
