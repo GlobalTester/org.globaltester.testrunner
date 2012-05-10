@@ -242,7 +242,7 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 		cardConfigViewer.setEditable(false);
 		
 		Composite execStateTreeComp = new Composite(grpExecutionresults, SWT.NONE);
-		execStateTreeComp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
+		execStateTreeComp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1));
 		Tree executionStateTree = new Tree(execStateTreeComp, SWT.BORDER
 				| SWT.H_SCROLL | SWT.V_SCROLL);
 		executionStateTree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
