@@ -74,7 +74,7 @@ public abstract class ActionStepExecution extends AbstractTestExecution {
 				.hasNext();) {
 			ExpectedResult curResult = expResultIter.next();
 			
-			TestLogger.info(String.format(TestLogger.DEFAULTFORMAT, "ExpectedResult: " + curResult.getId() + " (TestStep "+ testStep.getId()+")"));
+			TestLogger.info(String.format(TestLogger.DEFAULTFORMAT, "ExpectedResult: " + curResult.getId()));
 			
 			//log ExpectedResult descriptions
 			descrIter = curResult.getDescriptions().iterator();
