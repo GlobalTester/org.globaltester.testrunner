@@ -119,7 +119,8 @@ public class TestCampaignEditorInput extends FileEditorInput {
 		for (int i = 0; i < executions.size(); i++) {
 			TestCampaignExecution curExec = executions.get(i);
 			execStrings[i] = curExec.getName() + " ("
-					+ curExec.getLastExecutionStartTimeAsString() + ")";
+					+ curExec.getLastExecutionStartTimeAsString() + ") - " +
+			curExec.getStatus();
 			String comment = curExec.getComment();
 			if ((comment != null) && (comment.trim().length() > 0)) {
 				execStrings[i] += "// " + comment.trim();

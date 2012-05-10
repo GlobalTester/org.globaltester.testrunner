@@ -5,7 +5,6 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.globaltester.testrunner.testframework.AbstractTestExecution;
 import org.globaltester.testrunner.testframework.ActionStepExecution;
-import org.globaltester.testrunner.testframework.FileTestExecution;
 import org.globaltester.testrunner.testframework.IExecution;
 import org.globaltester.testrunner.testframework.TestCampaign;
 import org.globaltester.testrunner.testframework.TestCampaignElement;
@@ -26,9 +25,9 @@ public class TestCampaignTableLabelProvider implements ITableLabelProvider {
 				return UiImages.CAMPAIGN_TESTSTEP_ICON.getImage();
 			break;
 		case 2: // Status
-			if (element instanceof FileTestExecution)
+			if (element instanceof AbstractTestExecution)
 				return NonUiImages.valueOf(
-						((FileTestExecution) element).getResult().getStatus())
+						((AbstractTestExecution) element).getResult().getStatus())
 						.getImage();
 			break;
 		}
@@ -43,22 +42,18 @@ public class TestCampaignTableLabelProvider implements ITableLabelProvider {
 				return ((IExecution) element).getName();
 			return element.toString();
 		case 1: // Last executed
-			if (element instanceof FileTestExecution) {
-				AbstractTestExecution lastExec = ((FileTestExecution) element);
-				if (lastExec != null) {
-					return lastExec.getLastExecutionStartTimeAsString();
-				}
-
+			if (element instanceof AbstractTestExecution) {
+				return ((AbstractTestExecution) element).getLastExecutionStartTimeAsString();
 			}
 			break;
 		case 2: // Status
-			if (element instanceof FileTestExecution)
-				return ((FileTestExecution) element).getResult().getStatus()
+			if (element instanceof AbstractTestExecution)
+				return ((AbstractTestExecution) element).getResult().getStatus()
 						.toString();
 			break;
 		case 3: // Comment
-			if (element instanceof FileTestExecution)
-				return ((FileTestExecution) element).getResult().getComment();
+			if (element instanceof AbstractTestExecution)
+				return ((AbstractTestExecution) element).getResult().getComment();
 			break;
 		}
 		return null;
