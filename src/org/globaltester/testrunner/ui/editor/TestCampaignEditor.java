@@ -79,6 +79,8 @@ import org.globaltester.testrunner.ui.Activator;
 import org.globaltester.testrunner.ui.UiImages;
 
 public class TestCampaignEditor extends EditorPart implements SelectionListener, IResourceChangeListener {
+	public TestCampaignEditor() {
+	}
 	
 	public static final String ID = "org.globaltester.testrunner.ui.testcampaigneditor";
 	private TestCampaignEditorInput input;
@@ -316,13 +318,12 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 		// Group Execution control
 		Group grpExecutionControl = new Group(parent, SWT.NONE);
 		grpExecutionControl.setText("Execution control");
-		grpExecutionControl.setLayout(new GridLayout(2, false));
+		grpExecutionControl.setLayout(new GridLayout(3, false));
 		grpExecutionControl.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 
 		cardConfigSelector = new CardConfigSelector(grpExecutionControl, CardConfigSelector.ALL_BUTTONS);
 		cardConfigSelector.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 		
-		new Label(grpExecutionControl, SWT.NONE);
 		Button btnExecute = new Button(grpExecutionControl, SWT.NONE);
 		btnExecute.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true,
 				false, 1, 1));
