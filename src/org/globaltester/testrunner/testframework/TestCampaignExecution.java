@@ -205,7 +205,9 @@ public class TestCampaignExecution extends FileTestExecution {
 		List<TestCampaignElement> elements = getTestCampaign().getTestCampaignElements();
 		for (Iterator<TestCampaignElement> elemIter = elements.iterator(); elemIter
 				.hasNext();) {
-			elementExecutions.add(elemIter.next().execute(sr, cx, false));
+			FileTestExecution curExec = elemIter.next().execute(sr, cx, false);
+			elementExecutions.add(curExec);
+			result.addSubResult(curExec.getResult());
 		}
 
 	}
