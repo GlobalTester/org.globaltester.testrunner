@@ -91,7 +91,7 @@ public class Result implements Serializable{
 		root.addContent(statusElement);
 		
 		Element commentElement = new Element("Comment");
-		commentElement.addContent(status.toString());
+		commentElement.addContent(comment);
 		root.addContent(commentElement);
 		
 		//TODO think about sub results
