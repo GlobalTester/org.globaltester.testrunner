@@ -261,7 +261,7 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 		TreeColumn columnName = new TreeColumn(executionStateTree, SWT.LEFT);
 		executionStateTree.setLinesVisible(true);
 		columnName.setAlignment(SWT.LEFT);
-		columnName.setText("Testcase/TestStep");
+		columnName.setText("Test case");
 		TreeColumn columnLastExec = new TreeColumn(executionStateTree,
 				SWT.RIGHT);
 		columnLastExec.setAlignment(SWT.LEFT);
@@ -312,7 +312,7 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 		execStateTreeComp.setLayout( execStateTreeLayout );
 		execStateTreeLayout.setColumnData( columnName, new ColumnWeightData( 50 ) );
 		execStateTreeLayout.setColumnData( columnLastExec, new ColumnPixelData( 120 ) );
-		execStateTreeLayout.setColumnData( columnStatus, new ColumnPixelData( 80 ) );
+		execStateTreeLayout.setColumnData( columnStatus, new ColumnPixelData( 100 ) );
 		execStateTreeLayout.setColumnData( columnComment, new ColumnWeightData( 100 ) );
 
 		treeViewer.setContentProvider(new TestCampaignContentProvider());
