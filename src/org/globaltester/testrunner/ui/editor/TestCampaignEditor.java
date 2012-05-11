@@ -327,20 +327,18 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 		// Group Execution control
 		Group grpExecutionControl = new Group(parent, SWT.NONE);
 		grpExecutionControl.setText("Execution control");
-		grpExecutionControl.setLayout(new GridLayout(3, false));
+		grpExecutionControl.setLayout(new GridLayout(2, false));
 		grpExecutionControl.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 
 		cardConfigSelector = new CardConfigSelector(grpExecutionControl, CardConfigSelector.ALL_BUTTONS);
-		cardConfigSelector.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+		cardConfigSelector.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		
 		Button btnExecute = new Button(grpExecutionControl, SWT.NONE);
-		btnExecute.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true,
+		btnExecute.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false,
 				false, 1, 1));
 		btnExecute.setSize(52, 25);
 		btnExecute.setText("Execute");
 		btnExecute.setImage(UiImages.EXECUTE_ICON.getImage());
-		new Label(grpExecutionControl, SWT.NONE);
-		new Label(grpExecutionControl, SWT.NONE);
 		btnExecute.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				Job job = new Job("Test execution") {
