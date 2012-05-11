@@ -23,13 +23,16 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ModifyEvent;
@@ -74,6 +77,7 @@ import org.globaltester.core.ui.GtUiHelper;
 import org.globaltester.logging.logger.GTLogger;
 import org.globaltester.testrunner.report.ReportPdfGenerator;
 import org.globaltester.testrunner.report.TestReport;
+import org.globaltester.testrunner.testframework.AbstractTestExecution;
 import org.globaltester.testrunner.testframework.ActionStepExecution;
 import org.globaltester.testrunner.testframework.FileTestExecution;
 import org.globaltester.testrunner.testframework.IExecution;
@@ -252,7 +256,7 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 		executionStateTree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		executionStateTree.setSize(811, 45);
 		executionStateTree.setHeaderVisible(true);
-		treeViewer = new TreeViewer(executionStateTree);
+		treeViewer = new AllColumnsEditableTreeViewer(executionStateTree);
 		
 		TreeColumn columnName = new TreeColumn(executionStateTree, SWT.LEFT);
 		executionStateTree.setLinesVisible(true);
@@ -268,6 +272,40 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 		TreeColumn columnComment = new TreeColumn(executionStateTree, SWT.RIGHT);
 		columnComment.setAlignment(SWT.LEFT);
 		columnComment.setText("Comment");
+		
+		//make comment column editable
+		TreeViewerColumn viewerColumnComment = new TreeViewerColumn(treeViewer, columnComment);
+		viewerColumnComment.setEditingSupport(new EditingSupport(treeViewer) {
+			
+			@Override
+			protected void setValue(Object element, Object value) {
+				if (element instanceof AbstractTestExecution && value instanceof String){
+					((AbstractTestExecution) element).getResult().setComment((String)value);
+					treeViewer.refresh();
+					setDirty(true);
+				}
+			}
+			
+			@Override
+			protected Object getValue(Object element) {
+				if (element instanceof AbstractTestExecution)
+					return ((AbstractTestExecution) element).getResult().getComment();
+				return null;
+			}
+			
+			@Override
+			protected CellEditor getCellEditor(Object element) {
+				if (element instanceof AbstractTestExecution){
+					return new SilentTextCellEditor(treeViewer.getTree());
+				}
+				return null;
+			}
+			
+			@Override
+			protected boolean canEdit(Object element) {
+				return true;
+			}
+		});
 		
 		//set column widths
 		TreeColumnLayout execStateTreeLayout = new TreeColumnLayout();
