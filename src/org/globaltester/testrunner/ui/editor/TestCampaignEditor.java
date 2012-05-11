@@ -169,7 +169,7 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 	public void createPartControl(Composite parent) {
 		parent.setLayout(new FillLayout());
 		
-		ScrolledComposite scrolledComposite = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
+		ScrolledComposite scrolledComposite = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL);
 		scrolledComposite.setExpandHorizontal(true);
 	    scrolledComposite.setExpandVertical(true);
 	    
@@ -183,8 +183,6 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 		metaDataComp.setLayout(new GridLayout(2, false));
 
 		Label lblSpecName = new Label(metaDataComp, SWT.NONE);
-		lblSpecName.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER,
-				false, false, 1, 1));
 		lblSpecName.setText("Specification name:");
 
 		txtSpecName = new Text(metaDataComp, SWT.BORDER);
@@ -198,8 +196,6 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 		txtSpecName.setText(input.getTestCampaign().getSpecName());
 
 		Label lblSpecificationVersion = new Label(metaDataComp, SWT.NONE);
-		lblSpecificationVersion.setLayoutData(new GridData(SWT.RIGHT,
-				SWT.CENTER, false, false, 1, 1));
 		lblSpecificationVersion.setText("Specification version:");
 
 		txtSpecVersion = new Text(metaDataComp, SWT.BORDER);
