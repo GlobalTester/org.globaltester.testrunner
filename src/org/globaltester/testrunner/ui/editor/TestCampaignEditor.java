@@ -254,7 +254,7 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 		Tree executionStateTree = new Tree(execStateTreeComp, SWT.BORDER
 				| SWT.H_SCROLL | SWT.V_SCROLL);
 		executionStateTree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-		executionStateTree.setSize(811, 45);
+//		executionStateTree.setSize(811, 45);
 		executionStateTree.setHeaderVisible(true);
 		treeViewer = new AllColumnsEditableTreeViewer(executionStateTree);
 		
