@@ -31,6 +31,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -166,10 +167,18 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 
 	@Override
 	public void createPartControl(Composite parent) {
-		parent.setLayout(new GridLayout(1, false));
+		parent.setLayout(new FillLayout());
+		
+		ScrolledComposite scrolledComposite = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
+		scrolledComposite.setExpandHorizontal(true);
+	    scrolledComposite.setExpandVertical(true);
+	    
+		Composite scrolledContent = new Composite(scrolledComposite, SWT.NONE);
+		scrolledContent.setLayout(new GridLayout(1, false));
+		scrolledComposite.setContent(scrolledContent);
 
 		// some meta data on top of the editor
-		Composite metaDataComp = new Composite(parent, SWT.NONE);
+		Composite metaDataComp = new Composite(scrolledContent, SWT.NONE);
 		metaDataComp.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		metaDataComp.setLayout(new GridLayout(2, false));
 
@@ -204,13 +213,12 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 		});
 		txtSpecVersion.setText(input.getTestCampaign().getSpecVersion());
 		
-		Group grpExecutionresults = new Group(parent, SWT.NONE);
+		Group grpExecutionresults = new Group(scrolledContent, SWT.NONE);
 		grpExecutionresults.setLayout(new GridLayout(1, false));
 		grpExecutionresults.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1));
 		grpExecutionresults.setText("Execution results");
 		
 		// history
-
 		Composite historyComp = new Composite(grpExecutionresults, SWT.NONE);
 		historyComp.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		historyComp.setLayout(new GridLayout(5, false));
@@ -325,7 +333,7 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 		});
 
 		// Group Execution control
-		Group grpExecutionControl = new Group(parent, SWT.NONE);
+		Group grpExecutionControl = new Group(scrolledContent, SWT.NONE);
 		grpExecutionControl.setText("Execution control");
 		grpExecutionControl.setLayout(new GridLayout(2, false));
 		grpExecutionControl.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
@@ -365,6 +373,9 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 		});
 		
 		updateEditor();
+		
+		scrolledComposite.setMinSize(scrolledContent.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+		scrolledContent.layout();
 
 		//unset dirty flag as input is just loaded from file
 		setDirty(false);
