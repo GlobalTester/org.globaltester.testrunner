@@ -31,6 +31,7 @@ import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.swt.SWT;
@@ -253,11 +254,11 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 		Composite execStateTreeComp = new Composite(grpExecutionresults, SWT.NONE);
 		execStateTreeComp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1));
 		Tree executionStateTree = new Tree(execStateTreeComp, SWT.BORDER
-				| SWT.H_SCROLL | SWT.V_SCROLL);
+				| SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION);
 		executionStateTree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 //		executionStateTree.setSize(811, 45);
 		executionStateTree.setHeaderVisible(true);
-		treeViewer = new AllColumnsEditableTreeViewer(executionStateTree);
+		treeViewer = new TreeViewer(executionStateTree);
 		
 		TreeColumn columnName = new TreeColumn(executionStateTree, SWT.LEFT);
 		executionStateTree.setLinesVisible(true);
@@ -300,7 +301,7 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 			@Override
 			protected CellEditor getCellEditor(Object element) {
 				if (element instanceof AbstractTestExecution){
-					return new SilentTextCellEditor(treeViewer.getTree());
+					return new TextCellEditor(treeViewer.getTree());
 				}
 				return null;
 			}
