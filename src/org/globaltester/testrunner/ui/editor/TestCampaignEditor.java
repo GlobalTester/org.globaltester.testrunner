@@ -286,7 +286,6 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 					if (!result.getComment().equals(value)){
 						result.setComment((String)value);
 						treeViewer.refresh();
-						setDirty(true);
 					}
 				}
 			}
@@ -301,6 +300,8 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 			@Override
 			protected CellEditor getCellEditor(Object element) {
 				if (element instanceof AbstractTestExecution){
+					// set editor dirty if cell is going to be edited
+					setDirty(true);
 					return new TextCellEditor(treeViewer.getTree());
 				}
 				return null;
