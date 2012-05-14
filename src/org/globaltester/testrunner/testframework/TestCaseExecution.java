@@ -190,7 +190,7 @@ public class TestCaseExecution extends FileTestExecution {
 			for (int i = 0; i < testStepExecutionElements.size(); i++) {
 				TestStepExecution exec = new TestStepExecution(testSteps.get(i), this);
 				exec.extractFromXml(testStepExecutionElements.get(i));
-				preConExecutions.add(exec);
+				testStepExecutions.add(exec);
 				result.addSubResult(exec.getResult());
 			}
 		}
@@ -203,7 +203,7 @@ public class TestCaseExecution extends FileTestExecution {
 			for (int i = 0; i < postConditionExecutionElements.size(); i++) {
 				PostConditionExecution exec = new PostConditionExecution(postConditions.get(i), this);
 				exec.extractFromXml(postConditionExecutionElements.get(i));
-				preConExecutions.add(exec);
+				postConExecutions.add(exec);
 				result.addSubResult(exec.getResult());
 			}
 		}

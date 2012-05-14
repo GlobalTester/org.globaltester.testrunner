@@ -35,7 +35,7 @@ public class Result implements Serializable{
 
 	public Result(Status newStatus, String newComment) {
 		this.status = newStatus;
-		setComment(comment);
+		setComment(newComment);
 	}
 
 	public String getComment() {
