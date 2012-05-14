@@ -64,10 +64,12 @@ public class TestCampaignExecution extends FileTestExecution {
 							.getInstance(iFile.getProject().getFile(filename));
 
 					if (fileTestExecution instanceof TestCaseExecution) {
-						elementExecutions
-								.add(((TestCaseExecution) fileTestExecution));
+						TestCaseExecution exec = (TestCaseExecution) fileTestExecution;
+						elementExecutions.add(exec);
+						result.addSubResult(exec.getResult());
 					}
 				}
+				result.rebuildStatus();
 			}
 		} catch (CoreException e) {
 			// TODO Auto-generated catch block

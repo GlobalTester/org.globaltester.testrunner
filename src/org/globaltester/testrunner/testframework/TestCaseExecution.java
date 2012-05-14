@@ -21,9 +21,9 @@ import org.mozilla.javascript.Context;
 
 public class TestCaseExecution extends FileTestExecution {
 
-	private LinkedList<ActionStepExecution> preConExecutions;
-	private LinkedList<ActionStepExecution> testStepExecutions;
-	private LinkedList<ActionStepExecution> postConExecutions;
+	private LinkedList<ActionStepExecution> preConExecutions = new LinkedList<ActionStepExecution>();
+	private LinkedList<ActionStepExecution> testStepExecutions = new LinkedList<ActionStepExecution>();
+	private LinkedList<ActionStepExecution> postConExecutions = new LinkedList<ActionStepExecution>();
 
 	protected TestCaseExecution(IFile iFile) throws CoreException {
 		super(iFile);
@@ -49,7 +49,6 @@ public class TestCaseExecution extends FileTestExecution {
 	 */
 	private void initFromTestCase() {
 		//create execution objects for Preconditions
-		preConExecutions = new LinkedList<ActionStepExecution>();
 		List<PreCondition> preCons = getTestCase().getPreConditions();
 		if (preCons != null) {
 			for (Iterator<PreCondition> testStepIter = preCons.iterator(); testStepIter
@@ -59,7 +58,6 @@ public class TestCaseExecution extends FileTestExecution {
 		}
 		
 		//create execution objects for TestSteps
-		testStepExecutions = new LinkedList<ActionStepExecution>();
 		List<TestStep> testSteps = getTestCase().getTestSteps();
 		if (testSteps != null) {
 			for (Iterator<TestStep> testStepIter = testSteps.iterator(); testStepIter
@@ -68,8 +66,7 @@ public class TestCaseExecution extends FileTestExecution {
 			}
 		}
 		
-		//create exectuiont objects for Postconditions
-		postConExecutions = new LinkedList<ActionStepExecution>();
+		//create execution objects for Postconditions
 		List<PostCondition> postCons = getTestCase().getPostConditions();
 		if (postCons != null) {
 			for (Iterator<PostCondition> postConIter = postCons.iterator(); postConIter
@@ -167,12 +164,50 @@ public class TestCaseExecution extends FileTestExecution {
 		return "TestCaseExecution";
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	void extractFromXml(Element root) {
 		super.extractFromXml(root);
-		initFromTestCase();
+
+		// extract preconditions
+		List<Element> preConditionExecutionElements = root.getChildren("PreConditionExecution");
+		List<PreCondition> preConditions = getTestCase().getPreConditions();
+				
+		if (preConditionExecutionElements.size() == preConditions.size()) {
+			for (int i = 0; i < preConditionExecutionElements.size(); i++) {
+				PreConditionExecution exec = new PreConditionExecution(preConditions.get(i), this);
+				exec.extractFromXml(preConditionExecutionElements.get(i));
+				preConExecutions.add(exec);
+				result.addSubResult(exec.getResult());
+			}
+		}
 		
-		//FIXME MBK extract the information stored in rootElement about ActionSteps 
+		// extract teststeps
+		List<Element> testStepExecutionElements = root.getChildren("TestStepExecution");
+		List<TestStep> testSteps = getTestCase().getTestSteps();
+				
+		if (testStepExecutionElements.size() == testSteps.size()) {
+			for (int i = 0; i < testStepExecutionElements.size(); i++) {
+				TestStepExecution exec = new TestStepExecution(testSteps.get(i), this);
+				exec.extractFromXml(testStepExecutionElements.get(i));
+				preConExecutions.add(exec);
+				result.addSubResult(exec.getResult());
+			}
+		}
+		
+		// extract postconditions
+		List<Element> postConditionExecutionElements = root.getChildren("PostConditionExecution");
+		List<PostCondition> postConditions = getTestCase().getPostConditions();
+				
+		if (postConditionExecutionElements.size() == postConditions.size()) {
+			for (int i = 0; i < postConditionExecutionElements.size(); i++) {
+				PostConditionExecution exec = new PostConditionExecution(postConditions.get(i), this);
+				exec.extractFromXml(postConditionExecutionElements.get(i));
+				preConExecutions.add(exec);
+				result.addSubResult(exec.getResult());
+			}
+		}
+		result.rebuildStatus();
 	}
 
 	@Override

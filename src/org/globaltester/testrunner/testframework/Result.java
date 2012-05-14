@@ -31,6 +31,7 @@ public class Result implements Serializable{
 
 	public Result(Status newStatus) {
 		this.status = newStatus;
+		comment = "";
 	}
 
 	public Result(Status newStatus, String newComment) {
