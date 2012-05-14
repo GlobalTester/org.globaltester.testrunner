@@ -30,12 +30,11 @@ public class Result implements Serializable{
 	protected ArrayList<Result> subResults = new ArrayList<Result>();
 
 	public Result(Status newStatus) {
-		this.status = newStatus;
-		comment = "";
+		this(newStatus, "");
 	}
 
 	public Result(Status newStatus, String newComment) {
-		this(newStatus);
+		this.status = newStatus;
 		setComment(comment);
 	}
 
