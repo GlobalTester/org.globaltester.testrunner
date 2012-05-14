@@ -81,6 +81,7 @@ import org.globaltester.testrunner.testframework.AbstractTestExecution;
 import org.globaltester.testrunner.testframework.ActionStepExecution;
 import org.globaltester.testrunner.testframework.FileTestExecution;
 import org.globaltester.testrunner.testframework.IExecution;
+import org.globaltester.testrunner.testframework.Result;
 import org.globaltester.testrunner.testframework.TestCampaign;
 import org.globaltester.testrunner.testframework.TestCampaignExecution;
 import org.globaltester.testrunner.ui.Activator;
@@ -280,9 +281,12 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 			@Override
 			protected void setValue(Object element, Object value) {
 				if (element instanceof AbstractTestExecution && value instanceof String){
-					((AbstractTestExecution) element).getResult().setComment((String)value);
-					treeViewer.refresh();
-					setDirty(true);
+					Result result = ((AbstractTestExecution) element).getResult();
+					if (!result.getComment().equals(value)){
+						result.setComment((String)value);
+						treeViewer.refresh();
+						setDirty(true);
+					}
 				}
 			}
 			
