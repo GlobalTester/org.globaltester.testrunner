@@ -395,8 +395,7 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 						monitor.beginTask("Execution started...", 10);
 						// execute tests
 						try {
-							CardConfig cardConfig = cardConfigSelector
-									.getSelectedConfig();
+							CardConfig cardConfig = getSelectedCardConfig();
 							input.getTestCampaign().executeTests(cardConfig);
 						} catch (CoreException e) {
 							StatusManager.getManager().handle(e,
@@ -689,5 +688,9 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 				}
 			}
 		}
+	}
+
+	public CardConfig getSelectedCardConfig() {
+		return cardConfigSelector.getSelectedConfig();
 	}
 }
