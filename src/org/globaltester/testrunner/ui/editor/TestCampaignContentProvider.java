@@ -27,9 +27,13 @@ import org.globaltester.testrunner.testframework.TestCampaignExecution;
 public class TestCampaignContentProvider implements ITreeContentProvider,
 		ITreeChangeListener {
 	private Map<ITreeObservable, Set<Viewer>> listenerMapping = new HashMap<ITreeObservable, Set<Viewer>>();
-	
+
 	@Override
 	public Object[] getChildren(Object parentElement) {
+		if (parentElement instanceof TestCampaignEditorInput) {
+			return new TestCampaignExecution[] { ((TestCampaignEditorInput) parentElement)
+					.getCurrentlyDisplayedTestCampaignExecution() };
+		}
 		if ((parentElement instanceof IExecution)
 				&& ((IExecution) parentElement).hasChildren())
 			return ((IExecution) parentElement).getChildren().toArray();
@@ -38,18 +42,24 @@ public class TestCampaignContentProvider implements ITreeContentProvider,
 
 	@Override
 	public Object getParent(Object element) {
-		if (element instanceof TestCampaignExecution){
+		if (element instanceof TestCampaignExecution) {
 			try {
-				return ((TestCampaignExecution) element).getGtTestCampaignProject();
+				return ((TestCampaignExecution) element)
+						.getGtTestCampaignProject();
 			} catch (CoreException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}}
+			}
+		}
 		return null;
 	}
 
 	@Override
 	public boolean hasChildren(Object element) {
+		if (element instanceof TestCampaignEditorInput) {
+			return ((TestCampaignEditorInput) element)
+					.getArrayOfTestCampaignExecutions().length > 0;
+		}
 		if (element instanceof IExecution)
 			return ((IExecution) element).hasChildren();
 		return false;
@@ -101,20 +111,19 @@ public class TestCampaignContentProvider implements ITreeContentProvider,
 	@Override
 	public void notifyTreeChange(Object notifier, boolean structureChanged,
 			Object[] changedElements, String[] properties) {
-		
+
 		final Object fNotifier = notifier;
 		final boolean fStructureChanged = structureChanged;
 		final Object[] fChangedElements = changedElements;
 		final String[] fProperties = properties;
-		
-		
+
 		Display.getDefault().asyncExec(new Runnable() {
 			@Override
 			public void run() {
 
 				if (listenerMapping.containsKey(fNotifier)) {
-					Iterator<Viewer> viewerIter = listenerMapping.get(fNotifier)
-							.iterator();
+					Iterator<Viewer> viewerIter = listenerMapping
+							.get(fNotifier).iterator();
 
 					while (viewerIter.hasNext()) {
 						Viewer viewer = (Viewer) viewerIter.next();
@@ -123,8 +132,8 @@ public class TestCampaignContentProvider implements ITreeContentProvider,
 								|| !(viewer instanceof StructuredViewer)) {
 							viewer.refresh();
 						} else {
-							((StructuredViewer) viewer).update(fChangedElements,
-									fProperties);
+							((StructuredViewer) viewer).update(
+									fChangedElements, fProperties);
 						}
 					}
 				}

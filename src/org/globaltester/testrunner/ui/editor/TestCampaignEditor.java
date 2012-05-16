@@ -630,7 +630,7 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 				TestCampaignExecution toDisplay = input.getCurrentlyDisplayedTestCampaignExecution();
 				if (toDisplay != null) {
 					cardConfigViewer.setInput(toDisplay.getCardConfig());
-					treeViewer.setInput(toDisplay);
+					treeViewer.setInput(input);
 					treeViewer.expandAll();
 				}
 				// set buttons according to displayed TestCampaignExecution

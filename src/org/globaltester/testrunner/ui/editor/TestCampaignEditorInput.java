@@ -123,7 +123,7 @@ public class TestCampaignEditorInput extends FileEditorInput {
 			curExec.getStatus();
 			String comment = curExec.getComment();
 			if ((comment != null) && (comment.trim().length() > 0)) {
-				execStrings[i] += "// " + comment.trim();
+				execStrings[i] += " // " + comment.trim();
 			}
 		}
 		return execStrings;

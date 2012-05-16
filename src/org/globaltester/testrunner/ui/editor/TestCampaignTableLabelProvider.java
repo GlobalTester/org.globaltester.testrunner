@@ -8,6 +8,7 @@ import org.globaltester.testrunner.testframework.ActionStepExecution;
 import org.globaltester.testrunner.testframework.IExecution;
 import org.globaltester.testrunner.testframework.TestCampaign;
 import org.globaltester.testrunner.testframework.TestCampaignElement;
+import org.globaltester.testrunner.testframework.TestCampaignExecution;
 import org.globaltester.testrunner.testframework.TestCaseExecution;
 import org.globaltester.testrunner.ui.NonUiImages;
 import org.globaltester.testrunner.ui.UiImages;
@@ -17,6 +18,8 @@ public class TestCampaignTableLabelProvider implements ITableLabelProvider {
 	public Image getColumnImage(Object element, int columnIndex) {
 		switch (columnIndex) {
 		case 0:
+			if (element instanceof TestCampaignExecution)
+				return UiImages.CAMPAIGN_TESTSUITE_ICON.getImage();
 			if (element instanceof TestCampaign)
 				return UiImages.CAMPAIGN_TESTSUITE_ICON.getImage();
 			if (element instanceof TestCaseExecution)
