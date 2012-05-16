@@ -380,6 +380,7 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 
 		cardConfigSelector = new CardConfigSelector(grpExecutionControl, CardConfigSelector.ALL_BUTTONS);
 		cardConfigSelector.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		cardConfigSelector.setSelection(input.getCurrentTestCampaignExecution().getCardConfig());
 		
 		Button btnExecute = new Button(grpExecutionControl, SWT.NONE);
 		btnExecute.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false,
