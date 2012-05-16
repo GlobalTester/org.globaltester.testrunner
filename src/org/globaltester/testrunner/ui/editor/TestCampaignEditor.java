@@ -51,7 +51,6 @@ import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
@@ -450,10 +449,9 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 		.getFirstElement();
 		FileTestExecution fte = null;
 		
-		if(obj instanceof TestCampaign){
-			MessageBox dialog = new MessageBox(getShell(), SWT.APPLICATION_MODAL);
-			dialog.setMessage("Open TestCase is not available for TestCampaigns");
-			dialog.open();
+		if (obj instanceof TestCampaign) {
+			GtUiHelper.openErrorDialog(getShell(),
+					"Open TestCase is not available for TestCampaigns");
 		} else if (obj != null) {
 			if (obj instanceof FileTestExecution) {
 				fte = (FileTestExecution) obj;

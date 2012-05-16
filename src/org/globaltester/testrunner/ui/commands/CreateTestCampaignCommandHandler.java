@@ -12,8 +12,11 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.handlers.HandlerUtil;
 import org.globaltester.core.GtDateHelper;
 import org.globaltester.core.ui.GtUiHelper;
 import org.globaltester.logging.logger.GtErrorLogger;
@@ -36,23 +39,28 @@ public class CreateTestCampaignCommandHandler extends AbstractHandler {
 				.getSelectionService().getSelection();
 
 		// try to create the project
-		GtTestCampaignProject newProject;
+		GtTestCampaignProject newProject = null;
 		try {
-			newProject = createTestCampaignProject(iSel);
+			Shell shell = HandlerUtil.getActiveWorkbenchWindow(event).getShell();
+			newProject = createTestCampaignProject(iSel, shell);
 		} catch (CoreException e) {
-			throw new ExecutionException(
-					"ExecutionProject could not be created", e);
-		}
-
-		// open the new TestCampaign in the Test Campaign Editor
-		try {
-			GtUiHelper.openInEditor(newProject.getTestCampaignIFile());
-		} catch (CoreException e) {
-			// log Exception to eclipse log
 			GtErrorLogger.log(Activator.PLUGIN_ID, e);
+		}
+		
+		if (newProject == null) {
+			//no project was created, user is already informed
+			return null;
+		} else {
+			// open the new TestCampaign in the Test Campaign Editor
+			try {
+				GtUiHelper.openInEditor(newProject.getTestCampaignIFile());
+			} catch (CoreException e) {
+				// log Exception to eclipse log
+				GtErrorLogger.log(Activator.PLUGIN_ID, e);
 
-			// users most probably will ignore this behavior and open editor
-			// manually, so do not open annoying dialog
+				// users most probably will ignore this behavior and open editor
+				// manually, so do not open annoying dialog
+			}
 		}
 
 		return null;
@@ -65,21 +73,29 @@ public class CreateTestCampaignCommandHandler extends AbstractHandler {
 		return projectName;
 	}
 
+	/**
+	 * 
+	 * @param projectName name of created project
+	 * @param iSel selection that contains 
+	 * @param shell Shell used for error dialogs
+	 * @return
+	 * @throws CoreException
+	 */
 	public static GtTestCampaignProject createTestCampaignProject(
-			String projectName, ISelection iSel) throws ExecutionException,
-			CoreException {
+			String projectName, ISelection iSel, Shell shell) throws CoreException {
 
 		LinkedList<IFile> selectedIFiles = GtUiHelper.getSelectedIResource(iSel, IFile.class);
 		if (selectedIFiles.isEmpty()) {
-			throw new ExecutionException(
-					"No TestCampaignProject could be created because selection does not contain an IFile");
+			GtUiHelper.openErrorDialog(shell,
+				"No TestCampaignProject could be created because selection does not contain an IFile");
+			return null;
 		}
 
-		return createTestCampaignProject(projectName, selectedIFiles);
+		return createTestCampaignProject(projectName, selectedIFiles, shell);
 	}
 
 	public static GtTestCampaignProject createTestCampaignProject(
-			IFile testExecutableFile) throws ExecutionException, CoreException {
+			IFile testExecutableFile, Shell shell) throws CoreException {
 
 		// build a list containing the given testExecutableFile
 		LinkedList<IFile> listExecutableFiles = new LinkedList<IFile>();
@@ -87,12 +103,12 @@ public class CreateTestCampaignCommandHandler extends AbstractHandler {
 
 		// create the TestCampaignProject
 		return createTestCampaignProject(getNewProjectName(),
-				listExecutableFiles);
+				listExecutableFiles, shell);
 	}
 
 	public static GtTestCampaignProject createTestCampaignProject(
-			String projectName, Collection<IFile> testExecutableFiles)
-			throws ExecutionException, CoreException {
+			String projectName, Collection<IFile> testExecutableFiles, Shell shell)
+			throws CoreException {
 		// create the new TestCampaign project
 		IProject iProject = GtTestCampaignProject.createProject(projectName,
 				null);
@@ -104,15 +120,23 @@ public class CreateTestCampaignCommandHandler extends AbstractHandler {
 		while (execFilesIter.hasNext()) {
 			IFile iFile = execFilesIter.next();
 
-			FileTestExecutable testExecutable;
+			FileTestExecutable testExecutable = null;
 			try {
 				testExecutable = TestExecutableFactory.getInstance(iFile);
 			} catch (CoreException e) {
-				throw new ExecutionException(
-						"No TestExectubale could be created from one of the selected resources",
-						e);
+
+				continue;
 			}
-			runProject.getTestCampaign().addExecutable(testExecutable);
+			if (testExecutable != null) {
+				runProject.getTestCampaign().addExecutable(testExecutable);
+			}
+		}
+		
+		if (runProject.getTestCampaign().getTestCampaignElements().size() <= 0) {
+			GtUiHelper.openErrorDialog(shell,
+				"None of the given files represents a TestExectubale. Refuse to create empty TestCampaign.");
+			iProject.delete(true, true, new NullProgressMonitor());
+			return null;
 		}
 
 		// save the new project
@@ -135,8 +159,8 @@ public class CreateTestCampaignCommandHandler extends AbstractHandler {
 	}
 
 	public static GtTestCampaignProject createTestCampaignProject(
-			ISelection iSel) throws ExecutionException, CoreException {
-		return createTestCampaignProject(getNewProjectName(), iSel);
+			ISelection iSel, Shell shell) throws CoreException {
+		return createTestCampaignProject(getNewProjectName(), iSel, shell);
 	}
 
 }
