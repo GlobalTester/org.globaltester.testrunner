@@ -253,9 +253,8 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 		Composite execStateTreeComp = new Composite(grpExecutionresults, SWT.NONE);
 		execStateTreeComp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1));
 		Tree executionStateTree = new Tree(execStateTreeComp, SWT.BORDER
-				| SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION);
+				| SWT.FULL_SELECTION);
 		executionStateTree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-//		executionStateTree.setSize(811, 45);
 		executionStateTree.setHeaderVisible(true);
 		treeViewer = new TreeViewer(executionStateTree);
 		
@@ -414,6 +413,7 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 		updateEditor();
 		
 		scrolledComposite.setMinSize(scrolledContent.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+		scrolledContent.pack();
 		scrolledContent.layout();
 
 		//unset dirty flag as input is just loaded from file
