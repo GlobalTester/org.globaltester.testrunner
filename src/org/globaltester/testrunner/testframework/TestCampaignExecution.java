@@ -152,7 +152,9 @@ public class TestCampaignExecution extends FileTestExecution {
 
 	@Override
 	public String getComment() {
-		// TODO Auto-generated method stub
+		if (result != null) {
+			return result.getComment();
+		}
 		return "";
 	}
 
