@@ -681,10 +681,21 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 				IResourceDelta campaignExecutionDelta = rootDelta
 						.findMember(input.getCurrentTestCampaignExecution()
 								.getIFile().getFullPath());
-				// update if ressource was a TestCampaignExecution
+				
 				if (campaignExecutionDelta != null) {
-					input.stepToNewest();
-					updateEditor();
+					if (campaignExecutionDelta.getKind() == IResourceDelta.REMOVED) {
+						//close the editor when the TestCampaign is deleted
+						PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+							@Override
+							public void run() {
+								getSite().getPage().closeEditor(TestCampaignEditor.this, false); 
+							}
+						});
+					} else {
+						// update the editor to reflect resource changes
+						input.stepToNewest();
+						updateEditor();
+					}
 				}
 			}
 		}
