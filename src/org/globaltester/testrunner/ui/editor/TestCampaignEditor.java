@@ -55,6 +55,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
@@ -94,6 +95,7 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 	public static final String ID = "org.globaltester.testrunner.ui.testcampaigneditor";
 	private TestCampaignEditorInput input;
 	private CardConfigEditorWidget cardConfigViewer;
+	private Tree executionStateTree;
 	private TreeViewer treeViewer;
 	private boolean dirty = false;
 	private Text txtSpecName;
@@ -101,7 +103,7 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 	private CardConfigSelector cardConfigSelector;
 
 	// some actions defined for this view
-	private Action actionShowTestCase;
+	private Action actionShowSpec;
 	private Action actionShowLog;
 	private Action doubleClickAction;
 	private Button btnOldest;
@@ -252,10 +254,11 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 		
 		Composite execStateTreeComp = new Composite(grpExecutionresults, SWT.NONE);
 		execStateTreeComp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1));
-		Tree executionStateTree = new Tree(execStateTreeComp, SWT.BORDER
+		executionStateTree = new Tree(execStateTreeComp, SWT.BORDER
 				| SWT.FULL_SELECTION);
 		executionStateTree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		executionStateTree.setHeaderVisible(true);
+		executionStateTree.addSelectionListener(this);
 		treeViewer = new TreeViewer(executionStateTree);
 		
 		TreeColumn columnName = new TreeColumn(executionStateTree, SWT.LEFT);
@@ -436,7 +439,7 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 	}
 
 	private void fillContextMenu(IMenuManager manager) {
-		manager.add(actionShowTestCase);
+		manager.add(actionShowSpec);
 		manager.add(actionShowLog);
 		
 		// Other plug-ins can contribute there actions here
@@ -488,15 +491,15 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 	private void makeActions() {
 
 		// show test case:
-		actionShowTestCase = new Action() {
+		actionShowSpec = new Action() {
 			public void run(){
 				openTestCase();
 			}
 		};
 
-		actionShowTestCase.setText("Show test case");
-		actionShowTestCase.setToolTipText("Show test case");
-		actionShowTestCase.setImageDescriptor(PlatformUI.getWorkbench()
+		actionShowSpec.setText("Show specification");
+		actionShowSpec.setToolTipText("Show test case");
+		actionShowSpec.setImageDescriptor(PlatformUI.getWorkbench()
 				.getSharedImages().getImageDescriptor(
 						ISharedImages.IMG_TOOL_PASTE));
 
@@ -649,6 +652,22 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 	
 	@Override
 	public void widgetSelected(SelectionEvent e) {
+		if (e.getSource() == executionStateTree){
+			boolean enableLogAction = false;
+			boolean enableSpecAction = false;
+			if ( e.item instanceof TreeItem) {
+				TreeItem treeItem = (TreeItem) e.item;
+				Object data = treeItem.getData();
+				if (data instanceof AbstractTestExecution) {
+					String logFileName = ((AbstractTestExecution)data).getLogFileName();
+					enableLogAction = (logFileName != null) && (logFileName.trim().length() > 0);
+					enableSpecAction = !(data instanceof TestCampaignExecution);
+				}
+			}
+			actionShowLog.setEnabled(enableLogAction);
+			actionShowSpec.setEnabled(enableSpecAction);
+			return;
+		}
 		if (e.getSource() == btnNewest){
 			input.stepToNewest();
 		} else if (e.getSource() == btnOldest){
