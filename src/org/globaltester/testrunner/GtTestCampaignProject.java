@@ -17,7 +17,6 @@ import org.globaltester.core.GtDateHelper;
 import org.globaltester.core.resources.GtResourceHelper;
 import org.globaltester.interfaces.ITreeChangeListener;
 import org.globaltester.interfaces.ITreeObservable;
-import org.globaltester.logging.logger.GTLogger;
 import org.globaltester.logging.logger.GtErrorLogger;
 import org.globaltester.testrunner.testframework.TestCampaign;
 import org.globaltester.testspecification.testframework.FileTestExecutable;
@@ -126,7 +125,7 @@ public class GtTestCampaignProject implements ITreeObservable {
 	public String getNewResultDir() {
 		// initialize test logging for this test session
 		IFolder defaultLoggingDir = iProject.getFolder(RESULT_FOLDER
-				+ File.separator + GTLogger.getIsoDate());
+				+ File.separator + GtDateHelper.getCurrentTimeString());
 		try {
 			GtResourceHelper.createWithAllParents(defaultLoggingDir);
 		} catch (CoreException e) {
