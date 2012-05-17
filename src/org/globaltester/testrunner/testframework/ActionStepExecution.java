@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.globaltester.logging.logger.TestLogger;
 import org.globaltester.smartcardshell.ScriptRunner;
 import org.globaltester.testrunner.testframework.Result.Status;
@@ -14,7 +16,7 @@ import org.mozilla.javascript.Context;
 
 public abstract class ActionStepExecution extends AbstractTestExecution {
 
-	private ActionStep testStep;
+	private ActionStep actionStep;
 	
 	Result expResultsExecutionResults;
 
@@ -27,15 +29,24 @@ public abstract class ActionStepExecution extends AbstractTestExecution {
 	 * @param step	TestStep this execution instance should execute
 	 */
 	protected ActionStepExecution(ActionStep step, IExecution parentExecution) {
-		testStep = step;
+		actionStep = step;
 		parent = parentExecution;
 	}
 
 	@Override
-	public void execute(ScriptRunner sr, Context cx, boolean forceExecution, boolean reExecution) {
+	public void execute(ScriptRunner sr, Context cx, boolean forceExecution, boolean reExecution, IProgressMonitor monitor) {
+		if (monitor == null) {
+			monitor= new NullProgressMonitor();
+		}
+		
+		try {
+			monitor.beginTask("Execute " + actionStep.getName() + ": ", 2+actionStep.getExpectedResults().size()); //workitems: initialization + technicalCommand, + one per Result
+		
+			monitor.subTask("Initialization");
+		
 		//log TestStep ID and Command
-		TestLogger.info(String.format(TestLogger.DEFAULTFORMAT, "TestStep: "+ testStep.getId()));
-		Element commandElem = testStep.getCommand();
+		TestLogger.info(String.format(TestLogger.DEFAULTFORMAT, "TestStep: "+ actionStep.getId()));
+		Element commandElem = actionStep.getCommand();
 		if (commandElem != null) {
 			String command = commandElem.getTextNormalize();
 			Element commandTextElem = commandElem.getChild("Text", commandElem.getNamespace());
@@ -50,7 +61,7 @@ public abstract class ActionStepExecution extends AbstractTestExecution {
 		}
 		
 		//log TestStep descriptions
-		Iterator<String> descrIter = testStep.getDescriptions().iterator();
+		Iterator<String> descrIter = actionStep.getDescriptions().iterator();
 		while (descrIter.hasNext()) {
 			TestLogger.debug(String.format(TestLogger.DEFAULTFORMAT, "Description: "+descrIter.next()));			
 		}
@@ -58,22 +69,27 @@ public abstract class ActionStepExecution extends AbstractTestExecution {
 		//init the executor with context and script runner
 		ActionStepExecutor stepExecutor = new ActionStepExecutor(sr, cx);
 		
+		monitor.worked(1);
+		
 		//execute the test step itself
-		String techCommandCode = testStep.getTechnicalCommand();
+		monitor.subTask("Execute command");
+		String techCommandCode = actionStep.getTechnicalCommand();
 		if ((techCommandCode != null) && (techCommandCode.trim().length() > 0)) {
-			commandResult = stepExecutor.execute(techCommandCode, testStep.getId()+" - Command");
+			commandResult = stepExecutor.execute(techCommandCode, actionStep.getId()+" - Command");
 		} else {
 			//if no code can be executed the result of the step itself is always ok
 			commandResult = new Result(Status.PASSED);
 		}
+		monitor.worked(1);
 		
 		//execute all ExpectedResults
-		List<ExpectedResult> expResultDefs = testStep.getExpectedResults();
+		List<ExpectedResult> expResultDefs = actionStep.getExpectedResults();
 		expResultsExecutionResults = new OrResult(Status.PASSED);
 		for (Iterator<ExpectedResult> expResultIter = expResultDefs.iterator(); expResultIter
 				.hasNext();) {
 			ExpectedResult curResult = expResultIter.next();
 			
+			monitor.subTask("ExpectedResult: " + curResult.getId());
 			TestLogger.info(String.format(TestLogger.DEFAULTFORMAT, "ExpectedResult: " + curResult.getId()));
 			
 			//log ExpectedResult descriptions
@@ -86,12 +102,13 @@ public abstract class ActionStepExecution extends AbstractTestExecution {
 			Result curExecutionResult;
 			String techResultCode = curResult.getTechnicalResult();
 			if ((techResultCode != null) && (techResultCode.trim().length() > 0)) {
-				curExecutionResult = stepExecutor.execute(techResultCode, testStep.getId()+" - Expected Result "+curResult.getId());
+				curExecutionResult = stepExecutor.execute(techResultCode, actionStep.getId()+" - Expected Result "+curResult.getId());
 			} else {
 				//if no code can be executed the result of the result is always ok
 				curExecutionResult = new Result(Status.PASSED);
 			}
 			expResultsExecutionResults.addSubResult(curExecutionResult);
+			monitor.worked(1);
 		}
 		
 		
@@ -99,6 +116,10 @@ public abstract class ActionStepExecution extends AbstractTestExecution {
 		result = new Result(Status.PASSED);
 		result.addSubResult(commandResult);
 		result.addSubResult(expResultsExecutionResults);
+		
+		} finally {
+			monitor.done();
+		}
 	}
 
 	@Override
@@ -121,7 +142,7 @@ public abstract class ActionStepExecution extends AbstractTestExecution {
 
 	@Override
 	public String getName() {
-		return testStep.getName();
+		return actionStep.getName();
 	}
 
 	@Override
@@ -150,7 +171,7 @@ public abstract class ActionStepExecution extends AbstractTestExecution {
 
 	@Override
 	public String getId() {
-		return testStep.getId();
+		return actionStep.getId();
 	}
 
 }

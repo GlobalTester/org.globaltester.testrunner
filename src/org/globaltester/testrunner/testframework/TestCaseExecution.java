@@ -7,6 +7,9 @@ import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.SubProgressMonitor;
 import org.globaltester.core.xml.XMLHelper;
 import org.globaltester.logging.logger.TestLogger;
 import org.globaltester.smartcardshell.ScriptRunner;
@@ -104,7 +107,14 @@ public class TestCaseExecution extends FileTestExecution {
 	}
 
 	@Override
-	protected void execute(ScriptRunner sr, Context cx, boolean forceExecution, boolean reExecution) {
+	protected void execute(ScriptRunner sr, Context cx, boolean forceExecution, boolean reExecution, IProgressMonitor monitor) {
+		if (monitor == null){
+			monitor = new NullProgressMonitor();
+		}
+		try {
+			
+		monitor.beginTask("Execute TestCase "+getName() , getChildren().size());
+		
 		//make sure that failures are counted for each test case seperately
 		ResultFactory.reset();
 		
@@ -115,12 +125,10 @@ public class TestCaseExecution extends FileTestExecution {
 
 		// iterate over all preconditions and execute them
 		TestLogger.info("Running Preconditions");
-		
-		
 		for (Iterator<ActionStepExecution> preConIter = preConExecutions.iterator(); preConIter
-				.hasNext();) {
+				.hasNext() && !monitor.isCanceled();) {
 			ActionStepExecution curStepExec = preConIter.next();
-			curStepExec.execute(sr, cx, forceExecution);
+			curStepExec.execute(sr, cx, forceExecution, new SubProgressMonitor(monitor, 1));
 			
 			result.addSubResult(curStepExec.getResult());
 		}
@@ -128,9 +136,9 @@ public class TestCaseExecution extends FileTestExecution {
 		// iterate over all test steps and execute them
 		TestLogger.info("Running TestSteps");
 		for (Iterator<ActionStepExecution> testStepIter = testStepExecutions.iterator(); testStepIter
-				.hasNext();) {
+				.hasNext() && !monitor.isCanceled();) {
 			ActionStepExecution curStepExec = testStepIter.next();
-			curStepExec.execute(sr, cx, forceExecution);
+			curStepExec.execute(sr, cx, forceExecution, new SubProgressMonitor(monitor, 1));
 			
 			result.addSubResult(curStepExec.getResult());
 		}
@@ -139,11 +147,14 @@ public class TestCaseExecution extends FileTestExecution {
 		// iterate over all postconditions and execute them
 		TestLogger.info("Running Postconditions");
 		for (Iterator<ActionStepExecution> postConIter = postConExecutions.iterator(); postConIter
-				.hasNext();) {
+				.hasNext() && !monitor.isCanceled();) {
 			ActionStepExecution curStepExec = postConIter.next();
-			curStepExec.execute(sr, cx, forceExecution);
+			curStepExec.execute(sr, cx, forceExecution, new SubProgressMonitor(monitor, 1));
 			
 			result.addSubResult(curStepExec.getResult());
+		}
+		} finally {
+			monitor.done();
 		}
 		
 	}

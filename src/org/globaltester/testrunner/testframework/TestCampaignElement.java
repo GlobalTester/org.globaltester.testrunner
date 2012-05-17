@@ -2,6 +2,7 @@ package org.globaltester.testrunner.testframework;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.globaltester.logging.logger.TestLogger;
 import org.globaltester.smartcardshell.ScriptRunner;
 import org.globaltester.testspecification.testframework.FileTestExecutable;
@@ -67,7 +68,7 @@ public class TestCampaignElement {
 	 * @param forceExecution
 	 * @return 
 	 */
-	FileTestExecution execute(ScriptRunner sr, Context cx, boolean forceExecution) {
+	FileTestExecution execute(ScriptRunner sr, Context cx, boolean forceExecution, IProgressMonitor monitor) {
 
 		// create a new TestExecution this TestCampaignElement
 		FileTestExecution testExecution = null;
@@ -85,7 +86,7 @@ public class TestCampaignElement {
 			testExecution.setLogFileName(TestLogger.getTestCaseLogFileName());
 
 			// execute the TestExecutable
-			testExecution.execute(sr, cx, forceExecution);
+			testExecution.execute(sr, cx, forceExecution, monitor);
 
 			// dump execution information to logfile
 			TestLogger.shutdownTestExecutableLogger();

@@ -3,6 +3,7 @@ package org.globaltester.testrunner.testframework;
 import java.text.DateFormat;
 import java.util.Date;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.globaltester.logging.logger.TestLogger;
 import org.globaltester.smartcardshell.ScriptRunner;
 import org.globaltester.testrunner.testframework.Result.Status;
@@ -114,7 +115,7 @@ public abstract class AbstractTestExecution implements IExecution {
 	 *            is still valid, if true code is only executed if no previous
 	 *            execution is still valid
 	 */
-	public void execute(ScriptRunner sr, Context cx, boolean forceExecution) {
+	public void execute(ScriptRunner sr, Context cx, boolean forceExecution, IProgressMonitor monitor) {
 		// set the execution time
 		boolean reExecution = lastExecutionStartTime != 0;
 
@@ -125,7 +126,7 @@ public abstract class AbstractTestExecution implements IExecution {
 		logFileLine = TestLogger.getLogFileLine();
 		
 		// forward the execution to the implementing class
-		execute(sr, cx, forceExecution, reExecution);
+		execute(sr, cx, forceExecution, reExecution, monitor);
 
 		// calculate execution duration
 		lastExecutionDuration = new Date().getTime() - lastExecutionStartTime;
@@ -142,9 +143,10 @@ public abstract class AbstractTestExecution implements IExecution {
 	 *            if true the code is executed regardles if previous execution
 	 *            is still valid, if true code is only executed if no previous
 	 *            execution is still valid
+	 * @param monitor 
 	 */
 	protected abstract void execute(ScriptRunner sr, Context cx,
-			boolean forceExecution, boolean reExecution);
+			boolean forceExecution, boolean reExecution, IProgressMonitor monitor);
 
 	public long getLastExecutionStartTime() {
 		return lastExecutionStartTime;

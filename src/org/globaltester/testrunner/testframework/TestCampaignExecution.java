@@ -8,6 +8,9 @@ import java.util.List;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.SubProgressMonitor;
 import org.globaltester.cardconfiguration.CardConfig;
 import org.globaltester.core.resources.GtResourceHelper;
 import org.globaltester.core.xml.XMLHelper;
@@ -204,14 +207,24 @@ public class TestCampaignExecution extends FileTestExecution {
 
 	@Override
 	protected void execute(ScriptRunner sr, Context cx, boolean forceExecution,
-			boolean reExecution) {
+			boolean reExecution, IProgressMonitor monitor) {
+		if (monitor == null) {
+			monitor = new NullProgressMonitor();
+		}
+		try {
 		// execute all included TestCampaignElements
 		List<TestCampaignElement> elements = getTestCampaign().getTestCampaignElements();
+		monitor.beginTask("Execute TestCampaign", elements.size());
 		for (Iterator<TestCampaignElement> elemIter = elements.iterator(); elemIter
-				.hasNext();) {
-			FileTestExecution curExec = elemIter.next().execute(sr, cx, false);
+				.hasNext() && !monitor.isCanceled();) {
+			TestCampaignElement curElem = elemIter.next();
+			monitor.subTask(curElem.getExecutable().getName());
+			FileTestExecution curExec = curElem.execute(sr, cx, false, new SubProgressMonitor(monitor, 1));
 			elementExecutions.add(curExec);
 			result.addSubResult(curExec.getResult());
+		}
+		}finally{
+		monitor.done();	
 		}
 
 	}
@@ -238,35 +251,52 @@ public class TestCampaignExecution extends FileTestExecution {
 		return cardConfig;
 	}
 	
-	public void execute() throws CoreException {
-		
-		// (re)initialize the TestLogger
-		if (TestLogger.isInitialized()) {
-			TestLogger.shutdown();
+	public void execute(IProgressMonitor monitor) throws CoreException {
+
+		if (monitor == null) {
+			monitor= new NullProgressMonitor();
 		}
-		// initialize test logging for this test session
-		GtTestCampaignProject project = getTestCampaign().getProject();
-		IFolder defaultLoggingDir = project.getDefaultLoggingDir();
-		GtResourceHelper.createWithAllParents(defaultLoggingDir);
 		
-		TestLogger.init(project.getNewResultDir());	
-		setLogFileName(TestLogger.getLogFileName());
-
-		// init JS ScriptRunner and Context
-		Context cx = Context.enter();
-		ScriptRunner sr = new ScriptRunner(cx, project.getIProject()
-				.getLocation().toOSString());
-		sr.init(cx);
-		sr.initCard(cx, "card", cardConfig);
+		try {
+			monitor.beginTask("Execute TestCampaign: ", 2 + getTestCampaign().getTestCampaignElements().size());
 		
-		execute(sr, cx, false);
+			monitor.subTask("Initialization");
+			
+			// (re)initialize the TestLogger
+			if (TestLogger.isInitialized()) {
+				TestLogger.shutdown();
+			}
+			// initialize test logging for this test session
+			GtTestCampaignProject project = getTestCampaign().getProject();
+			IFolder defaultLoggingDir = project.getDefaultLoggingDir();
+			GtResourceHelper.createWithAllParents(defaultLoggingDir);
 
+			TestLogger.init(project.getNewResultDir());
+			setLogFileName(TestLogger.getLogFileName());
 
-		// close JS context
-		Context.exit();
+			// init JS ScriptRunner and Context
+			Context cx = Context.enter();
+			ScriptRunner sr = new ScriptRunner(cx, project.getIProject()
+					.getLocation().toOSString());
+			sr.init(cx);
+			sr.initCard(cx, "card", cardConfig);
+			monitor.worked(1);
 
-		// shutdown the TestLogger
-		TestLogger.shutdown();
+			execute(sr, cx, false, new SubProgressMonitor(monitor, getTestCampaign().getTestCampaignElements().size()));
+
+			monitor.subTask("Shutdown");
+			
+			// close JS context
+			Context.exit();
+
+			// shutdown the TestLogger
+			TestLogger.shutdown();
+			
+			monitor.worked(1);
+
+		} finally {
+			monitor.done();
+		}
 	}
 
 	/**

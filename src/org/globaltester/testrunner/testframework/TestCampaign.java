@@ -9,6 +9,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.globaltester.cardconfiguration.CardConfig;
 import org.globaltester.core.xml.XMLHelper;
 import org.globaltester.testrunner.GtTestCampaignProject;
@@ -175,11 +176,11 @@ public class TestCampaign {
 	/**
 	 * Execute all tests that need to be executed e.g. which do not have a valid
 	 * previous execution associated
+	 * @param monitor 
 	 * 
 	 * @throws CoreException
 	 */
-	public void executeTests(CardConfig cardConfig) throws CoreException {
-		//FIXME make this method capable of handling a IProgressMonitor
+	public void executeTests(CardConfig cardConfig, IProgressMonitor monitor) throws CoreException {
 
 		// create a new TestExecution this TestCampaignElement
 		TestCampaignExecution currentExecution = null;
@@ -199,7 +200,7 @@ public class TestCampaign {
 		currentExecution.setCardConfig(cardConfig.getCloneForExecution());
 
 		// execute the TestExecutable
-		currentExecution.execute();
+		currentExecution.execute(monitor);
 		
 		// save the new state
 		project.doSave();
