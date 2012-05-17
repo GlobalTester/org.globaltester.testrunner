@@ -381,7 +381,9 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 
 		cardConfigSelector = new CardConfigSelector(grpExecutionControl, CardConfigSelector.ALL_BUTTONS);
 		cardConfigSelector.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-		cardConfigSelector.setSelection(input.getCurrentTestCampaignExecution().getCardConfig());
+		if (input.getCurrentTestCampaignExecution() != null) {
+			cardConfigSelector.setSelection(input.getCurrentTestCampaignExecution().getCardConfig());
+		}
 		
 		Button btnExecute = new Button(grpExecutionControl, SWT.NONE);
 		btnExecute.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false,
@@ -394,16 +396,14 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 				Job job = new Job("Test execution") {
 
 					protected IStatus run(IProgressMonitor monitor) {
-						monitor.beginTask("Execution started...", 10);
 						// execute tests
 						try {
 							CardConfig cardConfig = getSelectedCardConfig();
-							input.getTestCampaign().executeTests(cardConfig);
+							input.getTestCampaign().executeTests(cardConfig, monitor);
 						} catch (CoreException e) {
 							StatusManager.getManager().handle(e,
 									Activator.PLUGIN_ID);
 						}
-						monitor.done();
 						return Status.OK_STATUS;
 					}
 				};

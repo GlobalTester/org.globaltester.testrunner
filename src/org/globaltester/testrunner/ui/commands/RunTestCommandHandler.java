@@ -9,6 +9,10 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
@@ -29,6 +33,9 @@ import org.globaltester.testrunner.ui.editor.TestCampaignEditorInput;
 
 public class RunTestCommandHandler extends AbstractHandler {
 
+	private GtTestCampaignProject campaingProject = null;
+	private CardConfig cardConfig = null;
+	
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		// check for dirty files and save them
@@ -37,8 +44,8 @@ public class RunTestCommandHandler extends AbstractHandler {
 		}
 
 		// get TestCampaign and CardConfig from user selection
-		GtTestCampaignProject campaingProject = null;
-		CardConfig cardConfig = null;
+		campaingProject = null;
+		cardConfig = null;
 
 		Shell shell = HandlerUtil.getActiveWorkbenchWindow(event).getShell();
 		IWorkbenchPart activePart = Activator.getDefault().getWorkbench()
@@ -81,35 +88,56 @@ public class RunTestCommandHandler extends AbstractHandler {
 		}
 
 		// execute the TestCampaign
-		try {
-			campaingProject.getTestCampaign().executeTests(cardConfig);
-		} catch (CoreException e) {
-			GtErrorLogger.log(Activator.PLUGIN_ID, e);
-		}
 
-		// refresh the workspace
-		try {
-			ResourcesPlugin.getWorkspace().getRoot()
-					.refreshLocal(IResource.DEPTH_INFINITE, null);
-		} catch (CoreException e) {
-			// log Exception to eclipse log
-			GtErrorLogger.log(Activator.PLUGIN_ID, e);
+		
+		Job job = new Job("Test execution") {
 
-			// users most probably will ignore this behavior and refresh
-			// workspace manually, so do not open annoying dialog
-		}
+			protected IStatus run(IProgressMonitor monitor) {
+				// execute tests
+				try {
+					campaingProject.getTestCampaign().executeTests(cardConfig,
+							monitor);
+				} catch (CoreException e) {
+					GtErrorLogger.log(Activator.PLUGIN_ID, e);
+				}
 
-		// open the new TestCampaign in the Test Campaign Editor
-		try {
-			GtUiHelper.openInEditor(campaingProject.getTestCampaignIFile());
-		} catch (CoreException e) {
-			// log Exception to eclipse log
-			GtErrorLogger.log(Activator.PLUGIN_ID, e);
+				// refresh the workspace
+				try {
+					ResourcesPlugin.getWorkspace().getRoot()
+							.refreshLocal(IResource.DEPTH_INFINITE, null);
+				} catch (CoreException e) {
+					// log Exception to eclipse log
+					GtErrorLogger.log(Activator.PLUGIN_ID, e);
 
-			// users most probably will ignore this behavior and open editor
-			// manually, so do not open annoying dialog
-		}
+					// users most probably will ignore this behavior and refresh
+					// workspace manually, so do not open annoying dialog
+				}
 
+				// open the new TestCampaign in the Test Campaign Editor
+				PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+					
+					@Override
+					public void run() {
+						try {
+							GtUiHelper.openInEditor(campaingProject
+									.getTestCampaignIFile());
+						} catch (CoreException e) {
+							// log Exception to eclipse log
+							GtErrorLogger.log(Activator.PLUGIN_ID, e);
+
+							// users most probably will ignore this behavior and open
+							// editor
+							// manually, so do not open annoying dialog
+						}
+					}
+				});
+				
+				return Status.OK_STATUS;
+			}
+		};
+		job.setUser(true);
+		job.schedule();
+		
 		return null;
 	}
 
