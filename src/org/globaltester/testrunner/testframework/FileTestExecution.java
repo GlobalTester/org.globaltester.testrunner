@@ -20,8 +20,8 @@ public abstract class FileTestExecution extends AbstractTestExecution {
 
 	// Constants defining status of specific testexecution
 	public static final int STATUS_PASSED = 0;
+	public static final int STATUS_WARNING = Failure.WARNING;
 	public static final int STATUS_FAILURE = Failure.FAILURE;
-	public static final int STATUS_WARNING = 2;
 	public static final int STATUS_UNDEFINED = 3;
 	public static final int STATUS_NOT_APPLICABLE = 4;
 	public static final int STATUS_ABORTED = 5;

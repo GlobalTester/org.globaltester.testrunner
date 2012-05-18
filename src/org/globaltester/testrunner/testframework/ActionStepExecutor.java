@@ -14,7 +14,6 @@ import org.mozilla.javascript.WrappedException;
 import de.cardcontact.scdp.gp.GPError;
 
 public class ActionStepExecutor {
-	private static final int LOGFILELINE = 0; //TODO remove this dummy and add the corresponding log file lines where possible
 
 	private ScriptRunner scriptRunner;
 	private Context context;
@@ -40,7 +39,7 @@ public class ActionStepExecutor {
 				unwrappedEx = ex.getCause();
 			}
 			return ResultFactory.newFailure(FileTestExecution.STATUS_FAILURE,
-					0, LOGFILELINE, unwrappedEx.toString());
+					0, TestLogger.getLogFileLine(), unwrappedEx.toString());
 
 		} catch (Exception ex) {
 
@@ -66,7 +65,7 @@ public class ActionStepExecutor {
 							jseo);
 					String receivedValue = (String) jseo.get("receivedValue",
 							jseo);
-					return ResultFactory.newFailure(rating, scriptLine, LOGFILELINE, msg, expectedValue,
+					return ResultFactory.newFailure(rating, scriptLine, TestLogger.getLogFileLine(), msg, expectedValue,
 							receivedValue);
 				}
 
@@ -130,15 +129,15 @@ public class ActionStepExecutor {
 						return false;
 					}
 					*/
-					return ResultFactory.newFailure(rating, scriptLine, LOGFILELINE, msg);
+					return ResultFactory.newFailure(rating, scriptLine, TestLogger.getLogFileLine(), msg);
 					
 				} else { // if (jseo instanceof GPError)
-					return ResultFactory.newFailure(FileTestExecution.STATUS_FAILURE, 0, LOGFILELINE, jse.toString());
+					return ResultFactory.newFailure(FileTestExecution.STATUS_FAILURE, 0, TestLogger.getLogFileLine(), jse.toString());
 				}
 			} else {
 				// this exception is thrown e. g. by ECMA exceptions
 				// this might be a following error, so handle it as warning
-				return ResultFactory.newFailure(FileTestExecution.STATUS_WARNING, 0, LOGFILELINE, ex.toString());
+				return ResultFactory.newFailure(FileTestExecution.STATUS_WARNING, 0, TestLogger.getLogFileLine(), ex.toString());
 			}
 		}
 		

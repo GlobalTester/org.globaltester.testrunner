@@ -17,6 +17,14 @@ package org.globaltester.testrunner.testframework;
 
 import java.io.Serializable;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.preferences.IPreferencesService;
+import org.globaltester.core.resources.GtResourceHelper;
 import org.globaltester.logging.logger.TestLogger;
 
 /**
@@ -36,8 +44,9 @@ public class Failure extends Result implements Serializable {
 	// constants defining failure Rating
 	// do not change these values, as they are referred to in TestCase class for
 	// further constants
-	public static final int FAILURE = 1;
-	public static final int WARNING = 2;
+	public static final int WARNING = 1;
+	public static final int FAILURE = 2;
+	
 	
 	//map failure ratings to strings
 	public static final String[] RATING_STRINGS = new String[] { "undefined", "FAILURE",
@@ -102,7 +111,7 @@ public class Failure extends Result implements Serializable {
 	 * @param expectedValue
 	 *            expected value of this failure
 	 * @param receivedValue
-	 *            receivedValue
+	 *            receivedValuee
 	 */
 	public Failure(int id, int rating, int lineScript, int lineLogFile,
 			String failureText, String expectedValue, String receivedValue) {
@@ -116,7 +125,68 @@ public class Failure extends Result implements Serializable {
 		this.failureText = failureText;
 		this.expectedValue = expectedValue;
 		this.receivedValue = receivedValue;
-		TestLogger.info("@FailureID" + id + ":  " + failureText);		
+		TestLogger.info("@FailureID" + id + ":  " + failureText);
+		
+		// refresh the workspace
+		try {
+			ResourcesPlugin.getWorkspace().getRoot()
+					.refreshLocal(IResource.DEPTH_INFINITE, null);
+		} catch (CoreException e) {
+			//ignore, this may lead to problems later when adding markers, but these will be hendled then
+		}
+		
+		//add markers
+		IFile logFile = GtResourceHelper.getIFileForLocation(TestLogger.getLogFileName());
+		IFile tcLogFile = GtResourceHelper.getIFileForLocation(TestLogger.getTestCaseLogFileName());
+		addMarker(logFile);
+		if ((tcLogFile != null) && (!tcLogFile.equals(logFile))) {
+			addMarker(tcLogFile);
+		}
+	}
+		   
+	private void addMarker(IFile file) {
+			if (file == null) return;
+		try {
+			IMarker marker = file
+					.createMarker("org.globaltester.testrunner.GTFailureMarker");
+			marker.setAttribute("expectedValue", getExpectedValue());
+			marker.setAttribute("receivedValue", getReceivedValue());
+			marker.setAttribute(IMarker.LINE_NUMBER, getLineLogFile());
+
+			//set message
+			if (getExpectedValue() != null
+					&& getReceivedValue() != null) {
+				String message = getFailureText()
+						+ " (Expected value: "
+						+ getExpectedValue()
+						+ "; received value: "
+						+ getReceivedValue() + ")";
+				marker.setAttribute(IMarker.MESSAGE, message);
+			} else {
+				marker.setAttribute(IMarker.MESSAGE, getFailureText());
+			}
+			
+			//set severity
+			if (getRating() == Failure.WARNING) {
+				marker.setAttribute(IMarker.SEVERITY,
+						IMarker.SEVERITY_WARNING);
+			} else {
+				marker.setAttribute(IMarker.SEVERITY,
+						IMarker.SEVERITY_ERROR);
+			}
+
+			// store markers persistent if needed
+			IPreferencesService prefService = Platform.getPreferencesService();
+			if (prefService.getBoolean(org.globaltester.logging.Activator.PLUGIN_ID,
+					org.globaltester.logging.preferences.PreferenceConstants.P_TEST_PERSISTENTMARKER, false, null)) {
+				marker.setAttribute(IMarker.TRANSIENT, true);
+			} else {
+				marker.setAttribute(IMarker.TRANSIENT, false);
+			}
+			
+		} catch (CoreException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
