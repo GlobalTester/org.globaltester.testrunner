@@ -87,7 +87,7 @@ public class CreateTestCampaignCommandHandler extends AbstractHandler {
 		LinkedList<IFile> selectedIFiles = GtUiHelper.getSelectedIResource(iSel, IFile.class);
 		if (selectedIFiles.isEmpty()) {
 			GtUiHelper.openErrorDialog(shell,
-				"No TestCampaignProject could be created because selection does not contain an IFile");
+				"No TestCampaign could be created because selection does not contain an executable test file.");
 			return null;
 		}
 
@@ -134,7 +134,7 @@ public class CreateTestCampaignCommandHandler extends AbstractHandler {
 		
 		if (runProject.getTestCampaign().getTestCampaignElements().size() <= 0) {
 			GtUiHelper.openErrorDialog(shell,
-				"None of the given files represents a TestExectubale. Refuse to create empty TestCampaign.");
+				"None of the given files represents an executable test. Refuse to create empty TestCampaign.");
 			iProject.delete(true, true, new NullProgressMonitor());
 			return null;
 		}
