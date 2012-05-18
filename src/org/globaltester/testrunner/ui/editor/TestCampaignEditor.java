@@ -96,6 +96,9 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 	
 	public static final String ID = "org.globaltester.testrunner.ui.testcampaigneditor";
 	private TestCampaignEditorInput input;
+	private ScrolledComposite scrolledComposite;
+	private Composite scrolledContent;
+	
 	private CardConfigEditorWidget cardConfigViewer;
 	private Tree executionStateTree;
 	private TreeViewer treeViewer;
@@ -178,11 +181,11 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 	public void createPartControl(Composite parent) {
 		parent.setLayout(new FillLayout());
 		
-		ScrolledComposite scrolledComposite = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL);
+		scrolledComposite = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL);
 		scrolledComposite.setExpandHorizontal(true);
 	    scrolledComposite.setExpandVertical(true);
 	    
-		Composite scrolledContent = new Composite(scrolledComposite, SWT.NONE);
+		scrolledContent = new Composite(scrolledComposite, SWT.NONE);
 		scrolledContent.setLayout(new GridLayout(1, false));
 		scrolledComposite.setContent(scrolledContent);
 
@@ -416,12 +419,6 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 		});
 		
 		updateEditor();
-		
-		Point calculatedSize = scrolledContent.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-		calculatedSize.y += 1;
-		scrolledComposite.setMinSize(calculatedSize);
-		scrolledContent.pack();
-		scrolledContent.layout();
 
 		//unset dirty flag as input is just loaded from file
 		setDirty(false);
@@ -658,6 +655,15 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 				//set input for Combo and select current displayed
 				cmbExecutionSelector.setItems(input.getArrayOfTestCampaignExecutions());
 				cmbExecutionSelector.select(input.getIndexOfCurrentlyDisplayedTestCampaignExecution());
+
+				//recalculate size
+				Point calculatedSize = scrolledContent.computeSize(scrolledComposite.getBounds().width, SWT.DEFAULT);
+				calculatedSize.x -= 1;
+				calculatedSize.y += 1;
+				scrolledComposite.setMinSize(calculatedSize);
+				scrolledContent.pack();
+				scrolledContent.layout();
+
 			}
 		});		
 		
