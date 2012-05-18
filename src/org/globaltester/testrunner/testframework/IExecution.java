@@ -2,7 +2,10 @@ package org.globaltester.testrunner.testframework;
 
 import java.util.Collection;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.globaltester.smartcardshell.ScriptRunner;
 import org.globaltester.testrunner.testframework.Result.Status;
+import org.mozilla.javascript.Context;
 
 public interface IExecution {
 
@@ -27,5 +30,10 @@ public interface IExecution {
 	public abstract String getLogFileName();
 	
 	public abstract int getLogFileLine();
+
+	public abstract Result getResult();
+
+	public abstract void execute(ScriptRunner sr, Context cx, boolean b,
+			IProgressMonitor monitor);
 
 }

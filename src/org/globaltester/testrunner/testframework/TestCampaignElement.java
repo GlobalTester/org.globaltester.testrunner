@@ -3,7 +3,6 @@ package org.globaltester.testrunner.testframework;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.globaltester.logging.logger.TestLogger;
 import org.globaltester.smartcardshell.ScriptRunner;
 import org.globaltester.testspecification.testframework.FileTestExecutable;
 import org.globaltester.testspecification.testframework.TestExecutableFactory;
@@ -80,17 +79,8 @@ public class TestCampaignElement {
 		}
 
 		if (testExecution != null) {
-			
-			// dump execution information to logfile
-			TestLogger.initTestExecutable(testExecution.getId());
-			testExecution.setLogFileName(TestLogger.getTestCaseLogFileName());
-
 			// execute the TestExecutable
 			testExecution.execute(sr, cx, forceExecution, monitor);
-
-			// dump execution information to logfile
-			TestLogger.shutdownTestExecutableLogger();
-
 		}
 		
 		return testExecution;

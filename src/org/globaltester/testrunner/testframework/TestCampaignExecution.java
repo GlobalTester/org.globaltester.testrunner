@@ -14,6 +14,8 @@ import org.eclipse.core.runtime.SubProgressMonitor;
 import org.globaltester.cardconfiguration.CardConfig;
 import org.globaltester.core.resources.GtResourceHelper;
 import org.globaltester.core.xml.XMLHelper;
+import org.globaltester.testrunner.Activator;
+import org.globaltester.logging.logger.GtErrorLogger;
 import org.globaltester.logging.logger.TestLogger;
 import org.globaltester.smartcardshell.ScriptRunner;
 import org.globaltester.testrunner.GtTestCampaignProject;
@@ -127,8 +129,30 @@ public class TestCampaignExecution extends FileTestExecution {
 		// persist the specFile to the GtTestCampaignProject
 		specFile = getGtTestCampaignProject().getTestCampaignIFile();
 
+		initFromTestCampaign();
+		
 		// store this configuration
 		doSave();
+	}
+
+	private void initFromTestCampaign() {
+		
+		List<TestCampaignElement> elements = getTestCampaign().getTestCampaignElements();
+		for (Iterator<TestCampaignElement> elemIter = elements.iterator(); elemIter
+				.hasNext();) {
+			TestCampaignElement curElem = elemIter.next();
+			
+			// create a new TestExecution this TestCampaignElement
+			FileTestExecution curExec = null;
+			try {
+				curExec = FileTestExecutionFactory.createExecution(curElem);
+				elementExecutions.add(curExec);
+			} catch (CoreException e) {
+				GtErrorLogger.log(Activator.PLUGIN_ID, e);
+			}
+			
+		}
+		
 	}
 
 	@Override
@@ -212,17 +236,17 @@ public class TestCampaignExecution extends FileTestExecution {
 			monitor = new NullProgressMonitor();
 		}
 		try {
-		// execute all included TestCampaignElements
-		List<TestCampaignElement> elements = getTestCampaign().getTestCampaignElements();
-		monitor.beginTask("Execute TestCampaign", elements.size());
-		for (Iterator<TestCampaignElement> elemIter = elements.iterator(); elemIter
-				.hasNext() && !monitor.isCanceled();) {
-			TestCampaignElement curElem = elemIter.next();
-			monitor.subTask(curElem.getExecutable().getName());
-			FileTestExecution curExec = curElem.execute(sr, cx, false, new SubProgressMonitor(monitor, 1));
-			elementExecutions.add(curExec);
-			result.addSubResult(curExec.getResult());
-		}
+		
+			monitor.beginTask("Execute TestCampaign", elementExecutions.size());
+			// execute all included TestCampaignElements
+			for (Iterator<IExecution> elemIter = elementExecutions.iterator(); elemIter
+					.hasNext() && !monitor.isCanceled();) {
+				IExecution curExec= elemIter.next();
+				monitor.subTask(curExec.getName());
+				curExec.execute(sr, cx, false,
+						new NullProgressMonitor());
+				result.addSubResult(curExec.getResult());
+			}
 		}finally{
 		monitor.done();	
 		}

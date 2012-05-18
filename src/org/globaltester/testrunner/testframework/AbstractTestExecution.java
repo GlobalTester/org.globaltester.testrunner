@@ -116,6 +116,11 @@ public abstract class AbstractTestExecution implements IExecution {
 	 *            execution is still valid
 	 */
 	public void execute(ScriptRunner sr, Context cx, boolean forceExecution, IProgressMonitor monitor) {
+		// dump execution information to logfile
+		TestLogger.initTestExecutable(getId());
+		setLogFileName(TestLogger.getTestCaseLogFileName());
+
+		
 		// set the execution time
 		boolean reExecution = lastExecutionStartTime != 0;
 
@@ -130,6 +135,11 @@ public abstract class AbstractTestExecution implements IExecution {
 
 		// calculate execution duration
 		lastExecutionDuration = new Date().getTime() - lastExecutionStartTime;
+		
+
+		// dump execution information to logfile
+		TestLogger.shutdownTestExecutableLogger();
+
 	}
 
 	/**
