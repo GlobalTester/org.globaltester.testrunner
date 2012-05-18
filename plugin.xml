@@ -65,6 +65,7 @@
             class="org.globaltester.testrunner.ui.editor.TestCampaignEditor"
             icon="icons/testcampaign.png"
             id="org.globaltester.testrunner.ui.testcampaigneditor"
+            matchingStrategy="org.globaltester.testrunner.ui.editor.TestCampaignEditorMatchingStrategy"
             name="GT TestCampaign Editor">
          <contentTypeBinding
                contentTypeId="org.globaltester.testrunner.contenttypes.TestCampaign">
