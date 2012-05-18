@@ -41,6 +41,7 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -416,7 +417,9 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 		
 		updateEditor();
 		
-		scrolledComposite.setMinSize(scrolledContent.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+		Point calculatedSize = scrolledContent.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		calculatedSize.y += 1;
+		scrolledComposite.setMinSize(calculatedSize);
 		scrolledContent.pack();
 		scrolledContent.layout();
 
