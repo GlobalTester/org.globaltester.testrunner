@@ -623,7 +623,7 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 
 	@Override
 	public void setFocus() {
-		// TODO Auto-generated method stub
+		txtSpecName.setFocus();
 	}
 
 	private void setDirty(boolean dirty) {
