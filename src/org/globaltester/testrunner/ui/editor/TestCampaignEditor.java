@@ -76,6 +76,7 @@ import org.globaltester.cardconfiguration.ui.CardConfigEditorWidget;
 import org.globaltester.cardconfiguration.ui.CardConfigSelector;
 import org.globaltester.core.ui.GtUiHelper;
 import org.globaltester.logging.logger.GTLogger;
+import org.globaltester.logging.ui.editors.LogfileEditor;
 import org.globaltester.testrunner.report.ReportPdfGenerator;
 import org.globaltester.testrunner.report.TestReport;
 import org.globaltester.testrunner.testframework.AbstractTestExecution;
@@ -466,7 +467,7 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 			}
 			if (fte != null) {
 				IFile file = fte.getSpecFile();
-				showFile(file, 0);
+				showFile(file, 0, null);
 			}
 		}
 	}
@@ -542,14 +543,19 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 		});
 	}
 
-
 	/**
 	 * Show files from local workspace in and editor and select given line
 	 * 
-	 * @param file			the IFile to be opened
-	 * @param line			line to be highlighted
+	 * @param file
+	 *            the IFile to be opened
+	 * @param line
+	 *            line to be highlighted
+	 * @param editorID
+	 *            ID of Editor to use, if null the method tries to resolve the
+	 *            editor based on content-type bindings as well as traditional
+	 *            name/extension bindings.
 	 */
-	private void showFile(IFile file, int line) {
+	private void showFile(IFile file, int line, String editorID) {
 
 		IEditorPart editor;
 		ITextEditor textEditor = null;
@@ -559,7 +565,11 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 
 		try {
 			if (file != null && file.exists()) {
-				editor = IDE.openEditor(page, file, true);
+				if (editorID != null) {
+					editor = IDE.openEditor(page, file, editorID);
+				} else {
+					editor = IDE.openEditor(page, file, true);
+				}
 				textEditor = (ITextEditor) editor.getAdapter(ITextEditor.class);
 			} else {
 				GtUiHelper.openErrorDialog(getShell(),
@@ -604,7 +614,7 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 		IFile file = ResourcesPlugin.getWorkspace().getRoot()
 		.getFileForLocation(path);
 
-		showFile(file, line);
+		showFile(file, line, LogfileEditor.EDITOR_ID);
 	}
 
 
