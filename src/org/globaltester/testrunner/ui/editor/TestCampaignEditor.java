@@ -640,12 +640,19 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 			
 			@Override
 			public void run() {
+				//do nothing if widgets are already disposed
+				if ((scrolledComposite == null)|| (scrolledComposite.isDisposed())){
+					return;
+				}
+				
+				//update inputs
 				TestCampaignExecution toDisplay = input.getCurrentlyDisplayedTestCampaignExecution();
 				if (toDisplay != null) {
 					cardConfigViewer.setInput(toDisplay.getCardConfig());
 					treeViewer.setInput(input);
 					treeViewer.expandAll();
 				}
+				
 				// set buttons according to displayed TestCampaignExecution
 				btnOldest.setEnabled(input.isStepBackwardsPossible());
 				btnStepBack.setEnabled(input.isStepBackwardsPossible());
