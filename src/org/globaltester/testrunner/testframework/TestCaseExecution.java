@@ -120,7 +120,9 @@ public class TestCaseExecution extends FileTestExecution {
 		
 		// TODO use variable forceExecution
 
-//		// dump execution information to logfile
+		// dump execution information to logfile
+		TestLogger.initTestExecutable(getId());
+		setLogFileName(TestLogger.getTestCaseLogFileName());
 		getTestCase().dumpTestCaseInfos();
 
 		// iterate over all preconditions and execute them
@@ -154,6 +156,9 @@ public class TestCaseExecution extends FileTestExecution {
 			result.addSubResult(curStepExec.getResult());
 		}
 		} finally {
+			// dump execution information to logfile
+			TestLogger.shutdownTestExecutableLogger();
+
 			monitor.done();
 		}
 		
