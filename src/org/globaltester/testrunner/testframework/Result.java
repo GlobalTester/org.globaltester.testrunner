@@ -68,15 +68,22 @@ public class Result implements Serializable{
 	void rebuildStatus() {
 		Status tmpStatus = Status.PASSED;
 
-		//search worst status in sub results
+		// search worst status in sub results
 		Iterator<Result> subResultIter = subResults.iterator();
-		while (subResultIter.hasNext()) {
+		iterationLoop: while (subResultIter.hasNext()) {
 			Result curResult = (Result) subResultIter.next();
-			if (curResult.getStatus() == Status.WARNING) {
-				tmpStatus = Status.WARNING;
-			} else if (curResult.getStatus() == Status.FAILURE) {
-				tmpStatus = Status.FAILURE;
+			switch (curResult.getStatus()) {
+			case UNDEFINED:
+				if (tmpStatus == Status.PASSED) {
+					tmpStatus = Status.UNDEFINED;
+				}
 				break;
+			case WARNING:
+				tmpStatus = Status.WARNING;
+				break;
+			case FAILURE:
+				tmpStatus = Status.FAILURE;
+				break iterationLoop;
 			}
 		}
 		
