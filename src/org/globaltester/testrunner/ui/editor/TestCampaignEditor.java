@@ -1,5 +1,6 @@
 package org.globaltester.testrunner.ui.editor;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.eclipse.core.resources.IFile;
@@ -14,11 +15,13 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
@@ -113,6 +116,9 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 	private Button btnStepForward;
 	private Button btnNewest;
 	
+	
+	private String baseDirName;
+	private boolean confirmDialogResult;
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
@@ -347,31 +353,79 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 				DirectoryDialog dialog = new DirectoryDialog(getShell());
 				dialog.setMessage("Please select location to store the report files");
 				dialog.setFilterPath(null); // do not filter at all
-				String baseDirName = dialog.open();
+				baseDirName = dialog.open();
 
-				if (baseDirName != null) {
-					// create report
-					TestReport report = new TestReport(input
-							.getCurrentlyDisplayedTestCampaignExecution(),
-							baseDirName);
+				Job job = new Job("PDF export") {
+					
+					@Override
+					public IStatus run(IProgressMonitor monitor) {
 
-					try {
-						// TODO output XML-Report here, if no pdf is desired
+						monitor.beginTask("Export PDF report", 2);
+						monitor.subTask("Create report");
+						
+						// create report
+						TestReport report = new TestReport(input
+								.getCurrentlyDisplayedTestCampaignExecution(),
+								baseDirName);
+						
+						monitor.worked(1);
 
-						// output pdf report
-						ReportPdfGenerator.writePdfReport(report);
-					} catch (IOException ex) {
-						IStatus status = new Status(Status.ERROR,
-								Activator.PLUGIN_ID,
-								"PDF report could not be created", ex);
-						StatusManager.getManager().handle(status,
-								StatusManager.SHOW);
+						if (baseDirName != null) {
+							monitor.subTask("Create PDF");
+							// check if file exists
+							boolean writeReport = true;
+							if (new File(report.getFileName("pdf")).exists()) {
+								writeReport = false;
+								
+								PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
+									
+									@Override
+									public void run() {
+										// TODO Auto-generated method stub
+										String message = "The selected destination file exists and will be overwritten, proceed?";
+										confirmDialogResult = MessageDialog.openConfirm(null, "Warning", message);
+									}
+								});
+								
+								if (confirmDialogResult) {
+									writeReport = true;
+								}
+							}
+
+							try {
+								// TODO output XML-Report here, if no pdf is
+								// desired
+
+								if (writeReport) {
+									// output pdf report
+									ReportPdfGenerator.writePdfReport(report);
+									monitor.worked(1);
+									PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
+										
+										@Override
+										public void run() {
+											MessageDialog.openInformation(null, "PDF report", "Report exported successfully.");
+										}
+									});
+								}
+
+							} catch (IOException ex) {
+								IStatus status = new Status(Status.ERROR,
+										Activator.PLUGIN_ID,
+										"PDF report could not be created", ex);
+								StatusManager.getManager().handle(status,
+										StatusManager.SHOW);
+							}
+
+							// TODO copy relevant logfiles
+						}
+						monitor.done();
+						return new Status(IStatus.OK, Activator.PLUGIN_ID, "Export successfull.");
 					}
-
-					// TODO copy relevant logfiles
-				}
+				};
+				job.setUser(true);
+				job.schedule();
 			}
-
 		});
 
 		updateEditor();
