@@ -9,7 +9,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.SubProgressMonitor;
 import org.globaltester.core.xml.XMLHelper;
 import org.globaltester.logging.logger.TestLogger;
 import org.globaltester.smartcardshell.ScriptRunner;
@@ -130,9 +129,10 @@ public class TestCaseExecution extends FileTestExecution {
 		for (Iterator<ActionStepExecution> preConIter = preConExecutions.iterator(); preConIter
 				.hasNext() && !monitor.isCanceled();) {
 			ActionStepExecution curStepExec = preConIter.next();
-			curStepExec.execute(sr, cx, forceExecution, new SubProgressMonitor(monitor, 1));
+			curStepExec.execute(sr, cx, forceExecution, new NullProgressMonitor());
 			
 			result.addSubResult(curStepExec.getResult());
+			monitor.worked(1);
 		}
 		
 		// iterate over all test steps and execute them
@@ -140,9 +140,10 @@ public class TestCaseExecution extends FileTestExecution {
 		for (Iterator<ActionStepExecution> testStepIter = testStepExecutions.iterator(); testStepIter
 				.hasNext() && !monitor.isCanceled();) {
 			ActionStepExecution curStepExec = testStepIter.next();
-			curStepExec.execute(sr, cx, forceExecution, new SubProgressMonitor(monitor, 1));
+			curStepExec.execute(sr, cx, forceExecution, new NullProgressMonitor());
 			
 			result.addSubResult(curStepExec.getResult());
+			monitor.worked(1);
 		}
 		
 
@@ -151,9 +152,10 @@ public class TestCaseExecution extends FileTestExecution {
 		for (Iterator<ActionStepExecution> postConIter = postConExecutions.iterator(); postConIter
 				.hasNext() && !monitor.isCanceled();) {
 			ActionStepExecution curStepExec = postConIter.next();
-			curStepExec.execute(sr, cx, forceExecution, new SubProgressMonitor(monitor, 1));
+			curStepExec.execute(sr, cx, forceExecution, new NullProgressMonitor());
 			
 			result.addSubResult(curStepExec.getResult());
+			monitor.worked(1);
 		}
 		} finally {
 			// dump execution information to logfile

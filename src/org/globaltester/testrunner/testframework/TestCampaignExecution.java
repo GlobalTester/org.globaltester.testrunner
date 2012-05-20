@@ -237,7 +237,7 @@ public class TestCampaignExecution extends FileTestExecution {
 		}
 		try {
 		
-			monitor.beginTask("Execute TestCampaign", elementExecutions.size());
+			monitor.beginTask("Execute TestCase ", elementExecutions.size());
 			// execute all included TestCampaignElements
 			for (Iterator<IExecution> elemIter = elementExecutions.iterator(); elemIter
 					.hasNext() && !monitor.isCanceled();) {
