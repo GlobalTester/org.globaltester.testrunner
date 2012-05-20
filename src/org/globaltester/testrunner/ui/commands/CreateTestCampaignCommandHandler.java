@@ -84,7 +84,7 @@ public class CreateTestCampaignCommandHandler extends AbstractHandler {
 	public static GtTestCampaignProject createTestCampaignProject(
 			String projectName, ISelection iSel, Shell shell) throws CoreException {
 
-		LinkedList<IFile> selectedIFiles = GtUiHelper.getSelectedIResource(iSel, IFile.class);
+		LinkedList<IFile> selectedIFiles = GtUiHelper.getSelectedIResources(iSel, IFile.class);
 		if (selectedIFiles.isEmpty()) {
 			GtUiHelper.openErrorDialog(shell,
 				"No TestCampaign could be created because selection does not contain an executable test file.");
