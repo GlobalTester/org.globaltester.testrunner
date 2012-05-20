@@ -47,10 +47,9 @@ public class RunTestCommandHandler extends AbstractHandler {
 			return null;
 		}
 
-		// get TestCampaign and CardConfig from user selection
+		// get TestCampaign from user selection
 		campaingProject = null;
-		cardConfig = null;
-
+		
 		Shell shell = HandlerUtil.getActiveWorkbenchWindow(event).getShell();
 		IWorkbenchPart activePart = Activator.getDefault().getWorkbench()
 				.getActiveWorkbenchWindow().getActivePage().getActivePart();
@@ -79,13 +78,20 @@ public class RunTestCommandHandler extends AbstractHandler {
 			return null;
 		}
 		
-		//try to get CardConfig from last CampaignExecution
-		cardConfig = getLastCardConfigFromTestCampaignProject(campaingProject);
-
-		//try to get CardConfig from Selection if none was defined in TestCampaign
-		if (cardConfig == null) {
-			cardConfig = getFirstCardConfigFromSelection();
+		//try to get CardConfig
+		cardConfig = null;
+		String selectCardConfigParam = event.getParameter("org.globaltester.testrunner.ui.SelectCardConfigParameter");
+		boolean forceSelection = (selectCardConfigParam != null) && selectCardConfigParam.trim().toLowerCase().equals("true");
+		if (!forceSelection) {
+			//try to get CardConfig from last CampaignExecution
+			cardConfig = getLastCardConfigFromTestCampaignProject(campaingProject);
+		
+			//try to get CardConfig from Selection if none was defined in TestCampaign
+			if (cardConfig == null) {
+				cardConfig = getFirstCardConfigFromSelection();
+			}
 		}
+
 		
 		// ask user for CardConfig if none was selected
 		if (cardConfig == null) {

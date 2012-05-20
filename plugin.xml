@@ -7,6 +7,11 @@
             defaultHandler="org.globaltester.testrunner.ui.commands.RunTestCommandHandler"
             id="org.globaltester.testrunner.ui.commands.RunTestCommand"
             name="Run Test">
+         <commandParameter
+               id="org.globaltester.testrunner.ui.SelectCardConfigParameter"
+               name="Select CardConfig"
+               optional="true">
+         </commandParameter>
       </command>
       <command
             defaultHandler="org.globaltester.testrunner.ui.commands.CreateTestCampaignCommandHandler"
@@ -41,11 +46,12 @@
                   id="org.globaltester.maintoolbar"
                   label="GlobalTester Toolbar">
                 <command
-                   commandId="org.globaltester.testrunner.ui.commands.RunTestCommand"
-                   icon="icons/execute.png"
-                   label="Run Test"
-                   style="push"
-                   tooltip="Create a new TestCampaign from selection and execute it">
+                      commandId="org.globaltester.testrunner.ui.commands.RunTestCommand"
+                      icon="icons/execute.png"
+                      id="org.globaltester.testrunner.ui.RunDropDown"
+                      label="Run Test"
+                      style="pulldown"
+                      tooltip="Create a new TestCampaign from selection and execute it">
                  </command>
                  <command
                    commandId="org.globaltester.testrunner.ui.commands.CreateTestCampaignCommand"
@@ -55,6 +61,22 @@
                    tooltip="Create a new TestCampaign from selection and open it">
                  </command>
             </toolbar>
+        </menuContribution>
+        <menuContribution
+              allPopups="false"
+              locationURI="menu:org.globaltester.testrunner.ui.RunDropDown">
+              <command
+                      commandId="org.globaltester.testrunner.ui.commands.RunTestCommand"
+                      icon="icons/execute.png"
+                      id="org.globaltester.testrunner.ui.RunDropDown"
+                      label="Run Test with other CardConfig"
+                      style="pulldown"
+                      tooltip="Create a new TestCampaign from selection and execute it with selected CardConfig">
+                 <parameter
+                       name="org.globaltester.testrunner.ui.SelectCardConfigParameter"
+                       value="true">
+                 </parameter>
+                 </command>
         </menuContribution>
     </extension>
 
