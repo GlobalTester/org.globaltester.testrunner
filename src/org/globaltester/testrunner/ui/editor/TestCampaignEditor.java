@@ -14,7 +14,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -72,9 +71,7 @@ import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.statushandlers.StatusManager;
 import org.eclipse.ui.texteditor.ITextEditor;
-import org.globaltester.cardconfiguration.CardConfig;
 import org.globaltester.cardconfiguration.ui.CardConfigEditorWidget;
-import org.globaltester.cardconfiguration.ui.CardConfigSelector;
 import org.globaltester.core.ui.GtUiHelper;
 import org.globaltester.logging.logger.GTLogger;
 import org.globaltester.logging.ui.editors.LogfileEditor;
@@ -105,7 +102,6 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 	private boolean dirty = false;
 	private Text txtSpecName;
 	private Text txtSpecVersion;
-	private CardConfigSelector cardConfigSelector;
 
 	// some actions defined for this view
 	private Action actionShowSpec;
@@ -378,46 +374,6 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 
 		});
 
-		// Group Execution control
-		Group grpExecutionControl = new Group(scrolledContent, SWT.NONE);
-		grpExecutionControl.setText("Execution control");
-		grpExecutionControl.setLayout(new GridLayout(2, false));
-		grpExecutionControl.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-
-		cardConfigSelector = new CardConfigSelector(grpExecutionControl, CardConfigSelector.ALL_BUTTONS);
-		cardConfigSelector.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-		if (input.getCurrentTestCampaignExecution() != null) {
-			cardConfigSelector.setSelection(input.getCurrentTestCampaignExecution().getCardConfig());
-		}
-		
-		Button btnExecute = new Button(grpExecutionControl, SWT.NONE);
-		btnExecute.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false,
-				false, 1, 1));
-		btnExecute.setSize(52, 25);
-		btnExecute.setText("Execute");
-		btnExecute.setImage(UiImages.EXECUTE_ICON.getImage());
-		btnExecute.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				Job job = new Job("Test execution") {
-
-					protected IStatus run(IProgressMonitor monitor) {
-						// execute tests
-						try {
-							CardConfig cardConfig = getSelectedCardConfig();
-							input.getTestCampaign().executeTests(cardConfig, monitor);
-						} catch (CoreException e) {
-							StatusManager.getManager().handle(e,
-									Activator.PLUGIN_ID);
-						}
-						return Status.OK_STATUS;
-					}
-				};
-				job.setUser(true);
-				job.schedule();
-
-			}
-		});
-		
 		updateEditor();
 
 		//unset dirty flag as input is just loaded from file
@@ -743,9 +699,5 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 				}
 			}
 		}
-	}
-
-	public CardConfig getSelectedCardConfig() {
-		return cardConfigSelector.getSelectedConfig();
 	}
 }
