@@ -179,9 +179,9 @@ public class Failure extends Result implements Serializable {
 			IPreferencesService prefService = Platform.getPreferencesService();
 			if (prefService.getBoolean(org.globaltester.logging.Activator.PLUGIN_ID,
 					org.globaltester.logging.preferences.PreferenceConstants.P_TEST_PERSISTENTMARKER, false, null)) {
-				marker.setAttribute(IMarker.TRANSIENT, true);
-			} else {
 				marker.setAttribute(IMarker.TRANSIENT, false);
+			} else {
+				marker.setAttribute(IMarker.TRANSIENT, true);
 			}
 			
 		} catch (CoreException e) {
