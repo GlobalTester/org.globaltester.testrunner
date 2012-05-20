@@ -246,6 +246,7 @@ public class TestCampaignExecution extends FileTestExecution {
 				curExec.execute(sr, cx, false,
 						new NullProgressMonitor());
 				result.addSubResult(curExec.getResult());
+				monitor.worked(1);
 			}
 		}finally{
 		monitor.done();	
