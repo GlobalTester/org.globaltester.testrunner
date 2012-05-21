@@ -118,7 +118,7 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 	
 	
 	private String baseDirName;
-	private boolean confirmDialogResult;
+	private boolean writeReport;
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
@@ -378,77 +378,84 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 				dialog.setMessage("Please select location to store the report files");
 				dialog.setFilterPath(null); // do not filter at all
 				baseDirName = dialog.open();
+				
+				if (baseDirName != null){
+					writeReport = true;
+					// check if file exists
+					File baseDir = new File(baseDirName);
+					if (baseDir.list().length > 0) {
 
-				Job job = new Job("PDF export") {
-					
-					@Override
-					public IStatus run(IProgressMonitor monitor) {
+						PlatformUI.getWorkbench().getDisplay()
+								.syncExec(new Runnable() {
 
-						monitor.beginTask("Export PDF report", 2);
-						monitor.subTask("Create report");
-						
-						// create report
-						TestReport report = new TestReport(input
-								.getCurrentlyDisplayedTestCampaignExecution(),
-								baseDirName);
-						
-						monitor.worked(1);
-
-						if (baseDirName != null) {
-							monitor.subTask("Create PDF");
-							// check if file exists
-							boolean writeReport = true;
-							if (new File(report.getFileName("pdf")).exists()) {
-								writeReport = false;
-								
-								PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
-									
 									@Override
 									public void run() {
-										// TODO Auto-generated method stub
-										String message = "The selected destination file exists and will be overwritten, proceed?";
-										confirmDialogResult = MessageDialog.openConfirm(null, "Warning", message);
+										// TODO Auto-generated method
+										// stub
+										String message = "The selected destination folder is not empty, proceed?";
+										writeReport = MessageDialog
+												.openConfirm(null,
+														"Warning",
+														message);
 									}
 								});
-								
-								if (confirmDialogResult) {
-									writeReport = true;
-								}
-							}
+					}
+					if (writeReport){
+						Job job = new Job("PDF export") {
+							
+							@Override
+							public IStatus run(IProgressMonitor monitor) {
 
-							try {
-								// TODO output XML-Report here, if no pdf is
-								// desired
+								monitor.beginTask("Export PDF report", 2);
 
-								if (writeReport) {
+								monitor.subTask("Create report");
+
+								// create report
+								TestReport report = new TestReport(
+										input.getCurrentlyDisplayedTestCampaignExecution(),
+										baseDirName);
+
+								monitor.worked(1);
+								monitor.subTask("Create PDF");
+
+								try {
+									// TODO output XML-Report here, if no pdf is
+									// desired
+
 									// output pdf report
 									ReportPdfGenerator.writePdfReport(report);
 									monitor.worked(1);
 									PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
-										
-										@Override
-										public void run() {
-											MessageDialog.openInformation(null, "PDF report", "Report exported successfully.");
-										}
-									});
+
+												@Override
+												public void run() {
+													MessageDialog.openInformation(null, "PDF report", "Report exported successfully.");
+												}
+											});
+
+								} catch (IOException ex) {
+									IStatus status = new Status(Status.ERROR,
+											Activator.PLUGIN_ID,
+											"PDF report could not be created",
+											ex);
+									StatusManager.getManager().handle(status,
+											StatusManager.SHOW);
 								}
 
-							} catch (IOException ex) {
-								IStatus status = new Status(Status.ERROR,
-										Activator.PLUGIN_ID,
-										"PDF report could not be created", ex);
-								StatusManager.getManager().handle(status,
-										StatusManager.SHOW);
-							}
+								// TODO copy relevant logfiles
 
-							// TODO copy relevant logfiles
-						}
-						monitor.done();
-						return new Status(IStatus.OK, Activator.PLUGIN_ID, "Export successfull.");
+								monitor.done();
+								return new Status(IStatus.OK, Activator.PLUGIN_ID,
+										"Export successfull.");
+							}
+						};
+						job.setUser(true);
+						job.schedule();
 					}
-				};
-				job.setUser(true);
-				job.schedule();
+					
+				}
+				
+
 			}
 		});
 
