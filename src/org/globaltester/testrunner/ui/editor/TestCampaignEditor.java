@@ -285,7 +285,7 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 		Composite execStateTreeComp = new Composite(grpExecutionresults, SWT.NONE);
 		execStateTreeComp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1));
 		executionStateTree = new Tree(execStateTreeComp, SWT.BORDER
-				| SWT.FULL_SELECTION);
+				| SWT.FULL_SELECTION | SWT.NO_SCROLL);
 		executionStateTree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		executionStateTree.setHeaderVisible(true);
 		executionStateTree.addSelectionListener(this);
@@ -706,8 +706,6 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 
 				//recalculate size
 				Point calculatedSize = scrolledContent.computeSize(scrolledComposite.getBounds().width, SWT.DEFAULT);
-				calculatedSize.x -= 1;
-				calculatedSize.y += 1;
 				scrolledComposite.setMinSize(calculatedSize);
 				scrolledContent.pack();
 				scrolledContent.layout();
