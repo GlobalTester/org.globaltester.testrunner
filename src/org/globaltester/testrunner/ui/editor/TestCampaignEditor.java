@@ -171,6 +171,7 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 		}
 
 		this.input = (TestCampaignEditorInput) input;
+		this.input.connect();
 		setSite(site);
 		setInput(input);
 		setDirty(false);
@@ -192,8 +193,6 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 
 	@Override
 	public void createPartControl(Composite parent) {
-		
-		
 		if ((input == null)){
 			//close the editor when the editor input was deleted
 			PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
@@ -664,8 +663,9 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 		txtSpecName.setFocus();
 	}
 
-	private void setDirty(boolean dirty) {
-		this.dirty = dirty;
+	private void setDirty(boolean isDirty) {
+		this.dirty = isDirty;
+		input.setDirty(isDirty);
 		firePropertyChange(IEditorPart.PROP_DIRTY);
 	}
 
@@ -784,5 +784,14 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 				}
 			}
 		}
+	}
+
+	@Override
+	public void dispose() {
+		if (input != null){
+			input.disconnect();
+		}
+		super.dispose();
+		
 	}
 }

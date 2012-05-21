@@ -2,13 +2,20 @@ package org.globaltester.testrunner.ui.editor;
 
 import java.util.List;
 
+import org.eclipse.core.filebuffers.FileBuffers;
+import org.eclipse.core.filebuffers.ITextFileBuffer;
+import org.eclipse.core.filebuffers.ITextFileBufferManager;
+import org.eclipse.core.filebuffers.LocationKind;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.part.FileEditorInput;
+import org.globaltester.logging.logger.GtErrorLogger;
 import org.globaltester.testrunner.GtTestCampaignProject;
 import org.globaltester.testrunner.testframework.TestCampaign;
 import org.globaltester.testrunner.testframework.TestCampaignExecution;
+import org.globaltester.testrunner.ui.Activator;
 import org.globaltester.testrunner.ui.UiImages;
 
 public class TestCampaignEditorInput extends FileEditorInput {
@@ -131,6 +138,50 @@ public class TestCampaignEditorInput extends FileEditorInput {
 
 	public int getIndexOfCurrentlyDisplayedTestCampaignExecution() {
 		return indexOfCurrentExecution;
+	}
+
+	/**
+	 * Set the dirtyState for the IFile associated with this EditorInput based
+	 * on FileBuffers. This is required in order to prevent accidental deletion
+	 * when unsaved changes exist in Editors.
+	 * 
+	 * @param isDirty
+	 *            new dirty state
+	 */
+	public void setDirty(boolean isDirty) {
+		ITextFileBuffer buffer = null;
+		try {
+			buffer = FileBuffers.getTextFileBufferManager().getTextFileBuffer(
+					getTestCampaignIFile()
+							.getFullPath(), LocationKind.IFILE);
+			if (buffer != null) {
+				buffer.setDirty(isDirty);
+			}
+		} catch (CoreException e) {
+			GtErrorLogger.log(Activator.PLUGIN_ID, e);
+		}
+	}
+
+	public void connect() {
+		ITextFileBufferManager mgr = FileBuffers.getTextFileBufferManager();
+		try {
+			mgr.connect(getTestCampaignIFile().getFullPath(), LocationKind.IFILE, new NullProgressMonitor());
+		} catch (CoreException e) {
+			GtErrorLogger.log(Activator.PLUGIN_ID, e);
+		}
+	}
+
+	public void disconnect() {
+		ITextFileBufferManager mgr = FileBuffers.getTextFileBufferManager();
+		try {
+			mgr.disconnect(getTestCampaignIFile().getFullPath(), LocationKind.IFILE, new NullProgressMonitor());
+		} catch (CoreException e) {
+			GtErrorLogger.log(Activator.PLUGIN_ID, e);
+		}
+	}
+
+	private IFile getTestCampaignIFile() throws CoreException {
+		return getGtTestCampaignProject().getTestCampaignIFile();
 	}
 
 }
