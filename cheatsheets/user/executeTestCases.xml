@@ -50,7 +50,7 @@
          title="Execute TestCampaign with different Setup">
       <description>
       	Now put your ePassport on the card reader.
-        You can (re-) execute your TestCampaign by clicking the <b>&quot;Execute&quot;</b> button.
+        You can (re-) execute your TestCampaign by clicking the <b>&quot;Run Test&quot;</b> command in the toolbar.
         This time the &quot;SelectApplication_nPA&quot; execution will report a failure as well,
         but the &quot;SelectApplication_ePassport&quot; execution will be declared as &quot;PASSED&quot;.
       </description>
@@ -83,7 +83,9 @@
    <item
          title="Browse TestCampaign Executions">
       <description>
-         TODO
+        Above the tree view you will find a selection
+        box where you can switch the display between the different executions to
+        compare the results. Have a look at the previous execution and you can easily see the different results.
       </description>
       <onCompletion>Congratulations! You have just learned how to execute TestCases and evaluate the respective results!</onCompletion>
    </item>
