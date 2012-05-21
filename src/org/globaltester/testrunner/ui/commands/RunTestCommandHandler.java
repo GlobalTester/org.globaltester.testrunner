@@ -22,6 +22,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.part.EditorPart;
+import org.eclipse.ui.part.FileEditorInput;
 import org.globaltester.cardconfiguration.CardConfig;
 import org.globaltester.cardconfiguration.CardConfigManager;
 import org.globaltester.cardconfiguration.GtCardConfigNature;
@@ -34,11 +35,13 @@ import org.globaltester.testrunner.testframework.TestCampaignExecution;
 import org.globaltester.testrunner.ui.Activator;
 import org.globaltester.testrunner.ui.editor.TestCampaignEditor;
 import org.globaltester.testrunner.ui.editor.TestCampaignEditorInput;
+import org.globaltester.testspecification.ui.editors.TestSpecEditor;
 
 public class RunTestCommandHandler extends AbstractHandler {
 
 	private GtTestCampaignProject campaingProject = null;
 	private CardConfig cardConfig = null;
+	private Shell shell;
 	
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
@@ -50,7 +53,7 @@ public class RunTestCommandHandler extends AbstractHandler {
 		// get TestCampaign from user selection
 		campaingProject = null;
 		
-		Shell shell = HandlerUtil.getActiveWorkbenchWindow(event).getShell();
+		shell = HandlerUtil.getActiveWorkbenchWindow(event).getShell();
 		IWorkbenchPart activePart = Activator.getDefault().getWorkbench()
 				.getActiveWorkbenchWindow().getActivePage().getActivePart();
 
@@ -208,6 +211,16 @@ public class RunTestCommandHandler extends AbstractHandler {
 			TestCampaignEditorInput editorInput = (TestCampaignEditorInput) ((TestCampaignEditor) activePart)
 					.getEditorInput();
 			return editorInput.getGtTestCampaignProject();
+		} else if (activePart instanceof TestSpecEditor) {
+			FileEditorInput editorInput = (FileEditorInput) ((TestSpecEditor)activePart).getEditorInput();
+			IFile file = editorInput.getFile();
+			
+			// try to create a TestCampaignProject from current selection
+			try {
+				return CreateTestCampaignCommandHandler.createTestCampaignProject(file, shell);
+			} catch (CoreException e) {
+				GtErrorLogger.log(Activator.PLUGIN_ID, e);
+			}
 		}
 		return null;
 	}
