@@ -147,16 +147,27 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 	@Override
 	public void init(IEditorSite site, IEditorInput input)
 	throws PartInitException {
+		String exceptionReason = "";
 		if ((input instanceof FileEditorInput)) {
 			try {
-				input = new TestCampaignEditorInput(((FileEditorInput) input).getFile());
+				IFile file = ((FileEditorInput) input).getFile();
+				if ((file == null) | (!file.exists())) {
+					exceptionReason = "File does not exist";
+				}
+				input = new TestCampaignEditorInput(file);
 			} catch (CoreException e) {
-				throw new RuntimeException(
+				input = null;
+				exceptionReason = "Selected resource does not represent a TestCampaign.";
+				String eMsg = e.getMessage();
+				if (eMsg != null && eMsg.trim().length() > 0){
+					exceptionReason += "( Caused by CoreException:" + e.getMessage() + ")";
+				}
+				throw new PartInitException(
 				"Wrong Input - No TestCampaignEditorInput can be created from selected resource");
 			}
 		}
 		if (!(input instanceof TestCampaignEditorInput)) {
-			throw new RuntimeException("Wrong input");
+			throw new PartInitException("Wrong input - "+exceptionReason);
 		}
 
 		this.input = (TestCampaignEditorInput) input;
@@ -181,6 +192,19 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 
 	@Override
 	public void createPartControl(Composite parent) {
+		
+		
+		if ((input == null)){
+			//close the editor when the editor input was deleted
+			PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+				@Override
+				public void run() {
+					getSite().getPage().closeEditor(TestCampaignEditor.this, false); 
+				}
+			});
+		}
+		
+		
 		parent.setLayout(new FillLayout());
 		
 		scrolledComposite = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL);
