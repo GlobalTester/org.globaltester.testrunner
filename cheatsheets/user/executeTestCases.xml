@@ -12,7 +12,7 @@
          title="Setup Test Environment">
       <description>
          Make sure your card reader is connected to you computer. First, do not put your ePassport on it.
-         If your card reader just had to be connected, start GlobalTester 3 again.
+         If your card reader just had to be connected, start GlobalTester again or update the reader list in the Preferences (Select &quot;Window -> Prefreences -> GlobalTester -> SmartCardShell&quot; and there click the "RefreshReader ).
       </description>
    </item>
    <item

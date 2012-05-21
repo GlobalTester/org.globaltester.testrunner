@@ -2,6 +2,6 @@
 <?NLS TYPE="org.eclipse.help.toc"?>
 
 <toc label="Reference" link_to="../org.globaltester.core.doc/toc/user/toc.xml#reference">
-   <topic href="html/user/reference/PreferencePageTestRunner.html" label="Preference Page TestRunner">
-   </topic>  
+   <!--topic href="html/user/reference/PreferencePageTestRunner.html" label="Preference Page TestRunner">
+   </topic-->  
 </toc>
