@@ -18,3 +18,4 @@ Export-Package: org.globaltester.testrunner,
  org.globaltester.testrunner.preferences,
  org.globaltester.testrunner.report,
  org.globaltester.testrunner.testframework
+Eclipse-ExtensibleAPI: true
