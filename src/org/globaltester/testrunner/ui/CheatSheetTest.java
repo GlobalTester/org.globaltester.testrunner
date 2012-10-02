@@ -55,7 +55,7 @@ public class CheatSheetTest {
 	public void executeTestCases() throws IOException, InterruptedException{
 		importTestSpecification();
 		createCardConfig();
-		/*NavigatorViewUiHelper navigator = GlobalTesterUiHelper.focusNavigatorView();
+		NavigatorViewUiHelper navigator = GlobalTesterUiHelper.focusNavigatorView();
 		String [] path1 = new String [] {sampleProject, "TestCases", "ePassport", "ePassport_Application.xml"};
 		String [] path2 = new String [] {sampleProject, "TestCases", "nPA", "nPA_Application.xml"};
 		navigator.expandAndSelect(path1);
@@ -65,7 +65,7 @@ public class CheatSheetTest {
 		assertNotNull("Execution progress dialog did not open", executionDialog);
 		GlobalTesterUiHelper.getBot().waitUntil(Conditions.shellCloses(executionDialog));
 		TestCampaignEditorUiHelper editor = GlobalTesterUiHelper.focusTestCampaignEditor();
-		File temp = JUnitHelper.createTemporaryFolder();
+		/*File temp = JUnitHelper.createTemporaryFolder();
 		editor.generateReport(temp);
 		assertTrue("Report folder should contain report pdf", temp.list(new FilenameFilter() {	
 			@Override
