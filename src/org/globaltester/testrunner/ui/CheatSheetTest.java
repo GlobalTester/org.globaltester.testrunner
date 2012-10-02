@@ -65,9 +65,9 @@ public class CheatSheetTest {
 		assertNotNull("Execution progress dialog did not open", executionDialog);
 		GlobalTesterUiHelper.getBot().waitUntil(Conditions.shellCloses(executionDialog));
 		TestCampaignEditorUiHelper editor = GlobalTesterUiHelper.focusTestCampaignEditor();
-		/*File temp = JUnitHelper.createTemporaryFolder();
+		File temp = JUnitHelper.createTemporaryFolder();
 		editor.generateReport(temp);
-		assertTrue("Report folder should contain report pdf", temp.list(new FilenameFilter() {	
+		/*assertTrue("Report folder should contain report pdf", temp.list(new FilenameFilter() {	
 			@Override
 			public boolean accept(File dir, String name) {
 				if (name.contains("TestCampaign") && name.endsWith(".pdf")){
