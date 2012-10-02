@@ -76,7 +76,7 @@ public class CheatSheetTest {
 				return false;
 			}
 		}).length == 1);
-		/*LogFileEditorUiHelper logFile = editor.openTestCaseLogFile(0);
-		assertTrue("log file editor should be active", logFile.isActive());*/
+		LogFileEditorUiHelper logFile = editor.openTestCaseLogFile(0);
+		assertTrue("log file editor should be active", logFile.isActive());
 	}
 }
