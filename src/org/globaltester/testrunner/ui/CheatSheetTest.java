@@ -67,7 +67,7 @@ public class CheatSheetTest {
 		TestCampaignEditorUiHelper editor = GlobalTesterUiHelper.focusTestCampaignEditor();
 		File temp = JUnitHelper.createTemporaryFolder();
 		editor.generateReport(temp);
-		/*assertTrue("Report folder should contain report pdf", temp.list(new FilenameFilter() {	
+		assertTrue("Report folder should contain report pdf", temp.list(new FilenameFilter() {	
 			@Override
 			public boolean accept(File dir, String name) {
 				if (name.contains("TestCampaign") && name.endsWith(".pdf")){
@@ -76,7 +76,7 @@ public class CheatSheetTest {
 				return false;
 			}
 		}).length == 1);
-		LogFileEditorUiHelper logFile = editor.openTestCaseLogFile(0);
+		/*LogFileEditorUiHelper logFile = editor.openTestCaseLogFile(0);
 		assertTrue("log file editor should be active", logFile.isActive());*/
 	}
 }
