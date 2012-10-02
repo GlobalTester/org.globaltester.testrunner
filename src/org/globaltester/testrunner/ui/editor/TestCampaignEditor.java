@@ -50,7 +50,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
@@ -75,6 +74,7 @@ import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.statushandlers.StatusManager;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.globaltester.cardconfiguration.ui.CardConfigEditorWidget;
+import org.globaltester.core.ui.DialogOptions;
 import org.globaltester.core.ui.GtUiHelper;
 import org.globaltester.logging.logger.GTLogger;
 import org.globaltester.logging.ui.editors.LogfileEditor;
@@ -373,10 +373,10 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 		btnGenerateReport.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				// ask for report location
-				DirectoryDialog dialog = new DirectoryDialog(getShell());
-				dialog.setMessage("Please select location to store the report files");
-				dialog.setFilterPath(null); // do not filter at all
-				baseDirName = dialog.open();
+				DialogOptions dialogOptions = new DialogOptions();
+				dialogOptions.setMessage("Please select location to store the report files");
+				dialogOptions.setFilterPath(null); // do not filter at all
+				baseDirName = GtUiHelper.openDirectoryDialog(getShell(), dialogOptions);
 				
 				if (baseDirName != null){
 					writeReport = true;
