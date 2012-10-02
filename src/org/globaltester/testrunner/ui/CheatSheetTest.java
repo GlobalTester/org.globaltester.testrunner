@@ -51,6 +51,7 @@ public class CheatSheetTest {
 		cardConfig.finish();
 	}
 	
+	@Ignore
 	@Test
 	public void executeTestCases() throws IOException, InterruptedException{
 		importTestSpecification();
