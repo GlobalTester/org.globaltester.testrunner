@@ -4,6 +4,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 
 import org.eclipse.core.runtime.CoreException;
@@ -11,7 +12,6 @@ import org.eclipse.swtbot.swt.finder.waits.Conditions;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotShell;
 import org.globaltester.junit.JUnitHelper;
 import org.globaltester.swtbot.Strings;
-import org.globaltester.swtbot.SwtBotHelper;
 import org.globaltester.swtbot.uihelper.CardConfigWizardUiHelper;
 import org.globaltester.swtbot.uihelper.GlobalTesterUiHelper;
 import org.globaltester.swtbot.uihelper.LogFileEditorUiHelper;
@@ -21,7 +21,7 @@ import org.globaltester.swtbot.uihelper.TestSpecificationImportWizardUiHelper;
 import org.junit.Before;
 import org.junit.Test;
 /**
- * Test the workflows that are given as eclipse cheat cheet.
+ * Test the workflows that are given as eclipse cheat sheet.
  * 
  * @author mboonk
  *
@@ -62,11 +62,19 @@ public class CheatSheetTest {
 		GlobalTesterUiHelper.createAndStartTestCampaignByToolBar();
 		SWTBotShell executionDialog = GlobalTesterUiHelper.getBot().shell(Strings.DIALOG_TITLE_TEST_EXECUTION);
 		assertNotNull("Execution progress dialog did not open", executionDialog);
-		SwtBotHelper.slowdown();
 		GlobalTesterUiHelper.getBot().waitUntil(Conditions.shellCloses(executionDialog));
 		TestCampaignEditorUiHelper editor = GlobalTesterUiHelper.focusTestCampaignEditor();
 		File temp = JUnitHelper.createTemporaryFolder();
 		editor.generateReport(temp);
+		assertTrue("Report folder should contain report pdf", temp.list(new FilenameFilter() {	
+			@Override
+			public boolean accept(File dir, String name) {
+				if (name.contains("TestCampaign") && name.endsWith(".pdf")){
+					return true;
+				}
+				return false;
+			}
+		}).length == 1);
 		LogFileEditorUiHelper logFile = editor.openTestCaseLogFile(0);
 		assertTrue("log file editor should be active", logFile.isActive());
 	}
