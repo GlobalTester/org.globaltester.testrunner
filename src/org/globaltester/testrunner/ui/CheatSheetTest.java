@@ -19,7 +19,6 @@ import org.globaltester.swtbot.uihelper.NavigatorViewUiHelper;
 import org.globaltester.swtbot.uihelper.TestCampaignEditorUiHelper;
 import org.globaltester.swtbot.uihelper.TestSpecificationImportWizardUiHelper;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 /**
  * Test the workflows that are given as eclipse cheat sheet.
@@ -51,7 +50,6 @@ public class CheatSheetTest {
 		cardConfig.finish();
 	}
 	
-	@Ignore
 	@Test
 	public void executeTestCases() throws IOException, InterruptedException{
 		importTestSpecification();
