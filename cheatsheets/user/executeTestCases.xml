@@ -3,16 +3,20 @@
       title="Execute TestCases">
    <intro>
    <description>
-     In a few steps, this cheat sheet will guide you through the execution of TestCases and evaluation of the respective results.
+<!-- Todo Anke: Other cards, that can be used for testing, e.g. "Geldkarte"?-->
+   In a few steps, this cheat sheet will guide you through the execution of TestCases and evaluation of the respective results.
      You will need a card reader and an ePassport. You can also use an nPA, but then switch any
      statements regarding nPA with ePassport and vice-versa.
       </description>
    </intro>
+<!-- Todo Anke: missing text for reader list added. Is activating manual setting correct?-->
    <item
          title="Setup Test Environment">
       <description>
-         Make sure your card reader is connected to you computer. First, do not put your ePassport on it.
-         If your card reader just had to be connected, start GlobalTester again or update the reader list in the Preferences (Select &quot;Window -> Prefreences -> GlobalTester -> SmartCardShell&quot; and there click the "RefreshReader ).
+         Make sure your card reader is connected to your computer. First, do not put your ePassport on it.
+         If your card reader just had to be connected, start GlobalTester again or update the reader list 
+         in the Preferences (Select &quot;Window -> Preferences -> GlobalTester -> SmartCardShell&quot;, 
+         activate "Manual setting ..." there and click the "Refresh Reader List" button).
       </description>
    </item>
    <item
@@ -24,8 +28,8 @@
    <item
          title="Create and execute TestCampaign">
       <description>
-        In your &quot;GlobalTester Sample TestSpecification&quot;, select the TestCases &quot;SelectApplication_nPA.xml&quot;
-        and &quot;SelectApplication_ePassport.xml&quot;.
+        In your &quot;GlobalTester Sample TestSpecification&quot;, select the TestCases &quot;nPA/nPA_Application.xml&quot;
+        and &quot;ePassport/ePassport_Application.xml&quot;.
         Right-click your mouse, and choose <b>&quot;RunTest&quot;</b>.<br/>
         A TestCampaign will be created and executed directly.
         Both TestCases will have a &quot;FAILURE&quot; - notice in their &quot;Status&quot;-column in the TestCampaign editor.
@@ -39,8 +43,8 @@
         and choose <b>&quot;Show log file&quot;</b>.
         The log file will open. Have a close look at it.<br/>
         You can find your error in the TestCase execution by looking for &quot;@FailureID1&quot;, &quot;@FailureID2&quot;, etc.
-        The lines in the  log file where they appear will have a red marker.
-        If you click on it, the line where the failure is reported will open and be highlighted.<br/>
+        The corresponding line in the log file will have a red marker.
+        When you click on it, the line where the failure is reported will open and be highlighted.<br/>
         Usually &quot;@FailureID1&quot; is the essential source of error; here it is the missing &quot;card&quot; reference
         (because you have no card placed on your reader).
       </description>
@@ -51,15 +55,15 @@
       <description>
       	Now put your ePassport on the card reader.
         You can (re-) execute your TestCampaign by clicking the <b>&quot;Run Test&quot;</b> command in the toolbar.
-        This time the &quot;SelectApplication_nPA&quot; execution will report a failure as well,
-        but the &quot;SelectApplication_ePassport&quot; execution will be declared as &quot;PASSED&quot;.
+        This time the &quot;nPA_Application&quot; execution will report a failure as well,
+        but the &quot;ePassport_Application&quot; execution will be declared as &quot;PASSED&quot;.
       </description>
    </item>
    <item
          title="Evaluate Log File again...">
       <description>
-        Open the log file of the &quot;SelectApplication_ePassport&quot; execution.
-        You can now see the communication between the card and the reader.
+        Open the log file of the &quot;ePassport_Application&quot; execution.
+        Now you can see the communication between the card and the reader.
         The command APDU is syntax highlighted.
         When you hover over it, you can see information about the command APDU.
         The response APDU is shown as well, and its status word is extracted.
@@ -68,7 +72,7 @@
    <item
          title="... and again.">
       <description>
-      	Open the log file of the &quot;SelectApplication_nPA&quot; execution.
+      	Open the log file of the &quot;nPA_Application&quot; execution.
         This time there is a &quot;card&quot; reference, so there is also a command APDU in the execution.
         The response APDU is only the status word &quot;6a82&quot;, because there is no nPA related eID application on your card.
       </description>
