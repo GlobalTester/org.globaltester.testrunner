@@ -12,11 +12,12 @@
 
 	<h2>Setup Test Environment</h2>
 	<p>
-		Make sure your card reader is connected to you computer.<br> If
-		you have to connect it yet and GlobalTester is running, GlobalTester
-		3 will not be able to recognize and embed it into its functionality,
-		so please start GlobalTester again.<br> Place your card on the
-		reader.
+		Make sure your card reader is connected to your computer.<br> If
+		you still have to connect it and GlobalTester is already running, 
+		GlobalTester 3 will not be able to recognize and embed it into its 
+		functionality.
+		So please start GlobalTester again in this case.
+		<br> Place your card on the reader.
 	</p>
 
 	<h2>Import your TestSpecification</h2>
@@ -65,18 +66,18 @@
 		TestCampaign will open.<br> You can access the corresponding log
 		of each part of a TestCampaign the same way.<br> For example, if
 		you have selected the option for single log files for each TestCase in
-		the prerefences, logs of TestCases and their parts will be opened in
+		the preferences, logs of TestCases and their parts will be opened in
 		the log file for the corresponding TestCase execution.
 	</p>
 	<p>
 		If you have a <b>&quot;Failure&quot;</b> notice in the TestCampaign
 		editor after an execution, you can find the error in the TestCase
 		execution by looking for &quot;@FailureID1&quot;,
-		&quot;@FailureID2&quot;, etc. The lines in the log file where they
-		appear will have a red marker. When you click on it, the line where
+		&quot;@FailureID2&quot;, etc. The corresponding lines in the log file
+		will have a red marker. When you click on it, the line where
 		the failure is quoted will be highlighted in the log file editor.<br>
 		Usually &quot;@FailureID1&quot; is the essential source of error. For
-		example, if you have no card placed on you reader, it will be the
+		example, if you have no card placed on your reader, it will be the
 		missing &quot;card&quot; reference.
 	</p>
 	<p>The APDU commands are syntax highlighted, and if you hover over
@@ -98,7 +99,7 @@
 	</p>
 
 	<h2>Browse TestCampaign Executions</h2>
-	<p>While evaluating the log files you already used the execution
+	<p>While evaluating the log files, you already used the execution
 		tree view in the TestCampaignEditor. Above you will find a selection
 		box where you can switch the display between different executions to
 		compare the results of several test runs. Also you can modify the
