@@ -39,9 +39,10 @@ import org.globaltester.testspecification.ui.editors.TestSpecEditor;
 
 public class RunTestCommandHandler extends AbstractHandler {
 
-	private GtTestCampaignProject campaingProject = null;
+	private GtTestCampaignProject campaignProject = null;
 	private CardConfig cardConfig = null;
 	private Shell shell;
+	private boolean debugMode = false;
 	
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
@@ -51,16 +52,16 @@ public class RunTestCommandHandler extends AbstractHandler {
 		}
 
 		// get TestCampaign from user selection
-		campaingProject = null;
+		campaignProject = null;
 		
 		shell = HandlerUtil.getActiveWorkbenchWindow(event).getShell();
 		IWorkbenchPart activePart = Activator.getDefault().getWorkbench()
 				.getActiveWorkbenchWindow().getActivePage().getActivePart();
 
 		if (activePart instanceof EditorPart) {
-			campaingProject = getCampaignProjectFromEditor(activePart);
+			campaignProject = getCampaignProjectFromEditor(activePart);
 			
-			if (campaingProject == null) {
+			if (campaignProject == null) {
 				// no campaignProject available, inform user
 				GtUiHelper
 						.openErrorDialog(
@@ -73,10 +74,10 @@ public class RunTestCommandHandler extends AbstractHandler {
 					.getActiveWorkbenchWindow().getSelectionService()
 					.getSelection();
 
-			campaingProject = getCampaignProjectFromSelection(iSel, shell);
+			campaignProject = getCampaignProjectFromSelection(iSel, shell);
 		}
 
-		if (campaingProject == null) {
+		if (campaignProject == null) {
 			// no campaignProject available, user is already informed
 			return null;
 		}
@@ -87,7 +88,7 @@ public class RunTestCommandHandler extends AbstractHandler {
 		boolean forceSelection = (selectCardConfigParam != null) && selectCardConfigParam.trim().toLowerCase().equals("true");
 		if (!forceSelection) {
 			//try to get CardConfig from last CampaignExecution
-			cardConfig = getLastCardConfigFromTestCampaignProject(campaingProject);
+			cardConfig = getLastCardConfigFromTestCampaignProject(campaignProject);
 		
 			//try to get CardConfig from Selection if none was defined in TestCampaign
 			if (cardConfig == null) {
@@ -114,8 +115,8 @@ public class RunTestCommandHandler extends AbstractHandler {
 			protected IStatus run(IProgressMonitor monitor) {
 				// execute tests
 				try {
-					campaingProject.getTestCampaign().executeTests(cardConfig,
-							monitor);
+					campaignProject.getTestCampaign().executeTests(cardConfig,
+							monitor, debugMode);
 				} catch (CoreException e) {
 					GtErrorLogger.log(Activator.PLUGIN_ID, e);
 				}
@@ -138,7 +139,7 @@ public class RunTestCommandHandler extends AbstractHandler {
 					@Override
 					public void run() {
 						try {
-							GtUiHelper.openInEditor(campaingProject
+							GtUiHelper.openInEditor(campaignProject
 									.getTestCampaignIFile());
 						} catch (CoreException e) {
 							// log Exception to eclipse log
