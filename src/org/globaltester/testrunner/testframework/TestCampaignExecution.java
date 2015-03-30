@@ -22,6 +22,7 @@ import org.globaltester.testrunner.GtTestCampaignProject;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.ContextFactory;
 
 public class TestCampaignExecution extends FileTestExecution {
 	List<IExecution> elementExecutions = new ArrayList<IExecution>();
@@ -299,8 +300,11 @@ public class TestCampaignExecution extends FileTestExecution {
 			TestLogger.init(project.getNewResultDir());
 			setLogFileName(TestLogger.getLogFileName());
 
-			// init JS ScriptRunner and Context
-			Context cx = Context.enter();
+			// init JS ScriptRunner and Context (factory is needed for listener for
+			// debugger)
+			ContextFactory factory = new ContextFactory();
+			Context cx = factory.enterContext();
+			
 			ScriptRunner sr = new ScriptRunner(cx, project.getIProject()
 					.getLocation().toOSString());
 			sr.init(cx);
