@@ -180,7 +180,7 @@ public class TestCampaign {
 	 * 
 	 * @throws CoreException
 	 */
-	public void executeTests(CardConfig cardConfig, IProgressMonitor monitor) throws CoreException {
+	public void executeTests(CardConfig cardConfig, IProgressMonitor monitor, boolean debugMode) throws CoreException {
 
 		// create a new TestExecution this TestCampaignElement
 		TestCampaignExecution currentExecution = null;
