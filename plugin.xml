@@ -14,6 +14,16 @@
          </commandParameter>
       </command>
       <command
+            defaultHandler="org.globaltester.testrunner.ui.commands.RunTestCommandHandler"
+            id="org.globaltester.testrunner.ui.commands.DebugTestCommand"
+            name="Debug Test">
+         <commandParameter
+               id="org.globaltester.testrunner.ui.SelectCardConfigParameter"
+               name="Select CardConfig"
+               optional="true">
+         </commandParameter>
+      </command>
+      <command
             defaultHandler="org.globaltester.testrunner.ui.commands.CreateTestCampaignCommandHandler"
             id="org.globaltester.testrunner.ui.commands.CreateTestCampaignCommand"
             name="Create TestCampaign">
@@ -27,6 +37,13 @@
                commandId="org.globaltester.testrunner.ui.commands.RunTestCommand"
                icon="icons/execute.png"
                label="Run Test"
+               style="push"
+               tooltip="Create a new TestCampaign from selection and execute it">
+         </command>
+         <command
+               commandId="org.globaltester.testrunner.ui.commands.DebugTestCommand"
+               icon="icons/debug-execute.png"
+               label="Debug Test"
                style="push"
                tooltip="Create a new TestCampaign from selection and execute it">
          </command>
