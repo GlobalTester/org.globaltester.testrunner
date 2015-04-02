@@ -14,7 +14,7 @@
          </commandParameter>
       </command>
       <command
-            defaultHandler="org.globaltester.testrunner.ui.commands.RunTestCommandHandler"
+            defaultHandler="org.globaltester.testrunner.ui.commands.DebugTestCommandHandler"
             id="org.globaltester.testrunner.ui.commands.DebugTestCommand"
             name="Debug Test">
          <commandParameter
@@ -45,7 +45,7 @@
                icon="icons/debug-execute.png"
                label="Debug Test"
                style="push"
-               tooltip="Create a new TestCampaign from selection and execute it">
+               tooltip="Create a new TestCampaign from selection and execute and debug it">
          </command>
          <command
                commandId="org.globaltester.testrunner.ui.commands.CreateTestCampaignCommand"
