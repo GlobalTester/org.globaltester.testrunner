@@ -200,7 +200,7 @@ public class TestCampaign {
 		currentExecution.setCardConfig(cardConfig.getCloneForExecution());
 
 		// execute the TestExecutable
-		currentExecution.execute(monitor);
+		currentExecution.execute(monitor, debugMode);
 		
 		// save the new state
 		project.doSave();
