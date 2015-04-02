@@ -11,6 +11,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.wst.jsdt.debug.rhino.debugger.RhinoDebugger;
 import org.globaltester.cardconfiguration.CardConfig;
 import org.globaltester.core.resources.GtResourceHelper;
 import org.globaltester.core.xml.XMLHelper;
@@ -27,6 +28,7 @@ import org.mozilla.javascript.ContextFactory;
 public class TestCampaignExecution extends FileTestExecution {
 	List<IExecution> elementExecutions = new ArrayList<IExecution>();
 	private CardConfig cardConfig;
+	private RhinoDebugger debugger = null;
 
 	private TestCampaignExecution previousExecution;
 	
@@ -277,7 +279,7 @@ public class TestCampaignExecution extends FileTestExecution {
 		return cardConfig;
 	}
 	
-	public void execute(IProgressMonitor monitor) throws CoreException {
+	public void execute(IProgressMonitor monitor, boolean debugMode) throws CoreException {
 
 		if (monitor == null) {
 			monitor= new NullProgressMonitor();
@@ -302,8 +304,23 @@ public class TestCampaignExecution extends FileTestExecution {
 
 			// init JS ScriptRunner and Context (factory is needed for listener for
 			// debugger)
-			ContextFactory factory = new ContextFactory();
-			Context cx = factory.enterContext();
+			
+			ContextFactory factory;
+			Context cx = null;
+			
+			if (debugMode) {
+				boolean success = startJSDebugger(cx);
+				if (! success) { // context shall initialized anyway!
+					if (cx == null) {
+						factory = new ContextFactory();
+						cx = factory.enterContext();						
+					}
+				}
+
+			} else {
+				factory = new ContextFactory();
+				cx = factory.enterContext();
+			}
 			
 			ScriptRunner sr = new ScriptRunner(cx, project.getIProject()
 					.getLocation().toOSString());
@@ -314,6 +331,10 @@ public class TestCampaignExecution extends FileTestExecution {
 			execute(sr, cx, false, new SubProgressMonitor(monitor, getTestCampaign().getTestCampaignElements().size()));
 
 			monitor.subTask("Shutdown");
+			
+			if (debugMode) {
+				stopJSDebugger();
+			}
 			
 			// close JS context
 			Context.exit();
@@ -363,4 +384,63 @@ public class TestCampaignExecution extends FileTestExecution {
 		this.cardConfig = newCardConfig;
 		
 	}
+
+	private boolean startJSDebugger(Context context) {
+		// suspend=y: the debugger should start up in suspended mode, meaning it
+		// will not continue execution until a client connects to it
+		// trace=y: status should be reported to the Eclipse console
+		// simply delete this if you do not want traces
+		// String rhino = "transport=socket,suspend=y,trace=y,address=9000";
+		String rhino = "transport=socket,suspend=y,trace=y,address=9000";
+		boolean success = false;
+
+		//TODO what should happen if debugger != null?
+		debugger = new RhinoDebugger(rhino);
+		try {
+			debugger.start();
+			System.out.println("Debugger started ...");
+		} catch (Exception e) {
+			// TODO print where??
+			System.err
+					.println("Error while starting the Rhino JavaScript Debugger.");
+			e.printStackTrace();
+			debugger = null;
+
+			return success;
+		}
+
+		try {
+			ContextFactory factory = new ContextFactory();
+			factory.addListener(debugger);
+			context = factory.enterContext();
+
+			success = true;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			stopJSDebugger();
+
+			System.err
+					.println("Error while starting the Rhino JavaScript Debugger.");
+			e.printStackTrace(); // TODO: this should be sent to the
+									// user. popup?
+		}
+
+		return success;
+	}
+
+	private void stopJSDebugger() {
+		if (debugger == null)
+			 return;
+
+		try {
+			debugger.stop();
+			debugger = null;
+		} catch (Exception e) {
+			System.err
+					.println("Error while stopping the Rhino JavaScript Debugger.");
+			e.printStackTrace();
+		}
+	}
+
+
 }
