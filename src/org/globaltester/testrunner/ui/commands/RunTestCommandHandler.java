@@ -42,7 +42,7 @@ public class RunTestCommandHandler extends AbstractHandler {
 	private GtTestCampaignProject campaignProject = null;
 	private CardConfig cardConfig = null;
 	private Shell shell;
-	private boolean debugMode = false;
+	protected boolean debugMode = false; //disable JavaScript debugging
 	
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
