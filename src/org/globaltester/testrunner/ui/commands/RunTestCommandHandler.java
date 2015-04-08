@@ -116,7 +116,7 @@ public class RunTestCommandHandler extends AbstractHandler {
 				// execute tests
 				try {
 					campaignProject.getTestCampaign().executeTests(cardConfig,
-							monitor, debugMode);
+							monitor, isDebugMode());
 				} catch (CoreException e) {
 					GtErrorLogger.log(Activator.PLUGIN_ID, e);
 				}
@@ -256,6 +256,14 @@ public class RunTestCommandHandler extends AbstractHandler {
 			}
 		}
 		return null;
+	}
+
+	public boolean isDebugMode() {
+		return debugMode;
+	}
+
+	public void setDebugMode(boolean debugMode) {
+		this.debugMode = debugMode;
 	}
 
 }

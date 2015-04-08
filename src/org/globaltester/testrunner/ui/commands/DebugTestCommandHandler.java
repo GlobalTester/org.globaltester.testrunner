@@ -15,7 +15,7 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 	public DebugTestCommandHandler() {
 		super();
 
-		debugMode = true; //enable JavaScript debugging
+		setDebugMode(true); //enable JavaScript debugging
 	}
 
 }
