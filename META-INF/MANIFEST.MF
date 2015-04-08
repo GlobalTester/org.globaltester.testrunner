@@ -18,4 +18,5 @@ Export-Package: org.globaltester.testrunner,
  org.globaltester.testrunner.preferences,
  org.globaltester.testrunner.report,
  org.globaltester.testrunner.testframework
-Import-Package: org.eclipse.wst.jsdt.debug.rhino.debugger
+Import-Package: org.eclipse.wst.jsdt.debug.rhino.debugger,
+ org.mozilla.javascript
