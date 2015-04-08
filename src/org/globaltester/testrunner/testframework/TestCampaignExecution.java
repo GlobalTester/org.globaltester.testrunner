@@ -307,19 +307,14 @@ public class TestCampaignExecution extends FileTestExecution {
 			
 			ContextFactory factory;
 			Context cx = null;
-			
-			if (debugMode) {
-				boolean success = startJSDebugger(cx);
-				if (! success) { // context shall initialized anyway!
-					if (cx == null) {
-						factory = new ContextFactory();
-						cx = factory.enterContext();						
-					}
-				}
 
-			} else {
+			if (cx == null) {
 				factory = new ContextFactory();
-				cx = factory.enterContext();
+				if (debugMode){
+					startJSDebugger();
+					factory.addListener(debugger);
+				}
+				cx = factory.enterContext();						
 			}
 			
 			ScriptRunner sr = new ScriptRunner(cx, project.getIProject()
@@ -385,15 +380,14 @@ public class TestCampaignExecution extends FileTestExecution {
 		
 	}
 
-	private boolean startJSDebugger(Context context) {
+	private void startJSDebugger() {
 		// suspend=y: the debugger should start up in suspended mode, meaning it
 		// will not continue execution until a client connects to it
 		// trace=y: status should be reported to the Eclipse console
 		// simply delete this if you do not want traces
 		// String rhino = "transport=socket,suspend=y,trace=y,address=9000";
 		String rhino = "transport=socket,suspend=y,trace=y,address=9000";
-		boolean success = false;
-
+		
 		//TODO what should happen if debugger != null?
 		debugger = new RhinoDebugger(rhino);
 		try {
@@ -405,27 +399,7 @@ public class TestCampaignExecution extends FileTestExecution {
 					.println("Error while starting the Rhino JavaScript Debugger.");
 			e.printStackTrace();
 			debugger = null;
-
-			return success;
 		}
-
-		try {
-			ContextFactory factory = new ContextFactory();
-			factory.addListener(debugger);
-			context = factory.enterContext();
-
-			success = true;
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			stopJSDebugger();
-
-			System.err
-					.println("Error while starting the Rhino JavaScript Debugger.");
-			e.printStackTrace(); // TODO: this should be sent to the
-									// user. popup?
-		}
-
-		return success;
 	}
 
 	private void stopJSDebugger() {
