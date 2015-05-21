@@ -34,6 +34,8 @@ public class ActionStepExecutor {
 			scriptRunner.executeCommand(context, code, sourceName, -1);
 		} catch (EvaluatorException ex) {
 			// this exception is thrown e. g. by asserts
+			
+			// TODO AKR: rethrow exception for Rhino debugger?
 			Throwable unwrappedEx = ex;
 			if (ex instanceof WrappedException) {
 				unwrappedEx = ex.getCause();
