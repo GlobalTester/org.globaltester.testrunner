@@ -248,11 +248,17 @@ public class RunTestCommandHandler extends AbstractHandler {
 
 	private CardConfig getLastCardConfigFromTestCampaignProject(
 			GtTestCampaignProject parentCampaingProject) {
-		TestCampaignExecution currentExecution = parentCampaingProject.getTestCampaign().getCurrentExecution();
-		if (currentExecution != null){
-			String cardConfigName = currentExecution.getCardConfig().getName();
-			if (CardConfigManager.isAvailableAsProject(cardConfigName)){
-				return CardConfigManager.get(cardConfigName);
+		TestCampaignExecution currentExecution = parentCampaingProject
+				.getTestCampaign().getCurrentExecution();
+		if (currentExecution != null) {
+			//TODO AKR: test added because of NullPointerException on empty cardConfig;
+			//what else should be done? Should there be an error message?
+			if (currentExecution.getCardConfig() != null) {
+				String cardConfigName = currentExecution.getCardConfig()
+						.getName();
+				if (CardConfigManager.isAvailableAsProject(cardConfigName)) {
+					return CardConfigManager.get(cardConfigName);
+				}
 			}
 		}
 		return null;
