@@ -1,5 +1,6 @@
 package org.globaltester.testrunner.testframework;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -8,9 +9,11 @@ import java.util.List;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.wst.jsdt.debug.rhino.debugger.RhinoDebugger;
 import org.globaltester.cardconfiguration.CardConfig;
 import org.globaltester.core.resources.GtResourceHelper;
@@ -380,19 +383,36 @@ public class TestCampaignExecution extends FileTestExecution {
 		
 	}
 
+	public void startDebuggerLaunch() {
+
+		try {
+			RhinoDebugLaunchManager launchMan = new RhinoDebugLaunchManager();
+			launchMan.openLaunchConfiguration();
+
+		}	catch (Exception e) {
+			System.err.println("JavaScript Rhino debugger launch could not be started!");
+			System.err.println("Reason:\n" + e.getMessage());
+		}
+	}
+
 	private void startJSDebugger() {
+		
+		System.out.println("Trying to start Rhino debugger ...");
+		//startDebuggerLaunch();
+		
 		// suspend=y: the debugger should start up in suspended mode, meaning it
 		// will not continue execution until a client connects to it
 		// trace=y: status should be reported to the Eclipse console
 		// simply delete this if you do not want traces
 		// String rhino = "transport=socket,suspend=y,trace=y,address=9000";
-		String rhino = "transport=socket,suspend=y,trace=y,address=9000";
+		String rhino = "transport=socket,suspend=y,address=9000";
 		
 		//TODO what should happen if debugger != null?
 		debugger = new RhinoDebugger(rhino);
 		try {
+			System.out.println("Please, activate Rhino JS launch now!");
 			debugger.start();
-			System.out.println("Debugger started ...");
+			System.out.println("Debugger started!");
 		} catch (Exception e) {
 			// TODO print where??
 			System.err
