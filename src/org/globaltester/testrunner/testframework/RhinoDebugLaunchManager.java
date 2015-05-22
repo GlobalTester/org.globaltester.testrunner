@@ -1,13 +1,17 @@
 package org.globaltester.testrunner.testframework;
 
-
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.debug.internal.core.LaunchConfigurationInfo;
 import org.eclipse.debug.internal.core.LaunchManager;
 import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.internal.core.LaunchConfiguration;
+import org.eclipse.debug.ui.DebugUITools;
 
 
 /**
@@ -40,7 +44,7 @@ public class RhinoDebugLaunchManager extends LaunchManager {
 	}
 	
 	//TODO which exception class should be thrown?
-	public void openLaunchConfiguration() throws Exception {
+	public void startDebugLaunchConfiguration() throws Exception {
 		
 		// path information code was copied from LaunchManager:findLocalLaunchConfigurations()
 		IPath containerPath = RhinoDebugLaunchManager.LOCAL_LAUNCH_CONFIGURATION_CONTAINER_PATH;
@@ -48,6 +52,7 @@ public class RhinoDebugLaunchManager extends LaunchManager {
 			// no path set
 			Exception exc = new Exception("No path found for JavaScript debug launch. " + 
 					"LOCAL_LAUNCH_CONFIGURATION_CONTAINER_PATH in class LaunchManager must be set correctly!");
+			//TODO AKR use a builtin launch configuration instead!
 			throw exc;
 			
 		}
@@ -63,20 +68,31 @@ public class RhinoDebugLaunchManager extends LaunchManager {
 			// no configuration found
 			Exception exc = new Exception("Standard configuration launch file for Rhino debugger missing!\n"
 					            + "File was looked for in directory "
-								+ directory.getName());
+								+ containerPath.toOSString());
 			throw exc;
 		}
 		
-		//getInfo(stdConfig);
+		//TODO AKR this cast should usually always work. But maybe there should be some "else" case
+		if (stdConfig instanceof LaunchConfiguration) {
+			LaunchConfiguration stdLConfig = (LaunchConfiguration) stdConfig;
+			//LaunchConfigurationInfo info = getInfo(stdLConfig);
+			Map<String, Object> attrs = stdLConfig.getAttributes();
+			System.out.println(attrs);
+		}
+		
+		DebugUITools.launch(stdConfig, ILaunchManager.DEBUG_MODE);
 
 	}
 
 	protected ILaunchConfiguration findLocalStandardLaunchConfiguration() {
 		
 		// retrieve launch configurations from disk and check if our standard config exists there
-		List<ILaunchConfiguration> listOfAllConfigs = findLocalLaunchConfigurations();
-		for (ILaunchConfiguration curConfig:listOfAllConfigs) {
-			if (curConfig.getName() == getStandardLaunchConfigFileName()) {
+		List<ILaunchConfiguration> validConfigs = new ArrayList<ILaunchConfiguration>(20);
+		List<ILaunchConfiguration> configs = findLocalLaunchConfigurations();
+		verifyConfigurations(configs, validConfigs);
+
+		for (ILaunchConfiguration curConfig:validConfigs) {
+			if (curConfig.getName().equals(getStandardLaunchConfigFileName())) {
 				return curConfig;
 			}
 		}
