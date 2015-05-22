@@ -313,9 +313,14 @@ public class TestCampaignExecution extends FileTestExecution {
 
 			if (cx == null) {
 				factory = new ContextFactory();
-				if (debugMode){
+				if (debugMode) {
 					startJSDebugger();
-					factory.addListener(debugger);
+					if (debugger != null) {
+						factory.addListener(debugger);// TODO AKR should
+														// anything else be done
+														// here?
+						startJSDebuggerLaunch();
+					}
 				}
 				cx = factory.enterContext();						
 			}
@@ -383,11 +388,11 @@ public class TestCampaignExecution extends FileTestExecution {
 		
 	}
 
-	public void startDebuggerLaunch() {
+	public void startJSDebuggerLaunch() {
 
 		try {
 			RhinoDebugLaunchManager launchMan = new RhinoDebugLaunchManager();
-			launchMan.openLaunchConfiguration();
+			launchMan.startDebugLaunchConfiguration();
 
 		}	catch (Exception e) {
 			System.err.println("JavaScript Rhino debugger launch could not be started!");
@@ -398,25 +403,26 @@ public class TestCampaignExecution extends FileTestExecution {
 	private void startJSDebugger() {
 		
 		System.out.println("Trying to start Rhino debugger ...");
-		//startDebuggerLaunch();
 		
 		// suspend=y: the debugger should start up in suspended mode, meaning it
 		// will not continue execution until a client connects to it
 		// trace=y: status should be reported to the Eclipse console
 		// simply delete this if you do not want traces
 		// String rhino = "transport=socket,suspend=y,trace=y,address=9000";
-		String rhino = "transport=socket,suspend=y,address=9000";
+		String rhino = "transport=socket,suspend=n,address=9000";
+		  //suspend must be "no" here, because the debug launch is started programmatically
+		  //directly behind startJSDebugger(); waiting must be prevented therefore!
 		
-		//TODO what should happen if debugger != null?
+		//TODO write some log message somewhere??
 		debugger = new RhinoDebugger(rhino);
 		try {
-			System.out.println("Please, activate Rhino JS launch now!");
+			//System.out.println("Please, activate Rhino JS launch now!");
 			debugger.start();
 			System.out.println("Debugger started!");
 		} catch (Exception e) {
 			// TODO print where??
 			System.err
-					.println("Error while starting the Rhino JavaScript Debugger.");
+					.println("Error while starting the Rhino JavaScript debugger.");
 			e.printStackTrace();
 			debugger = null;
 		}
