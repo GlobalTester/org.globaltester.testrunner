@@ -327,6 +327,7 @@ public class TestCampaignExecution extends FileTestExecution {
 							startJSDebuggerLaunch(launchMan);
 						}
 					} catch (Exception exc) {
+						stopJSDebugger();
 						System.err
 								.println("JavaScript Rhino debugger launch could not be started!");
 						System.err.println("Reason:\n" + exc.getMessage());
