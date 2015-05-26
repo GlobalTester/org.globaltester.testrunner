@@ -314,15 +314,25 @@ public class TestCampaignExecution extends FileTestExecution {
 			if (cx == null) {
 				factory = new ContextFactory();
 				if (debugMode) {
-					startJSDebugger();
-					if (debugger != null) {
-						factory.addListener(debugger);// TODO AKR should
-														// anything else be done
-														// here?
-						startJSDebuggerLaunch();
+					try {
+						RhinoDebugLaunchManager launchMan = new RhinoDebugLaunchManager();
+						launchMan.readDebugLaunchConfiguration();
+						startJSDebugger(launchMan.getPortNo());
+
+						if (debugger != null) {
+							factory.addListener(debugger);// TODO AKR should
+															// anything else be
+															// done
+															// here?
+							startJSDebuggerLaunch(launchMan);
+						}
+					} catch (Exception exc) {
+						System.err
+								.println("JavaScript Rhino debugger launch could not be started!");
+						System.err.println("Reason:\n" + exc.getMessage());
 					}
 				}
-				cx = factory.enterContext();						
+				cx = factory.enterContext();
 			}
 			
 			ScriptRunner sr = new ScriptRunner(cx, project.getIProject()
@@ -388,19 +398,12 @@ public class TestCampaignExecution extends FileTestExecution {
 		
 	}
 
-	public void startJSDebuggerLaunch() {
+	public void startJSDebuggerLaunch(RhinoDebugLaunchManager launchMan) throws Exception {
 
-		try {
-			RhinoDebugLaunchManager launchMan = new RhinoDebugLaunchManager();
 			launchMan.startDebugLaunchConfiguration();
-
-		}	catch (Exception e) {
-			System.err.println("JavaScript Rhino debugger launch could not be started!");
-			System.err.println("Reason:\n" + e.getMessage());
-		}
 	}
 
-	private void startJSDebugger() {
+	private void startJSDebugger(String portNum) {
 		
 		System.out.println("Trying to start Rhino debugger ...");
 		
@@ -409,13 +412,13 @@ public class TestCampaignExecution extends FileTestExecution {
 		// trace=y: status should be reported to the Eclipse console
 		// simply delete this if you do not want traces
 		// String rhino = "transport=socket,suspend=y,trace=y,address=9000";
-		String rhino = "transport=socket,suspend=n,address=9000";
+		String rhino = "transport=socket,suspend=n,address=" + portNum;
 		  //suspend must be "no" here, because the debug launch is started programmatically
 		  //directly behind startJSDebugger(); waiting must be prevented therefore!
 		
-		//TODO write some log message somewhere??
-		debugger = new RhinoDebugger(rhino);
 		try {
+			//TODO write some log message somewhere??
+			debugger = new RhinoDebugger(rhino);
 			//System.out.println("Please, activate Rhino JS launch now!");
 			debugger.start();
 			System.out.println("Debugger started!");
@@ -437,7 +440,7 @@ public class TestCampaignExecution extends FileTestExecution {
 			debugger = null;
 		} catch (Exception e) {
 			System.err
-					.println("Error while stopping the Rhino JavaScript Debugger.");
+					.println("Error while stopping the Rhino JavaScript debugger.");
 			e.printStackTrace();
 		}
 	}
