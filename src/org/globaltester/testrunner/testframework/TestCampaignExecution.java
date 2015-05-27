@@ -313,6 +313,8 @@ public class TestCampaignExecution extends FileTestExecution {
 
 			if (cx == null) {
 				factory = new ContextFactory();
+				//TODO here we could add an appropriate class loader to avoid the class load problem of org.mozilla.javascript plugin
+				factory.initApplicationClassLoader(getClass().getClassLoader());
 				if (debugMode) {
 					try {
 						RhinoDebugLaunchManager launchMan = new RhinoDebugLaunchManager();
@@ -327,6 +329,8 @@ public class TestCampaignExecution extends FileTestExecution {
 							startJSDebuggerLaunch(launchMan);
 						}
 					} catch (Exception exc) {
+						if (debugger != null)
+							factory.removeListener(debugger);
 						stopJSDebugger();
 						System.err
 								.println("JavaScript Rhino debugger launch could not be started!");
