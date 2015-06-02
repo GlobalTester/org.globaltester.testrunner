@@ -1,6 +1,5 @@
 package org.globaltester.testrunner.testframework;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -9,30 +8,25 @@ import java.util.List;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
-import org.eclipse.debug.core.ILaunchConfiguration;
-import org.eclipse.wst.jsdt.debug.rhino.debugger.RhinoDebugger;
 import org.globaltester.cardconfiguration.CardConfig;
 import org.globaltester.core.resources.GtResourceHelper;
 import org.globaltester.core.xml.XMLHelper;
 import org.globaltester.testrunner.Activator;
 import org.globaltester.logging.logger.GtErrorLogger;
 import org.globaltester.logging.logger.TestLogger;
+import org.globaltester.smartcardshell.RhinoJavaScriptAccess;
 import org.globaltester.smartcardshell.ScriptRunner;
 import org.globaltester.testrunner.GtTestCampaignProject;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ContextFactory;
 
 public class TestCampaignExecution extends FileTestExecution {
 	List<IExecution> elementExecutions = new ArrayList<IExecution>();
 	private CardConfig cardConfig;
-	private RhinoDebugger debugger = null;
-
 	private TestCampaignExecution previousExecution;
 	
 	@Override
@@ -304,42 +298,50 @@ public class TestCampaignExecution extends FileTestExecution {
 
 			TestLogger.init(project.getNewResultDir());
 			setLogFileName(TestLogger.getLogFileName());
+				
+			//generate a new JavaScript context for the current thread
+			Context cx = RhinoJavaScriptAccess.activateContext(debugMode);
 
-			// init JS ScriptRunner and Context (factory is needed for listener for
-			// debugger)
-			
-			ContextFactory factory;
-			Context cx = null;
-
-			if (cx == null) {
-				factory = new ContextFactory();
-				//TODO here we could add an appropriate class loader to avoid the class load problem of org.mozilla.javascript plugin
-				factory.initApplicationClassLoader(getClass().getClassLoader());
-				if (debugMode) {
-					try {
-						RhinoDebugLaunchManager launchMan = new RhinoDebugLaunchManager();
-						launchMan.readDebugLaunchConfiguration();
-						startJSDebugger(launchMan.getPortNo());
-
-						if (debugger != null) {
-							factory.addListener(debugger);// TODO AKR should
-															// anything else be
-															// done
-															// here?
-							startJSDebuggerLaunch(launchMan);
-						}
-					} catch (Exception exc) {
-						if (debugger != null)
-							factory.removeListener(debugger);
-						stopJSDebugger();
-						System.err
-								.println("JavaScript Rhino debugger launch could not be started!");
-						System.err.println("Reason:\n" + exc.getMessage());
-					}
-				}
-				cx = factory.enterContext();
-			}
-			
+//von hier anke
+//			// init JS ScriptRunner and Context (factory is needed for listener for
+//			// debugger)
+//			
+//			ContextFactory factory;
+//			Context cx = null;
+//
+//			factory = new ContextFactory();
+//			// TODO here we could add an appropriate class loader to avoid the
+//			// class load problem of org.mozilla.javascript plugin
+//			//factory.initApplicationClassLoader(getClass().getClassLoader());
+//			
+//			// factory.initApplicationClassLoader(new ClassLoader() {});
+//			factory.initApplicationClassLoader(getCompositeClassLoaderForProtocols());
+//
+//			if (debugMode) {
+//				try {
+//					RhinoDebugLaunchManager launchMan = new RhinoDebugLaunchManager();
+//					launchMan.readDebugLaunchConfiguration();
+//					startJSDebugger(launchMan.getPortNo());
+//
+//					if (debugger != null) {
+//						factory.addListener(debugger);// TODO AKR should
+//														// anything else be
+//														// done
+//														// here?
+//						startJSDebuggerLaunch(launchMan);
+//					}
+//				} catch (Exception exc) {
+//					if (debugger != null)
+//						factory.removeListener(debugger);
+//					stopJSDebugger();
+//					System.err
+//							.println("JavaScript Rhino debugger launch could not be started!");
+//					System.err.println("Reason:\n" + exc.getMessage());
+//				}
+//			}
+//			cx = factory.enterContext();
+//			//bis hier
+//			
 			ScriptRunner sr = new ScriptRunner(cx, project.getIProject()
 					.getLocation().toOSString());
 			sr.init(cx);
@@ -349,13 +351,9 @@ public class TestCampaignExecution extends FileTestExecution {
 			execute(sr, cx, false, new SubProgressMonitor(monitor, getTestCampaign().getTestCampaignElements().size()));
 
 			monitor.subTask("Shutdown");
-			
-			if (debugMode) {
-				stopJSDebugger();
-			}
-			
-			// close JS context
-			Context.exit();
+						
+			// close the JavaScript context for the current thread
+			RhinoJavaScriptAccess.closeContext();
 
 			// shutdown the TestLogger
 			TestLogger.shutdown();
@@ -366,6 +364,7 @@ public class TestCampaignExecution extends FileTestExecution {
 			monitor.done();
 		}
 	}
+
 
 	/**
 	 * @param previousExecution
@@ -402,53 +401,5 @@ public class TestCampaignExecution extends FileTestExecution {
 		this.cardConfig = newCardConfig;
 		
 	}
-
-	public void startJSDebuggerLaunch(RhinoDebugLaunchManager launchMan) throws Exception {
-
-			launchMan.startDebugLaunchConfiguration();
-	}
-
-	private void startJSDebugger(String portNum) {
-		
-		System.out.println("Trying to start Rhino debugger ...");
-		
-		// suspend=y: the debugger should start up in suspended mode, meaning it
-		// will not continue execution until a client connects to it
-		// trace=y: status should be reported to the Eclipse console
-		// simply delete this if you do not want traces
-		// String rhino = "transport=socket,suspend=y,trace=y,address=9000";
-		String rhino = "transport=socket,suspend=n,address=" + portNum;
-		  //suspend must be "no" here, because the debug launch is started programmatically
-		  //directly behind startJSDebugger(); waiting must be prevented therefore!
-		
-		try {
-			//TODO write some log message somewhere??
-			debugger = new RhinoDebugger(rhino);
-			//System.out.println("Please, activate Rhino JS launch now!");
-			debugger.start();
-			System.out.println("Debugger started!");
-		} catch (Exception e) {
-			// TODO print where??
-			System.err
-					.println("Error while starting the Rhino JavaScript debugger.");
-			e.printStackTrace();
-			debugger = null;
-		}
-	}
-
-	private void stopJSDebugger() {
-		if (debugger == null)
-			 return;
-
-		try {
-			debugger.stop();
-			debugger = null;
-		} catch (Exception e) {
-			System.err
-					.println("Error while stopping the Rhino JavaScript debugger.");
-			e.printStackTrace();
-		}
-	}
-
 
 }
