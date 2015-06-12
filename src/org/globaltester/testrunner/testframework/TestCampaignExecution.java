@@ -299,8 +299,10 @@ public class TestCampaignExecution extends FileTestExecution {
 			TestLogger.init(project.getNewResultDir());
 			setLogFileName(TestLogger.getLogFileName());
 				
+			RhinoJavaScriptAccess rhinoAccess = new RhinoJavaScriptAccess();
+
 			//generate a new JavaScript context for the current thread
-			Context cx = RhinoJavaScriptAccess.activateContext(debugMode);
+			Context cx = rhinoAccess.activateContext(debugMode);
 		
 			ScriptRunner sr = new ScriptRunner(cx, project.getIProject()
 					.getLocation().toOSString());
@@ -313,7 +315,7 @@ public class TestCampaignExecution extends FileTestExecution {
 			monitor.subTask("Shutdown");
 						
 			// close the JavaScript context for the current thread
-			RhinoJavaScriptAccess.closeContext();
+			rhinoAccess.closeContext();
 
 			// shutdown the TestLogger
 			TestLogger.shutdown();
