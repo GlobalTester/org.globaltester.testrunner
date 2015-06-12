@@ -301,47 +301,7 @@ public class TestCampaignExecution extends FileTestExecution {
 				
 			//generate a new JavaScript context for the current thread
 			Context cx = RhinoJavaScriptAccess.activateContext(debugMode);
-
-//von hier anke
-//			// init JS ScriptRunner and Context (factory is needed for listener for
-//			// debugger)
-//			
-//			ContextFactory factory;
-//			Context cx = null;
-//
-//			factory = new ContextFactory();
-//			// TODO here we could add an appropriate class loader to avoid the
-//			// class load problem of org.mozilla.javascript plugin
-//			//factory.initApplicationClassLoader(getClass().getClassLoader());
-//			
-//			// factory.initApplicationClassLoader(new ClassLoader() {});
-//			factory.initApplicationClassLoader(getCompositeClassLoaderForProtocols());
-//
-//			if (debugMode) {
-//				try {
-//					RhinoDebugLaunchManager launchMan = new RhinoDebugLaunchManager();
-//					launchMan.readDebugLaunchConfiguration();
-//					startJSDebugger(launchMan.getPortNo());
-//
-//					if (debugger != null) {
-//						factory.addListener(debugger);// TODO AKR should
-//														// anything else be
-//														// done
-//														// here?
-//						startJSDebuggerLaunch(launchMan);
-//					}
-//				} catch (Exception exc) {
-//					if (debugger != null)
-//						factory.removeListener(debugger);
-//					stopJSDebugger();
-//					System.err
-//							.println("JavaScript Rhino debugger launch could not be started!");
-//					System.err.println("Reason:\n" + exc.getMessage());
-//				}
-//			}
-//			cx = factory.enterContext();
-//			//bis hier
-//			
+		
 			ScriptRunner sr = new ScriptRunner(cx, project.getIProject()
 					.getLocation().toOSString());
 			sr.init(cx);
