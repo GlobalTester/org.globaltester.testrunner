@@ -8,8 +8,8 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.globaltester.core.ui.GtUiHelper;
-import org.globaltester.smartcardshell.RhinoDebugLaunchManager;
 import org.globaltester.smartcardshell.RhinoJavaScriptAccess;
+import org.globaltester.smartcardshell.ui.RhinoDebugLaunchManager;
 
 /**
  * Subclass of RunTestCommandHandler, but with different default setting for
