@@ -63,7 +63,9 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 				try {
 					int count = 0;
 					while (count <= 3) {
-						// wait for Rhino debugger to be started
+						// wait for Rhino debugger to be started; the object delivered
+						// here is an interface object which can be filled with 
+						// functionality in later versions
 						if (RhinoJavaScriptAccess.getDebuggerStartedObj() == null) {
 							Thread.sleep(1703);
 							count++;
