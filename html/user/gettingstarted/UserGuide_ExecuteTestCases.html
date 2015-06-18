@@ -41,10 +41,86 @@
 		There is also a shortcut to create and execute a TestCampaign
 		directly:<br> In the TestSpecification(s) you have chosen, select
 		the TestCases you want to execute. Right-click with your mouse, and
-		this time choose <b>&quot;RunTest&quot;</b>.<br> A TestCampaign
+		this time choose <b>&quot;Run Test&quot;</b>.<br> A TestCampaign
 		will be created and executed directly. Of course you can execute it
 		again by selecting or opening it and click the <b>&quot;Run
 			Test&quot;</b> command in the toolbar.
+	</p>
+
+	<h2>Debug Test Cases</h2>
+	In order to be able to debug the JavaScript parts of your test cases respectively campaigns,
+	a JavaScript Debugger can be invoked. It allows you to set breakpoints on JavaScript
+	statements and thus control the correctness of your program flow and variable values.
+	<h3>Create a JavaScript Debug Configuration</h3>
+	<p>
+		First a	debug configuration has to be created and initialized (currently this 
+		must be done manually, which will change in later versions). There different 
+		settings can be made such as the socket number for process communication of 
+		the debugger threads. 
+		You can add the configuration in the following way:
+		<ul>
+			<li>Open the debug perspective.
+			</li>
+			<li> Open the debug configuration editor (click on the black arrow besides 
+			the bug icon in the task bar and choose <b>&quot;Debug Configurations&quot;</b>).
+			</li>
+			<li> Select <b>&quot;Remote JavaScript&quot;</b> and click on the <b>&quot;New 
+			launch configuration&quot;</b> icon.
+			</li>
+			<li> Rename the configuration to <b>&quot;runJSDebugger&quot;</b>.
+			</li>
+			<li> Activate the <b>&quot;Connect&quot;</b> tab and change the connector type 
+			to <b>&quot;Mozilla Rhino – Attaching Connector&quot;</b>.
+			</li>
+			<li> Activate the <b>&quot;Source&quot;</b> tab and remove the default location.
+			</li>
+			<li> Add the directories where your test cases are stored:
+			</li>
+			<ul>
+			<li> Choose <b>&quot;Add --> Workspace Folder&quot;</b>.
+			</li>
+			<li> Choose for example <b>&quot;GlobalTester Sample TestSpecifications – TestCases&quot;</b>.
+			</li>
+			</ul>
+			<li> Click <b>&quot;Apply&quot;</b> to save your changes.
+			</li>
+		</ul>
+		This configuration will be used automatically when the debugger is started.	It can be changed 
+		using the same editor. Do not set a different name since the configuration cannot be
+		found in this case.
+	</p>
+
+	<h3>Set Breakpoints</h3>
+	<p>
+			<ul>
+			<li> Open the file where you want to set breakpoints by double clicking the file name in
+			the GlobalTester Navigator and select the line you want to watch. <br>
+			<b>Note:</b> Currently setting of breakpoints is restricted to JavaScript files. You can use
+			a load command inside a technical command or result tag of your XML test case file
+			in order to load and execute such a JavaScript file with breakpoints. Add for example 
+			(path must be adapted to your location for the JavaScript file):<br>
+			load("&lt;path&gt;GlobalTester Sample TestSpecification/TestCases/JSDebugger-PrintTest.js");
+			</li>
+			<li> Right-click on the vertical bar left to the source editor (left frame).
+			</li>
+			<li> Choose <b>&quot;Toggle Breakpoint&quot;</b> to set respectively unset a breakpoint. 
+			</li>			
+			<li> You can choose <b>&quot;Disable Breakpoint&quot;</b> to deactivate a breakpoint 
+			temporarily. 
+			</li>			
+		</ul>
+	</p>
+
+	<h3>Start a JavaScript Debugger and Execute Your Test Case or Campaign</h3>
+	<p>
+		Starting the debugger for test case execution is now largely analogous to running 
+		a test campaign (for creating and executing test cases and campaigns see above).
+		Right-click with your mouse on a test case respectively test campaign, and
+		this time choose <b>&quot;Debug Test&quot;</b>. In the case that any breakpoints
+		were set and are hit, the debugger widget will open the appropriate editor
+		and show the line being executed. The debugger will automatically be closed
+		after execution. For more information on how to work with the debug perspective
+		see &quot;Workbench User Guide&quot;.
 	</p>
 
 	<h2>Evaluate Log File(s)</h2>
