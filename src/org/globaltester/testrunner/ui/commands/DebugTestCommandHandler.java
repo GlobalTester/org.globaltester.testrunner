@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.globaltester.testrunner.ui.commands;
 
 import org.eclipse.core.commands.ExecutionEvent;
@@ -12,9 +9,10 @@ import org.globaltester.smartcardshell.RhinoJavaScriptAccess;
 import org.globaltester.smartcardshell.ui.RhinoDebugLaunchManager;
 
 /**
- * Subclass of RunTestCommandHandler, but with different default setting for
- * debugMode (true). Besides this the handler organizes the launching of the
- * Rhino debugger.
+ * Subclass of RunTestCommandHandler for activating the debug mode.
+ * The Rhino debugging launch is started in the execute method generating
+ * a new thread which is connected to the Rhino debugger in case
+ * of success.
  * 
  * @see #execute(org.eclipse.core.commands.ExecutionEvent)
  * 
@@ -23,17 +21,43 @@ import org.globaltester.smartcardshell.ui.RhinoDebugLaunchManager;
  */
 public class DebugTestCommandHandler extends RunTestCommandHandler {
 
+	/**
+	 * Time which the debug launch thread shall wait in case the connection
+	 * could not immediately be established (then try again {@link #numLoop} times).
+	 */
+	protected static long waitingTime = 2000;
+	
+	/**
+	 * Number of iterations for repeating trial to establish connection in debug launch thread.
+	 */
+	protected static int numLoop = 3;
+	
+	/**
+	 * Name for debug launch thread which makes it easier to find this thread 
+	 * in the runtime stack.
+	 */
+	protected static String rhinoLauncherThreadName = "RhinoDebuggerLauncher";
+	
+	/**
+	 * Calls the super constructor and initializes debug mode with true.
+	 */
 	public DebugTestCommandHandler() {
 		super();
 		setDebugMode(true); // enable JavaScript debugging
 	}
 
 	/**
-	 * Tries to launch the Rhino JavaScript debugger in an own thread and
-	 * concurrently executes the execute method of the super class. The debugger
-	 * launch thread has to wait until the concurrent thread set up the Rhino
-	 * debugging thread since these two threads communicate with each other and
-	 * the debugging thread must be started before the launch thread.
+	 * Tries to start the Rhino JavaScript debugger launch in an own thread and
+	 * concurrently starts the execute method of the super class which activates 
+	 * the Rhino debugger thread. This Rhino debugger thread must be started before 
+	 * the launch thread and the debugger launch thread has to wait for it,
+	 * since these two Rhino threads communicate with each other. <br>
+	 * NOTE: The debugger thread works with its own timeout if it is started in 
+	 * suspended mode (concurrently set to the fixed value of 300000 in class
+	 * org.eclipse.wst.jsdt.debug.internal.rhino.debugger.DebugSessionManager.start()). 
+	 * Therefore a deadlock should not occur when the launch thread is terminated 
+	 * too early. Since the timeout is rather long, this could be irritating for the user.
+	 * Maybe there should be a special treatment for this case!
 	 * 
 	 * @see org.globaltester.testrunner.ui.commands.RunTestCommandHandler#execute(org.eclipse.core.commands.ExecutionEvent)
 	 */
@@ -42,6 +66,9 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 
 		final RhinoDebugLaunchManager launchMan = new RhinoDebugLaunchManager();
 		try {
+			// read the standard configuration file and set the port number found
+			// there as socket number for the communication between debugger thread
+			// and debugger launch thread
 			launchMan.readDebugLaunchConfiguration();
 			RhinoJavaScriptAccess.setStandardPortNum(launchMan.getPortNo());
 		} catch (Exception e1) {
@@ -56,25 +83,43 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 									+ e1.getLocalizedMessage());
 			return null;
 		}
+	
+		// generate the launch thread and override its run method with a waiting
+		// loop so that there is some time to establish the connection
+		Thread rhinoDebugLaunchThread = new Thread() {
+			
+		/*
+			FIXME When starting a new Eclipse launch, build processes are executed in
+			void org.eclipse.debug.internal.ui.DebugUIPlugin.launchInBackground(ILaunchConfiguration 
+			configuration, String mode).
+			If these processes have not finished yet the launch process is set to wait
+			(a wait variable is set to true). In this case the code executes the statements
+			if (wait) {
+				progressService.showInDialog(workbench.getActiveWorkbenchWindow().getShell(), job);
+			}
+			It sometimes happens that the getActiveWorkbenchWindow() returns null which causes
+			a NullPointerException. This usually happens if the current thread is not a UI thread.
+			It is still unclear how to make the thread concerned a UI thread!
+			There exists a bug fix for this described in 
+			http://git.eclipse.org/c/platform/eclipse.platform.debug.git/commit/?id=a7933cebb9008430f78cb0a48e66007178723c95
+			which is not part of the official library org.eclipse.debug.ui.
+		*/
 
-		new Thread() {
 			@Override
 			public void run() {
 				try {
 					int count = 0;
-					while (count <= 3) {
+					while (count <= numLoop) {
 						// wait for Rhino debugger to be started; the object delivered
 						// here is an interface object which can be filled with 
 						// functionality in later versions
 						if (RhinoJavaScriptAccess.getDebuggerStartedObj() == null) {
-							Thread.sleep(1703);
+							Thread.sleep(waitingTime);
 							count++;
 						} else {
-							//TODO use fo final object OK??
 							launchMan.startDebugLaunchConfiguration();
 							break;
 						}
-
 					}
 					if (RhinoJavaScriptAccess.getDebuggerStartedObj() == null) {
 						System.err
@@ -88,9 +133,22 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 					e.printStackTrace();
 				}
 			}
-		}.start();
+		};
 
-		// concurrently continue standard execution
+		try {
+			// set a name so that it is easier to find this thread in the runtime stack
+			System.out.println("Starting debug thread ...");
+			rhinoDebugLaunchThread.setName(rhinoLauncherThreadName);
+			rhinoDebugLaunchThread.start();
+		} catch  (Exception e) {
+			System.err
+			.println("DebugTestCommandHandler: "
+					+ "Debugger launch could not be started! Canceling debug launching. Reason: " + e.getMessage());
+			e.printStackTrace();
+		}
+
+		// concurrently continue standard execution, which starts the debugger thread
+		// and evaluates the JavaScript code for this test case or campaign
 		return super.execute(event);
 
 	}
