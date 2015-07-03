@@ -42,7 +42,6 @@ public class RunTestCommandHandler extends AbstractHandler {
 	private GtTestCampaignProject campaignProject = null;
 	private CardConfig cardConfig = null;
 	private Shell shell;
-	protected boolean debugMode = false; //disable JavaScript debugging
 	
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
@@ -264,12 +263,11 @@ public class RunTestCommandHandler extends AbstractHandler {
 		return null;
 	}
 
+	/**
+	 * Indicates if JavaScript debugging is activated or not. 
+	 * @return false since JavaScript debugging is deactivated for this handler
+	 */
 	public boolean isDebugMode() {
-		return debugMode;
+		return false;
 	}
-
-	public void setDebugMode(boolean debugMode) {
-		this.debugMode = debugMode;
-	}
-
 }
