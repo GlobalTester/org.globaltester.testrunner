@@ -15,6 +15,7 @@ import org.globaltester.cardconfiguration.CardConfig;
 import org.globaltester.core.resources.GtResourceHelper;
 import org.globaltester.core.xml.XMLHelper;
 import org.globaltester.testrunner.Activator;
+import org.globaltester.logging.logger.GTLogger;
 import org.globaltester.logging.logger.GtErrorLogger;
 import org.globaltester.logging.logger.TestLogger;
 import org.globaltester.smartcardshell.RhinoJavaScriptAccess;
@@ -301,20 +302,37 @@ public class TestCampaignExecution extends FileTestExecution {
 				
 			//activate a JavaScript context for the current thread
 			RhinoJavaScriptAccess rhinoAccess = new RhinoJavaScriptAccess();
-			Context cx = rhinoAccess.activateContext(debugMode);
+			Context cx = null;
+			try {
+				cx = rhinoAccess.activateContext(debugMode);
+			} catch (Exception exc) {
+				String info = "A problem occurred when trying to activate the Rhino JavaScript context.\n"
+						+ exc.getLocalizedMessage();
+				// TODO this should be sent to the UI -> inform user!
+				// rethrow exc is not good, since execution should continue below
+				Exception newExc = new Exception(info, exc);
+				GTLogger.getInstance().error(info);
+				GtErrorLogger.log(Activator.PLUGIN_ID, newExc);
+				System.err.println(newExc.getLocalizedMessage());
+			}
 		
-			ScriptRunner sr = new ScriptRunner(cx, project.getIProject()
-					.getLocation().toOSString());
-			sr.init(cx);
-			sr.initCard(cx, "card", cardConfig);
-			monitor.worked(1);
+			if (cx != null) {
+				ScriptRunner sr = new ScriptRunner(cx, project.getIProject()
+						.getLocation().toOSString());
+				sr.init(cx);
+				sr.initCard(cx, "card", cardConfig);
+				monitor.worked(1);
 
-			execute(sr, cx, false, new SubProgressMonitor(monitor, getTestCampaign().getTestCampaignElements().size()));
+				execute(sr, cx, false, new SubProgressMonitor(monitor,
+						getTestCampaign().getTestCampaignElements().size()));
+			}
 
 			monitor.subTask("Shutdown");
 						
 			// exit the JavaScript context for the current thread
-			rhinoAccess.exitContext();
+			// TODO amay: could this be moved to the part above? 
+			if (cx != null)
+				rhinoAccess.exitContext();
 
 			// shutdown the TestLogger
 			TestLogger.shutdown();
