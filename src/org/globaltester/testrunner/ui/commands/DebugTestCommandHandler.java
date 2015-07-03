@@ -2,17 +2,19 @@ package org.globaltester.testrunner.ui.commands;
 
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.debug.internal.ui.DebugUIPlugin;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.globaltester.core.ui.GtUiHelper;
 import org.globaltester.smartcardshell.RhinoJavaScriptAccess;
 import org.globaltester.smartcardshell.ui.RhinoDebugLaunchManager;
 
 /**
- * Subclass of RunTestCommandHandler for activating the debug mode.
- * The Rhino debugging launch is started in the execute method generating
- * a new thread which is connected to the Rhino debugger in case
- * of success.
+ * Subclass of RunTestCommandHandler for activating the debug mode. The Rhino
+ * debugging launch is started in the execute method generating a new thread
+ * which is connected to the Rhino debugger in case of success.
  * 
  * @see #execute(org.eclipse.core.commands.ExecutionEvent)
  * 
@@ -28,9 +30,10 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 	protected static long waitingTime = 2000;
 	
 	/**
-	 * Number of iterations for repeating trial to establish connection in debug launch thread.
+	 * Number of iterations for repeating trial to establish connection in debug
+	 * launch thread.
 	 */
-	protected static int numLoop = 3;
+	protected static int numLoop = 7;
 	
 	/**
 	 * Name for debug launch thread which makes it easier to find this thread 
@@ -43,32 +46,43 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 	 */
 	public DebugTestCommandHandler() {
 		super();
-		setDebugMode(true); // enable JavaScript debugging
 	}
 
 	/**
 	 * Tries to start the Rhino JavaScript debugger launch in an own thread and
-	 * concurrently starts the execute method of the super class which activates 
-	 * the Rhino debugger thread. This Rhino debugger thread must be started before 
-	 * the launch thread and the debugger launch thread has to wait for it,
-	 * since these two Rhino threads communicate with each other. <br>
-	 * NOTE: The debugger thread works with its own timeout if it is started in 
+	 * concurrently starts the execute method of the super class which activates
+	 * the Rhino debugger thread. This Rhino debugger thread must be started
+	 * before the launch thread and the debugger launch thread has to wait for
+	 * it, since these two Rhino threads communicate with each other. <br>
+	 * 
+	 * NOTE: The debugger thread works with its own timeout if it is started in
 	 * suspended mode (concurrently set to the fixed value of 300000 in class
-	 * org.eclipse.wst.jsdt.debug.internal.rhino.debugger.DebugSessionManager.start()). 
-	 * Therefore a deadlock should not occur when the launch thread is terminated 
-	 * too early. Since the timeout is rather long, this could be irritating for the user.
-	 * Maybe there should be a special treatment for this case!
+	 * org.eclipse.wst.jsdt.debug.internal.rhino.debugger.DebugSessionManager.
+	 * start()). Therefore a deadlock should not occur when the launch thread is
+	 * terminated too early. Since the timeout is rather long, this could be
+	 * irritating for the user. Maybe there should be a special treatment for
+	 * this case!
 	 * 
 	 * @see org.globaltester.testrunner.ui.commands.RunTestCommandHandler#execute(org.eclipse.core.commands.ExecutionEvent)
 	 */
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 
+		if (Display.getCurrent() == null) {
+			System.out.println("Display is null in execute");
+		} else {
+			System.out.println("Display is not null in execute");
+		}
+		if (Display.findDisplay(Thread.currentThread()) == null) {
+			System.out.println("Thread is not UI in execute");
+		} else {
+			System.out.println("Thread is UI in execute");
+		}
+
 		final RhinoDebugLaunchManager launchMan = new RhinoDebugLaunchManager();
 		try {
 			// read the standard configuration file and set the port number found
 			// there as socket number for the communication between debugger thread
-			// and debugger launch thread
 			launchMan.readDebugLaunchConfiguration();
 			RhinoJavaScriptAccess.setStandardPortNum(launchMan.getPortNo());
 		} catch (Exception e1) {
@@ -113,10 +127,19 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 						// wait for Rhino debugger to be started; the object delivered
 						// here is an interface object which can be filled with 
 						// functionality in later versions
+						System.out.println("Run loop " + count + "of launch thread!");
 						if (RhinoJavaScriptAccess.getDebuggerStartedObj() == null) {
 							Thread.sleep(waitingTime);
 							count++;
 						} else {
+							if (Display.getCurrent() == null) {
+								System.out.println("Display is null");
+							}
+							if (Display.findDisplay(Thread.currentThread()) == null) {
+								System.out.println("Thread is not UI in run");
+							} else {
+								System.out.println("Thread is UI in run");
+							}
 							launchMan.startDebugLaunchConfiguration();
 							break;
 						}
@@ -135,10 +158,12 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 			}
 		};
 
+		rhinoDebugLaunchThread.setName(rhinoLauncherThreadName); // simplifies retrieving thread in runtime stack
 		try {
-			// set a name so that it is easier to find this thread in the runtime stack
-			System.out.println("Starting debug thread ...");
-			rhinoDebugLaunchThread.setName(rhinoLauncherThreadName);
+			System.out.println("Starting debug launch thread ...");
+			//final Display display = DebugUIPlugin.getStandardDisplay();
+			//display.asyncExec(rhinoDebugLaunchThread);
+			//PlatformUI.getWorkbench().getDisplay().asyncExec(rhinoDebugLaunchThread);
 			rhinoDebugLaunchThread.start();
 		} catch  (Exception e) {
 			System.err
@@ -147,9 +172,20 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 			e.printStackTrace();
 		}
 
-		// concurrently continue standard execution, which starts the debugger thread
-		// and evaluates the JavaScript code for this test case or campaign
+		// concurrently continue standard execution, which starts the debugger 
+		// thread and evaluates the JavaScript code for this test case or campaign
+		System.out.println("Starting execute of handler!");
 		return super.execute(event);
 
 	}
+
+	/**
+	 * Indicates if JavaScript debugging is activated or not. 
+	 * @return true since JavaScript debugging is activated for this handler
+	 */
+	@Override
+	public boolean isDebugMode() {
+		return true;
+	}
+
 }
