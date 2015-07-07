@@ -308,15 +308,18 @@ public class TestCampaignExecution extends FileTestExecution {
 			} catch (Exception exc) {
 				String info = "A problem occurred when trying to activate the Rhino JavaScript context.\n"
 						+ exc.getLocalizedMessage();
-				// TODO this should be sent to the UI -> inform user!
-				// rethrow exc is not good, since execution should continue below
+				// TODO amay this should be sent to the UI -> inform user!
+				// rethrow exc does not seem to be good here, since execution should 
+				// continue below
 				Exception newExc = new Exception(info, exc);
 				GTLogger.getInstance().error(info);
 				GtErrorLogger.log(Activator.PLUGIN_ID, newExc);
 				System.err.println(newExc.getLocalizedMessage());
 			}
 		
-			if (cx != null) {
+			if (cx != null) {// in this case the context could be activted
+							 // even if there was an exception. Execution can 
+							 // be continued.
 				ScriptRunner sr = new ScriptRunner(cx, project.getIProject()
 						.getLocation().toOSString());
 				sr.init(cx);
@@ -325,12 +328,13 @@ public class TestCampaignExecution extends FileTestExecution {
 
 				execute(sr, cx, false, new SubProgressMonitor(monitor,
 						getTestCampaign().getTestCampaignElements().size()));
+				//... move rhinoAccess.exitContext(); here??
 			}
 
 			monitor.subTask("Shutdown");
 						
 			// exit the JavaScript context for the current thread
-			// TODO amay: could this be moved to the part above? 
+			// TODO amay: could this be moved to the part above (see comment)? 
 			if (cx != null)
 				rhinoAccess.exitContext();
 
