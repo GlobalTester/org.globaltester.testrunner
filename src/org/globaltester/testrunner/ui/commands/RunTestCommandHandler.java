@@ -250,7 +250,7 @@ public class RunTestCommandHandler extends AbstractHandler {
 		TestCampaignExecution currentExecution = parentCampaingProject
 				.getTestCampaign().getCurrentExecution();
 		if (currentExecution != null) {
-			//TODO AKR: test added because of NullPointerException on empty cardConfig;
+			//TODO amay: test added because of NullPointerException on empty cardConfig;
 			//what else should be done? Should there be an error message?
 			if (currentExecution.getCardConfig() != null) {
 				String cardConfigName = currentExecution.getCardConfig()
