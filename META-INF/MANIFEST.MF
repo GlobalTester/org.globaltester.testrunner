@@ -20,7 +20,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.filebuffers;bundle-version="3.5.100",
  org.globaltester.testspecification.ui;bundle-version="3.0.0",
  org.globaltester.smartcardshell;bundle-version="3.0.1",
- org.globaltester.smartcardshell.ui;bundle-version="3.0.1"
+ org.globaltester.smartcardshell.ui;bundle-version="3.0.1",
+ org.eclipse.debug.ui
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Export-Package: org.globaltester.testrunner.ui,
