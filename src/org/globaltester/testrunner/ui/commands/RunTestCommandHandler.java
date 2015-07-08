@@ -121,9 +121,11 @@ public class RunTestCommandHandler extends AbstractHandler {
 				// shall not be called twice.
 			if (! prepareExecution(event)) {
 				return null;
-			} else
-				executionPrepared = true;
+			} 
 		}
+		// reset for the next execution, since the TestCommandHandler instance is reused
+		executionPrepared = false;
+		
 		
 		// execute the TestCampaign	
 		Job job = new Job("Test execution") {
