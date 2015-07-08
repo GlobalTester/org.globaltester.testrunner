@@ -42,12 +42,13 @@ public class RunTestCommandHandler extends AbstractHandler {
 	private GtTestCampaignProject campaignProject = null;
 	private CardConfig cardConfig = null;
 	private Shell shell;
+	protected boolean executionPrepared = false;
 	
-	@Override
-	public Object execute(ExecutionEvent event) throws ExecutionException {
+	protected boolean prepareExecution(ExecutionEvent event) {
+			
 		// check for dirty files and save them
 		if (!PlatformUI.getWorkbench().saveAllEditors(true)) {
-			return null;
+			return false;
 		}
 
 		// get TestCampaign from user selection
@@ -66,7 +67,7 @@ public class RunTestCommandHandler extends AbstractHandler {
 						.openErrorDialog(
 								shell,
 								"No TestCampaignProject could be associated with active editor. Please select either an existing TestCampaign for execution or valid input to create a new one.");
-				return null;
+				return false;
 			}
 		} else {
 			ISelection iSel = PlatformUI.getWorkbench()
@@ -78,7 +79,7 @@ public class RunTestCommandHandler extends AbstractHandler {
 
 		if (campaignProject == null) {
 			// no campaignProject available, user is already informed
-			return null;
+			return false;
 		}
 		
 		//try to get CardConfig
@@ -101,14 +102,30 @@ public class RunTestCommandHandler extends AbstractHandler {
 			CardConfigSelectorDialog dialog = new CardConfigSelectorDialog(
 					HandlerUtil.getActiveWorkbenchWindow(event).getShell());
 			if (dialog.open() != Window.OK) {
-				return null;
+				return false;
 			}
 			cardConfig = dialog.getSelectedCardConfig();
 		}
-
-		// execute the TestCampaign
-
 		
+		return true;
+	}
+	
+	@Override
+	public Object execute(ExecutionEvent event) throws ExecutionException {
+
+		// this realizes the common part between RunTestCommandHandler and DebugTestCommandHandler
+		if (! executionPrepared) { // this value can be set by
+								  // DebugTestCommandHandler.execute()
+				// which calls this super method after starting the debugger.
+				// executionPrepared is set in this case because prepareExecution()
+				// shall not be called twice.
+			if (! prepareExecution(event)) {
+				return null;
+			} else
+				executionPrepared = true;
+		}
+		
+		// execute the TestCampaign	
 		Job job = new Job("Test execution") {
 
 			protected IStatus run(IProgressMonitor monitor) {
