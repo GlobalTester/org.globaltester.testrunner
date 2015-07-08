@@ -83,9 +83,9 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 		// TODO this can partially be deleted as soon as we are sure there are no more thread
 		// problems
 		if (Display.findDisplay(Thread.currentThread()) == null) {
-			System.out.println("Thread has no display in DebugTestCommandHandler.execute");
+			System.err.println("Thread has no display in DebugTestCommandHandler.execute");
 		} else {
-			System.out.println("Thread HAS a display in DebugTestCommandHandler.execute");
+			System.err.println("Thread HAS a display in DebugTestCommandHandler.execute");
 		}
 
 		final RhinoDebugLaunchManager launchMan = new RhinoDebugLaunchManager();
@@ -120,14 +120,16 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 			FIXME When starting a new Eclipse launch, build processes are executed in
 			void org.eclipse.debug.internal.ui.DebugUIPlugin.launchInBackground(ILaunchConfiguration 
 			configuration, String mode).
-			If these processes have not finished yet the launch process is set to wait
+			If these processes have not finished yet, the launch process is set to wait
 			(a wait variable is set to true). In this case the code executes the statements
 			if (wait) {
 				progressService.showInDialog(workbench.getActiveWorkbenchWindow().getShell(), job);
 			}
 			It sometimes happens that the getActiveWorkbenchWindow() returns null which causes
 			a NullPointerException. This usually happens if the current thread is not a UI thread.
-			It is still unclear how to make the thread concerned a UI thread!
+			It is still unclear how to ensure the thread concerned to be a UI thread!
+			The problem only occurs from time to time, also dependent on if breakpoints are set 
+			and where.
 			There exists a bug fix for this described in 
 			http://git.eclipse.org/c/platform/eclipse.platform.debug.git/commit/?id=a7933cebb9008430f78cb0a48e66007178723c95
 			which is not part of the official library org.eclipse.debug.ui.
@@ -138,9 +140,9 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 				// TODO this can be deleted as soon as we are sure there are no more thread
 				// problems
 				if (Display.findDisplay(Thread.currentThread()) == null) {
-					System.out.println("Thread has no display in run");
+					System.err.println("Thread has no display in run");
 				} else {
-					System.out.println("Thread HAS a display in run");
+					System.err.println("Thread HAS a display in run");
 				}
 
 				try {
@@ -149,9 +151,13 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 						// wait for Rhino debugger to be started; the object delivered
 						// here is an interface object which can be filled with 
 						// functionality in later versions
-						System.out.println("Run loop " + count + " of launch thread!");
+						System.err.println("Run loop " + count + " of launch thread!");
 						if (RhinoJavaScriptAccess.getDebuggerStartedObj() == null) {
-							Thread.sleep(waitingTime);
+							try {
+								Thread.sleep(waitingTime);
+							} catch (InterruptedException exc) {
+								// just continue
+							}
 							count++;
 						} else {
 							launchMan.startDebugLaunchConfiguration();
@@ -160,10 +166,10 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 					}
 					if (RhinoJavaScriptAccess.getDebuggerStartedObj() == null) {
 						JSDebugLogger.error("DebugTestCommandHandler: "
-										+ "Debugger start could not be detected! Canceling debug launching.");
+										+ "No JavaScript debugger start could be detected! Canceling debug launching.");
 					}
 
-				} catch (Exception exc) {
+				} catch (Exception exc) { // probably missing debug configuration
 					String errorMsg = "DebugTestCommandHandler: "
 							+ "Debugger launch could not be started! Canceling debug launching.";
 					JSDebugLogger.error(errorMsg);
@@ -175,9 +181,15 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 
 		rhinoDebugLaunchThread.setName(rhinoLauncherThreadName); // simplifies retrieving thread in runtime stack
 		try {
-			JSDebugLogger.info("Starting debug launch thread ...");
-			// rhinoDebugLaunchThread.start();
+			// TODO this can be deleted as soon as we are sure there are no more thread
+			// problems
+			if (Display.findDisplay(Thread.currentThread()) == null) {
+				System.err.println("Thread has no display in DebugTestCommandHandler.execute before asyncExec");
+			} else {
+				System.err.println("Thread HAS a display in DebugTestCommandHandler.execute before asyncExec");
+			}
 
+			JSDebugLogger.info("Trying to start debug launch thread ...");
 			// make this thread a UI thread; otherwise there will be null pointer
 			// exceptions when accessing the active workbench window in 
 			// DebugUIPlugin.launchInBackground()
@@ -185,16 +197,23 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 									// currently same as PlatformUI.getWorkbench().getDisplay()
 			display.asyncExec(rhinoDebugLaunchThread); // starts the launch (hopefully) in a UI thread
 		} catch  (Exception exc) {
-			String errorMsg = "DebugTestCommandHandler: "
-					+ "Debugger launch could not be started! Canceling debug launching.";
+			// this part should usually only be reached, when non-debugging exceptions occur,
+			// since debug exceptions are handled elsewhere
+			String errorMsg = "DebugTestCommandHandler: " +
+					   "Debugger launch could not be started! Canceling debug launching.\n" +
+					   "Error message: " + exc.getLocalizedMessage() + "\n" +
+					   "Test will nevertheless be executed!";
 			JSDebugLogger.error(errorMsg);
 			GtErrorLogger.log(Activator.PLUGIN_ID, new Exception(errorMsg, exc));
+			Shell shell = HandlerUtil.getActiveWorkbenchWindow(event)
+					.getShell();
+			GtUiHelper.openErrorDialog(shell, errorMsg);
 			//exc.printStackTrace();
 		}
 
 		// concurrently continue standard execution, which starts the debugger 
 		// thread and evaluates the JavaScript code for this test case or campaign
-		System.out.println("Starting main execute of handler!");
+		System.err.println("Starting main execute of handler!");
 		return super.execute(event);
 
 	}
