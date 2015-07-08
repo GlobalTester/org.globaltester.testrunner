@@ -2,12 +2,11 @@ package org.globaltester.testrunner.ui.commands;
 
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
-//import org.eclipse.debug.internal.ui.DebugUIPlugin;
+import org.eclipse.debug.internal.ui.DebugUIPlugin;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.globaltester.core.ui.GtUiHelper;
-import org.globaltester.logging.logger.GTLogger;
 import org.globaltester.logging.logger.GtErrorLogger;
 import org.globaltester.logging.logger.JSDebugLogger;
 import org.globaltester.smartcardshell.Activator;
@@ -84,11 +83,9 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 		// TODO this can partially be deleted as soon as we are sure there are no more thread
 		// problems
 		if (Display.findDisplay(Thread.currentThread()) == null) {
-			System.out.println("Thread is not UI in DebugTestCommandHandler.execute");
+			System.out.println("Thread has no display in DebugTestCommandHandler.execute");
 		} else {
-			System.out.println("Thread is UI in DebugTestCommandHandler.execute");
-			GTLogger.getInstance().warn("DebugTestCommandHandler.execute() should not be " +
-										"called in a UI thread!");
+			System.out.println("Thread HAS a display in DebugTestCommandHandler.execute");
 		}
 
 		final RhinoDebugLaunchManager launchMan = new RhinoDebugLaunchManager();
@@ -105,7 +102,7 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 			//log and show error
 			String errorMsg = "A problem occurred when trying to read the JavaScript launch configuration.\n"
 					+ exc.getLocalizedMessage();
-			GTLogger.getInstance().error(errorMsg);
+			JSDebugLogger.error(errorMsg);
 			GtUiHelper
 					.openErrorDialog(
 							shell, errorMsg);
@@ -115,6 +112,8 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 	
 		// generate the launch thread and override its run method with a waiting
 		// loop so that there is some time to establish the connection
+		// (There is no extra class declared for this thread, since the run method
+		// shall have access to the local variables!)
 		Thread rhinoDebugLaunchThread = new Thread() {
 			
 		/*
@@ -136,6 +135,14 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 
 			@Override
 			public void run() {
+				// TODO this can be deleted as soon as we are sure there are no more thread
+				// problems
+				if (Display.findDisplay(Thread.currentThread()) == null) {
+					System.out.println("Thread has no display in run");
+				} else {
+					System.out.println("Thread HAS a display in run");
+				}
+
 				try {
 					int count = 0;
 					while (count <= numLoop) {
@@ -147,11 +154,6 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 							Thread.sleep(waitingTime);
 							count++;
 						} else {
-							if (Display.findDisplay(Thread.currentThread()) == null) {
-								System.out.println("Thread is not UI in run");
-							} else {
-								System.out.println("Thread is UI in run");
-							}
 							launchMan.startDebugLaunchConfiguration();
 							break;
 						}
@@ -161,10 +163,12 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 										+ "Debugger start could not be detected! Canceling debug launching.");
 					}
 
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				} catch (Exception e) {
-					e.printStackTrace();
+				} catch (Exception exc) {
+					String errorMsg = "DebugTestCommandHandler: "
+							+ "Debugger launch could not be started! Canceling debug launching.";
+					JSDebugLogger.error(errorMsg);
+					GtErrorLogger.log(Activator.PLUGIN_ID, new Exception(errorMsg, exc));
+					//exc.printStackTrace();
 				}
 			}
 		};
@@ -172,10 +176,19 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 		rhinoDebugLaunchThread.setName(rhinoLauncherThreadName); // simplifies retrieving thread in runtime stack
 		try {
 			JSDebugLogger.info("Starting debug launch thread ...");
-			rhinoDebugLaunchThread.start();
+			// rhinoDebugLaunchThread.start();
+
+			// make this thread a UI thread; otherwise there will be null pointer
+			// exceptions when accessing the active workbench window in 
+			// DebugUIPlugin.launchInBackground()
+			final Display display = DebugUIPlugin.getStandardDisplay(); 
+									// currently same as PlatformUI.getWorkbench().getDisplay()
+			display.asyncExec(rhinoDebugLaunchThread); // starts the launch (hopefully) in a UI thread
 		} catch  (Exception exc) {
-			GtErrorLogger.log(Activator.PLUGIN_ID, new Exception("DebugTestCommandHandler: "
-					+ "Debugger launch could not be started! Canceling debug launching.", exc));
+			String errorMsg = "DebugTestCommandHandler: "
+					+ "Debugger launch could not be started! Canceling debug launching.";
+			JSDebugLogger.error(errorMsg);
+			GtErrorLogger.log(Activator.PLUGIN_ID, new Exception(errorMsg, exc));
 			//exc.printStackTrace();
 		}
 
