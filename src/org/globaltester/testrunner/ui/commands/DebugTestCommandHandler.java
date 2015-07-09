@@ -146,6 +146,8 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 				}
 
 				try {
+					// TODO amay this waiting is still done in the UI thread. 
+					// should this be solved differently?
 					int count = 0;
 					while (count <= numLoop) {
 						// wait for Rhino debugger to be started; the object delivered
