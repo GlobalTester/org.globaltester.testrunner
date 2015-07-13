@@ -41,33 +41,41 @@ public class RunTestCommandHandler extends AbstractHandler {
 
 	private GtTestCampaignProject campaignProject = null;
 	private CardConfig cardConfig = null;
-	private Shell shell;
-	protected boolean executionPrepared = false;
-	
-	protected boolean prepareExecution(ExecutionEvent event) {
-			
+	protected Shell shell = null;
+
+	/**
+	 * If in debug mode, this method starts the Rhino debugger launch. For this
+	 * class the implementation is empty. Derived classes can override this
+	 * method.
+	 */
+	protected void startRhinoDebugLaunch() {
+		// nothing to do in this class
+	}
+
+	@Override
+	public Object execute(ExecutionEvent event) throws ExecutionException {
 		// check for dirty files and save them
 		if (!PlatformUI.getWorkbench().saveAllEditors(true)) {
-			return false;
+			return null;
 		}
 
 		// get TestCampaign from user selection
 		campaignProject = null;
-		
+
 		shell = HandlerUtil.getActiveWorkbenchWindow(event).getShell();
 		IWorkbenchPart activePart = Activator.getDefault().getWorkbench()
 				.getActiveWorkbenchWindow().getActivePage().getActivePart();
 
 		if (activePart instanceof EditorPart) {
 			campaignProject = getCampaignProjectFromEditor(activePart);
-			
+
 			if (campaignProject == null) {
 				// no campaignProject available, inform user
-				GtUiHelper
-						.openErrorDialog(
-								shell,
-								"No TestCampaignProject could be associated with active editor. Please select either an existing TestCampaign for execution or valid input to create a new one.");
-				return false;
+				GtUiHelper.openErrorDialog(shell,
+						"No TestCampaignProject could be associated with active editor. " +
+						"Please select either an existing TestCampaign for execution or " + 
+						"valid input to create a new one.");
+				return null;
 			}
 		} else {
 			ISelection iSel = PlatformUI.getWorkbench()
@@ -79,55 +87,49 @@ public class RunTestCommandHandler extends AbstractHandler {
 
 		if (campaignProject == null) {
 			// no campaignProject available, user is already informed
-			return false;
+			return null;
 		}
-		
-		//try to get CardConfig
+
+		// try to get CardConfig
 		cardConfig = null;
-		String selectCardConfigParam = event.getParameter("org.globaltester.testrunner.ui.SelectCardConfigParameter");
-		boolean forceSelection = (selectCardConfigParam != null) && selectCardConfigParam.trim().toLowerCase().equals("true");
+		String selectCardConfigParam = event
+				.getParameter("org.globaltester.testrunner.ui.SelectCardConfigParameter");
+		boolean forceSelection = (selectCardConfigParam != null)
+				&& selectCardConfigParam.trim().toLowerCase().equals("true");
 		if (!forceSelection) {
-			//try to get CardConfig from last CampaignExecution
+			// try to get CardConfig from last CampaignExecution
 			cardConfig = getLastCardConfigFromTestCampaignProject(campaignProject);
-		
-			//try to get CardConfig from Selection if none was defined in TestCampaign
+
+			// try to get CardConfig from Selection if none was defined in
+			// TestCampaign
 			if (cardConfig == null) {
 				cardConfig = getFirstCardConfigFromSelection();
 			}
 		}
 
-		
 		// ask user for CardConfig if none was selected
 		if (cardConfig == null) {
 			CardConfigSelectorDialog dialog = new CardConfigSelectorDialog(
 					HandlerUtil.getActiveWorkbenchWindow(event).getShell());
 			if (dialog.open() != Window.OK) {
-				return false;
+				return null;
 			}
 			cardConfig = dialog.getSelectedCardConfig();
 		}
-		
-		return true;
-	}
-	
-	@Override
-	public Object execute(ExecutionEvent event) throws ExecutionException {
 
-		// this realizes the common part between RunTestCommandHandler and DebugTestCommandHandler
-		if (! executionPrepared) { // this value can be set by
-								  // DebugTestCommandHandler.execute()
-				// which calls this super method after starting the debugger.
-				// executionPrepared is set in this case because prepareExecution()
-				// shall not be called twice.
-			if (! prepareExecution(event)) {
-				return null;
-			} 
-		}
-		// reset for the next execution, since the TestCommandHandler instance is reused
-		executionPrepared = false;
-		
-		
-		// execute the TestCampaign	
+		/*
+		 * Tries to start the Rhino JavaScript debugger launch in an own thread.
+		 * Concurrently the Rhino debugger thread is started by executeTests()
+		 * below. This Rhino debugger thread must be started before the launch
+		 * thread and the debugger launch thread has to wait for it, since these
+		 * two Rhino threads communicate with each other.
+		 */
+		if (isDebugMode()) // start debugger if in debug mode
+			startRhinoDebugLaunch();
+
+
+		// execute the TestCampaign
+
 		Job job = new Job("Test execution") {
 
 			protected IStatus run(IProgressMonitor monitor) {
@@ -153,29 +155,29 @@ public class RunTestCommandHandler extends AbstractHandler {
 
 				// open the new TestCampaign in the Test Campaign Editor
 				PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
-					
-					@Override
-					public void run() {
-						try {
-							GtUiHelper.openInEditor(campaignProject
-									.getTestCampaignIFile());
-						} catch (CoreException e) {
-							// log Exception to eclipse log
-							GtErrorLogger.log(Activator.PLUGIN_ID, e);
 
-							// users most probably will ignore this behavior and open
-							// editor
-							// manually, so do not open annoying dialog
-						}
-					}
-				});
-				
+							@Override
+							public void run() {
+								try {
+									GtUiHelper.openInEditor(campaignProject
+											.getTestCampaignIFile());
+								} catch (CoreException e) {
+									// log Exception to eclipse log
+									GtErrorLogger.log(Activator.PLUGIN_ID, e);
+
+									// users most probably will ignore this
+									// behavior and open editor manually, so do
+									// not open annoying dialog
+								}
+							}
+						});
+
 				return Status.OK_STATUS;
 			}
 		};
 		job.setUser(true);
 		job.schedule();
-		
+
 		return null;
 	}
 
@@ -183,23 +185,26 @@ public class RunTestCommandHandler extends AbstractHandler {
 			ISelection iSel, Shell shell) {
 
 		GtTestCampaignProject tmpCampaignProject = null;
-		
-		//if only one TestCampaign is selected run this
-		LinkedList<IFile> selectedIFiles = GtUiHelper.getSelectedIResources(iSel, IFile.class);
+
+		// if only one TestCampaign is selected run this
+		LinkedList<IFile> selectedIFiles = GtUiHelper.getSelectedIResources(
+				iSel, IFile.class);
 		if (!selectedIFiles.isEmpty()) {
 			// add the selected resources to the list of executables
 			Iterator<IFile> execFilesIter = selectedIFiles.iterator();
 			while (execFilesIter.hasNext()) {
 				IProject curProject = execFilesIter.next().getProject();
-				
+
 				try {
-					if (curProject.hasNature(GtTestCampaignNature.NATURE_ID)){
-						if (tmpCampaignProject == null){
-							//found first TestCampaignProject in selection
-							tmpCampaignProject = GtTestCampaignProject.getProjectForResource(curProject);
+					if (curProject.hasNature(GtTestCampaignNature.NATURE_ID)) {
+						if (tmpCampaignProject == null) {
+							// found first TestCampaignProject in selection
+							tmpCampaignProject = GtTestCampaignProject
+									.getProjectForResource(curProject);
 						} else {
 							GtUiHelper.openErrorDialog(shell,
-							"Selection contains files from more that one TestCampaign. Please select only one TestCampaign to execute.");
+									"Selection contains files from more than one " + 
+									"TestCampaign. Please select only one TestCampaign to execute.");
 							return null;
 						}
 					}
@@ -207,13 +212,13 @@ public class RunTestCommandHandler extends AbstractHandler {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
+
 			}
 		}
 		if (tmpCampaignProject != null) {
 			return tmpCampaignProject;
 		}
-		
+
 		// try to create a TestCampaignProject from current selection
 		try {
 			return CreateTestCampaignCommandHandler.createTestCampaignProject(
@@ -227,16 +232,18 @@ public class RunTestCommandHandler extends AbstractHandler {
 	private GtTestCampaignProject getCampaignProjectFromEditor(
 			IWorkbenchPart activePart) {
 		if (activePart instanceof TestCampaignEditor) {
-			TestCampaignEditorInput editorInput = (TestCampaignEditorInput) ((TestCampaignEditor) activePart)
-					.getEditorInput();
+			TestCampaignEditorInput editorInput = (TestCampaignEditorInput) 
+					((TestCampaignEditor) activePart).getEditorInput();
 			return editorInput.getGtTestCampaignProject();
 		} else if (activePart instanceof TestSpecEditor) {
-			FileEditorInput editorInput = (FileEditorInput) ((TestSpecEditor)activePart).getEditorInput();
+			FileEditorInput editorInput = (FileEditorInput) ((TestSpecEditor) activePart)
+					.getEditorInput();
 			IFile file = editorInput.getFile();
-			
+
 			// try to create a TestCampaignProject from current selection
 			try {
-				return CreateTestCampaignCommandHandler.createTestCampaignProject(file, shell);
+				return CreateTestCampaignCommandHandler
+						.createTestCampaignProject(file, shell);
 			} catch (CoreException e) {
 				GtErrorLogger.log(Activator.PLUGIN_ID, e);
 			}
@@ -245,10 +252,9 @@ public class RunTestCommandHandler extends AbstractHandler {
 	}
 
 	private CardConfig getFirstCardConfigFromSelection() {
-		ISelection iSel = PlatformUI.getWorkbench()
-		.getActiveWorkbenchWindow().getSelectionService()
-		.getSelection();
-		
+		ISelection iSel = PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+				.getSelectionService().getSelection();
+
 		LinkedList<IResource> iResources = GtUiHelper.getSelectedIResources(
 				iSel, IResource.class);
 		for (IResource iFile : iResources) {
@@ -269,11 +275,11 @@ public class RunTestCommandHandler extends AbstractHandler {
 		TestCampaignExecution currentExecution = parentCampaingProject
 				.getTestCampaign().getCurrentExecution();
 		if (currentExecution != null) {
-			//TODO amay: test added because of NullPointerException on empty cardConfig;
-			//what else should be done? Should there be an error message?
+			// TODO amay: test added because of NullPointerException on empty
+			// cardConfig;
+			// what else should be done? Should there be an error message?
 			if (currentExecution.getCardConfig() != null) {
-				String cardConfigName = currentExecution.getCardConfig()
-						.getName();
+				String cardConfigName = currentExecution.getCardConfig().getName();
 				if (CardConfigManager.isAvailableAsProject(cardConfigName)) {
 					return CardConfigManager.get(cardConfigName);
 				}
@@ -283,10 +289,12 @@ public class RunTestCommandHandler extends AbstractHandler {
 	}
 
 	/**
-	 * Indicates if JavaScript debugging is activated or not. 
+	 * Indicates if JavaScript debugging is activated or not.
+	 * 
 	 * @return false since JavaScript debugging is deactivated for this handler
 	 */
 	public boolean isDebugMode() {
 		return false;
 	}
+
 }
