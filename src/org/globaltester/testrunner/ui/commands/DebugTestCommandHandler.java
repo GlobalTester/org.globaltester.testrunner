@@ -76,7 +76,7 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 		try {
 			// read the standard configuration file and set the port number found
 			// there as socket number for the communication between debugger thread
-			launchMan.readDebugLaunchConfiguration();
+			launchMan.initDebugLaunchConfiguration();
 			RhinoJavaScriptAccess.setStandardPortNum(launchMan.getPortNo());
 		} catch (Exception exc) {
 			//log and show error
