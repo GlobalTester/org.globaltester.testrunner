@@ -11,14 +11,17 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.part.EditorPart;
@@ -44,11 +47,38 @@ public class RunTestCommandHandler extends AbstractHandler {
 	protected Shell shell = null;
 
 	/**
+	 * Returns the parent of the full, absolute path of the currently selected
+	 * resource relative to the workspace.
+	 * This is needed for setting the source lookup path in launch
+	 * configurations.
+	 * 
+	 * @param event
+	 *            which delivers the currently selected resource
+	 * @return path for the currently selected resource
+	 */
+	protected IPath getSourceLookupRoot(ExecutionEvent event) {
+		IWorkbenchWindow window = HandlerUtil.getActiveWorkbenchWindow(event);
+		if (window != null) {
+			IStructuredSelection selection = (IStructuredSelection) window
+					.getSelectionService().getSelection();
+			Object firstElement = selection.getFirstElement();
+			if (firstElement instanceof IFile) {
+				IPath path = (((IFile) firstElement).getParent()).getFullPath();
+				System.out.println("full path " + path);
+				return path;
+			}
+		}
+		return null;
+	}
+	
+	/**
 	 * If in debug mode, this method starts the Rhino debugger launch. For this
 	 * class the implementation is empty. Derived classes can override this
 	 * method.
+	 * @param event needed to retrieve information on the currently selected 
+	 * 			resource
 	 */
-	protected void startRhinoDebugLaunch() {
+	protected void startRhinoDebugLaunch(ExecutionEvent event) {
 		// nothing to do in this class
 	}
 
@@ -58,7 +88,7 @@ public class RunTestCommandHandler extends AbstractHandler {
 		if (!PlatformUI.getWorkbench().saveAllEditors(true)) {
 			return null;
 		}
-
+		
 		// get TestCampaign from user selection
 		campaignProject = null;
 
@@ -124,8 +154,13 @@ public class RunTestCommandHandler extends AbstractHandler {
 		 * thread and the debugger launch thread has to wait for it, since these
 		 * two Rhino threads communicate with each other.
 		 */
-		if (isDebugMode()) // start debugger if in debug mode
-			startRhinoDebugLaunch();
+		// TODO if startRhinoDebugLaunch is not successful, should we return here? with which value?
+		// difficult to decide since this opens a new thread.
+		// If something goes wrong before the thread is started, we could handle this
+		// here and return!?
+		if (isDebugMode()) { // start debugger if in debug mode
+			startRhinoDebugLaunch(event);
+		}
 
 
 		// execute the TestCampaign
