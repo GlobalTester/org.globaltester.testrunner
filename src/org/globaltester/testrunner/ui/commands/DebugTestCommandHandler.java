@@ -1,11 +1,8 @@
 package org.globaltester.testrunner.ui.commands;
 
 import org.eclipse.core.commands.ExecutionEvent;
-import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.debug.internal.ui.DebugUIPlugin;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.handlers.HandlerUtil;
 import org.globaltester.core.ui.GtUiHelper;
 import org.globaltester.logging.logger.GtErrorLogger;
 import org.globaltester.logging.logger.JSDebugLogger;
@@ -42,7 +39,7 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 	 * in the runtime stack.
 	 */
 	protected static String rhinoLauncherThreadName = "RhinoDebuggerLauncher";
-	
+		
 
 	/**
 	 * Tries to start the Rhino JavaScript debugger launch in an own thread.
@@ -60,9 +57,11 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 	 * this case!
 	 * 
 	 * @see org.globaltester.testrunner.ui.commands.RunTestCommandHandler#execute(org.eclipse.core.commands.ExecutionEvent)
+	 * @param event needed to retrieve information on the currently selected 
+	 * 			resource
 	 */
 	@Override
-	protected void startRhinoDebugLaunch() {
+	protected void startRhinoDebugLaunch(ExecutionEvent event) {
 
 		// TODO this can be deleted as soon as we are sure there are no more thread
 		// problems
@@ -75,9 +74,11 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 		final RhinoDebugLaunchManager launchMan = new RhinoDebugLaunchManager();
 		try {
 			// read the standard configuration file and set the port number found
-			// there as socket number for the communication between debugger thread
-			launchMan.initDebugLaunchConfiguration();
-			RhinoJavaScriptAccess.setStandardPortNum(launchMan.getPortNo());
+			// there as socket number for the communication between debugger thread.
+			// Besides this add the project root to the Rhino source lookup path
+			launchMan.initDebugLaunchConfiguration(getSourceLookupRoot(event));
+			RhinoJavaScriptAccess.setStandardPortNum(launchMan.getPortNum());
+			
 		} catch (Exception exc) {
 			//log and show error
 			String errorMsg = "A problem occurred when trying to read the JavaScript launch configuration.\n"
@@ -96,24 +97,27 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 		// shall have access to the local variables!)
 		Thread rhinoDebugLaunchThread = new Thread() {
 			
-		/*
-			FIXME When starting a new Eclipse launch, build processes are executed in
-			void org.eclipse.debug.internal.ui.DebugUIPlugin.launchInBackground(ILaunchConfiguration 
-			configuration, String mode).
-			If these processes have not finished yet, the launch process is set to wait
-			(a wait variable is set to true). In this case the code executes the statements
-			if (wait) {
-				progressService.showInDialog(workbench.getActiveWorkbenchWindow().getShell(), job);
-			}
-			It sometimes happens that the getActiveWorkbenchWindow() returns null which causes
-			a NullPointerException. This usually happens if the current thread is not a UI thread.
-			It is still unclear how to ensure the thread concerned to be a UI thread!
-			The problem only occurs from time to time, also dependent on if breakpoints are set 
-			and where.
-			There exists a bug fix for this described in 
-			http://git.eclipse.org/c/platform/eclipse.platform.debug.git/commit/?id=a7933cebb9008430f78cb0a48e66007178723c95
-			which is not part of the official library org.eclipse.debug.ui.
-		*/
+			/*
+			 * FIXME (probably already fixed!? must be observed!) When starting
+			 * a new Eclipse launch, build processes are executed in void
+			 * org.eclipse.debug.internal.ui.DebugUIPlugin.launchInBackground(
+			 * ILaunchConfiguration configuration, String mode). If these
+			 * processes have not finished yet, the launch process is set to
+			 * wait (a wait variable is set to true). In this case the code
+			 * executes the statements if (wait) {
+			 * progressService.showInDialog(workbench
+			 * .getActiveWorkbenchWindow().getShell(), job); } It sometimes
+			 * happens that the getActiveWorkbenchWindow() returns null which
+			 * causes a NullPointerException. This usually happens if the
+			 * current thread is not a UI thread. It is still unclear how to
+			 * ensure the thread concerned to be a UI thread! The problem only
+			 * occurs from time to time, also dependent on if breakpoints are
+			 * set and where. There exists a bug fix for this described in
+			 * http:/
+			 * /git.eclipse.org/c/platform/eclipse.platform.debug.git/commit
+			 * /?id=a7933cebb9008430f78cb0a48e66007178723c95 which is not part
+			 * of the official library org.eclipse.debug.ui.
+			 */
 
 			@Override
 			public void run() {
