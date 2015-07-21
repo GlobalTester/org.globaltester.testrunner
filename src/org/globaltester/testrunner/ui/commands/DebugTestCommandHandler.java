@@ -65,15 +65,15 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 
 		// TODO this can be deleted as soon as we are sure there are no more thread
 		// problems
-		if (Display.findDisplay(Thread.currentThread()) == null) {
-			System.err.println("Thread has no display in DebugTestCommandHandler.execute");
-		} else {
-			System.err.println("Thread HAS a display in DebugTestCommandHandler.execute");
-		}
+//		if (Display.findDisplay(Thread.currentThread()) == null) {
+//			System.err.println("Thread has no display in DebugTestCommandHandler.execute");
+//		} else {
+//			System.err.println("Thread HAS a display in DebugTestCommandHandler.execute");
+//		}
 
 		final RhinoDebugLaunchManager launchMan = new RhinoDebugLaunchManager();
 		try {
-			// read the standard configuration file and set the port number found
+			// initialize the standard configuration file and set the port number found
 			// there as socket number for the communication between debugger thread.
 			// Besides this add the project root to the Rhino source lookup path
 			launchMan.initDebugLaunchConfiguration(getSourceLookupRoot(event));
@@ -81,7 +81,7 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 			
 		} catch (Exception exc) {
 			//log and show error
-			String errorMsg = "A problem occurred when trying to read the JavaScript launch configuration.\n"
+			String errorMsg = "A problem occurred when trying to access a JavaScript launch configuration.\n"
 					+ exc.getLocalizedMessage();
 			JSDebugLogger.error(errorMsg);
 			GtErrorLogger.log(Activator.PLUGIN_ID, new Exception(errorMsg, exc));
@@ -123,11 +123,11 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 			public void run() {
 				// TODO this can be deleted as soon as we are sure there are no more thread
 				// problems
-				if (Display.findDisplay(Thread.currentThread()) == null) {
-					System.err.println("Thread has no display in run");
-				} else {
-					System.err.println("Thread HAS a display in run");
-				}
+//				if (Display.findDisplay(Thread.currentThread()) == null) {
+//					System.err.println("Thread has no display in run");
+//				} else {
+//					System.err.println("Thread HAS a display in run");
+//				}
 
 				try {
 					// TODO amay this waiting is still done in the UI thread. 
@@ -172,11 +172,11 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 		try {
 			// TODO this can be deleted as soon as we are sure there are no more thread
 			// problems
-			if (Display.findDisplay(Thread.currentThread()) == null) {
-				System.err.println("Thread has no display in DebugTestCommandHandler.execute before asyncExec");
-			} else {
-				System.err.println("Thread HAS a display in DebugTestCommandHandler.execute before asyncExec");
-			}
+//			if (Display.findDisplay(Thread.currentThread()) == null) {
+//				System.err.println("Thread has no display in DebugTestCommandHandler.execute before asyncExec");
+//			} else {
+//				System.err.println("Thread HAS a display in DebugTestCommandHandler.execute before asyncExec");
+//			}
 
 			JSDebugLogger.info("Trying to start debug launch thread ...");
 			// make this thread a UI thread; otherwise there will be null pointer
