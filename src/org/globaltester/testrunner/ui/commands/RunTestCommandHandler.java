@@ -63,7 +63,12 @@ public class RunTestCommandHandler extends AbstractHandler {
 					.getSelectionService().getSelection();
 			Object firstElement = selection.getFirstElement();
 			if (firstElement instanceof IFile) {
-				IPath path = (((IFile) firstElement).getParent()).getFullPath();
+				// TODO this does not work for test campaigns, because an absolute path
+				// relative to the workspace does not suffice for the Rhino debugger 
+				// (this only works for projects there).
+				// Maybe we can take an absolute path in the file system instead ("C:\...")
+				// IPath path = (((IFile) firstElement).getParent()).getFullPath();
+				IPath path = (((IFile) firstElement).getParent()).getLocation();
 				System.out.println("full path " + path);
 				return path;
 			}
