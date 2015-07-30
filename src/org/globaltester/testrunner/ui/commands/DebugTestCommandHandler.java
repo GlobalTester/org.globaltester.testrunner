@@ -1,12 +1,17 @@
 package org.globaltester.testrunner.ui.commands;
 
 import org.eclipse.core.commands.ExecutionEvent;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.debug.internal.ui.DebugUIPlugin;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.handlers.HandlerUtil;
 import org.globaltester.core.ui.GtUiHelper;
 import org.globaltester.logging.logger.GtErrorLogger;
 import org.globaltester.logging.logger.JSDebugLogger;
-import org.globaltester.smartcardshell.RhinoJavaScriptAccess;
+import org.globaltester.smartcardshell.jsinterface.RhinoJavaScriptAccess;
 import org.globaltester.smartcardshell.ui.RhinoDebugLaunchManager;
 import org.globaltester.testrunner.ui.Activator;
 
@@ -42,6 +47,72 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 		
 
 	/**
+	 * Returns the absolute path for the currently selected resource. This is
+	 * currently only used for testing the {@link #ConvertFileReader} routines
+	 * and can be deleted in later versions.
+	 * 
+	 * @param event
+	 *            which delivers the currently selected resource
+	 * @return IFile a file handle for the currently selected resource, null if
+	 *         none could be detected.
+	 */
+	protected IPath getResource(ExecutionEvent event) {
+		IWorkbenchWindow window = HandlerUtil.getActiveWorkbenchWindow(event);
+		if (window != null) {
+			IStructuredSelection selection = (IStructuredSelection) window
+					.getSelectionService().getSelection();
+			Object firstElement = selection.getFirstElement();
+			if (firstElement instanceof IFile) {
+				// NOTE: usually the launch configuration files contain the project location
+				// where the JavaScript files are stored. This does not work for test campaigns, 
+				// therefore we take an absolute path in the file system instead ("C:\...")
+				IPath path = (((IFile) firstElement)).getLocation();
+				System.out.println("full path " + path);
+				return path;
+			}
+		}
+		return null;
+//		IWorkbenchWindow window = HandlerUtil.getActiveWorkbenchWindow(event);
+//		if (window != null) {
+//			IStructuredSelection selection = (IStructuredSelection) window
+//					.getSelectionService().getSelection();
+//			Object firstElement = selection.getFirstElement();
+//			if (firstElement instanceof IFile) {
+//				return ((IFile) firstElement);
+//			}
+//		}
+//		return null;
+	}
+
+	/**
+	 * Returns the parent of the full, absolute path of the currently selected
+	 * resource relative to the workspace.
+	 * This is needed for setting the source lookup path in launch
+	 * configurations.
+	 * 
+	 * @param event
+	 *            which delivers the currently selected resource
+	 * @return path for the currently selected resource
+	 */
+	protected IPath getSourceLookupRoot(ExecutionEvent event) {
+		IWorkbenchWindow window = HandlerUtil.getActiveWorkbenchWindow(event);
+		if (window != null) {
+			IStructuredSelection selection = (IStructuredSelection) window
+					.getSelectionService().getSelection();
+			Object firstElement = selection.getFirstElement();
+			if (firstElement instanceof IFile) {
+				// NOTE: usually the launch configuration files contain the project location
+				// where the JavaScript files are stored. This does not work for test campaigns, 
+				// therefore we take an absolute path in the file system instead ("C:\...")
+				IPath path = (((IFile) firstElement).getParent()).getLocation();
+				System.out.println("full path " + path);
+				return path;
+			}
+		}
+		return null;
+	}
+	
+	/**
 	 * Tries to start the Rhino JavaScript debugger launch in an own thread.
 	 * Concurrently the execute method of the super class activates
 	 * the Rhino debugger thread. This Rhino debugger thread must be started
@@ -59,17 +130,10 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 	 * @see org.globaltester.testrunner.ui.commands.RunTestCommandHandler#execute(org.eclipse.core.commands.ExecutionEvent)
 	 * @param event needed to retrieve information on the currently selected 
 	 * 			resource
+	 * @throws RuntimeException if the launch could not be started
 	 */
 	@Override
-	protected void startRhinoDebugLaunch(ExecutionEvent event) {
-
-		// TODO this can be deleted as soon as we are sure there are no more thread
-		// problems
-//		if (Display.findDisplay(Thread.currentThread()) == null) {
-//			System.err.println("Thread has no display in DebugTestCommandHandler.execute");
-//		} else {
-//			System.err.println("Thread HAS a display in DebugTestCommandHandler.execute");
-//		}
+	protected void startRhinoDebugLaunch(ExecutionEvent event) throws RuntimeException {
 
 		final RhinoDebugLaunchManager launchMan = new RhinoDebugLaunchManager();
 		try {
@@ -78,6 +142,12 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 			// Besides this add the project root to the Rhino source lookup path
 			launchMan.initDebugLaunchConfiguration(getSourceLookupRoot(event));
 			RhinoJavaScriptAccess.setStandardPortNum(launchMan.getPortNum());
+			
+//			// TODO: Currently only used for testing the {@link #ConvertFileReader} routines.
+//			// delete this afterwards!
+//			RhinoJavaScriptAccess.XML2JSConverter(getResource(event));
+//			if (true)
+//				return; //TODO delete this!!
 			
 		} catch (Exception exc) {
 			//log and show error
@@ -88,7 +158,7 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 			if (shell != null)
 				GtUiHelper.openErrorDialog(shell, errorMsg);
 			//e1.printStackTrace();
-			return;
+			throw new RuntimeException(errorMsg, exc);
 		}
 	
 		// generate the launch thread and override its run method with a waiting
@@ -98,7 +168,7 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 		Thread rhinoDebugLaunchThread = new Thread() {
 			
 			/*
-			 * FIXME (probably already fixed!? must be observed!) When starting
+			 * NOTE (seems to be fixed - must be observed!) When starting
 			 * a new Eclipse launch, build processes are executed in void
 			 * org.eclipse.debug.internal.ui.DebugUIPlugin.launchInBackground(
 			 * ILaunchConfiguration configuration, String mode). If these
@@ -121,17 +191,7 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 
 			@Override
 			public void run() {
-				// TODO this can be deleted as soon as we are sure there are no more thread
-				// problems
-//				if (Display.findDisplay(Thread.currentThread()) == null) {
-//					System.err.println("Thread has no display in run");
-//				} else {
-//					System.err.println("Thread HAS a display in run");
-//				}
-
 				try {
-					// TODO amay this waiting is still done in the UI thread. 
-					// should this be solved differently?
 					int count = 0;
 					while (count <= numLoop) {
 						// wait for Rhino debugger to be started; the object delivered
@@ -164,20 +224,13 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 					if (shell != null)
 						GtUiHelper.openErrorDialog(shell, errorMsg);
 					//exc.printStackTrace();
+					throw new RuntimeException(errorMsg, exc);
 				}
 			}
 		};
 
 		rhinoDebugLaunchThread.setName(rhinoLauncherThreadName); // simplifies retrieving thread in runtime stack
 		try {
-			// TODO this can be deleted as soon as we are sure there are no more thread
-			// problems
-//			if (Display.findDisplay(Thread.currentThread()) == null) {
-//				System.err.println("Thread has no display in DebugTestCommandHandler.execute before asyncExec");
-//			} else {
-//				System.err.println("Thread HAS a display in DebugTestCommandHandler.execute before asyncExec");
-//			}
-
 			JSDebugLogger.info("Trying to start debug launch thread ...");
 			// make this thread a UI thread; otherwise there will be null pointer
 			// exceptions when accessing the active workbench window in 
@@ -194,6 +247,7 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 			JSDebugLogger.error(errorMsg);
 			GtErrorLogger.log(Activator.PLUGIN_ID, new Exception(errorMsg, exc));
 			//exc.printStackTrace();
+			throw new RuntimeException(errorMsg, exc);
 		}
 	}
 
