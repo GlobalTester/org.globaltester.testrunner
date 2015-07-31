@@ -133,12 +133,14 @@ public class RunTestCommandHandler extends AbstractHandler {
 //				return null; //TODO delete this!!
 		}
 		catch (Exception exc) {
-			// special exception handling has already been done in startRhinoDebugLaunch()
+			// special exception handling has already been done in 
+			// startRhinoDebugLaunch()
 			return null; // TODO amay: return null or Status.ERROR?
 		}
 
 
-		// execute the TestCampaign
+		// execute the TestCampaign and, if in debug mode, starts the Rhino 
+		// debugger thread while executing tests
 
 		Job job = new Job("Test execution") {
 
