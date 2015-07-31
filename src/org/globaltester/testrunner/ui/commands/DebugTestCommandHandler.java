@@ -67,21 +67,11 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 				// where the JavaScript files are stored. This does not work for test campaigns, 
 				// therefore we take an absolute path in the file system instead ("C:\...")
 				IPath path = (((IFile) firstElement)).getLocation();
-				System.out.println("full path " + path);
+//				System.out.println("full path " + path);
 				return path;
 			}
 		}
 		return null;
-//		IWorkbenchWindow window = HandlerUtil.getActiveWorkbenchWindow(event);
-//		if (window != null) {
-//			IStructuredSelection selection = (IStructuredSelection) window
-//					.getSelectionService().getSelection();
-//			Object firstElement = selection.getFirstElement();
-//			if (firstElement instanceof IFile) {
-//				return ((IFile) firstElement);
-//			}
-//		}
-//		return null;
 	}
 
 	/**
@@ -105,7 +95,7 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 				// where the JavaScript files are stored. This does not work for test campaigns, 
 				// therefore we take an absolute path in the file system instead ("C:\...")
 				IPath path = (((IFile) firstElement).getParent()).getLocation();
-				System.out.println("full path " + path);
+//				System.out.println("full path " + path);
 				return path;
 			}
 		}
@@ -197,7 +187,7 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 						// wait for Rhino debugger to be started; the object delivered
 						// here is an interface object which can be filled with 
 						// functionality in later versions
-						System.err.println("Run loop " + count + " of launch thread!");
+//						System.err.println("Run loop " + count + " of launch thread!");
 						if (RhinoJavaScriptAccess.getDebuggerStartedObj() == null) {
 							try {
 								Thread.sleep(waitingTime);
