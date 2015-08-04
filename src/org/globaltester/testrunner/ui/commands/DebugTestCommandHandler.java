@@ -1,5 +1,7 @@
 package org.globaltester.testrunner.ui.commands;
 
+import java.io.FileNotFoundException;
+
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IPath;
@@ -22,7 +24,7 @@ import org.globaltester.testrunner.ui.Activator;
  * 
  * @see #execute(org.eclipse.core.commands.ExecutionEvent)
  * 
- * @author koelzer
+ * @author akoelzer
  * 
  */
 public class DebugTestCommandHandler extends RunTestCommandHandler {
@@ -142,15 +144,11 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 //			if (true)
 //				return; //TODO delete this!!
 			
-		} catch (Exception exc) {
+		} catch (FileNotFoundException | RuntimeException exc) {
 			//log and show error
 			String errorMsg = "A problem occurred when trying to access a JavaScript launch configuration.\n"
 					+ exc.getLocalizedMessage();
-			JSDebugLogger.error(errorMsg);
-			GtErrorLogger.log(Activator.PLUGIN_ID, new Exception(errorMsg, exc));
-			if (shell != null)
-				GtUiHelper.openErrorDialog(shell, errorMsg);
-			//e1.printStackTrace();
+
 			throw new RuntimeException(errorMsg, exc);
 		}
 	

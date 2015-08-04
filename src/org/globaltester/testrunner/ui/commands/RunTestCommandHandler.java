@@ -129,19 +129,21 @@ public class RunTestCommandHandler extends AbstractHandler {
 		 */
 		try {
 			startRhinoDebugLaunch(event);
-//			if (true) // only used for testing the XML converter
-//				return null; //TODO delete this!!
 		}
-		catch (Exception exc) {
-			// special exception handling has already been done in 
-			// startRhinoDebugLaunch()
+		catch (RuntimeException exc) {
+			//log and show error
+			String errorMsg = "A problem occurred when trying to access a JavaScript launch configuration.\n"
+					+ exc.getLocalizedMessage();
+
+			GtErrorLogger.log(Activator.PLUGIN_ID, new Exception(errorMsg, exc));
+			if (shell != null)
+				GtUiHelper.openErrorDialog(shell, errorMsg);
+ 
+			// abort execution
 			return null;
 		}
 
-
-		// execute the TestCampaign and, if in debug mode, starts the Rhino 
-		// debugger thread while executing tests
-
+		// execute the TestCampaign
 		Job job = new Job("Test execution") {
 
 			protected IStatus run(IProgressMonitor monitor) {
