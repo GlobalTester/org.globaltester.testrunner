@@ -135,7 +135,7 @@ public class RunTestCommandHandler extends AbstractHandler {
 		catch (Exception exc) {
 			// special exception handling has already been done in 
 			// startRhinoDebugLaunch()
-			return null; // TODO amay: return null or Status.ERROR?
+			return null;
 		}
 
 
@@ -287,14 +287,9 @@ public class RunTestCommandHandler extends AbstractHandler {
 		TestCampaignExecution currentExecution = parentCampaingProject
 				.getTestCampaign().getCurrentExecution();
 		if (currentExecution != null) {
-			// TODO amay: test added because of NullPointerException on empty
-			// cardConfig;
-			// what else should be done? Should there be an error message?
-			if (currentExecution.getCardConfig() != null) {
-				String cardConfigName = currentExecution.getCardConfig().getName();
-				if (CardConfigManager.isAvailableAsProject(cardConfigName)) {
-					return CardConfigManager.get(cardConfigName);
-				}
+			String cardConfigName = currentExecution.getCardConfig().getName();
+			if (CardConfigManager.isAvailableAsProject(cardConfigName)) {
+				return CardConfigManager.get(cardConfigName);
 			}
 		}
 		return null;
