@@ -16,9 +16,9 @@ import org.globaltester.smartcardshell.ui.RhinoDebugLaunchManager;
 import org.globaltester.testrunner.ui.Activator;
 
 /**
- * Subclass of RunTestCommandHandler for activating the debug mode. The Rhino
- * debugging launch is started in the execute method generating a new thread
- * which is connected to the Rhino debugger in case of success.
+ * Subclass of RunTestCommandHandler for activating the JavaScript debug mode.
+ * The Rhino debugging launch is started in the execute method generating a new
+ * thread which is connected to the Rhino debugger in case of success.
  * 
  * @see #execute(org.eclipse.core.commands.ExecutionEvent)
  * 
@@ -49,11 +49,11 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 	/**
 	 * Returns the absolute path for the currently selected resource. This is
 	 * currently only used for testing the {@link #ConvertFileReader} routines
-	 * and can be deleted in later versions.
+	 * and can be used in later versions for access to this resource.
 	 * 
 	 * @param event
 	 *            which delivers the currently selected resource
-	 * @return IFile a file handle for the currently selected resource, null if
+	 * @return IPath for the currently selected resource, null if
 	 *         none could be detected.
 	 */
 	protected IPath getResource(ExecutionEvent event) {
@@ -76,8 +76,7 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 
 	/**
 	 * Returns the parent of the full, absolute path of the currently selected
-	 * resource relative to the workspace.
-	 * This is needed for setting the source lookup path in launch
+	 * resource. This is needed for setting the source lookup path in launch
 	 * configurations.
 	 * 
 	 * @param event
@@ -104,10 +103,12 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 	
 	/**
 	 * Tries to start the Rhino JavaScript debugger launch in an own thread.
-	 * Concurrently the execute method of the super class activates
-	 * the Rhino debugger thread. This Rhino debugger thread must be started
-	 * before the launch thread and the debugger launch thread has to wait for
-	 * it, since these two Rhino threads communicate with each other. <br>
+	 * Concurrently the execute method of the super class activates the Rhino
+	 * debugger thread. This Rhino debugger thread must be started before the
+	 * launch thread and the debugger launch thread has to wait for it, since
+	 * these two Rhino threads communicate with each other. When the debugger
+	 * thread has created a debuggerStartedObj-object (which serves as a signal
+	 * that it is running) the two threads are connected.<br>
 	 * 
 	 * NOTE: The debugger thread works with its own timeout if it is started in
 	 * suspended mode (concurrently set to the fixed value of 300000 in class
@@ -118,9 +119,11 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 	 * this case!
 	 * 
 	 * @see org.globaltester.testrunner.ui.commands.RunTestCommandHandler#execute(org.eclipse.core.commands.ExecutionEvent)
-	 * @param event needed to retrieve information on the currently selected 
-	 * 			resource
-	 * @throws RuntimeException if the launch could not be started
+	 * @param event
+	 *            needed to retrieve information on the currently selected
+	 *            resource
+	 * @throws RuntimeException
+	 *             if the launch could not be started
 	 */
 	@Override
 	protected void startRhinoDebugLaunch(ExecutionEvent event) throws RuntimeException {
