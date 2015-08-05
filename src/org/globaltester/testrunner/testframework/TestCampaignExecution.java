@@ -2,6 +2,7 @@ package org.globaltester.testrunner.testframework;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -277,7 +278,10 @@ public class TestCampaignExecution extends FileTestExecution {
 		return cardConfig;
 	}
 	
-	public void execute(IProgressMonitor monitor, boolean debugMode) throws CoreException {
+	public void execute(IProgressMonitor monitor, HashMap<String, Object> envSettings) throws CoreException {
+
+		RhinoJavaScriptAccess rhinoAccess = new RhinoJavaScriptAccess();
+		Context cx = null;
 
 		if (monitor == null) {
 			monitor= new NullProgressMonitor();
@@ -301,23 +305,14 @@ public class TestCampaignExecution extends FileTestExecution {
 			setLogFileName(TestLogger.getLogFileName());
 				
 			//activate a JavaScript context for the current thread
-			RhinoJavaScriptAccess rhinoAccess = new RhinoJavaScriptAccess();
-			Context cx = null;
 			try {
-				cx = rhinoAccess.activateContext(debugMode);
-			} catch (Exception exc) {
+				cx = rhinoAccess.activateContext(envSettings);
+			} catch (RuntimeException exc) {
 				String info = "A problem occurred when trying to activate the Rhino JavaScript context.\n"
 						+ exc.getLocalizedMessage();
 				Exception newExc = new Exception(info, exc);
 				GTLogger.getInstance().error(info);
-				GtErrorLogger.log(Activator.PLUGIN_ID, newExc);
-				
-				if (cx != null) // it is possible that a context was activated
-					// even if there was an error
-					rhinoAccess.exitContext();
-				//TODO amay what else must be done? move monitor.worked(1) and 
-				//monitor.subTask("Shutdown")
-				//into the finally block at the end?
+				GtErrorLogger.log(Activator.PLUGIN_ID, newExc);				
 				return;
 			}
 		
@@ -332,15 +327,14 @@ public class TestCampaignExecution extends FileTestExecution {
 
 			monitor.subTask("Shutdown");
 			
-//			// exit the JavaScript context for the current thread
-			rhinoAccess.exitContext();
-
 			// shutdown the TestLogger
 			TestLogger.shutdown();
 			
 			monitor.worked(1);
 
 		} finally {
+			if (cx != null) // exit a created context in any case
+				rhinoAccess.exitContext();
 			monitor.done();
 		}
 	}
