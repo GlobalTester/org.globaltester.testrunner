@@ -104,6 +104,21 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 	}
 	
 	/**
+	 * prepares settings for Rhino debugging thread and launch and starts the
+	 * launch
+	 * 
+	 * @param event
+	 *            which triggers the handler and delivers information on
+	 *            selected resource etc.
+	 * @throws RuntimeException
+	 *             in case the launch could not be started properly
+	 */
+	@Override
+	protected void setupEnvironment(ExecutionEvent event)  throws RuntimeException {
+		startRhinoDebugLaunch(event);
+	}
+
+	/**
 	 * Tries to start the Rhino JavaScript debugger launch in an own thread.
 	 * Concurrently the execute method of the super class activates the Rhino
 	 * debugger thread. This Rhino debugger thread must be started before the
@@ -127,7 +142,6 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 	 * @throws RuntimeException
 	 *             if the launch could not be started
 	 */
-	@Override
 	protected void startRhinoDebugLaunch(ExecutionEvent event) throws RuntimeException {
 
 		final RhinoDebugLaunchManager launchMan = new RhinoDebugLaunchManager();
@@ -135,20 +149,24 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 			// initialize the standard configuration file and set the port number found
 			// there as socket number for the communication between debugger thread.
 			// Besides this add the project root to the Rhino source lookup path
-			launchMan.initDebugLaunchConfiguration(getSourceLookupRoot(event));
-			RhinoJavaScriptAccess.setStandardPortNum(launchMan.getPortNum());
+			envSettings.put(RhinoJavaScriptAccess.getRhinoJSFileNameHashKey(), getResource(event));
+			envSettings.put(RhinoJavaScriptAccess.getRhinoJSLookupPathHashKey(), getSourceLookupRoot(event));
+			launchMan.initDebugLaunchConfiguration(envSettings);
+			envSettings.put(RhinoJavaScriptAccess.getRhinoJSPortHashKey(), launchMan.getPortNum());
 			
+//			// delete from here ...
 //			// TODO: Currently only used for testing the {@link #ConvertFileReader} routines.
-//			// delete this afterwards!
-//			RhinoJavaScriptAccess.XML2JSConverter(getResource(event));
+//			RhinoJavaScriptAccess jsAccess = new RhinoJavaScriptAccess(); 
+//			jsAccess.XML2JSConverter(envSettings);
 //			if (true)
-//				return; //TODO delete this!!
-			
-		} catch (FileNotFoundException | RuntimeException exc) {
+//				return;
+//			// delete to here!
+		
+		} catch (FileNotFoundException | RuntimeException exc) {	
 			//log and show error
 			String errorMsg = "A problem occurred when trying to access a JavaScript launch configuration.\n"
 					+ exc.getLocalizedMessage();
-
+			// throw RuntimeException to simplify handling on calling layers
 			throw new RuntimeException(errorMsg, exc);
 		}
 	
@@ -206,7 +224,7 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 										+ "No JavaScript debugger start could be detected! Canceling debug launching.");
 					}
 
-				} catch (Exception exc) { // probably missing debug configuration
+				} catch (RuntimeException exc) { // probably a missing debug configuration
 					String errorMsg = "DebugTestCommandHandler: "
 							+ "Debugger launch could not be started! Canceling debug launching.\n"
 							+ "Reason:\n" + exc.getLocalizedMessage();
@@ -241,14 +259,4 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 			throw new RuntimeException(errorMsg, exc);
 		}
 	}
-
-	/**
-	 * Indicates if JavaScript debugging is activated or not. 
-	 * @return true since JavaScript debugging is activated for this handler
-	 */
-	@Override
-	public boolean isDebugMode() {
-		return true;
-	}
-
 }
