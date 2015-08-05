@@ -1,6 +1,7 @@
 package org.globaltester.testrunner.testframework;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -180,7 +181,8 @@ public class TestCampaign {
 	 * 
 	 * @throws CoreException
 	 */
-	public void executeTests(CardConfig cardConfig, IProgressMonitor monitor, boolean debugMode) throws CoreException {
+	public void executeTests(CardConfig cardConfig, IProgressMonitor monitor, 
+			HashMap<String, Object> envSettings) throws CoreException {
 
 		// create a new TestExecution this TestCampaignElement
 		TestCampaignExecution currentExecution = null;
@@ -200,7 +202,7 @@ public class TestCampaign {
 		currentExecution.setCardConfig(cardConfig.getCloneForExecution());
 
 		// execute the TestExecutable
-		currentExecution.execute(monitor, debugMode);
+		currentExecution.execute(monitor, envSettings);
 		
 		// save the new state
 		project.doSave();
