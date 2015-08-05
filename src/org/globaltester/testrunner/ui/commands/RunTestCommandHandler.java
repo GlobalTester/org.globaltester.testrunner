@@ -1,5 +1,6 @@
 package org.globaltester.testrunner.ui.commands;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -42,18 +43,11 @@ public class RunTestCommandHandler extends AbstractHandler {
 	private GtTestCampaignProject campaignProject = null;
 	private CardConfig cardConfig = null;
 	protected Shell shell = null;
-
 	/**
-	 * If in debug mode, this method starts the Rhino debugger launch. For 
-	 * RunTestCommandHandler the implementation is empty. Derived classes 
-	 * can override this method.
-	 * @param event needed to retrieve information on the currently selected 
-	 * 			resource
-	 * @throws RuntimeException only in derived classes
+	 * The hash map can be used to store environment information for example for
+	 * JavaScript debuggíng or other applications.
 	 */
-	protected void startRhinoDebugLaunch(ExecutionEvent event)  throws RuntimeException {
-		// nothing to do in this class
-	}
+	protected HashMap<String, Object> envSettings = new HashMap<String, Object>();
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
@@ -128,7 +122,9 @@ public class RunTestCommandHandler extends AbstractHandler {
 		 * two Rhino threads communicate with each other.
 		 */
 		try {
-			startRhinoDebugLaunch(event);
+			setupEnvironment(event);
+//			if (true) // only used for testing the XML converter
+//				return null; //TODO delete this!!
 		}
 		catch (RuntimeException exc) {
 			//log and show error
@@ -143,14 +139,17 @@ public class RunTestCommandHandler extends AbstractHandler {
 			return null;
 		}
 
-		// execute the TestCampaign
+
+		// execute the TestCampaign and, if in debug mode, starts the Rhino 
+		// debugger thread while executing tests
+
 		Job job = new Job("Test execution") {
 
 			protected IStatus run(IProgressMonitor monitor) {
 				// execute tests
 				try {
 					campaignProject.getTestCampaign().executeTests(cardConfig,
-							monitor, isDebugMode());
+							monitor, envSettings);
 				} catch (CoreException e) {
 					GtErrorLogger.log(Activator.PLUGIN_ID, e);
 				}
@@ -193,6 +192,20 @@ public class RunTestCommandHandler extends AbstractHandler {
 		job.schedule();
 
 		return null;
+	}
+
+	/**
+	 * sets up environment, e.g. prepares settings for debugging threads and
+	 * launches and starts them, dependent on what is currently activated and
+	 * needed.
+	 * 
+	 * @param event
+	 *            which triggers the handler and delivers information on
+	 *            selected resource etc.
+	 * @throws RuntimeException in case of errors
+	 */
+	protected void setupEnvironment(ExecutionEvent event)  throws RuntimeException {
+		// does nothing special here; can be overridden by derived classes
 	}
 
 	private GtTestCampaignProject getCampaignProjectFromSelection(
@@ -296,14 +309,4 @@ public class RunTestCommandHandler extends AbstractHandler {
 		}
 		return null;
 	}
-
-	/**
-	 * Indicates if JavaScript debugging is activated or not.
-	 * 
-	 * @return false since JavaScript debugging is deactivated for this handler
-	 */
-	public boolean isDebugMode() {
-		return false;
-	}
-
 }
