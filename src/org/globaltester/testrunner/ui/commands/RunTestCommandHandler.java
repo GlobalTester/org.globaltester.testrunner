@@ -45,8 +45,9 @@ public class RunTestCommandHandler extends AbstractHandler {
 	protected Shell shell = null;
 	/**
 	 * The hash map can be used to store environment information for example for
-	 * JavaScript debuggíng or other applications.
+	 * JavaScript debuggï¿½ng or other applications.
 	 */
+	//FIXME AKR why is this an instance field (instead of a local variable?)
 	protected HashMap<String, Object> envSettings = new HashMap<String, Object>();
 
 	@Override
@@ -139,10 +140,7 @@ public class RunTestCommandHandler extends AbstractHandler {
 			return null;
 		}
 
-
-		// execute the TestCampaign and, if in debug mode, starts the Rhino 
-		// debugger thread while executing tests
-
+		// execute the TestCampaign
 		Job job = new Job("Test execution") {
 
 			protected IStatus run(IProgressMonitor monitor) {

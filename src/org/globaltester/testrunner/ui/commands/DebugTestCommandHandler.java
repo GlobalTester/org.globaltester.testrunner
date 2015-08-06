@@ -106,10 +106,6 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 	/**
 	 * prepares settings for Rhino debugging thread and launch and starts the
 	 * launch
-	 * 
-	 * @param event
-	 *            which triggers the handler and delivers information on
-	 *            selected resource etc.
 	 * @throws RuntimeException
 	 *             in case the launch could not be started properly
 	 */
@@ -163,10 +159,9 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 //			// delete to here!
 		
 		} catch (FileNotFoundException | RuntimeException exc) {	
-			//log and show error
+			//rewrap Exception with additional context description and rethrow it to be handled by calling code
 			String errorMsg = "A problem occurred when trying to access a JavaScript launch configuration.\n"
 					+ exc.getLocalizedMessage();
-			// throw RuntimeException to simplify handling on calling layers
 			throw new RuntimeException(errorMsg, exc);
 		}
 	
