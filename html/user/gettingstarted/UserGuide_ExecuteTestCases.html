@@ -53,11 +53,11 @@
 	statements and thus control the correctness of your program flow and variable values.
 	<h3>Create a JavaScript Debug Configuration</h3>
 	<p>
-		First a	debug configuration has to be created and initialized (currently this 
-		must be done manually, which will change in later versions). There different 
-		settings can be made such as the socket number for process communication of 
-		the debugger threads. 
-		You can add the configuration in the following way:
+		First a	debug configuration has to be created and initialized. 
+		Different settings can be made such as the socket number for 
+		process communication of the debugger threads. If you do not define
+		a configuration, an automatically created one will be used. If you want to set up your
+		own configuration, follow these steps:
 		<ul>
 			<li>Open the debug perspective.
 			</li>
@@ -96,11 +96,12 @@
 	<h3>Set Breakpoints</h3>
 	<p>
 			<ul>
-			<li> Open the file where you want to set breakpoints by double clicking the file name in
+			<li> Open the JavaScript file where you want to set breakpoints by double clicking the file name in
 			the GlobalTester Navigator and select the line you want to watch. <br>
 			<b>Note:</b> Currently setting of breakpoints is restricted to JavaScript files. You can use
 			a load command inside a technical command or result tag of your XML test case file
-			in order to load and execute such a JavaScript file with breakpoints. Add for example 
+			in order to load and execute such a JavaScript file with breakpoints (in later versions setting breakpoints
+			directly in the xml test case file shall be possible). Add for example 
 			(path must be adapted to your location for the JavaScript file):<br>
 			load("&lt;path&gt;GlobalTester Sample TestSpecification/TestCases/JSDebugger-PrintTest.js");
 			</li>
