@@ -1,6 +1,7 @@
 package org.globaltester.testrunner.ui.commands;
 
 import java.io.FileNotFoundException;
+import java.util.HashMap;
 
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.resources.IFile;
@@ -106,12 +107,17 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 	/**
 	 * prepares settings for Rhino debugging thread and launch and starts the
 	 * launch
+	 * @param event event which triggered this handler
+	 * @param envSettings used for collecting and passing objects containing 
+	 * 			e.g. file or debug information between methods/modules
 	 * @throws RuntimeException
 	 *             in case the launch could not be started properly
 	 */
 	@Override
-	protected void setupEnvironment(ExecutionEvent event)  throws RuntimeException {
-		startRhinoDebugLaunch(event);
+	protected void setupEnvironment(ExecutionEvent event, HashMap<String, Object> envSettings)  throws RuntimeException {
+		envSettings.put(RhinoJavaScriptAccess.RHINO_JS_FILENAME_HASH_KEY, getResource(event));
+		envSettings.put(RhinoJavaScriptAccess.RHINO_JS_SOURCE_LOOKUP_HASH_KEY, getSourceLookupRoot(event));
+		startRhinoDebugLaunch(envSettings);
 	}
 
 	/**
@@ -132,31 +138,29 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 	 * this case!
 	 * 
 	 * @see org.globaltester.testrunner.ui.commands.RunTestCommandHandler#execute(org.eclipse.core.commands.ExecutionEvent)
-	 * @param event
-	 *            needed to retrieve information on the currently selected
-	 *            resource
+	 * @param envSettings must contain information for starting the debug launch (file
+	 * 			name, source lookup path)
 	 * @throws RuntimeException
 	 *             if the launch could not be started
 	 */
-	protected void startRhinoDebugLaunch(ExecutionEvent event) throws RuntimeException {
+	protected void startRhinoDebugLaunch(HashMap<String, Object> envSettings) throws RuntimeException {
 
-		final RhinoDebugLaunchManager launchMan = new RhinoDebugLaunchManager();
+		final RhinoDebugLaunchManager launchMan = new RhinoDebugLaunchManager(envSettings);
 		try {
 			// initialize the standard configuration file and set the port number found
 			// there as socket number for the communication between debugger thread.
 			// Besides this add the project root to the Rhino source lookup path
-			envSettings.put(RhinoJavaScriptAccess.getRhinoJSFileNameHashKey(), getResource(event));
-			envSettings.put(RhinoJavaScriptAccess.getRhinoJSLookupPathHashKey(), getSourceLookupRoot(event));
-			launchMan.initDebugLaunchConfiguration(envSettings);
-			envSettings.put(RhinoJavaScriptAccess.getRhinoJSPortHashKey(), launchMan.getPortNum());
+			launchMan.initDebugLaunchConfiguration();
+			// after init... the port number can be fetched from launch manager and set for debugger
+			// TODO if we move the thread start to smartcardshell this would probably be obsolete!
+			envSettings.put(RhinoJavaScriptAccess.RHINO_JS_PORT_HASH_KEY, launchMan.getPortNum());
 			
-//			// delete from here ...
-//			// TODO: Currently only used for testing the {@link #ConvertFileReader} routines.
-//			RhinoJavaScriptAccess jsAccess = new RhinoJavaScriptAccess(); 
-//			jsAccess.XML2JSConverter(envSettings);
+//			Only used for testing XML converter: delete or activate from here...
+//			RhinoJavaScriptAccess jsAccess = new RhinoJavaScriptAccess(envSettings); 
+//			jsAccess.XML2JSConverter();
 //			if (true)
 //				return;
-//			// delete to here!
+//			// ... to here!
 		
 		} catch (FileNotFoundException | RuntimeException exc) {	
 			//rewrap Exception with additional context description and rethrow it to be handled by calling code
