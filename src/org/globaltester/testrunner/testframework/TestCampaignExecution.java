@@ -280,7 +280,7 @@ public class TestCampaignExecution extends FileTestExecution {
 	
 	public void execute(IProgressMonitor monitor, HashMap<String, Object> envSettings) throws CoreException {
 
-		RhinoJavaScriptAccess rhinoAccess = new RhinoJavaScriptAccess();
+		RhinoJavaScriptAccess rhinoAccess = new RhinoJavaScriptAccess(envSettings);
 		Context cx = null;
 
 		if (monitor == null) {
@@ -306,7 +306,7 @@ public class TestCampaignExecution extends FileTestExecution {
 				
 			//activate a JavaScript context for the current thread
 			try {
-				cx = rhinoAccess.activateContext(envSettings);
+				cx = rhinoAccess.activateContext();
 			} catch (RuntimeException exc) {
 				String info = "A problem occurred when trying to activate the Rhino JavaScript context.\n"
 						+ exc.getLocalizedMessage();
