@@ -43,12 +43,6 @@ public class RunTestCommandHandler extends AbstractHandler {
 	private GtTestCampaignProject campaignProject = null;
 	private CardConfig cardConfig = null;
 	protected Shell shell = null;
-	/**
-	 * The hash map can be used to store environment information for example for
-	 * JavaScript debugg�ng or other applications.
-	 */
-	//FIXME AKR why is this an instance field (instead of a local variable?)
-	protected HashMap<String, Object> envSettings = new HashMap<String, Object>();
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
@@ -122,10 +116,16 @@ public class RunTestCommandHandler extends AbstractHandler {
 		 * thread and the debugger launch thread has to wait for it, since these
 		 * two Rhino threads communicate with each other.
 		 */
+		final HashMap<String, Object> envSettings = new HashMap<String, Object>();
+			// This hash map is used to store environment information for example for
+			// JavaScript debugging or other applications.
+
 		try {
-			setupEnvironment(event);
-//			if (true) // only used for testing the XML converter
-//				return null; //TODO delete this!!
+			setupEnvironment(event, envSettings);
+// Only used for testing XML converter: delete or activate from here...
+//			if (true)
+//				return null;
+// to here!
 		}
 		catch (RuntimeException exc) {
 			//log and show error
@@ -200,9 +200,10 @@ public class RunTestCommandHandler extends AbstractHandler {
 	 * @param event
 	 *            which triggers the handler and delivers information on
 	 *            selected resource etc.
+	 * @param envSettings 
 	 * @throws RuntimeException in case of errors
 	 */
-	protected void setupEnvironment(ExecutionEvent event)  throws RuntimeException {
+	protected void setupEnvironment(ExecutionEvent event, HashMap<String, Object> envSettings)  throws RuntimeException {
 		// does nothing special here; can be overridden by derived classes
 	}
 
