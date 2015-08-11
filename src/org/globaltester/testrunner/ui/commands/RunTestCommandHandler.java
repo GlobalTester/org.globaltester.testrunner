@@ -44,6 +44,21 @@ public class RunTestCommandHandler extends AbstractHandler {
 	private CardConfig cardConfig = null;
 	protected Shell shell = null;
 
+	/**
+	 * sets up environment, e.g. prepares settings for debugging threads and
+	 * launches and starts them, dependent on what is currently activated and
+	 * needed.
+	 * 
+	 * @param event
+	 *            which triggers the handler and delivers information on
+	 *            selected resource etc.
+	 * @param envSettings used for adding or retrieving environment information
+	 * @throws RuntimeException in case of errors
+	 */
+	protected void setupEnvironment(ExecutionEvent event, HashMap<String, Object> envSettings)  throws RuntimeException {
+		// does nothing special here; can be overridden by derived classes
+	}
+
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		// check for dirty files and save them
@@ -109,13 +124,6 @@ public class RunTestCommandHandler extends AbstractHandler {
 			cardConfig = dialog.getSelectedCardConfig();
 		}
 
-		/*
-		 * Tries to start the Rhino JavaScript debugger launch in an own thread.
-		 * Concurrently the Rhino debugger thread is started by executeTests()
-		 * below. This Rhino debugger thread must be started before the launch
-		 * thread and the debugger launch thread has to wait for it, since these
-		 * two Rhino threads communicate with each other.
-		 */
 		final HashMap<String, Object> envSettings = new HashMap<String, Object>();
 			// This hash map is used to store environment information for example for
 			// JavaScript debugging or other applications.
@@ -190,21 +198,6 @@ public class RunTestCommandHandler extends AbstractHandler {
 		job.schedule();
 
 		return null;
-	}
-
-	/**
-	 * sets up environment, e.g. prepares settings for debugging threads and
-	 * launches and starts them, dependent on what is currently activated and
-	 * needed.
-	 * 
-	 * @param event
-	 *            which triggers the handler and delivers information on
-	 *            selected resource etc.
-	 * @param envSettings 
-	 * @throws RuntimeException in case of errors
-	 */
-	protected void setupEnvironment(ExecutionEvent event, HashMap<String, Object> envSettings)  throws RuntimeException {
-		// does nothing special here; can be overridden by derived classes
 	}
 
 	private GtTestCampaignProject getCampaignProjectFromSelection(
