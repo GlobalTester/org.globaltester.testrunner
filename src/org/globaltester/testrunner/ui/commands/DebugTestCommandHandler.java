@@ -1,6 +1,6 @@
 package org.globaltester.testrunner.ui.commands;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashMap;
 
 import org.eclipse.core.commands.ExecutionEvent;
@@ -12,15 +12,15 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.globaltester.core.ui.GtUiHelper;
+import org.globaltester.logging.logger.GTLogger;
 import org.globaltester.logging.logger.GtErrorLogger;
-import org.globaltester.logging.logger.JSDebugLogger;
 import org.globaltester.smartcardshell.jsinterface.RhinoJavaScriptAccess;
 import org.globaltester.smartcardshell.ui.RhinoDebugLaunchManager;
 import org.globaltester.testrunner.ui.Activator;
 
 /**
  * Subclass of RunTestCommandHandler for activating the JavaScript debug mode.
- * The Rhino debugging launch is started in the execute method generating a new
+ * The Rhino debugging launch is started by the execute method generating a new
  * thread which is connected to the Rhino debugger in case of success.
  * 
  * @see #execute(org.eclipse.core.commands.ExecutionEvent)
@@ -70,7 +70,6 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 				// where the JavaScript files are stored. This does not work for test campaigns, 
 				// therefore we take an absolute path in the file system instead ("C:\...")
 				IPath path = (((IFile) firstElement)).getLocation();
-//				System.out.println("full path " + path);
 				return path;
 			}
 		}
@@ -97,7 +96,6 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 				// where the JavaScript files are stored. This does not work for test campaigns, 
 				// therefore we take an absolute path in the file system instead ("C:\...")
 				IPath path = (((IFile) firstElement).getParent()).getLocation();
-//				System.out.println("full path " + path);
 				return path;
 			}
 		}
@@ -106,10 +104,15 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 	
 	/**
 	 * prepares settings for Rhino debugging thread and launch and starts the
-	 * launch
-	 * @param event event which triggered this handler
-	 * @param envSettings used for collecting and passing objects containing 
-	 * 			e.g. file or debug information between methods/modules
+	 * launch.
+	 * 
+	 * @param event
+	 *            event which triggered this handler
+	 * @param envSettings
+	 *            the name of the currently selected resource and the project
+	 *            root for the Rhino source lookup path are added to
+	 *            envSettings by this method
+	 * 
 	 * @throws RuntimeException
 	 *             in case the launch could not be started properly
 	 */
@@ -123,7 +126,8 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 	/**
 	 * Tries to start the Rhino JavaScript debugger launch in an own thread.
 	 * Concurrently the execute method of the super class activates the Rhino
-	 * debugger thread. This Rhino debugger thread must be started before the
+	 * debugger thread by calling execute methods for a test case/campaign. 
+	 * This Rhino debugger thread must be started before the
 	 * launch thread and the debugger launch thread has to wait for it, since
 	 * these two Rhino threads communicate with each other. When the debugger
 	 * thread has created a debuggerStartedObj-object (which serves as a signal
@@ -147,11 +151,10 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 
 		final RhinoDebugLaunchManager launchMan = new RhinoDebugLaunchManager(envSettings);
 		try {
-			// initialize the standard configuration file and set the port number found
-			// there as socket number for the communication between debugger thread.
-			// Besides this add the project root to the Rhino source lookup path
+			// initialize the standard launch configuration file
 			launchMan.initDebugLaunchConfiguration();
 			// after init... the port number can be fetched from launch manager and set for debugger
+			// as socket number for the communication between the two debugger threads.
 			// TODO if we move the thread start to smartcardshell this would probably be obsolete!
 			envSettings.put(RhinoJavaScriptAccess.RHINO_JS_PORT_HASH_KEY, launchMan.getPortNum());
 			
@@ -162,7 +165,7 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 //				return;
 //			// ... to here!
 		
-		} catch (FileNotFoundException | RuntimeException exc) {	
+		} catch (IOException | RuntimeException exc) {	
 			//rewrap Exception with additional context description and rethrow it to be handled by calling code
 			String errorMsg = "A problem occurred when trying to access a JavaScript launch configuration.\n"
 					+ exc.getLocalizedMessage();
@@ -205,7 +208,6 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 						// wait for Rhino debugger to be started; the object delivered
 						// here is an interface object which can be filled with 
 						// functionality in later versions
-//						System.err.println("Run loop " + count + " of launch thread!");
 						if (RhinoJavaScriptAccess.getDebuggerStartedObj() == null) {
 							try {
 								Thread.sleep(waitingTime);
@@ -219,7 +221,7 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 						}
 					}
 					if (RhinoJavaScriptAccess.getDebuggerStartedObj() == null) {
-						JSDebugLogger.error("DebugTestCommandHandler: "
+						GTLogger.getInstance().error("DebugTestCommandHandler: "
 										+ "No JavaScript debugger start could be detected! Canceling debug launching.");
 					}
 
@@ -227,7 +229,7 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 					String errorMsg = "DebugTestCommandHandler: "
 							+ "Debugger launch could not be started! Canceling debug launching.\n"
 							+ "Reason:\n" + exc.getLocalizedMessage();
-					JSDebugLogger.error(errorMsg);
+					GTLogger.getInstance().error(errorMsg);
 					GtErrorLogger.log(Activator.PLUGIN_ID, new Exception(errorMsg, exc));
 					if (shell != null)
 						GtUiHelper.openErrorDialog(shell, errorMsg);
@@ -239,7 +241,7 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 
 		rhinoDebugLaunchThread.setName(rhinoLauncherThreadName); // simplifies retrieving thread in runtime stack
 		try {
-			JSDebugLogger.info("Trying to start debug launch thread ...");
+			GTLogger.getInstance().info("Trying to start debug launch thread ...");
 			// make this thread a UI thread; otherwise there will be null pointer
 			// exceptions when accessing the active workbench window in 
 			// DebugUIPlugin.launchInBackground()
@@ -252,7 +254,7 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 			String errorMsg = "DebugTestCommandHandler: " +
 					   "Debugger launch could not be started! Canceling debug launching.\n" +
 					   "Error message: " + exc.getLocalizedMessage() + "\n";
-			JSDebugLogger.error(errorMsg);
+			GTLogger.getInstance().error(errorMsg);
 			GtErrorLogger.log(Activator.PLUGIN_ID, new Exception(errorMsg, exc));
 			//exc.printStackTrace();
 			throw new RuntimeException(errorMsg, exc);
