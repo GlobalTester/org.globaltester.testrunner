@@ -40,7 +40,7 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 	 * Number of iterations for repeating trial to establish connection in debug
 	 * launch thread.
 	 */
-	protected static int numLoop = 3;
+	protected static int numLoop = 7;
 	
 	/**
 	 * Name for debug launch thread which makes it easier to find this thread 
@@ -79,7 +79,12 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 	/**
 	 * Returns the parent of the full, absolute path of the currently selected
 	 * resource. This is needed for setting the source lookup path in launch
-	 * configurations.
+	 * configurations.<br>
+	 * NOTE: Currently only one path is supported. The launch configurations may
+	 * in principle contain several paths. If one works with test cases to be debugged
+	 * which lie in different directories, a common root directory could be used or the
+	 * functionality in {@link RhinoDebugLaunchManager} must be expanded in a way 
+	 * that several paths can be added. 
 	 * 
 	 * @param event
 	 *            which delivers the currently selected resource
