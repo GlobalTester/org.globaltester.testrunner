@@ -40,7 +40,7 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 	 * Number of iterations for repeating trial to establish connection in debug
 	 * launch thread.
 	 */
-	protected static int numLoop = 7;
+	protected static int numLoop = 3;
 	
 	/**
 	 * Name for debug launch thread which makes it easier to find this thread 
