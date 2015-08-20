@@ -162,7 +162,16 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 			// as socket number for the communication between the two debugger threads.
 			// TODO if we move the thread start to smartcardshell this would probably be obsolete!
 			envSettings.put(RhinoJavaScriptAccess.RHINO_JS_PORT_HASH_KEY, launchMan.getPortNum());
+
+//			Test1: Write converted JS code to file without calling the Rhino evaluator:
+//			Only used for testing XML converter: delete or activate from here...
+//			RhinoJavaScriptAccess jsAccess = new RhinoJavaScriptAccess(envSettings); 
+//			jsAccess.XML2JSWriteToFile();
+//			if (true)
+//				return;
+//			... to here!
 			
+//			Test2: Convert XML test case to JS code and evaluate it with Rhino evaluator:
 //			Only used for testing XML converter: delete or activate from here...
 //			RhinoJavaScriptAccess jsAccess = new RhinoJavaScriptAccess(envSettings); 
 //			jsAccess.XML2JSConverter();
