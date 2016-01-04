@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>TestCampaign</title>
+</head>
+<body>
+
+	<h1>TestCampaign</h1>
+	<p>
+	A <b>TestCampaign</b> is a collection of TestCases and their Executions.
+	The collection of TestCases is static and is not to be changed after the TestCampaign is created.
+	The Executions are the dynamic part of a TestCampaign, and you can start them as often as you like.
+	</p>
+	<p>
+	The <a href="PLUGINS_ROOT/org.globaltester.testspecification.doc/html/user/concepts/TestCase.html">TestCases</a>
+	that have been selected from their 
+	<a href="PLUGINS_ROOT/org.globaltester.testspecification.doc/html/user/concepts/TestSpecification.html">TestSpecification</a>
+	will be stored in the TestCampaign's subfolder &quot;TestSpecification&quot;.
+	There they can be accessed permanently, identically, and comparably to execute the TestCampaign.
+	</p>
+	<p>
+	When you execute a TestCampaign, you can choose the profiles its TestCases have assigned to.
+	Only those TestCases that match the selected profiles will be executed.
+	</p>
+	<p>
+	Information of each execution is saved.
+	It covers the start time of the execution, the duration, the result, a link to the log file and to the line the logging starts,
+	and to the TestCase resource itself.<br>
+	You can see and browse the Information, and open log files and TestCases in the TestCampaign editor.<br>
+	You can also generate a <a href="../concepts/Report.html">report</a> of your last execution.
+	</p>
+	<p>
+	The <a href="../concepts/LogFiles.html">log files</a> of the TestCampaign executions will be stored in the folder TestResults.
+	If that option was set in the Preferences, the single log files for each TestCase will be stored there as well.
+	</p>
+</body>
+</html>

@@ -1,0 +1,189 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Execute TestCases</title>
+</head>
+<body>
+	<h1>Execute TestCases</h1>
+	<p>In a few steps, you will be able to create a TestCampaign out of
+		TestCases in your TestSpecification and evaluate them. In order to get
+		a quick overview, you can also use the Cheat Sheet.</p>
+
+	<h2>Setup Test Environment</h2>
+	<p>
+		Make sure your card reader is connected to your computer.<br> If
+		you still have to connect it and GlobalTester is already running, 
+		GlobalTester 3 will not be able to recognize and embed it into its 
+		functionality.
+		So please start GlobalTester again in this case.
+		<br> Place your card on the reader.
+	</p>
+
+	<h2>Import your TestSpecification</h2>
+	<p>
+		If not already done, import one or more <a
+			href="PLUGINS_ROOT/org.globaltester.testspecification.doc/html/user/gettingstarted/UserGuide_ImportOfATestSpec.html">TestSpecification(s)</a>.
+	</p>
+
+	<h2>Create and execute TestCampaign</h2>
+	<p>
+		In the TestSpecification(s) you have chosen, select the TestCases you
+		want to execute. Right-click with your mouse, and choose <b>&quot;Create
+			TestCampaign&quot;</b>. A TestCampaign will be created and opened in the
+		TestCampaign Editor. It consists of your selected TestCases, the
+		execution states, the log files documenting the test results, and the
+		subset of the TestSpecification(s) you have chosen (i.e. the TestCases
+		you have chosen).<br> You can (re-) execute your TestCampaign by
+		clicking the <b>&quot;Execute&quot;</b> button.
+	</p>
+	<p>
+		There is also a shortcut to create and execute a TestCampaign
+		directly:<br> In the TestSpecification(s) you have chosen, select
+		the TestCases you want to execute. Right-click with your mouse, and
+		this time choose <b>&quot;Run Test&quot;</b>.<br> A TestCampaign
+		will be created and executed directly. Of course you can execute it
+		again by selecting or opening it and click the <b>&quot;Run
+			Test&quot;</b> command in the toolbar.
+	</p>
+
+	<h2>Debug Test Cases</h2>
+	In order to be able to debug the JavaScript parts of your test cases respectively campaigns,
+	a JavaScript Debugger can be invoked. It allows you to set breakpoints on JavaScript
+	statements and thus control the correctness of your program flow and variable values.
+	<h3>Create a JavaScript Debug Configuration</h3>
+	<p>
+		First a	debug configuration has to be created and initialized. 
+		Different settings can be made such as the socket number for 
+		process communication of the debugger threads. If you do not define
+		a configuration, an automatically created one will be used. If you want to set up your
+		own configuration, follow these steps:
+		<ul>
+			<li>Open the debug perspective.
+			</li>
+			<li> Open the debug configuration editor (click on the black arrow besides 
+			the bug icon in the task bar and choose <b>&quot;Debug Configurations&quot;</b>).
+			</li>
+			<li> Select <b>&quot;Remote JavaScript&quot;</b> and click on the <b>&quot;New 
+			launch configuration&quot;</b> icon.
+			</li>
+			<li> Rename the configuration to <b>&quot;runJSDebugger&quot;</b>.
+			</li>
+			<li> Activate the <b>&quot;Connect&quot;</b> tab and change the connector type 
+			to <b>&quot;Mozilla Rhino – Attaching Connector&quot;</b>.
+			</li>
+			<li> If you want to change the port for the socket communication between the debugging 
+			threads, type in a different port number.
+			</li>			
+			<li> Activate the <b>&quot;Source&quot;</b> tab and remove the default location.
+			</li>
+			<li> Add the directories where your test cases are stored:
+			</li>
+			<ul>
+			<li> Choose <b>&quot;Add --> Workspace Folder&quot;</b>.
+			</li>
+			<li> Choose for example <b>&quot;GlobalTester Sample TestSpecifications – TestCases&quot;</b>.
+			</li>
+			</ul>
+			<li> Click <b>&quot;Apply&quot;</b> to save your changes.
+			</li>
+		</ul>
+		This configuration will be used automatically when the debugger is started.	It can be changed 
+		using the same editor. Do not set a different name since the configuration cannot be
+		found in this case.
+	</p>
+
+	<h3>Set Breakpoints</h3>
+	<p>
+			<ul>
+			<li> Open the JavaScript file where you want to set breakpoints by double clicking the file name in
+			the GlobalTester Navigator and select the line you want to watch. <br>
+			<b>Note:</b> Currently setting of breakpoints is restricted to JavaScript files. You can use
+			a load command inside a technical command or result tag of your XML test case file
+			in order to load and execute such a JavaScript file with breakpoints (in later versions setting breakpoints
+			directly in the xml test case file shall be possible). Add for example 
+			(path must be adapted to your location for the JavaScript file):<br>
+			load("&lt;path&gt;GlobalTester Sample TestSpecification/TestCases/JSDebugger-PrintTest.js");
+			</li>
+			<li> Right-click on the vertical bar left to the source editor (left frame).
+			</li>
+			<li> Choose <b>&quot;Toggle Breakpoint&quot;</b> to set respectively unset a breakpoint. 
+			</li>			
+			<li> You can choose <b>&quot;Disable Breakpoint&quot;</b> to deactivate a breakpoint 
+			temporarily. 
+			</li>			
+		</ul>
+	</p>
+
+	<h3>Start a JavaScript Debugger and Execute Your Test Case or Campaign</h3>
+	<p>
+		Starting the debugger for test case execution is now largely analogous to running 
+		a test campaign (for creating and executing test cases and campaigns see above).
+		Right-click with your mouse on a test case respectively test campaign, and
+		this time choose <b>&quot;Debug Test&quot;</b>. In the case that any breakpoints
+		were set and are hit, the debugger widget will open the appropriate editor
+		and show the line being executed. The debugger will automatically be closed
+		after execution. For more information on how to work with the debug perspective
+		see &quot;Workbench User Guide&quot;.
+	</p>
+
+	<h2>Evaluate Log File(s)</h2>
+	<p>
+		Each execution of a TestCampaign will have an own <a
+			href="../concepts/LogFiles.html">log file</a>. You can see the whole
+		communication between the card and the reader, because the output of
+		chip and reader of all executed TestCases is logged there.<br> If
+		you have selected &quot;Add separate logfile for each testcase&quot;
+		in the Preferences, each executed TestCase will have its own log file.<br>
+		You can easily access the log files:
+	</p>
+	<p>
+		In the TestCampaign editor, you can see a tree view displaying the
+		last execution of the TestCampaign structured in its sub-parts.
+		Right-click with your mouse on the root of the tree view which
+		corresponds to the last execution of the TestCampaign, and choose <b>&quot;Show
+			log file&quot;</b>. The log file of the last execution of the
+		TestCampaign will open.<br> You can access the corresponding log
+		of each part of a TestCampaign the same way.<br> For example, if
+		you have selected the option for single log files for each TestCase in
+		the preferences, logs of TestCases and their parts will be opened in
+		the log file for the corresponding TestCase execution.
+	</p>
+	<p>
+		If you have a <b>&quot;Failure&quot;</b> notice in the TestCampaign
+		editor after an execution, you can find the error in the TestCase
+		execution by looking for &quot;@FailureID1&quot;,
+		&quot;@FailureID2&quot;, etc. The corresponding lines in the log file
+		will have a red marker. When you click on it, the line where
+		the failure is quoted will be highlighted in the log file editor.<br>
+		Usually &quot;@FailureID1&quot; is the essential source of error. For
+		example, if you have no card placed on your reader, it will be the
+		missing &quot;card&quot; reference.
+	</p>
+	<p>The APDU commands are syntax highlighted, and if you hover over
+		it with your mouse, the APDU command is declared in its parts.</p>
+	<p>
+		The response APDUs are also highlighted and thus can be easily
+		spotted. Status words are extracted and interpreted.<br> They can
+		be checked, and be another source for a &quot;Failure&quot; notice.
+	</p>
+
+	<h2>Generate Report</h2>
+	<p>
+		You can generate a <a href="../concepts/Report.html">report</a> of
+		your execution by clicking the <b>&quot;Generate Report&quot;</b>
+		button. A folder browser will open where you can choose the folder you
+		want the report to be saved in.<br> The report comprises the
+		details of your TestCampaign execution with results of each TestCase
+		in a more human-readable way than the log files.
+	</p>
+
+	<h2>Browse TestCampaign Executions</h2>
+	<p>While evaluating the log files, you already used the execution
+		tree view in the TestCampaignEditor. Above you will find a selection
+		box where you can switch the display between different executions to
+		compare the results of several test runs. Also you can modify the
+		comments, view the logs and generate reports for older executions as
+		the complete state is persisted.</p>
+</body>
+</html>
