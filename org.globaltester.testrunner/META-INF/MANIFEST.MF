@@ -10,7 +10,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.globaltester.testspecification;bundle-version="3.0.0",
  org.globaltester.core;bundle-version="3.0.0",
  org.globaltester.smartcardshell;bundle-version="3.0.0",
- org.globaltester.logging;bundle-version="3.0.0",
+ org.globaltester.logging.legacy;bundle-version="3.0.0",
  org.globaltester.cardconfiguration;bundle-version="3.0.0",
  org.mozilla.javascript;bundle-version="1.7.2"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
