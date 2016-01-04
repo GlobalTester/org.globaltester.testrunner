@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            defaultHandler="org.globaltester.testrunner.ui.commands.RunTestCommandHandler"
+            id="org.globaltester.testrunner.ui.commands.RunTestCommand"
+            name="Run Test">
+         <commandParameter
+               id="org.globaltester.testrunner.ui.SelectCardConfigParameter"
+               name="Select CardConfig"
+               optional="true">
+         </commandParameter>
+      </command>
+      <command
+            defaultHandler="org.globaltester.testrunner.ui.commands.DebugTestCommandHandler"
+            id="org.globaltester.testrunner.ui.commands.DebugTestCommand"
+            name="Debug Test">
+         <commandParameter
+               id="org.globaltester.testrunner.ui.SelectCardConfigParameter"
+               name="Select CardConfig"
+               optional="true">
+         </commandParameter>
+      </command>
+      <command
+            defaultHandler="org.globaltester.testrunner.ui.commands.CreateTestCampaignCommandHandler"
+            id="org.globaltester.testrunner.ui.commands.CreateTestCampaignCommand"
+            name="Create TestCampaign">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="popup:org.globaltester.core.ui.views.GlobalTesterNavigator.PopupMenu?after=group.edit">
+         <command
+               commandId="org.globaltester.testrunner.ui.commands.RunTestCommand"
+               icon="icons/execute.png"
+               label="Run Test"
+               style="push"
+               tooltip="Create a new TestCampaign from selection and execute it">
+         </command>
+         <command
+               commandId="org.globaltester.testrunner.ui.commands.DebugTestCommand"
+               icon="icons/debug-execute.png"
+               label="Debug Test"
+               style="push"
+               tooltip="Create a new TestCampaign from selection and execute and debug it">
+         </command>
+         <command
+               commandId="org.globaltester.testrunner.ui.commands.CreateTestCampaignCommand"
+               icon="icons/testcampaign.png"
+               label="Create TestCampaign"
+               style="push"
+               tooltip="Create a new TestCampaign from selection and open it">
+         </command>
+      </menuContribution>
+   </extension>
+   <extension point="org.eclipse.ui.menus">
+        <menuContribution
+            locationURI="toolbar:org.eclipse.ui.main.toolbar">
+            <toolbar
+                  id="org.globaltester.maintoolbar"
+                  label="GlobalTester Toolbar">
+                <command
+                      commandId="org.globaltester.testrunner.ui.commands.RunTestCommand"
+                      icon="icons/execute.png"
+                      id="org.globaltester.testrunner.ui.RunDropDown"
+                      label="Run Test"
+                      style="pulldown"
+                      tooltip="Create a new TestCampaign from selection and execute it">
+                 </command>
+                 <command
+                   commandId="org.globaltester.testrunner.ui.commands.CreateTestCampaignCommand"
+                   icon="icons/testcampaign.png"
+                   label="Create TestCampaign"
+                   style="push"
+                   tooltip="Create a new TestCampaign from selection and open it">
+                 </command>
+            </toolbar>
+        </menuContribution>
+        <menuContribution
+              allPopups="false"
+              locationURI="menu:org.globaltester.testrunner.ui.RunDropDown">
+              <command
+                      commandId="org.globaltester.testrunner.ui.commands.RunTestCommand"
+                      icon="icons/execute.png"
+                      id="org.globaltester.testrunner.ui.RunDropDown"
+                      label="Run Test with other CardConfig"
+                      style="pulldown"
+                      tooltip="Create a new TestCampaign from selection and execute it with selected CardConfig">
+                 <parameter
+                       name="org.globaltester.testrunner.ui.SelectCardConfigParameter"
+                       value="true">
+                 </parameter>
+                 </command>
+        </menuContribution>
+    </extension>
+
+   
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="org.globaltester.testrunner.ui.editor.TestCampaignEditor"
+            icon="icons/testcampaign.png"
+            id="org.globaltester.testrunner.ui.testcampaigneditor"
+            matchingStrategy="org.globaltester.testrunner.ui.editor.TestCampaignEditorMatchingStrategy"
+            name="GT TestCampaign Editor">
+         <contentTypeBinding
+               contentTypeId="org.globaltester.testrunner.contenttypes.TestCampaign">
+         </contentTypeBinding>
+      </editor>
+   </extension>
+   <extension
+         point="org.eclipse.ui.ide.projectNatureImages">
+      <image
+            icon="icons/ovr_testcampaign.png"
+            id="org.globaltester.testrunner.ui.image1"
+            natureId="org.globaltester.testrunner.gtTestCampaignNature">
+      </image>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="org.globaltester.core.ui.preferences.GlobalTesterPreferencePage"
+            class="org.globaltester.testrunner.ui.preferences.GlobalTesterPreferencePageTestrunner"
+            id="orgorg.globaltester.testrunner.ui.preferences.GlobalTesterPreferencePageTestrunner.globaltester.testrunner.ui.PreferencePage"
+            name="TestRunner">
+      </page>
+   </extension>
+</plugin>
