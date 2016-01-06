@@ -22,7 +22,7 @@ Require-Bundle: org.eclipse.ui,
  org.globaltester.smartcardshell;bundle-version="3.0.1",
  org.globaltester.smartcardshell.ui;bundle-version="3.0.1",
  org.eclipse.debug.ui
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Export-Package: org.globaltester.testrunner.ui,
  org.globaltester.testrunner.ui.commands
