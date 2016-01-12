@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: GlobalTester TestRunner UI
 Bundle-SymbolicName: org.globaltester.testrunner.ui;singleton:=true
-Bundle-Version: 3.0.1.qualifier
+Bundle-Version: 3.0.1
 Bundle-Activator: org.globaltester.testrunner.ui.Activator
 Bundle-Vendor: HJP Consulting GmbH
 Require-Bundle: org.eclipse.ui,
@@ -22,7 +22,7 @@ Require-Bundle: org.eclipse.ui,
  org.globaltester.smartcardshell;bundle-version="3.0.1",
  org.globaltester.smartcardshell.ui;bundle-version="3.0.1",
  org.eclipse.debug.ui
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Export-Package: org.globaltester.testrunner.ui,
  org.globaltester.testrunner.ui.commands
