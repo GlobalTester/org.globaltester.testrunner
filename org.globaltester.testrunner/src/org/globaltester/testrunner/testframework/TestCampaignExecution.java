@@ -247,23 +247,6 @@ public class TestCampaignExecution extends FileTestExecution {
 		
 			monitor.beginTask("Execute TestCase ", elementExecutions.size());
 			
-			//set up the OpenCardFramework
-			try {
-				OCFWrapper.start();
-			} catch (OpenCardPropertyLoadingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (CardServiceException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (CardTerminalException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
 			// execute all included TestCampaignElements
 			for (Iterator<IExecution> elemIter = elementExecutions.iterator(); elemIter
 					.hasNext() && !monitor.isCanceled();) {
