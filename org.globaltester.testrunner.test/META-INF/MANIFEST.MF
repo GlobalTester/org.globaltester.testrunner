@@ -4,6 +4,6 @@ Bundle-Name: GlobalTester TestRunner (TestFragment)
 Bundle-SymbolicName: org.globaltester.testrunner.test
 Bundle-Version: 3.0.3
 Bundle-Vendor: HJP Consulting GmbH
-Fragment-Host: org.globaltester.testrunner;bundle-version="3.0.0"
+Fragment-Host: org.globaltester.testrunner
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.junit
