@@ -18,7 +18,7 @@ import org.globaltester.core.xml.XMLHelper;
 import org.globaltester.logging.logger.GTLogger;
 import org.globaltester.logging.logger.GtErrorLogger;
 import org.globaltester.logging.logger.TestLogger;
-import org.globaltester.smartcardshell.ScriptRunner;
+import org.globaltester.testrunner.ScriptRunner;
 import org.globaltester.smartcardshell.jsinterface.RhinoJavaScriptAccess;
 import org.globaltester.smartcardshell.ocf.OCFWrapper;
 import org.globaltester.testrunner.Activator;

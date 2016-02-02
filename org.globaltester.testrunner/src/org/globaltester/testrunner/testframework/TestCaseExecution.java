@@ -11,7 +11,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.globaltester.core.xml.XMLHelper;
 import org.globaltester.logging.logger.TestLogger;
-import org.globaltester.smartcardshell.ScriptRunner;
+import org.globaltester.testrunner.ScriptRunner;
 import org.globaltester.testspecification.testframework.PostCondition;
 import org.globaltester.testspecification.testframework.PreCondition;
 import org.globaltester.testspecification.testframework.TestCase;

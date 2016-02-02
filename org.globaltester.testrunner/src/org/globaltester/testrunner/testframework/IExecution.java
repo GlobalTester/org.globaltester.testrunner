@@ -3,7 +3,7 @@ package org.globaltester.testrunner.testframework;
 import java.util.Collection;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.globaltester.smartcardshell.ScriptRunner;
+import org.globaltester.testrunner.ScriptRunner;
 import org.globaltester.testrunner.testframework.Result.Status;
 import org.mozilla.javascript.Context;
 
