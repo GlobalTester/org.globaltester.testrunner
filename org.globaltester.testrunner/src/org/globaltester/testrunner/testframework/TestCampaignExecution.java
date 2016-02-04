@@ -15,16 +15,21 @@ import org.eclipse.core.runtime.SubProgressMonitor;
 import org.globaltester.cardconfiguration.CardConfig;
 import org.globaltester.core.resources.GtResourceHelper;
 import org.globaltester.core.xml.XMLHelper;
-import org.globaltester.testrunner.Activator;
 import org.globaltester.logging.logger.GTLogger;
 import org.globaltester.logging.logger.GtErrorLogger;
 import org.globaltester.logging.logger.TestLogger;
-import org.globaltester.smartcardshell.ScriptRunner;
+import org.globaltester.testrunner.ScriptRunner;
 import org.globaltester.smartcardshell.jsinterface.RhinoJavaScriptAccess;
+import org.globaltester.smartcardshell.ocf.OCFWrapper;
+import org.globaltester.testrunner.Activator;
 import org.globaltester.testrunner.GtTestCampaignProject;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.mozilla.javascript.Context;
+
+import opencard.core.service.CardServiceException;
+import opencard.core.terminal.CardTerminalException;
+import opencard.core.util.OpenCardPropertyLoadingException;
 
 public class TestCampaignExecution extends FileTestExecution {
 	List<IExecution> elementExecutions = new ArrayList<IExecution>();
@@ -121,6 +126,7 @@ public class TestCampaignExecution extends FileTestExecution {
 
 	public TestCampaignExecution(IFile iFile) throws CoreException {
 		super(iFile);
+		
 		initFromIFile();
 	}
 
@@ -240,6 +246,7 @@ public class TestCampaignExecution extends FileTestExecution {
 		try {
 		
 			monitor.beginTask("Execute TestCase ", elementExecutions.size());
+			
 			// execute all included TestCampaignElements
 			for (Iterator<IExecution> elemIter = elementExecutions.iterator(); elemIter
 					.hasNext() && !monitor.isCanceled();) {
@@ -252,6 +259,12 @@ public class TestCampaignExecution extends FileTestExecution {
 			}
 		}finally{
 		monitor.done();	
+		try {
+			OCFWrapper.shutdown();
+		} catch (CardTerminalException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		}
 
 	}

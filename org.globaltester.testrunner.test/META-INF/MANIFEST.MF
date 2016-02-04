@@ -7,3 +7,5 @@ Bundle-Vendor: HJP Consulting GmbH
 Fragment-Host: org.globaltester.testrunner
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.junit
+Import-Package: org.globaltester.smartcardshell.test
+Eclipse-ExtensibleAPI: true

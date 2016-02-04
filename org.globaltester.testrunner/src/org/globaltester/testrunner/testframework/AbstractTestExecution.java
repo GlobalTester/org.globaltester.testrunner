@@ -5,7 +5,7 @@ import java.util.Date;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.globaltester.logging.logger.TestLogger;
-import org.globaltester.smartcardshell.ScriptRunner;
+import org.globaltester.testrunner.ScriptRunner;
 import org.globaltester.testrunner.testframework.Result.Status;
 import org.jdom.Element;
 import org.mozilla.javascript.Context;
