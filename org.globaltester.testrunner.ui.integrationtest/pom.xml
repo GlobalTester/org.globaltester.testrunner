@@ -9,7 +9,7 @@
     <relativePath>../../org.globaltester.parent/org.globaltester.parent/</relativePath>
   </parent>
   <groupId>org.globaltester</groupId>
-  <artifactId>org.globaltester.testrunner.ui.test</artifactId>
+  <artifactId>org.globaltester.testrunner.ui.integrationtest</artifactId>
   <version>3.0.3</version>
   <packaging>eclipse-plugin</packaging>
 </project>
