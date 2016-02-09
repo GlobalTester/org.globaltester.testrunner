@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: GlobalTester Testrunner UI Test
+Bundle-SymbolicName: org.globaltester.testrunner.ui.integrationtest
+Bundle-Version: 3.0.3
+Fragment-Host: org.globaltester.testrunner.ui;bundle-version="3.0.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.junit;bundle-version="4.8.1",
+ org.globaltester.junit;bundle-version="1.0.0",
+ org.globaltester.swtbot;bundle-version="3.0.0",
+ org.eclipse.swtbot.eclipse.finder;bundle-version="2.0.5"
