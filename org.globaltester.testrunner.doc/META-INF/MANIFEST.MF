@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: GlobalTester TestRunner User Guide
+Bundle-Name: GT TestRunner Doc
 Bundle-SymbolicName: org.globaltester.testrunner.doc;singleton:=true
 Bundle-Version: 3.0.3
 Require-Bundle: org.eclipse.help,

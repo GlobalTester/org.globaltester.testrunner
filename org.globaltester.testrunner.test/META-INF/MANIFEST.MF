@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: GlobalTester TestRunner (TestFragment)
+Bundle-Name: GT TestRunner Test
 Bundle-SymbolicName: org.globaltester.testrunner.test
 Bundle-Version: 3.0.3
 Bundle-Vendor: HJP Consulting GmbH

@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: GlobalTester TestRunner
+Bundle-Name: GT TestRunner
 Bundle-SymbolicName: org.globaltester.testrunner;singleton:=true
 Bundle-Version: 3.0.3
 Bundle-Activator: org.globaltester.testrunner.Activator
