@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: GlobalTester Testrunner UI Test
+Bundle-Name: GT Testrunner UI Integration Test
 Bundle-SymbolicName: org.globaltester.testrunner.ui.integrationtest
 Bundle-Version: 3.0.3
 Fragment-Host: org.globaltester.testrunner.ui;bundle-version="3.0.0"
