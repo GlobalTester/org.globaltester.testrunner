@@ -1,3 +1,10 @@
+Version 3.0.4 (18.02.2016)
+
+* updated Bundle-Name to match naming conventions
+* Remove outdated content from help
+* Move Scriptrunner (and unit test) from org.gt.smartcardshell
+
+
 Version 3.0.3 (29.01.2016)
 
 * Repo migration
