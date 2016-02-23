@@ -144,7 +144,7 @@ public class GtTestCampaignProject implements ITreeObservable {
 	 * @throws CoreException
 	 */
 	public IFile getTestCampaignIFile() throws CoreException {
-		IFile file = getIProject().getFile("testCampaign.xml");
+		IFile file = getIProject().getFile("testCampaign.gtcampaign");
 		return file;
 	}
 
@@ -182,13 +182,13 @@ public class GtTestCampaignProject implements ITreeObservable {
 	 * @throws CoreException
 	 */
 	public IFile getNewStateIFile(FileTestExecutable executable) throws CoreException {
-		String execName = GtDateHelper.getCurrentTimeString() + "_" + executable.getName()+".xml";
+		String execName = GtDateHelper.getCurrentTimeString() + "_" + executable.getName()+".gt";
 
 		return getNewStateIFile(execName);
 	}
 	
 	public IFile getNewCampaignStateIFile() throws CoreException {
-		String execName = GtDateHelper.getCurrentTimeString() + "_" + getName()+".xml";
+		String execName = GtDateHelper.getCurrentTimeString() + "_" + getName()+".gt";
 
 		return getNewStateIFile(execName);
 	}
