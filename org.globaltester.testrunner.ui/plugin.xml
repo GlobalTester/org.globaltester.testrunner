@@ -36,14 +36,14 @@
          <command
                commandId="org.globaltester.testrunner.ui.commands.RunTestCommand"
                icon="icons/execute.png"
-               label="Run Test"
+               label="Create TestCampaign and execute it"
                style="push"
                tooltip="Create a new TestCampaign from selection and execute it">
          </command>
          <command
                commandId="org.globaltester.testrunner.ui.commands.DebugTestCommand"
                icon="icons/debug-execute.png"
-               label="Debug Test"
+               label="Create TestCampaign and debug it"
                style="push"
                tooltip="Create a new TestCampaign from selection and execute and debug it">
          </command>
