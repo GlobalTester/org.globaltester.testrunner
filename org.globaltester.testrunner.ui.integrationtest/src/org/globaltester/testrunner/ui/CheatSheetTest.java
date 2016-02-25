@@ -57,8 +57,8 @@ public class CheatSheetTest {
 		importTestSpecification();
 		createCardConfig();
 		NavigatorViewUiHelper navigator = GlobalTesterUiHelper.focusNavigatorView();
-		String [] path1 = new String [] {sampleProject, "TestCases", "ePassport", "ePassport_Application.xml"};
-		String [] path2 = new String [] {sampleProject, "TestCases", "nPA", "nPA_Application.xml"};
+		String [] path1 = new String [] {sampleProject, "TestCases", "ePassport", "ePassport_Application.gt"};
+		String [] path2 = new String [] {sampleProject, "TestCases", "nPA", "nPA_Application.gt"};
 		navigator.expandAndSelect(path1);
 		navigator.expandAndSelect(path2);
 		GlobalTesterUiHelper.createAndStartTestCampaignByToolBar();
