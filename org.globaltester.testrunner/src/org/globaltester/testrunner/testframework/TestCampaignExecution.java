@@ -27,9 +27,7 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.mozilla.javascript.Context;
 
-import opencard.core.service.CardServiceException;
 import opencard.core.terminal.CardTerminalException;
-import opencard.core.util.OpenCardPropertyLoadingException;
 
 public class TestCampaignExecution extends FileTestExecution {
 	List<IExecution> elementExecutions = new ArrayList<IExecution>();
