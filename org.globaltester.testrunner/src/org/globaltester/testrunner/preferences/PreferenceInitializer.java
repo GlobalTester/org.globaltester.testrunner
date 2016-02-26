@@ -22,9 +22,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 	 */
 	public void initializeDefaultPreferences() {
 
-		Preferences preferences = new DefaultScope()
-				.getNode(Activator.PLUGIN_ID);
-		
+		Preferences preferences = DefaultScope.INSTANCE.getNode(Activator.PLUGIN_ID);
 		
 		//if TestCase or log file should open on double click
 		preferences.putInt(PreferenceConstants.P_DOUBLECLICKRESULTVIEW, 0);

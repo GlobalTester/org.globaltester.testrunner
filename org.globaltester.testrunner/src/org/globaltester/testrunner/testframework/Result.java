@@ -84,6 +84,8 @@ public class Result implements Serializable{
 			case FAILURE:
 				tmpStatus = Status.FAILURE;
 				break iterationLoop;
+			default:
+				break;
 			}
 		}
 		

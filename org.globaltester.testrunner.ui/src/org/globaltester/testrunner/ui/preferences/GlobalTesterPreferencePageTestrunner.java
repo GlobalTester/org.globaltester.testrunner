@@ -31,7 +31,7 @@ FieldEditorPreferencePage implements IWorkbenchPreferencePage{
 	public GlobalTesterPreferencePageTestrunner() {
 		super(GRID);
 		
-		IPreferenceStore store = new ScopedPreferenceStore(new InstanceScope(),
+		IPreferenceStore store = new ScopedPreferenceStore(InstanceScope.INSTANCE,
 				Activator.PLUGIN_ID);
 		setPreferenceStore(store);
 		setDescription("GlobalTester Preference Page for the TestRunner");

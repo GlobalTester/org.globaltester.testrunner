@@ -83,6 +83,8 @@ public enum NonUiImages {
 			return STS_WARNING_ICON;
 		case NOT_APPLICABLE:
 			return STS_NA_ICON;
+		case UNDEFINED:
+			return STS_NYE_ICON;
 		}
 		return STS_NYE_ICON;
 	}
