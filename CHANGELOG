@@ -1,3 +1,10 @@
+Version 3.0.5 (29.02.2016)
+
+* changed file endings from xml to .gt, .gtsuite or .gtcampaign
+* Clearify labels of popup menu entries for running/debug tests
+* Code maintenance
+
+
 Version 3.0.4 (18.02.2016)
 
 * updated Bundle-Name to match naming conventions
