@@ -61,6 +61,18 @@ public class RunTestCommandHandler extends AbstractHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
+		//return executeRunnerTestcase(event);
+		return executeManagerTestcase();
+	}
+	
+	private Object executeManagerTestcase(){
+		GlobalTesterAction action = new GlobalTesterAction();
+		action.init(PlatformUI.getWorkbench().getActiveWorkbenchWindow());
+		action.run(null);
+		return null;
+	}
+
+	private Object executeRunnerTestcase(ExecutionEvent event) {
 		// check for dirty files and save them
 		if (!PlatformUI.getWorkbench().saveAllEditors(true)) {
 			return null;
@@ -130,10 +142,6 @@ public class RunTestCommandHandler extends AbstractHandler {
 
 		try {
 			setupEnvironment(event, envSettings);
-// Only used for testing XML converter: delete or activate from here...
-//			if (true)
-//				return null;
-// to here!
 		}
 		catch (RuntimeException exc) {
 			//log and show error
