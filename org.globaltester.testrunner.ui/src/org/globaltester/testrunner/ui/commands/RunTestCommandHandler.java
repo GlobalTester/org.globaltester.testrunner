@@ -30,6 +30,9 @@ import org.globaltester.cardconfiguration.CardConfigManager;
 import org.globaltester.cardconfiguration.GtCardConfigNature;
 import org.globaltester.cardconfiguration.ui.CardConfigSelectorDialog;
 import org.globaltester.logging.logger.GtErrorLogger;
+import org.globaltester.testmanager.testframework.TestCase;
+import org.globaltester.testmanager.testframework.TestCaseFactory;
+import org.globaltester.testmanager.testframework.TestCaseGt3;
 import org.globaltester.testrunner.GtTestCampaignNature;
 import org.globaltester.testrunner.GtTestCampaignProject;
 import org.globaltester.testrunner.testframework.TestCampaignExecution;
@@ -61,8 +64,20 @@ public class RunTestCommandHandler extends AbstractHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		//return executeRunnerTestcase(event);
-		return executeManagerTestcase();
+		ISelection iSel = PlatformUI.getWorkbench()
+				.getActiveWorkbenchWindow().getSelectionService()
+				.getSelection();
+		LinkedList<IResource> resources = GtUiHelper.getSelectedIResources(iSel, IResource.class);
+		if (resources.size() == 1 && resources.get(0) instanceof IFile){
+			IFile selectedFile = (IFile) resources.get(0);
+			TestCase testCase = TestCaseFactory.createTestcase(selectedFile);
+			
+			if (!(testCase instanceof TestCaseGt3)){
+				return executeManagerTestcase();	
+			}
+			
+		}
+		return executeRunnerTestcase(event);
 	}
 	
 	private Object executeManagerTestcase(){
