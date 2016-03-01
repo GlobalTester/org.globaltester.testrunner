@@ -64,20 +64,41 @@ public class RunTestCommandHandler extends AbstractHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
+		
+		boolean useCampaign = true;
+		
+		
 		ISelection iSel = PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow().getSelectionService()
 				.getSelection();
 		LinkedList<IResource> resources = GtUiHelper.getSelectedIResources(iSel, IResource.class);
-		if (resources.size() == 1 && resources.get(0) instanceof IFile){
-			IFile selectedFile = (IFile) resources.get(0);
-			TestCase testCase = TestCaseFactory.createTestcase(selectedFile);
-			
-			if (!(testCase instanceof TestCaseGt3)){
-				return executeManagerTestcase();	
+		
+		boolean incompatibleFiles = false;
+		for (IResource r : resources){
+			IFile selectedFile = null;
+			if (r instanceof IFile){
+				selectedFile = (IFile) r;
+			} else {
+				incompatibleFiles = true;
+				break;
 			}
-			
+			TestCase testCase = TestCaseFactory.createTestcase(selectedFile);
+			if (useCampaign && !(testCase instanceof TestCaseGt3)){
+				incompatibleFiles = true;
+			}
 		}
-		return executeRunnerTestcase(event);
+		
+		if (incompatibleFiles){
+			GtUiHelper.openErrorDialog(shell,
+					"Selection contains files that can not be executed in a test campaign.");
+			return null;
+		}
+		
+		if (useCampaign){
+			return executeRunnerTestcase(event, resources);
+		} else {
+			return executeManagerTestcase();
+		}
 	}
 	
 	private Object executeManagerTestcase(){
@@ -87,7 +108,7 @@ public class RunTestCommandHandler extends AbstractHandler {
 		return null;
 	}
 
-	private Object executeRunnerTestcase(ExecutionEvent event) {
+	private Object executeRunnerTestcase(ExecutionEvent event, final LinkedList<IResource> resources) {
 		// check for dirty files and save them
 		if (!PlatformUI.getWorkbench().saveAllEditors(true)) {
 			return null;
@@ -117,13 +138,18 @@ public class RunTestCommandHandler extends AbstractHandler {
 					.getSelection();
 
 			campaignProject = getCampaignProjectFromSelection(iSel, shell);
+			
+			if (campaignProject == null){
+				// try to create a TestCampaignProject from current selection
+				try {
+					campaignProject = CreateTestCampaignCommandHandler.createTestCampaignProject(
+							iSel, shell);
+				} catch (CoreException e) {
+					GtErrorLogger.log(Activator.PLUGIN_ID, e);
+				}
+			}
 		}
-
-		if (campaignProject == null) {
-			// no campaignProject available, user is already informed
-			return null;
-		}
-
+		
 		// try to get CardConfig
 		cardConfig = null;
 		String selectCardConfigParam = event
@@ -177,8 +203,11 @@ public class RunTestCommandHandler extends AbstractHandler {
 			protected IStatus run(IProgressMonitor monitor) {
 				// execute tests
 				try {
-					campaignProject.getTestCampaign().executeTests(cardConfig,
-							monitor, envSettings);
+					if (campaignProject != null) {
+						campaignProject.getTestCampaign().executeTests(cardConfig, monitor, envSettings);
+					} else {
+						return Status.CANCEL_STATUS;
+					}
 				} catch (CoreException e) {
 					GtErrorLogger.log(Activator.PLUGIN_ID, e);
 				}
@@ -259,14 +288,6 @@ public class RunTestCommandHandler extends AbstractHandler {
 		}
 		if (tmpCampaignProject != null) {
 			return tmpCampaignProject;
-		}
-
-		// try to create a TestCampaignProject from current selection
-		try {
-			return CreateTestCampaignCommandHandler.createTestCampaignProject(
-					iSel, shell);
-		} catch (CoreException e) {
-			GtErrorLogger.log(Activator.PLUGIN_ID, e);
 		}
 		return null;
 	}
