@@ -11,7 +11,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.handlers.HandlerUtil;
-import org.globaltester.core.ui.GtUiHelper;
+import org.globaltester.base.ui.GtUiHelper;
 import org.globaltester.logging.logger.GTLogger;
 import org.globaltester.logging.logger.GtErrorLogger;
 import org.globaltester.smartcardshell.jsinterface.RhinoJavaScriptAccess;

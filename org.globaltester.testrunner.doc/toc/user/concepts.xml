@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?NLS TYPE="org.eclipse.help.toc"?>
 
-<toc label="Concepts" link_to="/org.globaltester.core.doc/toc/user/toc.xml#concepts"> 
+<toc label="Concepts" link_to="/org.globaltester.base.doc/toc/user/toc.xml#concepts"> 
 	<topic label="TestCampaign"  href="html/user/concepts/TestCampaign.html"> 
 	</topic>
  <topic href="html/user/concepts/LogFiles.html" label="Log Files">

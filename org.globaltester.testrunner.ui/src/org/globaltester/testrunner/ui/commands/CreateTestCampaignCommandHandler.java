@@ -17,7 +17,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
-import org.globaltester.core.ui.GtUiHelper;
+import org.globaltester.base.ui.GtUiHelper;
 import org.globaltester.logging.logger.GtErrorLogger;
 import org.globaltester.testrunner.GtTestCampaignProject;
 import org.globaltester.testrunner.ui.Activator;

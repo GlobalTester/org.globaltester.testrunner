@@ -8,7 +8,7 @@ Bundle-Vendor: HJP Consulting GmbH
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.globaltester.testrunner,
- org.globaltester.core.ui,
+ org.globaltester.base.ui,
  org.eclipse.core.resources,
  org.globaltester.testspecification,
  org.eclipse.ui.ide,
