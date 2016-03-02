@@ -11,8 +11,8 @@ import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.globaltester.lib.fop.renderer.GtFopHelper;
 import org.globaltester.testrunner.Activator;
-import org.globaltester.renderer.GtFopHelper;
 import org.osgi.framework.Bundle;
 
 public class ReportPdfGenerator {
