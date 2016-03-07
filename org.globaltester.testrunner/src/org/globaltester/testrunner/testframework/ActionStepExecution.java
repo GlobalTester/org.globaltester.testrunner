@@ -7,12 +7,11 @@ import java.util.List;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.globaltester.logging.logger.TestLogger;
-import org.globaltester.testrunner.ScriptRunner;
+import org.globaltester.testmanager.testframework.ScriptRunner;
 import org.globaltester.testrunner.testframework.Result.Status;
 import org.globaltester.testspecification.testframework.ActionStep;
 import org.globaltester.testspecification.testframework.ExpectedResult;
 import org.jdom.Element;
-import org.mozilla.javascript.Context;
 
 public abstract class ActionStepExecution extends AbstractTestExecution {
 
@@ -34,7 +33,7 @@ public abstract class ActionStepExecution extends AbstractTestExecution {
 	}
 
 	@Override
-	public void execute(ScriptRunner sr, Context cx, boolean forceExecution, boolean reExecution, IProgressMonitor monitor) {
+	public void execute(ScriptRunner sr, boolean forceExecution, boolean reExecution, IProgressMonitor monitor) {
 		if (monitor == null) {
 			monitor= new NullProgressMonitor();
 		}
@@ -67,7 +66,7 @@ public abstract class ActionStepExecution extends AbstractTestExecution {
 		}
 		
 		//init the executor with context and script runner
-		ActionStepExecutor stepExecutor = new ActionStepExecutor(sr, cx);
+		ActionStepExecutor stepExecutor = new ActionStepExecutor(sr);
 		
 		monitor.worked(1);
 		

@@ -11,7 +11,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.globaltester.base.xml.XMLHelper;
 import org.globaltester.logging.logger.TestLogger;
-import org.globaltester.testrunner.ScriptRunner;
+import org.globaltester.testmanager.testframework.ScriptRunner;
 import org.globaltester.testspecification.testframework.PostCondition;
 import org.globaltester.testspecification.testframework.PreCondition;
 import org.globaltester.testspecification.testframework.TestCase;
@@ -19,7 +19,6 @@ import org.globaltester.testspecification.testframework.TestExecutableFactory;
 import org.globaltester.testspecification.testframework.TestStep;
 import org.jdom.Document;
 import org.jdom.Element;
-import org.mozilla.javascript.Context;
 
 public class TestCaseExecution extends FileTestExecution {
 
@@ -106,7 +105,7 @@ public class TestCaseExecution extends FileTestExecution {
 	}
 
 	@Override
-	protected void execute(ScriptRunner sr, Context cx, boolean forceExecution, boolean reExecution, IProgressMonitor monitor) {
+	protected void execute(ScriptRunner sr, boolean forceExecution, boolean reExecution, IProgressMonitor monitor) {
 		if (monitor == null){
 			monitor = new NullProgressMonitor();
 		}
@@ -129,7 +128,7 @@ public class TestCaseExecution extends FileTestExecution {
 		for (Iterator<ActionStepExecution> preConIter = preConExecutions.iterator(); preConIter
 				.hasNext() && !monitor.isCanceled();) {
 			ActionStepExecution curStepExec = preConIter.next();
-			curStepExec.execute(sr, cx, forceExecution, new NullProgressMonitor());
+			curStepExec.execute(sr, forceExecution, new NullProgressMonitor());
 			
 			result.addSubResult(curStepExec.getResult());
 			monitor.worked(1);
@@ -140,7 +139,7 @@ public class TestCaseExecution extends FileTestExecution {
 		for (Iterator<ActionStepExecution> testStepIter = testStepExecutions.iterator(); testStepIter
 				.hasNext() && !monitor.isCanceled();) {
 			ActionStepExecution curStepExec = testStepIter.next();
-			curStepExec.execute(sr, cx, forceExecution, new NullProgressMonitor());
+			curStepExec.execute(sr, forceExecution, new NullProgressMonitor());
 			
 			result.addSubResult(curStepExec.getResult());
 			monitor.worked(1);
@@ -152,7 +151,7 @@ public class TestCaseExecution extends FileTestExecution {
 		for (Iterator<ActionStepExecution> postConIter = postConExecutions.iterator(); postConIter
 				.hasNext() && !monitor.isCanceled();) {
 			ActionStepExecution curStepExec = postConIter.next();
-			curStepExec.execute(sr, cx, forceExecution, new NullProgressMonitor());
+			curStepExec.execute(sr, forceExecution, new NullProgressMonitor());
 			
 			result.addSubResult(curStepExec.getResult());
 			monitor.worked(1);

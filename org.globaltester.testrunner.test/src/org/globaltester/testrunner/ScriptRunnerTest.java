@@ -1,19 +1,21 @@
 package org.globaltester.testrunner;
 
-import static org.junit.Assert.assertEquals;
-import opencard.core.service.SmartCard;
+import java.util.Collections;
 
-import org.globaltester.cardconfiguration.CardConfig;
-import org.globaltester.smartcardshell.jsinterface.RhinoJavaScriptAccess;
 import org.globaltester.smartcardshell.ocf.PreferencesPropertyLoader;
 import org.globaltester.smartcardshell.preferences.PreferenceInitializer;
+import org.globaltester.testmanager.testframework.ScriptRunner;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mozilla.javascript.Context;
 
+import static org.junit.Assert.assertEquals;
+
+import opencard.core.service.SmartCard;
+
 /**
- * Test on the implementaiton of the SkriptRunner
+ * Test on the implementation of the SkriptRunner
  * 
  * @author amay
  * 
@@ -26,11 +28,7 @@ public class ScriptRunnerTest {
 		if (SmartCard.isStarted()) {
 			SmartCard.shutdown();
 		}
-
-		// initialize OCF
-//		System.setProperty("OpenCard.loaderClassName",
-//				org.globaltester.smartcardshell.test.TestPropertyLoader.class
-//						.getName());
+		
 		System.setProperty("OpenCard.loaderClassName", org.globaltester.smartcardshell.test.TestPropertyLoader.class.getName());
 		SmartCard.start();
 	}
@@ -42,24 +40,15 @@ public class ScriptRunnerTest {
 	}
 
 	@Test
-	public void testInitialCardConfig() throws RuntimeException {
-
-		// activate Rhino JS Context
-		RhinoJavaScriptAccess rhinoAccess = new RhinoJavaScriptAccess();
-		Context cx = rhinoAccess.activateContext(); // no exception handling done
-						// here since this is done in the calling methods
-
+	public void testInitialCardConfig() throws Exception {
 		// init JS ScriptRunner
-		ScriptRunner sr = new ScriptRunner(cx, "");
-		sr.init(cx);
-		sr.initCard(cx, "card", new CardConfig());
+		ScriptRunner sr = new ScriptRunner("", Collections.emptyMap());
+		sr.init();
+		TestRunnerEnvironmentInitializer.setEnvironment(sr);
 
-		String result = sr.executeCommand(cx,
-				"card.gt_getCardConfig(\"ICAO9303\",\"MRZ\")");
+		String result = Context.toString(sr.exec("card.gt_getCardConfig(\"ICAO9303\",\"MRZ\")"));
 
-		// exit the JavaScript context
-		rhinoAccess.exitContext();
-
+		sr.close();
 		// asserts
 		assertEquals("Returned default MRZ does not match", "P<D<<MUSTERMANN<<ERIKA<<<<<<<<<<<<<<<<<<<<<<C11T002JM4D<<9608122F1310317<<<<<<<<<<<<<<<6", result);
 	}
@@ -73,21 +62,15 @@ public class ScriptRunnerTest {
 	 */
 	@Test
 	public void testProtocolClassLoader() throws RuntimeException {
-
-		// activate Rhino JS Context
-		RhinoJavaScriptAccess rhinoAccess = new RhinoJavaScriptAccess();
-		Context cx = rhinoAccess.activateContext(); // no exception handling done
-						// here since this is done in the calling methods
-
 		// init JS ScriptRunner
-		ScriptRunner sr = new ScriptRunner(cx, "");
+		ScriptRunner sr = new ScriptRunner("", Collections.emptyMap());
+		sr.init();
 
 		// If the class loader for BAC was not activated, this will throw an exception:
 		String s = "new Packages.org.globaltester.smartcardshell.protocols.bac.BAC();";
-		sr.executeCommand(cx, s);
-
-		// exit the JavaScript context
-		rhinoAccess.exitContext();
+		sr.exec(s);
+		
+		sr.close();
 	}
 
 }

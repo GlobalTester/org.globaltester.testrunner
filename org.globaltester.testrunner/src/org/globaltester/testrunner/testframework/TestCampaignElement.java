@@ -3,11 +3,10 @@ package org.globaltester.testrunner.testframework;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.globaltester.testrunner.ScriptRunner;
+import org.globaltester.testmanager.testframework.ScriptRunner;
 import org.globaltester.testspecification.testframework.FileTestExecutable;
 import org.globaltester.testspecification.testframework.TestExecutableFactory;
 import org.jdom.Element;
-import org.mozilla.javascript.Context;
 
 public class TestCampaignElement {
 
@@ -67,7 +66,7 @@ public class TestCampaignElement {
 	 * @param forceExecution
 	 * @return 
 	 */
-	FileTestExecution execute(ScriptRunner sr, Context cx, boolean forceExecution, IProgressMonitor monitor) {
+	FileTestExecution execute(ScriptRunner sr, boolean forceExecution, IProgressMonitor monitor) {
 
 		// create a new TestExecution this TestCampaignElement
 		FileTestExecution testExecution = null;
@@ -80,7 +79,7 @@ public class TestCampaignElement {
 
 		if (testExecution != null) {
 			// execute the TestExecutable
-			testExecution.execute(sr, cx, forceExecution, monitor);
+			testExecution.execute(sr, forceExecution, monitor);
 		}
 		
 		return testExecution;

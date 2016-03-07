@@ -1,10 +1,10 @@
 package org.globaltester.testrunner.testframework;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
@@ -177,12 +177,13 @@ public class TestCampaign {
 	/**
 	 * Execute all tests that need to be executed e.g. which do not have a valid
 	 * previous execution associated
+	 * @param configuration 
 	 * @param monitor 
 	 * 
 	 * @throws CoreException
 	 */
-	public void executeTests(CardConfig cardConfig, IProgressMonitor monitor, 
-			HashMap<String, Object> envSettings) throws CoreException {
+	public void executeTests(Map<Class<?>, Object> configuration, IProgressMonitor monitor, 
+			Map<String, Object> envSettings) throws CoreException {
 
 		// create a new TestExecution this TestCampaignElement
 		TestCampaignExecution currentExecution = null;
@@ -199,7 +200,7 @@ public class TestCampaign {
 		}
 		executions.addFirst(currentExecution);
 
-		currentExecution.setCardConfig(cardConfig.getCloneForExecution());
+		currentExecution.setCardConfig((CardConfig)configuration.get(CardConfig.class));
 
 		// execute the TestExecutable
 		currentExecution.execute(monitor, envSettings);

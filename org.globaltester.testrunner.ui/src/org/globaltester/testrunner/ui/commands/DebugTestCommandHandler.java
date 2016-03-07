@@ -1,7 +1,7 @@
 package org.globaltester.testrunner.ui.commands;
 
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.resources.IFile;
@@ -10,6 +10,7 @@ import org.eclipse.debug.internal.ui.DebugUIPlugin;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.globaltester.base.ui.GtUiHelper;
 import org.globaltester.logging.logger.GTLogger;
@@ -122,7 +123,7 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 	 *             in case the launch could not be started properly
 	 */
 	@Override
-	protected void setupEnvironment(ExecutionEvent event, HashMap<String, Object> envSettings)  throws RuntimeException {
+	protected void setupEnvironment(ExecutionEvent event, Map<String, Object> envSettings)  throws RuntimeException {
 		envSettings.put(RhinoJavaScriptAccess.RHINO_JS_FILENAME_HASH_KEY, getResource(event));
 		envSettings.put(RhinoJavaScriptAccess.RHINO_JS_SOURCE_LOOKUP_HASH_KEY, getSourceLookupRoot(event));
 		startRhinoDebugLaunch(envSettings);
@@ -152,7 +153,7 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 	 * @throws RuntimeException
 	 *             if the launch could not be started
 	 */
-	protected void startRhinoDebugLaunch(HashMap<String, Object> envSettings) throws RuntimeException {
+	protected void startRhinoDebugLaunch(Map<String, Object> envSettings) throws RuntimeException {
 
 		final RhinoDebugLaunchManager launchMan = new RhinoDebugLaunchManager(envSettings);
 		try {
@@ -245,8 +246,7 @@ public class DebugTestCommandHandler extends RunTestCommandHandler {
 							+ "Reason:\n" + exc.getLocalizedMessage();
 					GTLogger.getInstance().error(errorMsg);
 					GtErrorLogger.log(Activator.PLUGIN_ID, new Exception(errorMsg, exc));
-					if (shell != null)
-						GtUiHelper.openErrorDialog(shell, errorMsg);
+					GtUiHelper.openErrorDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), errorMsg);
 					//exc.printStackTrace();
 					throw new RuntimeException(errorMsg, exc);
 				}

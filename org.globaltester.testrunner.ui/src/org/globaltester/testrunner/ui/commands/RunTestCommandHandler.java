@@ -1,8 +1,9 @@
 package org.globaltester.testrunner.ui.commands;
 
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -22,7 +23,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
-import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.part.FileEditorInput;
 import org.globaltester.base.ui.GtUiHelper;
 import org.globaltester.cardconfiguration.CardConfig;
@@ -30,10 +30,6 @@ import org.globaltester.cardconfiguration.CardConfigManager;
 import org.globaltester.cardconfiguration.GtCardConfigNature;
 import org.globaltester.cardconfiguration.ui.CardConfigSelectorDialog;
 import org.globaltester.logging.logger.GtErrorLogger;
-import org.globaltester.testmanager.testframework.TestCase;
-import org.globaltester.testmanager.testframework.TestCaseFactory;
-import org.globaltester.testmanager.testframework.TestCaseGt3;
-import org.globaltester.testrunner.GtTestCampaignNature;
 import org.globaltester.testrunner.GtTestCampaignProject;
 import org.globaltester.testrunner.testframework.TestCampaignExecution;
 import org.globaltester.testrunner.ui.Activator;
@@ -42,11 +38,6 @@ import org.globaltester.testrunner.ui.editor.TestCampaignEditorInput;
 import org.globaltester.testspecification.ui.editors.TestSpecEditor;
 
 public class RunTestCommandHandler extends AbstractHandler {
-
-	private GtTestCampaignProject campaignProject = null;
-	private CardConfig cardConfig = null;
-	protected Shell shell = null;
-
 	/**
 	 * sets up environment, e.g. prepares settings for debugging threads and
 	 * launches and starts them, dependent on what is currently activated and
@@ -58,153 +49,76 @@ public class RunTestCommandHandler extends AbstractHandler {
 	 * @param envSettings used for adding or retrieving environment information
 	 * @throws RuntimeException in case of errors
 	 */
-	protected void setupEnvironment(ExecutionEvent event, HashMap<String, Object> envSettings)  throws RuntimeException {
+	protected void setupEnvironment(ExecutionEvent event, Map<String, Object> envSettings)  throws RuntimeException {
 		// does nothing special here; can be overridden by derived classes
 	}
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		
-		boolean useCampaign = true;
-		
+		// check for dirty files and save them
+		if (!PlatformUI.getWorkbench().saveAllEditors(true)) {
+			return null;
+		}
 		
 		ISelection iSel = PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow().getSelectionService()
 				.getSelection();
 		LinkedList<IResource> resources = GtUiHelper.getSelectedIResources(iSel, IResource.class);
 		
-		boolean incompatibleFiles = false;
-		for (IResource r : resources){
-			IFile selectedFile = null;
-			if (r instanceof IFile){
-				selectedFile = (IFile) r;
-			} else {
-				incompatibleFiles = true;
-				break;
-			}
-			TestCase testCase = TestCaseFactory.createTestcase(selectedFile);
-			if (useCampaign && !(testCase instanceof TestCaseGt3)){
-				incompatibleFiles = true;
+		
+		if (resources.size() == 0){
+			//try to get file from editor
+			IFile file = getFileFromEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActivePart());
+			if (file != null){
+				resources.add(file);
 			}
 		}
 		
-		if (incompatibleFiles){
-			GtUiHelper.openErrorDialog(shell,
-					"Selection contains files that can not be executed in a test campaign.");
+		Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+		
+		if (resources.size() == 0){
+			GtUiHelper.openErrorDialog(shell, "Select executable files or an editor for execution of test cases.");
 			return null;
 		}
 		
-		if (useCampaign){
-			return executeRunnerTestcase(event, resources);
+
+		Map<Class<?>, Object> configuration = new HashMap<>();
+		
+		if (resources.size() == 1 && resources.get(0).getFileExtension().equals("gtcampaign")){
+			try {
+				GtTestCampaignProject campaign = GtTestCampaignProject.getProjectForResource(resources.get(0));
+				CardConfig config = getConfiguration(event, campaign);
+				configuration.put(config.getClass(), config);
+				return executeCampaign(campaign, configuration);
+			} catch (CoreException e) {
+				GtUiHelper.openErrorDialog(shell, "The test campaign project could not be opened.");
+				return null;
+			}
 		} else {
-			return executeManagerTestcase();
+			CardConfig config = getConfiguration(event, null);
+			configuration.put(config.getClass(), config);
+			return executeInDialog(configuration);
 		}
+
 	}
 	
-	private Object executeManagerTestcase(){
+	private Object executeInDialog(Map<Class<?>, Object> configuration){
 		GlobalTesterAction action = new GlobalTesterAction();
 		action.init(PlatformUI.getWorkbench().getActiveWorkbenchWindow());
-		action.run(null);
+		action.run(configuration);
 		return null;
 	}
 
-	private Object executeRunnerTestcase(ExecutionEvent event, final LinkedList<IResource> resources) {
-		// check for dirty files and save them
-		if (!PlatformUI.getWorkbench().saveAllEditors(true)) {
-			return null;
-		}
+	private Object executeCampaign(final GtTestCampaignProject campaign, final Map<Class<?>, Object> configuration) {
 		
-		// get TestCampaign from user selection
-		campaignProject = null;
-
-		shell = HandlerUtil.getActiveWorkbenchWindow(event).getShell();
-		IWorkbenchPart activePart = Activator.getDefault().getWorkbench()
-				.getActiveWorkbenchWindow().getActivePage().getActivePart();
-
-		if (activePart instanceof EditorPart) {
-			campaignProject = getCampaignProjectFromEditor(activePart);
-
-			if (campaignProject == null) {
-				// no campaignProject available, inform user
-				GtUiHelper.openErrorDialog(shell,
-						"No TestCampaignProject could be associated with active editor. " +
-						"Please select either an existing TestCampaign for execution or " + 
-						"valid input to create a new one.");
-				return null;
-			}
-		} else {
-			ISelection iSel = PlatformUI.getWorkbench()
-					.getActiveWorkbenchWindow().getSelectionService()
-					.getSelection();
-
-			campaignProject = getCampaignProjectFromSelection(iSel, shell);
-			
-			if (campaignProject == null){
-				// try to create a TestCampaignProject from current selection
-				try {
-					campaignProject = CreateTestCampaignCommandHandler.createTestCampaignProject(
-							iSel, shell);
-				} catch (CoreException e) {
-					GtErrorLogger.log(Activator.PLUGIN_ID, e);
-				}
-			}
-		}
-		
-		// try to get CardConfig
-		cardConfig = null;
-		String selectCardConfigParam = event
-				.getParameter("org.globaltester.testrunner.ui.SelectCardConfigParameter");
-		boolean forceSelection = (selectCardConfigParam != null)
-				&& selectCardConfigParam.trim().toLowerCase().equals("true");
-		if (!forceSelection) {
-			// try to get CardConfig from last CampaignExecution
-			cardConfig = getLastCardConfigFromTestCampaignProject(campaignProject);
-
-			// try to get CardConfig from Selection if none was defined in
-			// TestCampaign
-			if (cardConfig == null) {
-				cardConfig = getFirstCardConfigFromSelection();
-			}
-		}
-
-		// ask user for CardConfig if none was selected
-		if (cardConfig == null) {
-			CardConfigSelectorDialog dialog = new CardConfigSelectorDialog(
-					HandlerUtil.getActiveWorkbenchWindow(event).getShell());
-			if (dialog.open() != Window.OK) {
-				return null;
-			}
-			cardConfig = dialog.getSelectedCardConfig();
-		}
-
-		final HashMap<String, Object> envSettings = new HashMap<String, Object>();
-			// This hash map is used to store environment information for example for
-			// JavaScript debugging or other applications.
-
-		try {
-			setupEnvironment(event, envSettings);
-		}
-		catch (RuntimeException exc) {
-			//log and show error
-			String errorMsg = "A problem occurred when trying to access a JavaScript launch configuration.\n"
-					+ exc.getLocalizedMessage();
-
-			GtErrorLogger.log(Activator.PLUGIN_ID, new Exception(errorMsg, exc));
-			if (shell != null)
-				GtUiHelper.openErrorDialog(shell, errorMsg);
- 
-			// abort execution
-			return null;
-		}
-
 		// execute the TestCampaign
 		Job job = new Job("Test execution") {
 
 			protected IStatus run(IProgressMonitor monitor) {
 				// execute tests
 				try {
-					if (campaignProject != null) {
-						campaignProject.getTestCampaign().executeTests(cardConfig, monitor, envSettings);
+					if (campaign != null) {
+						campaign.getTestCampaign().executeTests(configuration, monitor, Collections.emptyMap());
 					} else {
 						return Status.CANCEL_STATUS;
 					}
@@ -230,7 +144,7 @@ public class RunTestCommandHandler extends AbstractHandler {
 							@Override
 							public void run() {
 								try {
-									GtUiHelper.openInEditor(campaignProject
+									GtUiHelper.openInEditor(campaign
 											.getTestCampaignIFile());
 								} catch (CoreException e) {
 									// log Exception to eclipse log
@@ -252,63 +166,50 @@ public class RunTestCommandHandler extends AbstractHandler {
 		return null;
 	}
 
-	private GtTestCampaignProject getCampaignProjectFromSelection(
-			ISelection iSel, Shell shell) {
+	private CardConfig getConfiguration(ExecutionEvent event, GtTestCampaignProject campaign) {
+		// try to get CardConfig
+		CardConfig cardConfig = null;
+		String selectCardConfigParam = event
+				.getParameter("org.globaltester.testrunner.ui.SelectCardConfigParameter");
+		boolean forceSelection = (selectCardConfigParam != null)
+				&& selectCardConfigParam.trim().toLowerCase().equals("true");
+		if (!forceSelection) {
+			if (campaign != null){
+				// try to get CardConfig from last CampaignExecution
+				cardConfig = getLastCardConfigFromTestCampaignProject(campaign);	
+			}
 
-		GtTestCampaignProject tmpCampaignProject = null;
-
-		// if only one TestCampaign is selected run this
-		LinkedList<IFile> selectedIFiles = GtUiHelper.getSelectedIResources(
-				iSel, IFile.class);
-		if (!selectedIFiles.isEmpty()) {
-			// add the selected resources to the list of executables
-			Iterator<IFile> execFilesIter = selectedIFiles.iterator();
-			while (execFilesIter.hasNext()) {
-				IProject curProject = execFilesIter.next().getProject();
-
-				try {
-					if (curProject.hasNature(GtTestCampaignNature.NATURE_ID)) {
-						if (tmpCampaignProject == null) {
-							// found first TestCampaignProject in selection
-							tmpCampaignProject = GtTestCampaignProject
-									.getProjectForResource(curProject);
-						} else {
-							GtUiHelper.openErrorDialog(shell,
-									"Selection contains files from more than one " + 
-									"TestCampaign. Please select only one TestCampaign to execute.");
-							return null;
-						}
-					}
-				} catch (CoreException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
+			// try to get CardConfig from Selection if none was defined in
+			// TestCampaign
+			if (cardConfig == null) {
+				cardConfig = getFirstCardConfigFromSelection();
 			}
 		}
-		if (tmpCampaignProject != null) {
-			return tmpCampaignProject;
-		}
-		return null;
-	}
 
-	private GtTestCampaignProject getCampaignProjectFromEditor(
-			IWorkbenchPart activePart) {
+		// ask user for CardConfig if none was selected
+		if (cardConfig == null) {
+			CardConfigSelectorDialog dialog = new CardConfigSelectorDialog(
+					HandlerUtil.getActiveWorkbenchWindow(event).getShell());
+			if (dialog.open() != Window.OK) {
+				return null;
+			}
+			cardConfig = dialog.getSelectedCardConfig();
+		}
+		return cardConfig;
+	}
+	
+	private IFile getFileFromEditor(IWorkbenchPart activePart){
+		if (activePart instanceof TestSpecEditor) {
+			FileEditorInput editorInput = (FileEditorInput) ((TestSpecEditor) activePart).getEditorInput();
+			return editorInput.getFile();
+		}
 		if (activePart instanceof TestCampaignEditor) {
 			TestCampaignEditorInput editorInput = (TestCampaignEditorInput) 
 					((TestCampaignEditor) activePart).getEditorInput();
-			return editorInput.getGtTestCampaignProject();
-		} else if (activePart instanceof TestSpecEditor) {
-			FileEditorInput editorInput = (FileEditorInput) ((TestSpecEditor) activePart)
-					.getEditorInput();
-			IFile file = editorInput.getFile();
-
-			// try to create a TestCampaignProject from current selection
 			try {
-				return CreateTestCampaignCommandHandler
-						.createTestCampaignProject(file, shell);
+				return editorInput.getGtTestCampaignProject().getTestCampaignIFile();
 			} catch (CoreException e) {
-				GtErrorLogger.log(Activator.PLUGIN_ID, e);
+				// expected behavior for some inputs
 			}
 		}
 		return null;
@@ -335,12 +236,19 @@ public class RunTestCommandHandler extends AbstractHandler {
 
 	private CardConfig getLastCardConfigFromTestCampaignProject(
 			GtTestCampaignProject parentCampaingProject) {
+		if (parentCampaingProject == null){
+			return null;
+		}
 		TestCampaignExecution currentExecution = parentCampaingProject
 				.getTestCampaign().getCurrentExecution();
 		if (currentExecution != null) {
-			String cardConfigName = currentExecution.getCardConfig().getName();
-			if (CardConfigManager.isAvailableAsProject(cardConfigName)) {
-				return CardConfigManager.get(cardConfigName);
+			CardConfig config = currentExecution.getCardConfig();
+			if (config != null){
+				String cardConfigName = currentExecution.getCardConfig().getName();
+				
+				if (CardConfigManager.isAvailableAsProject(cardConfigName)) {
+					return CardConfigManager.get(cardConfigName);
+				}	
 			}
 		}
 		return null;

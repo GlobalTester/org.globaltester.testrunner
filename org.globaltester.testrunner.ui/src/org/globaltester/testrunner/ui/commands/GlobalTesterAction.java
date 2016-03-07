@@ -18,6 +18,7 @@ package org.globaltester.testrunner.ui.commands;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -44,28 +45,15 @@ import org.globaltester.testmanager.launcher.GlobalTesterThread;
  * 
  */
 
-public class GlobalTesterAction implements IWorkbenchWindowActionDelegate {
+public class GlobalTesterAction {
 
 	// Used to store parent window
 	private static IWorkbenchWindow window;
 
 	// The current working directory
 	private String workingDirectory;
-
-	/**
-	 * Constructor of GlobalTesterAction
-	 */
-	public GlobalTesterAction() {
-	}
-
-	/**
-	 * The action has been activated. The argument of the method represents the
-	 * 'real' action sitting in the workbench UI.
-	 * 
-	 * @see IWorkbenchWindowActionDelegate#run
-	 */
-	@SuppressWarnings("unchecked")
-	public void run(IAction action) {
+	
+	public void run(Map<Class<?>, Object> configuration) {
 
 		//check whether the working dir in preferences is still correct
 		recalcWorkingDirectory();
@@ -126,6 +114,7 @@ public class GlobalTesterAction implements IWorkbenchWindowActionDelegate {
 		//TestSession testSession = new TestSession(testList);
 		GlobalTesterThread gtThread = new GlobalTesterThread("GlobalTester");
 		gtThread.setFileList(testList);
+		gtThread.setConfiguration(configuration);
 		
 		//FIXME what exactly does this accomplish?
 		gtThread.run();
