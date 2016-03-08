@@ -13,6 +13,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.globaltester.cardconfiguration,
  org.globaltester.base,
  org.globaltester.testmanager
+ org.mozilla.javascript
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
  org.globaltester.lib.jdom,
  org.globaltester.lib.apache.fop,
  org.globaltester.lib.apache.xml

@@ -4,8 +4,8 @@ import java.util.Collections;
 
 import org.globaltester.smartcardshell.ocf.PreferencesPropertyLoader;
 import org.globaltester.smartcardshell.preferences.PreferenceInitializer;
-import org.globaltester.testmanager.testframework.ScriptRunner;
-import org.globaltester.testmanager.testframework.ScshScope;
+import org.globaltester.testrunner.ScriptRunner;
+import org.globaltester.testrunner.ScshScope;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;

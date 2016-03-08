@@ -7,7 +7,7 @@ import java.util.List;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.globaltester.logging.logger.TestLogger;
-import org.globaltester.testmanager.testframework.ScriptRunner;
+import org.globaltester.testrunner.ScriptRunner;
 import org.globaltester.testrunner.testframework.Result.Status;
 import org.globaltester.testspecification.testframework.ActionStep;
 import org.globaltester.testspecification.testframework.ExpectedResult;

@@ -3,7 +3,7 @@ package org.globaltester.testrunner.testframework;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.globaltester.testmanager.testframework.ScriptRunner;
+import org.globaltester.testrunner.ScriptRunner;
 import org.globaltester.testspecification.testframework.FileTestExecutable;
 import org.globaltester.testspecification.testframework.TestExecutableFactory;
 import org.jdom.Element;

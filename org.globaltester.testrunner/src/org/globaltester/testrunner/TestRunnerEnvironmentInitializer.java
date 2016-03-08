@@ -11,9 +11,6 @@ import org.globaltester.smartcardshell.ProtocolExtensions;
 import org.globaltester.smartcardshell.ocf.OCFWrapper;
 import org.globaltester.smartcardshell.preferences.PreferenceConstants;
 import org.globaltester.smartcardshell.protocols.IScshProtocolProvider;
-import org.globaltester.testmanager.Activator;
-import org.globaltester.testmanager.testframework.EnvironmentNotInitializedException;
-import org.globaltester.testmanager.testframework.ScriptRunner;
 import org.mozilla.javascript.Context;
 
 import opencard.core.service.CardServiceException;
