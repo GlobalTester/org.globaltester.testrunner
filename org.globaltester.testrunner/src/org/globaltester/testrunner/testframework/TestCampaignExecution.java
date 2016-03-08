@@ -19,6 +19,7 @@ import org.globaltester.cardconfiguration.CardConfig;
 import org.globaltester.logging.logger.GtErrorLogger;
 import org.globaltester.logging.logger.TestLogger;
 import org.globaltester.testmanager.testframework.ScriptRunner;
+import org.globaltester.testmanager.testframework.ScshScope;
 import org.globaltester.testrunner.Activator;
 import org.globaltester.testrunner.GtTestCampaignProject;
 import org.jdom.Document;
@@ -327,7 +328,7 @@ public class TestCampaignExecution extends FileTestExecution {
 		HashMap<Class<?>, Object> configuration = new HashMap<>();
 		configuration.put(cardConfig.getClass(), cardConfig);
 		ScriptRunner sr = new ScriptRunner(directory, configuration);
-		sr.init();
+		sr.init(new ScshScope(sr));
 		return sr;
 	}
 	

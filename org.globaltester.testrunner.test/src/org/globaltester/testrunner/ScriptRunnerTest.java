@@ -5,6 +5,7 @@ import java.util.Collections;
 import org.globaltester.smartcardshell.ocf.PreferencesPropertyLoader;
 import org.globaltester.smartcardshell.preferences.PreferenceInitializer;
 import org.globaltester.testmanager.testframework.ScriptRunner;
+import org.globaltester.testmanager.testframework.ScshScope;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -43,7 +44,7 @@ public class ScriptRunnerTest {
 	public void testInitialCardConfig() throws Exception {
 		// init JS ScriptRunner
 		ScriptRunner sr = new ScriptRunner("", Collections.emptyMap());
-		sr.init();
+		sr.init(new ScshScope(sr));
 		TestRunnerEnvironmentInitializer.setEnvironment(sr);
 
 		String result = Context.toString(sr.exec("card.gt_getCardConfig(\"ICAO9303\",\"MRZ\")"));
@@ -64,7 +65,7 @@ public class ScriptRunnerTest {
 	public void testProtocolClassLoader() throws RuntimeException {
 		// init JS ScriptRunner
 		ScriptRunner sr = new ScriptRunner("", Collections.emptyMap());
-		sr.init();
+		sr.init(new ScshScope(sr));
 
 		// If the class loader for BAC was not activated, this will throw an exception:
 		String s = "new Packages.org.globaltester.smartcardshell.protocols.bac.BAC();";

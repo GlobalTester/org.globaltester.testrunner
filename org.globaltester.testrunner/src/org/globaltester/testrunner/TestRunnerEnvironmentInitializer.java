@@ -207,7 +207,7 @@ public class TestRunnerEnvironmentInitializer {
 				cmd += implementation + "\n";
 				cmd += "}\n";
 				
-				runner.getContext().evaluateString(runner, cmd, TestRunnerEnvironmentInitializer.class.getName(), -1, null);
+				runner.getContext().evaluateString(runner.getScope(), cmd, TestRunnerEnvironmentInitializer.class.getName(), -1, null);
 			}
 			
 		}
