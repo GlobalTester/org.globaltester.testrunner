@@ -1,9 +1,7 @@
 package org.globaltester.testrunner.ui;
 
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.globaltester.testrunner.TestResourceExecutor;
 import org.osgi.framework.BundleContext;
-import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -15,8 +13,6 @@ public class Activator extends AbstractUIPlugin {
 
 	// The shared instance
 	private static Activator plugin;
-
-	private ServiceTracker<TestResourceExecutor, TestResourceExecutor> executorTracker;
 	
 	/**
 	 * The constructor
@@ -40,7 +36,6 @@ public class Activator extends AbstractUIPlugin {
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;
 		super.stop(context);
-		executorTracker.close();
 	}
 
 	/**

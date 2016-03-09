@@ -16,12 +16,13 @@ import org.mozilla.javascript.ScriptableObject;
 import de.cardcontact.scdp.js.GPRuntime;
 import de.cardcontact.scdp.js.GPTracer;
 
+/**
+ * This is used as a top level scope for the scripting environment.
+ * @author mboonk
+ *
+ */
 public class ScshScope extends ImporterTopLevel implements GPRuntime {
 
-	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private FileEvaluator fileEvaluator;
 

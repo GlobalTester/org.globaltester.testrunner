@@ -20,13 +20,13 @@ import opencard.core.terminal.CardTerminalException;
 import opencard.core.terminal.CardTerminalRegistry;
 import opencard.core.util.OpenCardPropertyLoadingException;
 
+/**
+ * This sets the environment for test runner script execution.
+ * @author mboonk
+ *
+ */
 public class TestRunnerEnvironmentInitializer {
-
-	/**
-	 * Define the environment of the shell: - execute defined properties -
-	 * define reader name - define certificate
-	 * 
-	 */
+	
 	public static void setEnvironment(ScriptRunner runner) throws EnvironmentNotInitializedException{
 		runner.addCleanupHook(new Runnable() {
 			

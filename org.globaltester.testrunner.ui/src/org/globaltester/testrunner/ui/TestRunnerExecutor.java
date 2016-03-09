@@ -27,9 +27,14 @@ import org.globaltester.testrunner.GtTestCampaignProject;
 import org.globaltester.testrunner.TestResourceExecutor;
 import org.globaltester.testrunner.testframework.TestCampaignExecution;
 
+/**
+ * This implementation of {@link TestResourceExecutor} executes TestCampaigns.
+ * @author mboonk
+ *
+ */
 public class TestRunnerExecutor implements TestResourceExecutor {
 
-	public boolean canExecute(List<IResource> resources) {
+	protected boolean canExecute(List<IResource> resources) {
 		return resources.size() == 1 && resources.iterator().next().getFileExtension().equals("gtcampaign");
 	}
 
