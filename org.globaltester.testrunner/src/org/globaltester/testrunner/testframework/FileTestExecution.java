@@ -4,7 +4,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
-import org.globaltester.core.xml.XMLHelper;
+import org.globaltester.base.xml.XMLHelper;
 import org.globaltester.testrunner.GtTestCampaignProject;
 import org.jdom.Document;
 import org.jdom.Element;

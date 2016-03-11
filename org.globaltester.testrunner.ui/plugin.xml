@@ -32,7 +32,7 @@
    <extension
          point="org.eclipse.ui.menus">
       <menuContribution
-            locationURI="popup:org.globaltester.core.ui.views.GlobalTesterNavigator.PopupMenu?after=group.edit">
+            locationURI="popup:org.globaltester.base.ui.views.GlobalTesterNavigator.PopupMenu?after=group.edit">
          <command
                commandId="org.globaltester.testrunner.ui.commands.RunTestCommand"
                icon="icons/execute.png"

@@ -24,7 +24,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.IPreferencesService;
-import org.globaltester.core.resources.GtResourceHelper;
+import org.globaltester.base.resources.GtResourceHelper;
 import org.globaltester.logging.logger.TestLogger;
 
 /**

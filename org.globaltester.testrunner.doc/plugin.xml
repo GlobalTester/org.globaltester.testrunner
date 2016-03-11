@@ -4,7 +4,7 @@
    <extension
          point="org.eclipse.ui.cheatsheets.cheatSheetContent">
       <cheatsheet
-            category="org.globaltester.core.doc.userGuide"
+            category="org.globaltester.base.doc.userGuide"
             composite="false"
             contentFile="cheatsheets/user/executeTestCases.xml"
             id="org.globaltester.testrunner.doc.cheatsheet.executeTestCases"

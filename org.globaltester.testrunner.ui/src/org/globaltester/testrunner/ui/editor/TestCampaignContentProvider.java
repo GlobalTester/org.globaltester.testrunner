@@ -11,8 +11,8 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.widgets.Display;
-import org.globaltester.interfaces.ITreeChangeListener;
-import org.globaltester.interfaces.ITreeObservable;
+import org.globaltester.base.interfaces.ITreeChangeListener;
+import org.globaltester.base.interfaces.ITreeObservable;
 import org.globaltester.testrunner.testframework.IExecution;
 import org.globaltester.testrunner.testframework.TestCampaignExecution;
 
