@@ -4,19 +4,14 @@
    <extension
          point="org.eclipse.ui.commands">
       <command
+            defaultHandler="org.globaltester.testrunner.ui.commands.CreateAndRunTestCampaignCommandHandler"
+            id="org.globaltester.testrunner.ui.commands.CreateAndRunTestCampaignCommandHandler"
+            name="Create and run TestCampaign">
+      </command>
+      <command
             defaultHandler="org.globaltester.testrunner.ui.commands.RunTestCommandHandler"
             id="org.globaltester.testrunner.ui.commands.RunTestCommand"
             name="Run TestCampaign">
-         <commandParameter
-               id="org.globaltester.testrunner.ui.SelectCardConfigParameter"
-               name="Select CardConfig"
-               optional="true">
-         </commandParameter>
-      </command>
-      <command
-            defaultHandler="org.globaltester.testrunner.ui.commands.DebugTestCommandHandler"
-            id="org.globaltester.testrunner.ui.commands.DebugTestCommand"
-            name="Debug test">
          <commandParameter
                id="org.globaltester.testrunner.ui.SelectCardConfigParameter"
                name="Select CardConfig"
@@ -40,14 +35,14 @@
             <toolbar
                   id="org.globaltester.maintoolbar"
                   label="GlobalTester Toolbar">
-                <command
-                      commandId="org.globaltester.testrunner.ui.commands.RunTestCommand"
-                      icon="icons/execute.png"
-                      id="org.globaltester.testrunner.ui.RunDropDown"
-                      label="Run TestCampaign"
-                      style="pulldown"
-                      tooltip="Execute TestCampaign">
-                 </command>
+               <command
+                     commandId="org.globaltester.testrunner.ui.commands.RunTestCommand"
+                     icon="icons/execute.png"
+                     id="org.globaltester.testrunner.ui.RunDropDown"
+                     label="Run TestCampaign"
+                     style="pulldown"
+                     tooltip="Execute TestCampaign">
+               </command>
                  <command
                        commandId="org.globaltester.testrunner.ui.commands.CreateTestCampaignCommand"
                        icon="icons/testcampaign.png"

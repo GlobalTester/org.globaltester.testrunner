@@ -1,11 +1,12 @@
 package org.globaltester.testrunner;
 
 import java.util.Collections;
+import java.util.Map;
 
+import org.globaltester.scriptrunner.ScriptRunner;
+import org.globaltester.scriptrunner.ScshScope;
 import org.globaltester.smartcardshell.ocf.PreferencesPropertyLoader;
 import org.globaltester.smartcardshell.preferences.PreferenceInitializer;
-import org.globaltester.testrunner.ScriptRunner;
-import org.globaltester.testrunner.ScshScope;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -43,7 +44,8 @@ public class ScriptRunnerTest {
 	@Test
 	public void testInitialCardConfig() throws Exception {
 		// init JS ScriptRunner
-		ScriptRunner sr = new ScriptRunner("", Collections.emptyMap());
+		Map<Class<?>, Object> emptyMap = Collections.emptyMap();
+		ScriptRunner sr = new ScriptRunner("", emptyMap);
 		sr.init(new ScshScope(sr));
 		TestRunnerEnvironmentInitializer.setEnvironment(sr);
 
@@ -64,7 +66,8 @@ public class ScriptRunnerTest {
 	@Test
 	public void testProtocolClassLoader() throws RuntimeException {
 		// init JS ScriptRunner
-		ScriptRunner sr = new ScriptRunner("", Collections.emptyMap());
+		Map<Class<?>, Object> emptyMap = Collections.emptyMap();
+		ScriptRunner sr = new ScriptRunner("", emptyMap);
 		sr.init(new ScshScope(sr));
 
 		// If the class loader for BAC was not activated, this will throw an exception:

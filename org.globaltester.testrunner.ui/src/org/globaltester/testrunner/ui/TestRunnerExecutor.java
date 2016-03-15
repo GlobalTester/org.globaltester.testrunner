@@ -17,14 +17,14 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.ui.PlatformUI;
+import org.globaltester.base.ui.GtUiHelper;
 import org.globaltester.cardconfiguration.CardConfig;
 import org.globaltester.cardconfiguration.CardConfigManager;
 import org.globaltester.cardconfiguration.GtCardConfigNature;
 import org.globaltester.cardconfiguration.ui.CardConfigSelectorDialog;
-import org.globaltester.core.ui.GtUiHelper;
 import org.globaltester.logging.logger.GtErrorLogger;
+import org.globaltester.scriptrunner.TestResourceExecutor;
 import org.globaltester.testrunner.GtTestCampaignProject;
-import org.globaltester.testrunner.TestResourceExecutor;
 import org.globaltester.testrunner.testframework.TestCampaignExecution;
 
 /**
@@ -33,6 +33,8 @@ import org.globaltester.testrunner.testframework.TestCampaignExecution;
  *
  */
 public class TestRunnerExecutor implements TestResourceExecutor {
+
+	private GtTestCampaignProject campaign;
 
 	protected boolean canExecute(List<IResource> resources) {
 		return resources.size() == 1 && resources.iterator().next().getFileExtension().equals("gtcampaign");
@@ -50,7 +52,7 @@ public class TestRunnerExecutor implements TestResourceExecutor {
 			} catch (CoreException e) {
 				throw new IllegalArgumentException("No test campaign project could be found for the given resources.");
 			}
-			CardConfig config = getConfiguration(parameters, campaign);
+			CardConfig config = getConfiguration(parameters);
 			configuration.put(config.getClass(), config);
 			return executeCampaign(campaign, configuration);
 		}
@@ -66,7 +68,8 @@ public class TestRunnerExecutor implements TestResourceExecutor {
 				// execute tests
 				try {
 					if (campaign != null) {
-						campaign.getTestCampaign().executeTests(configuration, monitor, Collections.emptyMap());
+						Map<String, Object> emptyMap = Collections.emptyMap();
+						campaign.getTestCampaign().executeTests(configuration, monitor, emptyMap);
 					} else {
 						return Status.CANCEL_STATUS;
 					}
@@ -135,7 +138,7 @@ public class TestRunnerExecutor implements TestResourceExecutor {
 		return null;
 	}
 
-	protected CardConfig getConfiguration(Map<?, ?> parameters, GtTestCampaignProject campaign) {
+	protected CardConfig getConfiguration(Map<?, ?> parameters) {
 		// try to get CardConfig
 		CardConfig cardConfig = null;
 		Object parameter = parameters.get("org.globaltester.testrunner.ui.SelectCardConfigParameter");

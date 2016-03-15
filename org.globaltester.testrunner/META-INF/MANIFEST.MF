@@ -11,13 +11,15 @@ Require-Bundle: org.eclipse.core.runtime,
  org.globaltester.smartcardshell,
  org.globaltester.logging.legacy,
  org.globaltester.cardconfiguration,
+ org.mozilla.javascript,
+ org.globaltester.scriptrunner,
+ org.globaltester.lib.jdom,
  org.globaltester.base,
- org.globaltester.testmanager
- org.mozilla.javascript
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+ org.globaltester.lib.apache.fop,
  org.globaltester.lib.jdom,
  org.globaltester.lib.apache.fop,
  org.globaltester.lib.apache.xml
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Export-Package: org.globaltester.testrunner,
  org.globaltester.testrunner.preferences,

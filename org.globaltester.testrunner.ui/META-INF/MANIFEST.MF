@@ -9,7 +9,6 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.globaltester.testrunner,
  org.globaltester.base.ui,
- org.eclipse.core.resources,
  org.globaltester.testspecification,
  org.eclipse.ui.ide,
  org.globaltester.logging.legacy,
@@ -20,8 +19,10 @@ Require-Bundle: org.eclipse.ui,
  org.globaltester.testspecification.ui,
  org.globaltester.smartcardshell,
  org.globaltester.smartcardshell.ui,
- org.eclipse.debug.ui,
- org.globaltester.base
+ org.globaltester.base,
+ org.globaltester.scriptrunner,
+ org.globaltester.scriptrunner.ui,
+ org.eclipse.core.resources
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Export-Package: org.globaltester.testrunner.ui,

@@ -7,6 +7,8 @@ import java.util.Iterator;
 import org.eclipse.core.runtime.Platform;
 import org.globaltester.cardconfiguration.CardConfig;
 import org.globaltester.logger.TestLogger;
+import org.globaltester.scriptrunner.EnvironmentNotInitializedException;
+import org.globaltester.scriptrunner.ScriptRunner;
 import org.globaltester.smartcardshell.ProtocolExtensions;
 import org.globaltester.smartcardshell.ocf.OCFWrapper;
 import org.globaltester.smartcardshell.preferences.PreferenceConstants;
