@@ -29,6 +29,24 @@ import opencard.core.util.OpenCardPropertyLoadingException;
  */
 public class TestRunnerEnvironmentInitializer {
 	
+	private TestRunnerEnvironmentInitializer() {
+		//Do not instantiate
+	}
+	
+	/**
+	 * Sets up the environment for test script execution.
+	 * The OCF will be initialized using the {@link OCFWrapper} and {@link SmartCard} services.
+	 * Additionally the SCSH config file will be executed. This is either the default configuration
+	 * delivered with the SCSH or a config file set by the user in preferences.
+	 * 
+	 * Global variables are set up as defined in {@link #setVariables(ScriptRunner)}.
+	 * 
+	 * Additionally the AllHelpers.js file from the org.globaltester.smartcardshell bundle is loaded
+	 * into the context.
+	 * 
+	 * @param runner the {@link ScriptRunner} to modify
+	 * @throws EnvironmentNotInitializedException
+	 */
 	public static void setEnvironment(ScriptRunner runner) throws EnvironmentNotInitializedException{
 		runner.addCleanupHook(new Runnable() {
 			
@@ -62,6 +80,16 @@ public class TestRunnerEnvironmentInitializer {
 		runner.evaluateFile(f.getAbsolutePath());
 	}
 	
+	/**
+	 * This sets several variables for use in the javascript context:</br>
+	 * 
+	 * <code>_reader</code> - The currently used smart card reader name</br>
+	 * <code>_manualReader</code> - Indicates manual override of the auto reader selection</br>
+	 * <code>card</code> - The SCDP card object used for APDU transmission</br>
+	 * <code>card.gt_cardConfig</code> - The {@link CardConfig} object for this test case execution</br>
+	 * 
+	 * @param runner
+	 */
 	private static void setVariables(ScriptRunner runner){
 		// set the _reader and _manualReader variables
 		boolean manualReaderSetting = Platform.getPreferencesService()
