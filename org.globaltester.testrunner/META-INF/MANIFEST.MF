@@ -15,7 +15,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.globaltester.base,
  org.globaltester.lib.jdom,
  org.globaltester.lib.apache.fop,
- org.globaltester.lib.apache.xml
+ org.globaltester.lib.apache.xml,
+ org.globaltester.testrunner.doc;resolution:=optional
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Export-Package: org.globaltester.testrunner,
