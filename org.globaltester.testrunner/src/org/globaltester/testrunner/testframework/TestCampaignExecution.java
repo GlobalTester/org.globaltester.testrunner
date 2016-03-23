@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -15,24 +16,19 @@ import org.eclipse.core.runtime.SubProgressMonitor;
 import org.globaltester.base.resources.GtResourceHelper;
 import org.globaltester.base.xml.XMLHelper;
 import org.globaltester.cardconfiguration.CardConfig;
-import org.globaltester.logging.logger.GTLogger;
 import org.globaltester.logging.logger.GtErrorLogger;
 import org.globaltester.logging.logger.TestLogger;
-import org.globaltester.testrunner.ScriptRunner;
-import org.globaltester.smartcardshell.jsinterface.RhinoJavaScriptAccess;
-import org.globaltester.smartcardshell.ocf.OCFWrapper;
+import org.globaltester.scriptrunner.ScriptRunner;
+import org.globaltester.scriptrunner.ScshScope;
 import org.globaltester.testrunner.Activator;
 import org.globaltester.testrunner.GtTestCampaignProject;
 import org.jdom.Document;
 import org.jdom.Element;
-import org.mozilla.javascript.Context;
-
-import opencard.core.terminal.CardTerminalException;
 
 public class TestCampaignExecution extends FileTestExecution {
 	List<IExecution> elementExecutions = new ArrayList<IExecution>();
-	private CardConfig cardConfig;
 	private TestCampaignExecution previousExecution;
+	private CardConfig cardConfig;
 	
 	@Override
 	void extractFromXml(Element root) {
@@ -236,7 +232,7 @@ public class TestCampaignExecution extends FileTestExecution {
 	}
 
 	@Override
-	protected void execute(ScriptRunner sr, Context cx, boolean forceExecution,
+	protected void execute(ScriptRunner sr, boolean forceExecution,
 			boolean reExecution, IProgressMonitor monitor) {
 		if (monitor == null) {
 			monitor = new NullProgressMonitor();
@@ -250,21 +246,14 @@ public class TestCampaignExecution extends FileTestExecution {
 					.hasNext() && !monitor.isCanceled();) {
 				IExecution curExec= elemIter.next();
 				monitor.subTask(curExec.getName());
-				curExec.execute(sr, cx, false,
+				curExec.execute(sr, false,
 						new NullProgressMonitor());
 				result.addSubResult(curExec.getResult());
 				monitor.worked(1);
 			}
 		}finally{
-		monitor.done();	
-		try {
-			OCFWrapper.shutdown();
-		} catch (CardTerminalException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			monitor.done();	
 		}
-		}
-
 	}
 
 	/**
@@ -289,15 +278,12 @@ public class TestCampaignExecution extends FileTestExecution {
 		return cardConfig;
 	}
 	
-	public void execute(IProgressMonitor monitor, HashMap<String, Object> envSettings) throws CoreException {
-
-		RhinoJavaScriptAccess rhinoAccess = new RhinoJavaScriptAccess(envSettings);
-		Context cx = null;
-
+	public void execute(IProgressMonitor monitor, Map<String, Object> envSettings) throws CoreException {
+		
 		if (monitor == null) {
 			monitor= new NullProgressMonitor();
 		}
-		
+		ScriptRunner sr = null;
 		try {
 			monitor.beginTask("Execute TestCampaign: ", 2 + getTestCampaign().getTestCampaignElements().size());
 		
@@ -314,26 +300,13 @@ public class TestCampaignExecution extends FileTestExecution {
 
 			TestLogger.init(project.getNewResultDir());
 			setLogFileName(TestLogger.getLogFileName());
-				
-			//activate a JavaScript context for the current thread
-			try {
-				cx = rhinoAccess.activateContext();
-			} catch (RuntimeException exc) {
-				String info = "A problem occurred when trying to activate the Rhino JavaScript context.\n"
-						+ exc.getLocalizedMessage();
-				Exception newExc = new Exception(info, exc);
-				GTLogger.getInstance().error(info);
-				GtErrorLogger.log(Activator.PLUGIN_ID, newExc);				
-				return;
-			}
 		
-			ScriptRunner sr = new ScriptRunner(cx, project.getIProject()
+			sr = setupScriptRunner(project.getIProject()
 					.getLocation().toOSString());
-			sr.init(cx);
-			sr.initCard(cx, "card", cardConfig);
+			
 			monitor.worked(1);
 
-			execute(sr, cx, false, new SubProgressMonitor(monitor,
+			execute(sr, false, new SubProgressMonitor(monitor,
 					getTestCampaign().getTestCampaignElements().size()));
 
 			monitor.subTask("Shutdown");
@@ -344,13 +317,21 @@ public class TestCampaignExecution extends FileTestExecution {
 			monitor.worked(1);
 
 		} finally {
-			if (cx != null) // exit a created context in any case
-				rhinoAccess.exitContext();
+			if (sr != null){
+				sr.close();
+			}
 			monitor.done();
 		}
 	}
 
-
+	private ScriptRunner setupScriptRunner(String directory){
+		HashMap<Class<?>, Object> configuration = new HashMap<>();
+		configuration.put(cardConfig.getClass(), cardConfig);
+		ScriptRunner sr = new ScriptRunner(directory, configuration);
+		sr.init(new ScshScope(sr));
+		return sr;
+	}
+	
 	/**
 	 * @param previousExecution
 	 *            the previousExecution to set

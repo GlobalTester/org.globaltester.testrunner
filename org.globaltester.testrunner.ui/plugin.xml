@@ -4,19 +4,14 @@
    <extension
          point="org.eclipse.ui.commands">
       <command
-            defaultHandler="org.globaltester.testrunner.ui.commands.RunTestCommandHandler"
-            id="org.globaltester.testrunner.ui.commands.RunTestCommand"
-            name="Run Test">
-         <commandParameter
-               id="org.globaltester.testrunner.ui.SelectCardConfigParameter"
-               name="Select CardConfig"
-               optional="true">
-         </commandParameter>
+            defaultHandler="org.globaltester.testrunner.ui.commands.CreateAndRunTestCampaignCommandHandler"
+            id="org.globaltester.testrunner.ui.commands.CreateAndRunTestCampaignCommandHandler"
+            name="Create and run TestCampaign">
       </command>
       <command
-            defaultHandler="org.globaltester.testrunner.ui.commands.DebugTestCommandHandler"
-            id="org.globaltester.testrunner.ui.commands.DebugTestCommand"
-            name="Debug Test">
+            defaultHandler="org.globaltester.testrunner.ui.commands.RunTestCommandHandler"
+            id="org.globaltester.testrunner.ui.commands.RunTestCommand"
+            name="Run TestCampaign">
          <commandParameter
                id="org.globaltester.testrunner.ui.SelectCardConfigParameter"
                name="Select CardConfig"
@@ -28,33 +23,11 @@
             id="org.globaltester.testrunner.ui.commands.CreateTestCampaignCommand"
             name="Create TestCampaign">
       </command>
-   </extension>
-   <extension
-         point="org.eclipse.ui.menus">
-      <menuContribution
-            locationURI="popup:org.globaltester.base.ui.views.GlobalTesterNavigator.PopupMenu?after=group.edit">
-         <command
-               commandId="org.globaltester.testrunner.ui.commands.RunTestCommand"
-               icon="icons/execute.png"
-               label="Create TestCampaign and execute it"
-               style="push"
-               tooltip="Create a new TestCampaign from selection and execute it">
-         </command>
-         <command
-               commandId="org.globaltester.testrunner.ui.commands.DebugTestCommand"
-               icon="icons/debug-execute.png"
-               label="Create TestCampaign and debug it"
-               style="push"
-               tooltip="Create a new TestCampaign from selection and execute and debug it">
-         </command>
-         <command
-               commandId="org.globaltester.testrunner.ui.commands.CreateTestCampaignCommand"
-               icon="icons/testcampaign.png"
-               label="Create TestCampaign"
-               style="push"
-               tooltip="Create a new TestCampaign from selection and open it">
-         </command>
-      </menuContribution>
+      <command
+            defaultHandler="org.globaltester.testrunner.ui.commands.CreateAndRunTestCampaignCommandHandler"
+            id="org.globaltester.testrunner.ui.commands.CreateAndRunTestCampaignCommandHandler"
+            name="Run TestCampaign">
+      </command>
    </extension>
    <extension point="org.eclipse.ui.menus">
         <menuContribution
@@ -62,20 +35,21 @@
             <toolbar
                   id="org.globaltester.maintoolbar"
                   label="GlobalTester Toolbar">
-                <command
-                      commandId="org.globaltester.testrunner.ui.commands.RunTestCommand"
-                      icon="icons/execute.png"
-                      id="org.globaltester.testrunner.ui.RunDropDown"
-                      label="Run Test"
-                      style="pulldown"
-                      tooltip="Create a new TestCampaign from selection and execute it">
-                 </command>
+               <command
+                     commandId="org.globaltester.testrunner.ui.commands.RunTestCommand"
+                     icon="icons/execute.png"
+                     id="org.globaltester.testrunner.ui.RunDropDown"
+                     label="Run TestCampaign"
+                     style="pulldown"
+                     tooltip="Execute TestCampaign">
+               </command>
                  <command
-                   commandId="org.globaltester.testrunner.ui.commands.CreateTestCampaignCommand"
-                   icon="icons/testcampaign.png"
-                   label="Create TestCampaign"
-                   style="push"
-                   tooltip="Create a new TestCampaign from selection and open it">
+                       commandId="org.globaltester.testrunner.ui.commands.CreateTestCampaignCommand"
+                       icon="icons/testcampaign.png"
+                       id="org.globaltester.testrunner.ui.CampaignDropDown"
+                       label="Create TestCampaign"
+                       style="pulldown"
+                       tooltip="Create a new TestCampaign from selection and open it">
                  </command>
             </toolbar>
         </menuContribution>
@@ -83,18 +57,60 @@
               allPopups="false"
               locationURI="menu:org.globaltester.testrunner.ui.RunDropDown">
               <command
-                      commandId="org.globaltester.testrunner.ui.commands.RunTestCommand"
-                      icon="icons/execute.png"
-                      id="org.globaltester.testrunner.ui.RunDropDown"
-                      label="Run Test with other CardConfig"
-                      style="pulldown"
-                      tooltip="Create a new TestCampaign from selection and execute it with selected CardConfig">
+                    commandId="org.globaltester.testrunner.ui.commands.RunTestCommand"
+                    icon="icons/execute.png"
+                    label="Run TestCampaign"
+                    style="push"
+                    tooltip="Execute TestCampaign">
+              </command>
+              <command
+                    commandId="org.globaltester.testrunner.ui.commands.RunTestCommand"
+                    icon="icons/execute.png"
+                    id="org.globaltester.testrunner.ui.commands.RunTestCommand.withSelection"
+                    label="Run TestCampaign with configuration selection"
+                    style="push"
+                    tooltip="Execute TestCampaign with selected configuration">
                  <parameter
                        name="org.globaltester.testrunner.ui.SelectCardConfigParameter"
                        value="true">
                  </parameter>
                  </command>
         </menuContribution>
+        <menuContribution
+              allPopups="false"
+              locationURI="menu:org.globaltester.testrunner.ui.CampaignDropDown">
+           <command
+                 commandId="org.globaltester.testrunner.ui.commands.CreateTestCampaignCommand"
+                 icon="icons/testcampaign.png"
+                 label="Create TestCampaign"
+                 style="push"
+                 tooltip="Create a new TestCampaign from selection and open it">
+           </command>
+           <command
+                 commandId="org.globaltester.testrunner.ui.commands.CreateAndRunTestCampaignCommandHandler"
+                 icon="icons/execute.png"
+                 label="Create TestCampaign and execute it"
+                 style="push"
+                 tooltip="Create a new TestCampaign from selection and execute it">
+           </command>
+        </menuContribution>
+              <menuContribution
+            locationURI="popup:org.globaltester.core.ui.views.GlobalTesterNavigator.PopupMenu?after=group.edit">
+                 <command
+                       commandId="org.globaltester.testrunner.ui.commands.RunTestCommand"
+                       icon="icons/execute.png"
+                       label="Run TestCampaign"
+                       style="push"
+                       tooltip="Execute TestCampaign">
+                 </command>
+                 <command
+                       commandId="org.globaltester.testrunner.ui.commands.CreateTestCampaignCommand"
+                       icon="icons/testcampaign.png"
+                       label="Create TestCampaign"
+                       style="push"
+                       tooltip="Create a new TestCampaign from selection and open it">
+                 </command>
+      </menuContribution>
     </extension>
 
    

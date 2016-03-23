@@ -2,9 +2,8 @@ package org.globaltester.testrunner.testframework;
 
 import org.globaltester.base.util.StringUtil;
 import org.globaltester.logging.logger.TestLogger;
-import org.globaltester.testrunner.ScriptRunner;
+import org.globaltester.scriptrunner.ScriptRunner;
 import org.globaltester.testrunner.testframework.Result.Status;
-import org.mozilla.javascript.Context;
 import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.JavaScriptException;
 import org.mozilla.javascript.Scriptable;
@@ -16,11 +15,9 @@ import de.cardcontact.scdp.gp.GPError;
 public class ActionStepExecutor {
 
 	private ScriptRunner scriptRunner;
-	private Context context;
 	
-	public ActionStepExecutor(ScriptRunner sr, Context cx) {
+	public ActionStepExecutor(ScriptRunner sr) {
 		scriptRunner= sr;
-		context = cx;
 	}
 
 	public Result execute(String code, String sourceName) {
@@ -31,7 +28,7 @@ public class ActionStepExecutor {
 		String codeFormat = String.format(TestLogger.DEFAULTFORMAT, "Code:");
 		TestLogger.trace(codeFormat + "\n" + code);
 		try {
-			scriptRunner.executeCommand(context, code, sourceName, -1);
+			scriptRunner.exec(code, sourceName, -1);
 		} catch (EvaluatorException ex) {
 			// this exception is thrown e. g. by asserts
 			

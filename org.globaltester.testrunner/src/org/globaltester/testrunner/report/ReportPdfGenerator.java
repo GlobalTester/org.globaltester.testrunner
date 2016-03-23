@@ -38,7 +38,6 @@ public class ReportPdfGenerator {
 		File styleSheet = styleSheetPath.toFile();
 
 		GtFopHelper.transformToPdf(src, destFile, styleSheet);
-
 	}
 
 }

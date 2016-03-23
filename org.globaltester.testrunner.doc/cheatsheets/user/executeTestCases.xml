@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cheatsheet
-      title="Execute TestCases">
+      title="Execute test cases as a TestCampaign">
    <intro>
    <description>
 <!-- Todo Anke: Other cards, that can be used for testing, e.g. "Geldkarte"?-->
@@ -26,12 +26,19 @@
       </description>
    </item>
    <item
-         title="Create and execute TestCampaign">
+         title="Create TestCampaign">
       <description>
         In your &quot;GlobalTester Sample TestSpecification&quot;, select the TestCases &quot;nPA/nPA_Application.xml&quot;
         and &quot;ePassport/ePassport_Application.xml&quot;.
-        Right-click your mouse, and choose <b>&quot;RunTest&quot;</b>.<br/>
-        A TestCampaign will be created and executed directly.
+        Right-click your mouse, and choose <b>&quot;Create TestCampaign&quot;</b>.<br/>
+        A TestCampaign will be created in your workspace.
+      </description>
+   </item>
+   <item
+         title="Create TestCampaign">
+      <description>
+        To execute the newly created TestCampaign select the campaign file in the campaign project and click
+        &quot;Run TestCampaign&quot; after opening the context menu.
         Both TestCases will have a &quot;FAILURE&quot; - notice in their &quot;Status&quot;-column in the TestCampaign editor.
       </description>
    </item>
@@ -54,7 +61,7 @@
          title="Execute TestCampaign with different Setup">
       <description>
       	Now put your ePassport on the card reader.
-        You can (re-) execute your TestCampaign by clicking the <b>&quot;Run Test&quot;</b> command in the toolbar.
+        You can (re-) execute your TestCampaign by clicking the <b>&quot;Run TestCampaign&quot;</b> command in the toolbar.
         This time the &quot;nPA_Application&quot; execution will report a failure as well,
         but the &quot;ePassport_Application&quot; execution will be declared as &quot;PASSED&quot;.
       </description>

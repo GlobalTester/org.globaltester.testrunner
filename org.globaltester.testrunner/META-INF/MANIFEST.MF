@@ -13,11 +13,12 @@ Require-Bundle: org.eclipse.core.runtime,
  org.globaltester.cardconfiguration,
  org.mozilla.javascript;bundle-version="1.7.2",
  org.globaltester.base,
+ org.globaltester.scriptrunner,
  org.globaltester.lib.jdom,
  org.globaltester.lib.apache.fop,
  org.globaltester.lib.apache.xml,
  org.globaltester.testrunner.doc;resolution:=optional
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Export-Package: org.globaltester.testrunner,
  org.globaltester.testrunner.preferences,

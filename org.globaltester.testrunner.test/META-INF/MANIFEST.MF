@@ -5,7 +5,7 @@ Bundle-SymbolicName: org.globaltester.testrunner.test
 Bundle-Version: 3.0.5.qualifier
 Bundle-Vendor: HJP Consulting GmbH
 Fragment-Host: org.globaltester.testrunner
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: org.junit
 Import-Package: org.globaltester.smartcardshell.test
 Eclipse-ExtensibleAPI: true
