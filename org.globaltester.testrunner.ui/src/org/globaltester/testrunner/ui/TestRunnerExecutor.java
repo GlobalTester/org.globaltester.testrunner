@@ -43,8 +43,6 @@ public class TestRunnerExecutor implements TestResourceExecutor {
 	@Override
 	public Object execute(List<IResource> resources, Map<?, ?> parameters) {
 
-		Map<Class<?>, Object> configuration = new HashMap<>();
-		
 		if (canExecute(resources)){
 			GtTestCampaignProject campaign;
 			try {
@@ -52,9 +50,8 @@ public class TestRunnerExecutor implements TestResourceExecutor {
 			} catch (CoreException e) {
 				throw new IllegalArgumentException("No test campaign project could be found for the given resources.");
 			}
-			CardConfig config = getConfiguration(parameters);
-			configuration.put(config.getClass(), config);
-			return executeCampaign(campaign, configuration);
+			
+			return executeCampaign(campaign, getConfiguration(parameters));
 		}
 		throw new IllegalArgumentException("These resources can not be executed as a test campaign");
 	}
@@ -138,7 +135,21 @@ public class TestRunnerExecutor implements TestResourceExecutor {
 		return null;
 	}
 
-	protected CardConfig getConfiguration(Map<?, ?> parameters) {
+	protected Map<Class<?>, Object> getConfiguration(Map<?, ?> parameters) {
+		
+		Map<Class<?>, Object> configuration = new HashMap<>();
+				
+		//add CardConfig
+		CardConfig cardConfig = getCardConfig(parameters);
+		configuration.put(cardConfig.getClass(), cardConfig);
+		
+		//add o.g.protocol.Activator 
+		configuration.put(org.globaltester.protocol.Activator.class, org.globaltester.protocol.Activator.getDefault());
+		
+		return configuration;		
+	}
+		
+	protected CardConfig getCardConfig(Map<?, ?> parameters) {	
 		// try to get CardConfig
 		CardConfig cardConfig = null;
 		Object parameter = parameters.get("org.globaltester.testrunner.ui.SelectCardConfigParameter");
@@ -166,6 +177,7 @@ public class TestRunnerExecutor implements TestResourceExecutor {
 			}
 			cardConfig = dialog.getSelectedCardConfig();
 		}
+		
 		return cardConfig;
 	}
 
