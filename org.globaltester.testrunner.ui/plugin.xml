@@ -10,6 +10,11 @@
       </command>
       <command
             defaultHandler="org.globaltester.testrunner.ui.commands.RunTestCommandHandler"
+            id="org.globaltester.testrunner.ui.commands.RunTestCampaignCommandHandler"
+            name="Run TestCampaign">
+      </command>
+      <command
+            defaultHandler="org.globaltester.testrunner.ui.commands.RunTestCommandHandler"
             id="org.globaltester.testrunner.ui.commands.RunTestCommand"
             name="Run TestCampaign">
          <commandParameter
@@ -22,11 +27,6 @@
             defaultHandler="org.globaltester.testrunner.ui.commands.CreateTestCampaignCommandHandler"
             id="org.globaltester.testrunner.ui.commands.CreateTestCampaignCommand"
             name="Create TestCampaign">
-      </command>
-      <command
-            defaultHandler="org.globaltester.testrunner.ui.commands.CreateAndRunTestCampaignCommandHandler"
-            id="org.globaltester.testrunner.ui.commands.CreateAndRunTestCampaignCommandHandler"
-            name="Run TestCampaign">
       </command>
    </extension>
    <extension point="org.eclipse.ui.menus">
@@ -95,7 +95,7 @@
            </command>
         </menuContribution>
               <menuContribution
-            locationURI="popup:org.globaltester.core.ui.views.GlobalTesterNavigator.PopupMenu?after=group.edit">
+            locationURI="popup:org.globaltester.base.ui.views.GlobalTesterNavigator.PopupMenu?after=group.edit">
                  <command
                        commandId="org.globaltester.testrunner.ui.commands.RunTestCommand"
                        icon="icons/execute.png"
