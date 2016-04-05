@@ -6,9 +6,9 @@
       <cheatsheet
             category="org.globaltester.base.doc.userGuide"
             composite="false"
-            contentFile="cheatsheets/user/executeTestCases.xml"
+            contentFile="cheatsheets/user/executeTestCampaign.xml"
             id="org.globaltester.testrunner.doc.cheatsheet.executeTestCases"
-            name="Execute TestCases">
+            name="Execute TestCases as Campaign">
       </cheatsheet>
    </extension>
    <extension
