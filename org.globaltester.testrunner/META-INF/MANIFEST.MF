@@ -18,7 +18,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.globaltester.lib.apache.fop,
  org.globaltester.lib.apache.xml,
  org.globaltester.testrunner.doc;resolution:=optional
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: org.globaltester.testrunner,
  org.globaltester.testrunner.preferences,
