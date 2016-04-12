@@ -28,8 +28,8 @@
    <item
          title="Create TestCampaign">
       <description>
-        In your &quot;GlobalTester Sample TestSpecification&quot;, select the TestCases &quot;nPA/nPA_Application.xml&quot;
-        and &quot;ePassport/ePassport_Application.xml&quot;.
+        In your &quot;GlobalTester Sample TestSpecification&quot;, select the TestCases &quot;nPA/nPA_Application.gt&quot;
+        and &quot;ePassport/ePassport_Application.gt&quot;.
         Right-click your mouse, and choose <b>&quot;Create TestCampaign&quot;</b>.<br/>
         A TestCampaign will be created in your workspace.
       </description>
