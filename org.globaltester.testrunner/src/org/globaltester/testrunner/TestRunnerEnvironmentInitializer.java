@@ -167,7 +167,9 @@ public class TestRunnerEnvironmentInitializer {
 		} catch (CardTerminalException e) {
 			TestLogger.error(e);
 		}
-		Context.exit();
+		if (Context.getCurrentContext() != null){
+			Context.exit();	
+		}
 	}
 
 	/**
