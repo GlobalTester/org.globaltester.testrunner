@@ -35,7 +35,7 @@
       </description>
    </item>
    <item
-         title="Create TestCampaign">
+         title="Run TestCampaign">
       <description>
         To execute the newly created TestCampaign select the campaign file in the campaign project and click
         &quot;Run TestCampaign&quot; after opening the context menu.
