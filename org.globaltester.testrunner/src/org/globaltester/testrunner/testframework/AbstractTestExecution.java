@@ -4,7 +4,7 @@ import java.text.DateFormat;
 import java.util.Date;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.globaltester.logging.logger.TestLogger;
+import org.globaltester.logging.legacy.logger.TestLogger;
 import org.globaltester.scriptrunner.ScriptRunner;
 import org.globaltester.testrunner.testframework.Result.Status;
 import org.jdom.Element;

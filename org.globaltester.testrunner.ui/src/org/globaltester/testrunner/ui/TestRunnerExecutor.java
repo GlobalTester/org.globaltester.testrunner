@@ -22,7 +22,7 @@ import org.globaltester.cardconfiguration.CardConfig;
 import org.globaltester.cardconfiguration.CardConfigManager;
 import org.globaltester.cardconfiguration.GtCardConfigNature;
 import org.globaltester.cardconfiguration.ui.CardConfigSelectorDialog;
-import org.globaltester.logging.logger.GtErrorLogger;
+import org.globaltester.logging.legacy.logger.GtErrorLogger;
 import org.globaltester.scriptrunner.TestResourceExecutor;
 import org.globaltester.testrunner.GtTestCampaignProject;
 import org.globaltester.testrunner.testframework.TestCampaignExecution;

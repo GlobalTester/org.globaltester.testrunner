@@ -10,7 +10,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.globaltester.base.xml.XMLHelper;
-import org.globaltester.logging.logger.TestLogger;
+import org.globaltester.logging.legacy.logger.TestLogger;
 import org.globaltester.scriptrunner.ScriptRunner;
 import org.globaltester.testspecification.testframework.PostCondition;
 import org.globaltester.testspecification.testframework.PreCondition;

@@ -16,7 +16,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.globaltester.base.interfaces.ITreeChangeListener;
 import org.globaltester.base.interfaces.ITreeObservable;
 import org.globaltester.base.resources.GtResourceHelper;
-import org.globaltester.logging.logger.GtErrorLogger;
+import org.globaltester.logging.legacy.logger.GtErrorLogger;
 import org.globaltester.testrunner.testframework.TestCampaign;
 import org.globaltester.testrunner.utils.GtDateHelper;
 import org.globaltester.testspecification.testframework.FileTestExecutable;

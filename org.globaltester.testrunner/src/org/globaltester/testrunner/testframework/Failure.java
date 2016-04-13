@@ -25,7 +25,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.IPreferencesService;
 import org.globaltester.base.resources.GtResourceHelper;
-import org.globaltester.logging.logger.TestLogger;
+import org.globaltester.logging.legacy.logger.TestLogger;
 
 /**
  * This class implements the information of a test failure.
@@ -177,8 +177,8 @@ public class Failure extends Result implements Serializable {
 
 			// store markers persistent if needed
 			IPreferencesService prefService = Platform.getPreferencesService();
-			if (prefService.getBoolean(org.globaltester.logging.Activator.PLUGIN_ID,
-					org.globaltester.logging.preferences.PreferenceConstants.P_TEST_PERSISTENTMARKER, false, null)) {
+			if (prefService.getBoolean(org.globaltester.logging.legacy.Activator.PLUGIN_ID,
+					org.globaltester.logging.legacy.preferences.PreferenceConstants.P_TEST_PERSISTENTMARKER, false, null)) {
 				marker.setAttribute(IMarker.TRANSIENT, false);
 			} else {
 				marker.setAttribute(IMarker.TRANSIENT, true);

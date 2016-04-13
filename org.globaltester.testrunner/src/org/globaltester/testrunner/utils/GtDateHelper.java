@@ -3,7 +3,7 @@ package org.globaltester.testrunner.utils;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-import org.globaltester.logging.logger.GTLogger;
+import org.globaltester.logging.legacy.logger.GTLogger;
 
 public class GtDateHelper {
 	//default time format is same as default logging time format
