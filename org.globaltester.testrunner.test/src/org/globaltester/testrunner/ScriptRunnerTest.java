@@ -42,14 +42,14 @@ public class ScriptRunnerTest {
 	}
 
 	@Test
-	public void testInitialCardConfig() throws Exception {
+	public void testInitialSampleConfig() throws Exception {
 		// init JS ScriptRunner
 		Map<Class<?>, Object> emptyMap = Collections.emptyMap();
 		ScriptRunner sr = new ScriptRunner("", emptyMap);
 		sr.init(new ScshScope(sr));
 		TestRunnerEnvironmentInitializer.setEnvironment(sr);
 
-		String result = Context.toString(sr.exec("card.gt_getCardConfig(\"ICAO9303\",\"MRZ\")"));
+		String result = Context.toString(sr.exec("card.gt_getSampleConfig(\"ICAO9303\",\"MRZ\")"));
 
 		sr.close();
 		// asserts

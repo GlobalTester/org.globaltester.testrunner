@@ -18,11 +18,11 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.ui.PlatformUI;
 import org.globaltester.base.ui.GtUiHelper;
-import org.globaltester.cardconfiguration.CardConfig;
-import org.globaltester.cardconfiguration.CardConfigManager;
-import org.globaltester.cardconfiguration.GtCardConfigNature;
-import org.globaltester.cardconfiguration.ui.CardConfigSelectorDialog;
 import org.globaltester.logging.logger.GtErrorLogger;
+import org.globaltester.sampleconfiguration.SampleConfig;
+import org.globaltester.sampleconfiguration.SampleConfigManager;
+import org.globaltester.sampleconfiguration.ui.SampleConfigSelectorDialog;
+import org.globaltester.sampleconfiguration.GtSampleConfigNature;
 import org.globaltester.scriptrunner.TestResourceExecutor;
 import org.globaltester.testrunner.GtTestCampaignProject;
 import org.globaltester.testrunner.testframework.TestCampaignExecution;
@@ -115,7 +115,7 @@ public class TestRunnerExecutor implements TestResourceExecutor {
 	}
 
 
-	private CardConfig getLastCardConfigFromTestCampaignProject(
+	private SampleConfig getLastSampleConfigFromTestCampaignProject(
 			GtTestCampaignProject parentCampaingProject) {
 		if (parentCampaingProject == null){
 			return null;
@@ -123,12 +123,12 @@ public class TestRunnerExecutor implements TestResourceExecutor {
 		TestCampaignExecution currentExecution = parentCampaingProject
 				.getTestCampaign().getCurrentExecution();
 		if (currentExecution != null) {
-			CardConfig config = currentExecution.getCardConfig();
+			SampleConfig config = currentExecution.getSampleConfig();
 			if (config != null){
-				String cardConfigName = currentExecution.getCardConfig().getName();
+				String sampleConfigName = currentExecution.getSampleConfig().getName();
 				
-				if (CardConfigManager.isAvailableAsProject(cardConfigName)) {
-					return CardConfigManager.get(cardConfigName);
+				if (SampleConfigManager.isAvailableAsProject(sampleConfigName)) {
+					return SampleConfigManager.get(sampleConfigName);
 				}	
 			}
 		}
@@ -139,9 +139,9 @@ public class TestRunnerExecutor implements TestResourceExecutor {
 		
 		Map<Class<?>, Object> configuration = new HashMap<>();
 				
-		//add CardConfig
-		CardConfig cardConfig = getCardConfig(parameters);
-		configuration.put(cardConfig.getClass(), cardConfig);
+		//add SampleConfig
+		SampleConfig sampleConfig = getSampleConfig(parameters);
+		configuration.put(sampleConfig.getClass(), sampleConfig);
 		
 		//add o.g.protocol.Activator 
 		configuration.put(org.globaltester.protocol.Activator.class, org.globaltester.protocol.Activator.getDefault());
@@ -149,39 +149,39 @@ public class TestRunnerExecutor implements TestResourceExecutor {
 		return configuration;		
 	}
 		
-	protected CardConfig getCardConfig(Map<?, ?> parameters) {	
-		// try to get CardConfig
-		CardConfig cardConfig = null;
-		Object parameter = parameters.get("org.globaltester.testrunner.ui.SelectCardConfigParameter");
-		String selectCardConfigParam = parameter == null ? null : parameter.toString();
-		boolean forceSelection = (selectCardConfigParam != null)
-				&& selectCardConfigParam.trim().toLowerCase().equals("true");
+	protected SampleConfig getSampleConfig(Map<?, ?> parameters) {	
+		// try to get SampleConfig
+		SampleConfig sampleConfig = null;
+		Object parameter = parameters.get("org.globaltester.testrunner.ui.SelectSampleConfigParameter");
+		String selectSampleConfigParam = parameter == null ? null : parameter.toString();
+		boolean forceSelection = (selectSampleConfigParam != null)
+				&& selectSampleConfigParam.trim().toLowerCase().equals("true");
 		if (!forceSelection) {
 			if (campaign != null){
-				// try to get CardConfig from last CampaignExecution
-				cardConfig = getLastCardConfigFromTestCampaignProject(campaign);	
+				// try to get SampleConfig from last CampaignExecution
+				sampleConfig = getLastSampleConfigFromTestCampaignProject(campaign);	
 			}
 
-			// try to get CardConfig from Selection if none was defined in
+			// try to get SampleConfig from Selection if none was defined in
 			// TestCampaign
-			if (cardConfig == null) {
-				cardConfig = getFirstCardConfigFromSelection();
+			if (sampleConfig == null) {
+				sampleConfig = getFirstSampleConfigFromSelection();
 			}
 		}
 
-		// ask user for CardConfig if none was selected
-		if (cardConfig == null) {
-			CardConfigSelectorDialog dialog = new CardConfigSelectorDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
+		// ask user for SampleConfig if none was selected
+		if (sampleConfig == null) {
+			SampleConfigSelectorDialog dialog = new SampleConfigSelectorDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
 			if (dialog.open() != Window.OK) {
 				return null;
 			}
-			cardConfig = dialog.getSelectedCardConfig();
+			sampleConfig = dialog.getSelectedSampleConfig();
 		}
 		
-		return cardConfig;
+		return sampleConfig;
 	}
 
-	private CardConfig getFirstCardConfigFromSelection() {
+	private SampleConfig getFirstSampleConfigFromSelection() {
 		ISelection iSel = PlatformUI.getWorkbench().getActiveWorkbenchWindow()
 				.getSelectionService().getSelection();
 
@@ -190,8 +190,8 @@ public class TestRunnerExecutor implements TestResourceExecutor {
 		for (IResource iFile : iResources) {
 			IProject iProject = iFile.getProject();
 			try {
-				if (iProject.hasNature(GtCardConfigNature.NATURE_ID)) {
-					return CardConfigManager.get(iProject.getName());
+				if (iProject.hasNature(GtSampleConfigNature.NATURE_ID)) {
+					return SampleConfigManager.get(iProject.getName());
 				}
 			} catch (CoreException e) {
 				GtErrorLogger.log(Activator.PLUGIN_ID, e);

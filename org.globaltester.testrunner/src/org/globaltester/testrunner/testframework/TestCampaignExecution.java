@@ -15,9 +15,9 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.globaltester.base.resources.GtResourceHelper;
 import org.globaltester.base.xml.XMLHelper;
-import org.globaltester.cardconfiguration.CardConfig;
 import org.globaltester.logging.logger.GtErrorLogger;
 import org.globaltester.logging.logger.TestLogger;
+import org.globaltester.sampleconfiguration.SampleConfig;
 import org.globaltester.scriptrunner.ScriptRunner;
 import org.globaltester.scriptrunner.ScshScope;
 import org.globaltester.testrunner.Activator;
@@ -28,16 +28,16 @@ import org.jdom.Element;
 public class TestCampaignExecution extends FileTestExecution {
 	List<IExecution> elementExecutions = new ArrayList<IExecution>();
 	private TestCampaignExecution previousExecution;
-	private CardConfig cardConfig;
+	private SampleConfig sampleConfig;
 	
 	@Override
 	void extractFromXml(Element root) {
 		super.extractFromXml(root);
 
-		// extract cardConfig
-		Element cardConfigElement = root.getChild("CardConfiguration");
-		if (cardConfigElement != null) {
-			cardConfig = new CardConfig(cardConfigElement);
+		// extract sampleConfig
+		Element sampleConfigElement = root.getChild("SampleConfiguration");
+		if (sampleConfigElement != null) {
+			sampleConfig = new SampleConfig(sampleConfigElement);
 		}
 		
 		try {
@@ -87,11 +87,11 @@ public class TestCampaignExecution extends FileTestExecution {
 	void dumpToXml(Element root) {
 		super.dumpToXml(root);
 		
-		// dump cardConfig
-		if (cardConfig != null) {
-			Element cardConfigElement = new Element("CardConfiguration");
-			cardConfig.dumpToXml(cardConfigElement);
-			root.addContent(cardConfigElement);
+		// dump sampleConfig
+		if (sampleConfig != null) {
+			Element sampleConfigElement = new Element("SampleConfiguration");
+			sampleConfig.dumpToXml(sampleConfigElement);
+			root.addContent(sampleConfigElement);
 		}
 		
 		// dump previous execution
@@ -274,8 +274,8 @@ public class TestCampaignExecution extends FileTestExecution {
 		return true;
 	}
 
-	public CardConfig getCardConfig() {
-		return cardConfig;
+	public SampleConfig getSampleConfig() {
+		return sampleConfig;
 	}
 	
 	public void execute(IProgressMonitor monitor, Map<String, Object> envSettings) throws CoreException {
@@ -326,7 +326,7 @@ public class TestCampaignExecution extends FileTestExecution {
 
 	private ScriptRunner setupScriptRunner(String directory){
 		HashMap<Class<?>, Object> configuration = new HashMap<>();
-		configuration.put(cardConfig.getClass(), cardConfig);
+		configuration.put(sampleConfig.getClass(), sampleConfig);
 		ScriptRunner sr = new ScriptRunner(directory, configuration);
 		sr.init(new ScshScope(sr));
 		return sr;
@@ -363,8 +363,8 @@ public class TestCampaignExecution extends FileTestExecution {
 		}
 	}
 
-	public void setCardConfig(CardConfig newCardConfig) {
-		this.cardConfig = newCardConfig;
+	public void setSampleConfig(SampleConfig newSampleConfig) {
+		this.sampleConfig = newSampleConfig;
 		
 	}
 

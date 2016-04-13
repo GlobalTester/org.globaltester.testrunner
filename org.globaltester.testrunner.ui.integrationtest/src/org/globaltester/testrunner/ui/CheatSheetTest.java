@@ -12,7 +12,7 @@ import org.eclipse.swtbot.swt.finder.waits.Conditions;
 import org.eclipse.swtbot.swt.finder.widgets.SWTBotShell;
 import org.globaltester.junit.JUnitHelper;
 import org.globaltester.swtbot.Strings;
-import org.globaltester.swtbot.uihelper.CardConfigWizardUiHelper;
+import org.globaltester.swtbot.uihelper.SampleConfigWizardUiHelper;
 import org.globaltester.swtbot.uihelper.GlobalTesterUiHelper;
 import org.globaltester.swtbot.uihelper.LogFileEditorUiHelper;
 import org.globaltester.swtbot.uihelper.NavigatorViewUiHelper;
@@ -42,20 +42,20 @@ public class CheatSheetTest {
 		importWizard.finish();
 	}
 	
-	private void createCardConfig(){
-		CardConfigWizardUiHelper cardConfig = GlobalTesterUiHelper.openNewWizardByMenu().selectCardConfiguration();
-		cardConfig.setProjectName("CardConfigProject");
-		cardConfig.setDescription("TestDescription");
-		cardConfig.setPin("1234");
-		cardConfig.setMrz("P<D<<MUSTERMANN<<ERIKA<<<<<<<<<<<<<<<<<<<<<<", "C11T002JM4D<<9608122F1310317<<<<<<<<<<<<<<<6", "");
-		cardConfig.finish();
+	private void createSampleConfig(){
+		SampleConfigWizardUiHelper sampleConfig = GlobalTesterUiHelper.openNewWizardByMenu().selectSampleConfiguration();
+		sampleConfig.setProjectName("SampleConfigProject");
+		sampleConfig.setDescription("TestDescription");
+		sampleConfig.setPin("1234");
+		sampleConfig.setMrz("P<D<<MUSTERMANN<<ERIKA<<<<<<<<<<<<<<<<<<<<<<", "C11T002JM4D<<9608122F1310317<<<<<<<<<<<<<<<6", "");
+		sampleConfig.finish();
 	}
 	
 	@Test
 	@Ignore
 	public void executeTestCases() throws IOException, InterruptedException{
 		importTestSpecification();
-		createCardConfig();
+		createSampleConfig();
 		NavigatorViewUiHelper navigator = GlobalTesterUiHelper.focusNavigatorView();
 		String [] path1 = new String [] {sampleProject, "TestCases", "ePassport", "ePassport_Application.gt"};
 		String [] path2 = new String [] {sampleProject, "TestCases", "nPA", "nPA_Application.gt"};
