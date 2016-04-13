@@ -18,8 +18,8 @@
             id="org.globaltester.testrunner.ui.commands.RunTestCommand"
             name="Run TestCampaign">
          <commandParameter
-               id="org.globaltester.testrunner.ui.SelectCardConfigParameter"
-               name="Select CardConfig"
+               id="org.globaltester.testrunner.ui.SelectSampleConfigParameter"
+               name="Select SampleConfig"
                optional="true">
          </commandParameter>
       </command>
@@ -71,7 +71,7 @@
                     style="push"
                     tooltip="Execute TestCampaign with selected configuration">
                  <parameter
-                       name="org.globaltester.testrunner.ui.SelectCardConfigParameter"
+                       name="org.globaltester.testrunner.ui.SelectSampleConfigParameter"
                        value="true">
                  </parameter>
                  </command>

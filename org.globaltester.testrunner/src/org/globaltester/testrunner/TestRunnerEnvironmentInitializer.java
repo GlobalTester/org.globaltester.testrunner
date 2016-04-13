@@ -5,8 +5,8 @@ import java.util.Enumeration;
 import java.util.Iterator;
 
 import org.eclipse.core.runtime.Platform;
-import org.globaltester.cardconfiguration.CardConfig;
 import org.globaltester.logger.TestLogger;
+import org.globaltester.sampleconfiguration.SampleConfig;
 import org.globaltester.scriptrunner.EnvironmentNotInitializedException;
 import org.globaltester.scriptrunner.ScriptRunner;
 import org.globaltester.smartcardshell.ProtocolExtensions;
@@ -86,7 +86,7 @@ public class TestRunnerEnvironmentInitializer {
 	 * <code>_reader</code> - The currently used smart card reader name</br>
 	 * <code>_manualReader</code> - Indicates manual override of the auto reader selection</br>
 	 * <code>card</code> - The SCDP card object used for APDU transmission</br>
-	 * <code>card.gt_cardConfig</code> - The {@link CardConfig} object for this test case execution</br>
+	 * <code>card.gt_sampleConfig</code> - The {@link SampleConfig} object for this test case execution</br>
 	 * 
 	 * @param runner
 	 */
@@ -133,8 +133,8 @@ public class TestRunnerEnvironmentInitializer {
 		runner.exec(cmd, null, -1); // do not send "" as source filename,
 									// since Rhino debugger crashes in that
 									// case
-		// set CardConfig as member variable
-		cmd = "card.gt_cardConfig = _" + CardConfig.class.getCanonicalName().replace('.', '_') + ";";
+		// set SampleConfig as member variable
+		cmd = "card.gt_sampleConfig = _" + SampleConfig.class.getCanonicalName().replace('.', '_') + ";";
 		runner.exec(cmd, null, -1); // do not send "" as source filename,
 									// since Rhino debugger crashes in that
 									// case
@@ -172,17 +172,6 @@ public class TestRunnerEnvironmentInitializer {
 		}
 	}
 
-	/**
-	 * Create a card variable in the given Context and assign the CardConfig
-	 * object.
-	 * 
-	 * @param cx
-	 *            JS-Context to create the variable in
-	 * @param varName
-	 *            name of the variable in the context
-	 * @param cardConfig
-	 *            CardConfig object to be associated
-	 */
 	private static void initOcf(ScriptRunner runner) {
 		try {
 			OCFWrapper.start();
@@ -198,8 +187,8 @@ public class TestRunnerEnvironmentInitializer {
 	/**
 	 * Create functions defined by protocols within the given Context.
 	 * 
-	 * @param cx
-	 *            the context to install the protocols into
+	 * @param runner
+	 *            the ScriptRunner to install the protocols into
 	 */
 	private static void initExtensionPoints(ScriptRunner runner) {
 		for (IScshProtocolProvider curProtocolProvider : ProtocolExtensions.getInstance().getAllAvailableProtocols()) {

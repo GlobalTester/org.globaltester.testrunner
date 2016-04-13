@@ -75,9 +75,9 @@ import org.eclipse.ui.statushandlers.StatusManager;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.globaltester.base.ui.DialogOptions;
 import org.globaltester.base.ui.GtUiHelper;
-import org.globaltester.cardconfiguration.ui.CardConfigEditorWidget;
 import org.globaltester.logging.legacy.logger.GTLogger;
 import org.globaltester.logging.ui.editors.LogfileEditor;
+import org.globaltester.sampleconfiguration.ui.SampleConfigEditorWidget;
 import org.globaltester.testrunner.report.ReportPdfGenerator;
 import org.globaltester.testrunner.report.TestReport;
 import org.globaltester.testrunner.testframework.AbstractTestExecution;
@@ -99,7 +99,7 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 	private ScrolledComposite scrolledComposite;
 	private Composite scrolledContent;
 	
-	private CardConfigEditorWidget cardConfigViewer;
+	private SampleConfigEditorWidget sampleConfigViewer;
 	private Tree executionStateTree;
 	private TreeViewer treeViewer;
 	private boolean dirty = false;
@@ -124,8 +124,8 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 	public void doSave(IProgressMonitor monitor) {
 		//TODO handle progress in monitor
 		
-		//save selectedCardConfiguration
-		cardConfigViewer.doSave();
+		//save selectedSampleConfiguration
+		sampleConfigViewer.doSave();
 		
 		//flush all changed values to the input
 		input.getTestCampaign().setSpecName(txtSpecName.getText());
@@ -274,13 +274,13 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 		btnNewest.addSelectionListener(this);		
 		btnNewest.setEnabled(false);
 		
-		//selection and Editor for CardConfiguration
-		Composite cardConfigComp = new Composite(grpExecutionresults, SWT.NONE);
-		cardConfigComp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1));
-		cardConfigComp.setLayout(new GridLayout(1, false));
-		cardConfigViewer = new CardConfigEditorWidget(cardConfigComp);
-		cardConfigViewer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
-		cardConfigViewer.setEditable(false);
+		//selection and Editor for SampleConfiguration
+		Composite sampleConfigComp = new Composite(grpExecutionresults, SWT.NONE);
+		sampleConfigComp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1));
+		sampleConfigComp.setLayout(new GridLayout(1, false));
+		sampleConfigViewer = new SampleConfigEditorWidget(sampleConfigComp);
+		sampleConfigViewer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+		sampleConfigViewer.setEditable(false);
 		
 		Composite execStateTreeComp = new Composite(grpExecutionresults, SWT.NONE);
 		execStateTreeComp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1));
@@ -689,7 +689,7 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 				//update inputs
 				TestCampaignExecution toDisplay = input.getCurrentlyDisplayedTestCampaignExecution();
 				if (toDisplay != null) {
-					cardConfigViewer.setInput(toDisplay.getCardConfig());
+					sampleConfigViewer.setInput(toDisplay.getSampleConfig());
 					treeViewer.setInput(input);
 					treeViewer.expandAll();
 				}

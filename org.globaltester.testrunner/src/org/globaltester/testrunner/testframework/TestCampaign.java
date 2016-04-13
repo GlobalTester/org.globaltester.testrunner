@@ -12,7 +12,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.globaltester.base.xml.XMLHelper;
-import org.globaltester.cardconfiguration.CardConfig;
+import org.globaltester.sampleconfiguration.SampleConfig;
 import org.globaltester.testrunner.GtTestCampaignProject;
 import org.globaltester.testspecification.testframework.FileTestExecutable;
 import org.jdom.Document;
@@ -200,7 +200,7 @@ public class TestCampaign {
 		}
 		executions.addFirst(currentExecution);
 
-		currentExecution.setCardConfig((CardConfig)configuration.get(CardConfig.class));
+		currentExecution.setSampleConfig((SampleConfig)configuration.get(SampleConfig.class));
 
 		// execute the TestExecutable
 		currentExecution.execute(monitor, envSettings);
