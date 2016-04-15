@@ -76,7 +76,7 @@ import org.eclipse.ui.texteditor.ITextEditor;
 import org.globaltester.base.ui.DialogOptions;
 import org.globaltester.base.ui.GtUiHelper;
 import org.globaltester.logging.legacy.logger.GTLogger;
-import org.globaltester.logging.ui.editors.LogfileEditor;
+import org.globaltester.logging.logfileeditor.ui.editors.LogfileEditor;
 import org.globaltester.sampleconfiguration.ui.SampleConfigEditorWidget;
 import org.globaltester.testrunner.report.ReportPdfGenerator;
 import org.globaltester.testrunner.report.TestReport;
