@@ -39,7 +39,12 @@ public abstract class ActionStepExecution extends AbstractTestExecution {
 		}
 		
 		try {
-			monitor.beginTask("Execute " + actionStep.getName() + ": ", 2+actionStep.getExpectedResults().size()); //workitems: initialization + technicalCommand, + one per Result
+			
+			int expectedResults = 0;
+			if(actionStep.getExpectedResults()!=null){
+				expectedResults = actionStep.getExpectedResults().size();
+			}
+			monitor.beginTask("Execute " + actionStep.getName() + ": ", 2+expectedResults); //workitems: initialization + technicalCommand, + one per Result
 		
 			monitor.subTask("Initialization");
 		
@@ -60,9 +65,12 @@ public abstract class ActionStepExecution extends AbstractTestExecution {
 		}
 		
 		//log TestStep descriptions
-		Iterator<String> descrIter = actionStep.getDescriptions().iterator();
-		while (descrIter.hasNext()) {
-			TestLogger.debug(String.format(TestLogger.DEFAULTFORMAT, "Description: "+descrIter.next()));			
+		List<String> descriptions = actionStep.getDescriptions();
+		if(descriptions!=null){
+			Iterator<String> descrIter = descriptions .iterator();
+			while (descrIter.hasNext()) {
+				TestLogger.debug(String.format(TestLogger.DEFAULTFORMAT, "Description: "+descrIter.next()));			
+			}
 		}
 		
 		//init the executor with context and script runner
@@ -83,39 +91,43 @@ public abstract class ActionStepExecution extends AbstractTestExecution {
 		
 		//execute all ExpectedResults
 		List<ExpectedResult> expResultDefs = actionStep.getExpectedResults();
-		expResultsExecutionResults = new OrResult(Status.PASSED);
-		for (Iterator<ExpectedResult> expResultIter = expResultDefs.iterator(); expResultIter
-				.hasNext();) {
-			ExpectedResult curResult = expResultIter.next();
-			
-			monitor.subTask("ExpectedResult: " + curResult.getId());
-			TestLogger.info(String.format(TestLogger.DEFAULTFORMAT, "ExpectedResult: " + curResult.getId()));
-			
-			//log ExpectedResult descriptions
-			descrIter = curResult.getDescriptions().iterator();
-			while (descrIter.hasNext()) {
-				TestLogger.debug(String.format(TestLogger.DEFAULTFORMAT, "Description: "+descrIter.next()));
+		if(expResultDefs!=null){
+			expResultsExecutionResults = new OrResult(Status.PASSED);
+			for (Iterator<ExpectedResult> expResultIter = expResultDefs.iterator(); expResultIter
+					.hasNext();) {
+				ExpectedResult curResult = expResultIter.next();
+				
+				monitor.subTask("ExpectedResult: " + curResult.getId());
+				TestLogger.info(String.format(TestLogger.DEFAULTFORMAT, "ExpectedResult: " + curResult.getId()));
+				
+				//log ExpectedResult descriptions
+				Iterator<String> descrIter = curResult.getDescriptions().iterator();
+				while (descrIter.hasNext()) {
+					TestLogger.debug(String.format(TestLogger.DEFAULTFORMAT, "Description: "+descrIter.next()));
+				}
+				
+				//execute the current expected result
+				Result curExecutionResult;
+				String techResultCode = curResult.getTechnicalResult();
+				if ((techResultCode != null) && (techResultCode.trim().length() > 0)) {
+					curExecutionResult = stepExecutor.execute(techResultCode, actionStep.getId()+" - Expected Result "+curResult.getId());
+				} else {
+					//if no code can be executed the result of the result is always ok
+					curExecutionResult = new Result(Status.PASSED);
+				}
+				expResultsExecutionResults.addSubResult(curExecutionResult);
+				monitor.worked(1);
 			}
-			
-			//execute the current expected result
-			Result curExecutionResult;
-			String techResultCode = curResult.getTechnicalResult();
-			if ((techResultCode != null) && (techResultCode.trim().length() > 0)) {
-				curExecutionResult = stepExecutor.execute(techResultCode, actionStep.getId()+" - Expected Result "+curResult.getId());
-			} else {
-				//if no code can be executed the result of the result is always ok
-				curExecutionResult = new Result(Status.PASSED);
-			}
-			expResultsExecutionResults.addSubResult(curExecutionResult);
-			monitor.worked(1);
 		}
+
 		
 		
 		//evaluate results
 		result = new Result(Status.PASSED);
 		result.addSubResult(commandResult);
-		result.addSubResult(expResultsExecutionResults);
-		
+		if(expResultsExecutionResults!=null){
+			result.addSubResult(expResultsExecutionResults);
+		}
 		} finally {
 			monitor.done();
 		}
