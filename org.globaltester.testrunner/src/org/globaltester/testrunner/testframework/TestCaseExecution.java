@@ -1,6 +1,8 @@
 package org.globaltester.testrunner.testframework;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -238,6 +240,9 @@ public class TestCaseExecution extends FileTestExecution {
 
 	@Override
 	public Collection<IExecution> getChildren() {
+		if (getStatus().equals(Status.NOT_APPLICABLE)){
+			return Collections.emptyList();
+		}
 		LinkedList<IExecution> children = new LinkedList<IExecution>();
 		
 		//add test step executions to list of children
