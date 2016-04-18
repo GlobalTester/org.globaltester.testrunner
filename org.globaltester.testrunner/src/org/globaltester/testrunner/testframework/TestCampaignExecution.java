@@ -2,7 +2,6 @@ package org.globaltester.testrunner.testframework;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -18,8 +17,6 @@ import org.globaltester.base.xml.XMLHelper;
 import org.globaltester.logging.legacy.logger.GtErrorLogger;
 import org.globaltester.logging.legacy.logger.TestLogger;
 import org.globaltester.sampleconfiguration.SampleConfig;
-import org.globaltester.scriptrunner.ScriptRunner;
-import org.globaltester.scriptrunner.ScshScope;
 import org.globaltester.testrunner.Activator;
 import org.globaltester.testrunner.GtTestCampaignProject;
 import org.jdom.Document;
@@ -232,7 +229,7 @@ public class TestCampaignExecution extends FileTestExecution {
 	}
 
 	@Override
-	protected void execute(ScriptRunner sr, boolean forceExecution,
+	protected void execute(RuntimeRequirementsProvider provider, boolean forceExecution,
 			boolean reExecution, IProgressMonitor monitor) {
 		if (monitor == null) {
 			monitor = new NullProgressMonitor();
@@ -246,7 +243,7 @@ public class TestCampaignExecution extends FileTestExecution {
 					.hasNext() && !monitor.isCanceled();) {
 				IExecution curExec= elemIter.next();
 				monitor.subTask(curExec.getName());
-				curExec.execute(sr, false,
+				curExec.execute(provider, false,
 						new NullProgressMonitor());
 				result.addSubResult(curExec.getResult());
 				monitor.worked(1);
@@ -283,7 +280,6 @@ public class TestCampaignExecution extends FileTestExecution {
 		if (monitor == null) {
 			monitor= new NullProgressMonitor();
 		}
-		ScriptRunner sr = null;
 		try {
 			monitor.beginTask("Execute TestCampaign: ", 2 + getTestCampaign().getTestCampaignElements().size());
 		
@@ -300,13 +296,12 @@ public class TestCampaignExecution extends FileTestExecution {
 
 			TestLogger.init(project.getNewResultDir());
 			setLogFileName(TestLogger.getLogFileName());
-		
-			sr = setupScriptRunner(project.getIProject()
-					.getLocation().toOSString());
 			
 			monitor.worked(1);
 
-			execute(sr, false, new SubProgressMonitor(monitor,
+			RuntimeRequirementsProvider provider = new SampleConfigProviderImpl(sampleConfig);
+			
+			execute(provider, false, new SubProgressMonitor(monitor,
 					getTestCampaign().getTestCampaignElements().size()));
 
 			monitor.subTask("Shutdown");
@@ -317,19 +312,8 @@ public class TestCampaignExecution extends FileTestExecution {
 			monitor.worked(1);
 
 		} finally {
-			if (sr != null){
-				sr.close();
-			}
 			monitor.done();
 		}
-	}
-
-	private ScriptRunner setupScriptRunner(String directory){
-		HashMap<Class<?>, Object> configuration = new HashMap<>();
-		configuration.put(sampleConfig.getClass(), sampleConfig);
-		ScriptRunner sr = new ScriptRunner(directory, configuration);
-		sr.init(new ScshScope(sr));
-		return sr;
 	}
 	
 	/**

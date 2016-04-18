@@ -14,6 +14,8 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.globaltester.base.xml.XMLHelper;
 import org.globaltester.logging.legacy.logger.TestLogger;
 import org.globaltester.scriptrunner.ScriptRunner;
+import org.globaltester.scriptrunner.ScshScope;
+import org.globaltester.testrunner.testframework.Result.Status;
 import org.globaltester.testspecification.testframework.PostCondition;
 import org.globaltester.testspecification.testframework.PreCondition;
 import org.globaltester.testspecification.testframework.TestCase;
@@ -27,7 +29,7 @@ public class TestCaseExecution extends FileTestExecution {
 	private LinkedList<ActionStepExecution> preConExecutions = new LinkedList<ActionStepExecution>();
 	private LinkedList<ActionStepExecution> testStepExecutions = new LinkedList<ActionStepExecution>();
 	private LinkedList<ActionStepExecution> postConExecutions = new LinkedList<ActionStepExecution>();
-
+	
 	protected TestCaseExecution(IFile iFile) throws CoreException {
 		super(iFile);
 		initFromIFile();
@@ -51,6 +53,7 @@ public class TestCaseExecution extends FileTestExecution {
 	 * create all required execution instances from test case. E.g. TestStepExecutions
 	 */
 	private void initFromTestCase() {
+		
 		//create execution objects for Preconditions
 		List<PreCondition> preCons = getTestCase().getPreConditions();
 		if (preCons != null) {
@@ -107,10 +110,11 @@ public class TestCaseExecution extends FileTestExecution {
 	}
 
 	@Override
-	protected void execute(ScriptRunner sr, boolean forceExecution, boolean reExecution, IProgressMonitor monitor) {
+	protected void execute(RuntimeRequirementsProvider provider, boolean forceExecution, boolean reExecution, IProgressMonitor monitor) {
 		if (monitor == null){
 			monitor = new NullProgressMonitor();
 		}
+		ScriptRunner sr = null;
 		try {
 			
 		monitor.beginTask("Execute TestCase "+getName() , getChildren().size());
@@ -119,18 +123,38 @@ public class TestCaseExecution extends FileTestExecution {
 		ResultFactory.reset();
 		
 		// TODO use variable forceExecution
-
+		
 		// dump execution information to logfile
 		TestLogger.initTestExecutable(getId());
 		setLogFileName(TestLogger.getTestCaseLogFileName());
 		getTestCase().dumpTestCaseInfos();
+		
+		// check provider capabilities
+		if (!(provider instanceof SampleConfigProvider)){
+			result.status = Status.NOT_APPLICABLE;
+			result.comment = "Runtime requirements not fulfilled.";
+			return;
+		}
+		
+		sr = setupScriptRunner(getIFile().getProject()
+				.getLocation().toOSString(), (SampleConfigProvider) provider);
+		
+		provider = new TestCaseRuntimeProvider(sr, (SampleConfigProvider)provider);
+		
+		// check if test case is applicable
+		TestLogger.info("Check test case profiles");
+		if (!getTestCase().getProfileExpression().evaluate(((SampleConfigProvider) provider).getSampleConfig())){
+			result.status = Status.NOT_APPLICABLE;
+			result.comment = "Profiles not fulfilled.";
+			return;
+		}
 
 		// iterate over all preconditions and execute them
 		TestLogger.info("Running Preconditions");
 		for (Iterator<ActionStepExecution> preConIter = preConExecutions.iterator(); preConIter
 				.hasNext() && !monitor.isCanceled();) {
 			ActionStepExecution curStepExec = preConIter.next();
-			curStepExec.execute(sr, forceExecution, new NullProgressMonitor());
+			curStepExec.execute(provider, forceExecution, new NullProgressMonitor());
 			
 			result.addSubResult(curStepExec.getResult());
 			monitor.worked(1);
@@ -141,7 +165,7 @@ public class TestCaseExecution extends FileTestExecution {
 		for (Iterator<ActionStepExecution> testStepIter = testStepExecutions.iterator(); testStepIter
 				.hasNext() && !monitor.isCanceled();) {
 			ActionStepExecution curStepExec = testStepIter.next();
-			curStepExec.execute(sr, forceExecution, new NullProgressMonitor());
+			curStepExec.execute(provider, forceExecution, new NullProgressMonitor());
 			
 			result.addSubResult(curStepExec.getResult());
 			monitor.worked(1);
@@ -153,15 +177,17 @@ public class TestCaseExecution extends FileTestExecution {
 		for (Iterator<ActionStepExecution> postConIter = postConExecutions.iterator(); postConIter
 				.hasNext() && !monitor.isCanceled();) {
 			ActionStepExecution curStepExec = postConIter.next();
-			curStepExec.execute(sr, forceExecution, new NullProgressMonitor());
+			curStepExec.execute(provider, forceExecution, new NullProgressMonitor());
 			
 			result.addSubResult(curStepExec.getResult());
 			monitor.worked(1);
 		}
 		} finally {
+			if (sr != null){
+				sr.close();
+			}
 			// dump execution information to logfile
 			TestLogger.shutdownTestExecutableLogger();
-
 			monitor.done();
 		}
 		
@@ -227,6 +253,14 @@ public class TestCaseExecution extends FileTestExecution {
 			}
 		}
 		result.rebuildStatus();
+	}
+	
+	private ScriptRunner setupScriptRunner(String directory, SampleConfigProvider sampleConfigProvider){
+		HashMap<Class<?>, Object> configuration = new HashMap<>();
+		configuration.put(sampleConfigProvider.getSampleConfig().getClass(), sampleConfigProvider.getSampleConfig());
+		ScriptRunner sr = new ScriptRunner(directory, configuration);
+		sr.init(new ScshScope(sr));
+		return sr;
 	}
 
 	@Override

@@ -5,7 +5,6 @@ import java.util.Date;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.globaltester.logging.legacy.logger.TestLogger;
-import org.globaltester.scriptrunner.ScriptRunner;
 import org.globaltester.testrunner.testframework.Result.Status;
 import org.jdom.Element;
 
@@ -105,16 +104,15 @@ public abstract class AbstractTestExecution implements IExecution {
 	/**
 	 * (Re)Execute the code associated with this test execution
 	 * 
-	 * @param sr
-	 *            ScriptRunner to execute JS code in
-	 * @param cx
-	 *            Context to execute JS code in
+	 * @param provider
+	 *            The {@link RuntimeRequirementsProvider} to deliver all needed
+	 *            data and functions for this execution
 	 * @param forceExecution
 	 *            if true the code is executed regardless if previous execution
 	 *            is still valid, if true code is only executed if no previous
 	 *            execution is still valid
 	 */
-	public void execute(ScriptRunner sr, boolean forceExecution, IProgressMonitor monitor) {
+	public void execute(RuntimeRequirementsProvider provider, boolean forceExecution, IProgressMonitor monitor) {
 		// set the execution time
 		boolean reExecution = lastExecutionStartTime != 0;
 
@@ -125,7 +123,7 @@ public abstract class AbstractTestExecution implements IExecution {
 		logFileLine = TestLogger.getLogFileLine();
 		
 		// forward the execution to the implementing class
-		execute(sr, forceExecution, reExecution, monitor);
+		execute(provider, forceExecution, reExecution, monitor);
 
 		// calculate execution duration
 		lastExecutionDuration = new Date().getTime() - lastExecutionStartTime;
@@ -135,17 +133,16 @@ public abstract class AbstractTestExecution implements IExecution {
 	/**
 	 * (Re)Execute the code associated with this test execution
 	 * 
-	 * @param sr
-	 *            ScriptRunner to execut JS code in
-	 * @param cx
-	 *            Context to execute JS code in
+	 * @param provider
+	 *            The {@link RuntimeRequirementsProvider} to deliver all needed
+	 *            data and functions for this execution
 	 * @param forceExecution
 	 *            if true the code is executed regardless if previous execution
 	 *            is still valid, if true code is only executed if no previous
 	 *            execution is still valid
 	 * @param monitor 
 	 */
-	protected abstract void execute(ScriptRunner sr, boolean forceExecution, boolean reExecution, IProgressMonitor monitor);
+	protected abstract void execute(RuntimeRequirementsProvider provider, boolean forceExecution, boolean reExecution, IProgressMonitor monitor);
 
 	public long getLastExecutionStartTime() {
 		return lastExecutionStartTime;

@@ -14,13 +14,18 @@ import de.cardcontact.scdp.gp.GPError;
 
 public class ActionStepExecutor {
 
-	private ScriptRunner scriptRunner;
+	private RuntimeRequirementsProvider provider;
 	
-	public ActionStepExecutor(ScriptRunner sr) {
-		scriptRunner= sr;
+	public ActionStepExecutor(RuntimeRequirementsProvider provider) {
+		this.provider = provider;
 	}
 
 	public Result execute(String code, String sourceName) {
+		if (!(provider instanceof ScriptRunnerProvider)){
+			return ResultFactory.newFailure(FileTestExecution.STATUS_NOT_APPLICABLE, 0, 0, "No script runner available");
+		}
+		ScriptRunner scriptRunner = ((ScriptRunnerProvider)provider).getScriptRunner();
+		
 		//unindent code
 		code = StringUtil.formatCode(code);
 		

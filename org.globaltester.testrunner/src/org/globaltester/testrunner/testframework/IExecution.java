@@ -3,7 +3,6 @@ package org.globaltester.testrunner.testframework;
 import java.util.Collection;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.globaltester.scriptrunner.ScriptRunner;
 import org.globaltester.testrunner.testframework.Result.Status;
 
 public interface IExecution {
@@ -32,7 +31,7 @@ public interface IExecution {
 
 	public abstract Result getResult();
 
-	public abstract void execute(ScriptRunner sr, boolean b,
+	public abstract void execute(RuntimeRequirementsProvider provider, boolean b,
 			IProgressMonitor monitor);
 
 }
