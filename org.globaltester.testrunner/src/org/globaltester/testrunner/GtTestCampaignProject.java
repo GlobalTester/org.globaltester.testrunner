@@ -30,9 +30,9 @@ import org.globaltester.testspecification.testframework.TestExecutableFactory;
  */
 public class GtTestCampaignProject implements ITreeObservable {
 
-	private static final String SPEC_FOLDER = "TestSpecification";
-	private static final String STATE_FOLDER = "ExecutionState";
-	private static final String RESULT_FOLDER = "TestResults";
+	public static final String SPEC_FOLDER = "TestSpecification";
+	public static final String STATE_FOLDER = "ExecutionState";
+	public static final String RESULT_FOLDER = "TestResults";
 
 	private static Hashtable<IProject, GtTestCampaignProject> instances = new Hashtable<IProject, GtTestCampaignProject>();
 	private IProject iProject; // IProject that is represented by this

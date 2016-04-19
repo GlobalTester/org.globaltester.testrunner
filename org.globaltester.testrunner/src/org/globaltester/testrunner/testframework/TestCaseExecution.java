@@ -15,6 +15,7 @@ import org.globaltester.base.xml.XMLHelper;
 import org.globaltester.logging.legacy.logger.TestLogger;
 import org.globaltester.scriptrunner.ScriptRunner;
 import org.globaltester.scriptrunner.ScshScope;
+import org.globaltester.testrunner.GtTestCampaignProject;
 import org.globaltester.testrunner.testframework.Result.Status;
 import org.globaltester.testspecification.testframework.PostCondition;
 import org.globaltester.testspecification.testframework.PreCondition;
@@ -119,7 +120,7 @@ public class TestCaseExecution extends FileTestExecution {
 			
 		monitor.beginTask("Execute TestCase "+getName() , getChildren().size());
 		
-		//make sure that failures are counted for each test case seperately
+		//make sure that failures are counted for each test case separately
 		ResultFactory.reset();
 		
 		// TODO use variable forceExecution
@@ -136,8 +137,7 @@ public class TestCaseExecution extends FileTestExecution {
 			return;
 		}
 		
-		sr = setupScriptRunner(getIFile().getProject()
-				.getLocation().toOSString(), (SampleConfigProvider) provider);
+		sr = setupScriptRunner((SampleConfigProvider) provider);
 		
 		provider = new TestCaseRuntimeProvider(sr, (SampleConfigProvider)provider);
 		
@@ -255,10 +255,10 @@ public class TestCaseExecution extends FileTestExecution {
 		result.rebuildStatus();
 	}
 	
-	private ScriptRunner setupScriptRunner(String directory, SampleConfigProvider sampleConfigProvider){
+	private ScriptRunner setupScriptRunner(SampleConfigProvider sampleConfigProvider){
 		HashMap<Class<?>, Object> configuration = new HashMap<>();
 		configuration.put(sampleConfigProvider.getSampleConfig().getClass(), sampleConfigProvider.getSampleConfig());
-		ScriptRunner sr = new ScriptRunner(directory, configuration);
+		ScriptRunner sr = new ScriptRunner(getIFile().getProject().getFolder(GtTestCampaignProject.SPEC_FOLDER), getIFile().getLocation().toOSString(), configuration);
 		sr.init(new ScshScope(sr));
 		return sr;
 	}
