@@ -24,6 +24,9 @@ import org.globaltester.testrunner.ui.Activator;
 import org.globaltester.testrunner.utils.GtDateHelper;
 import org.globaltester.testspecification.testframework.FileTestExecutable;
 import org.globaltester.testspecification.testframework.TestExecutableFactory;
+import org.globaltester.testspecification.testframework.TestLayer;
+import org.globaltester.testspecification.testframework.TestSuiteLegacy;
+import org.globaltester.testspecification.testframework.TestUnit;
 
 public class CreateTestCampaignCommandHandler extends AbstractHandler {
 
@@ -109,17 +112,41 @@ public class CreateTestCampaignCommandHandler extends AbstractHandler {
 	public static GtTestCampaignProject createTestCampaignProject(
 			String projectName, Collection<IFile> testExecutableFiles, Shell shell)
 			throws CoreException {
+		
 		// create the new TestCampaign project
 		IProject iProject = GtTestCampaignProject.createProject(projectName,
 				null);
 		GtTestCampaignProject runProject = GtTestCampaignProject
 				.getProjectForResource(iProject);
 
-		// add the selected resources to the list of executables
+		//Analyze TestSuites, Units and Layers for testcases
+		LinkedList<IFile> foundTestsInSuite = new LinkedList<IFile>();
+		LinkedList<IFile> filesToRemove = new LinkedList<IFile>(); //only Testcases are added to the campaign. Therefore Suites etc. are removed from the file list after the extraction of the tests
 		Iterator<IFile> execFilesIter = testExecutableFiles.iterator();
 		while (execFilesIter.hasNext()) {
+			
 			IFile iFile = execFilesIter.next();
-
+			
+			if(TestSuiteLegacy.isFileRepresentation(iFile)){
+				foundTestsInSuite.addAll(TestSuiteLegacy.extractTests(iFile));
+				filesToRemove.add(iFile);
+			} else if(TestUnit.isFileRepresentation(iFile)){
+				foundTestsInSuite.addAll(TestUnit.extractTests(iFile));
+				filesToRemove.add(iFile);
+			} else if(TestLayer.isFileRepresentation(iFile)){
+				foundTestsInSuite.addAll(TestLayer.extractTests(iFile));
+				filesToRemove.add(iFile);
+			}
+		}
+		
+		testExecutableFiles.removeAll(filesToRemove);
+		testExecutableFiles.addAll(foundTestsInSuite);
+		
+		// add the selected resources to the list of executables
+		execFilesIter = testExecutableFiles.iterator();
+		while (execFilesIter.hasNext()) {
+			IFile iFile = execFilesIter.next();
+				
 			FileTestExecutable testExecutable = null;
 			try {
 				testExecutable = TestExecutableFactory.getInstance(iFile);
