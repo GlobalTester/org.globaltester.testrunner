@@ -5,7 +5,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 
 import org.eclipse.core.runtime.Platform;
-import org.globaltester.logger.TestLogger;
+import org.globaltester.logging.legacy.logger.TestLogger;
 import org.globaltester.sampleconfiguration.SampleConfig;
 import org.globaltester.scriptrunner.EnvironmentNotInitializedException;
 import org.globaltester.scriptrunner.ScriptRunner;
