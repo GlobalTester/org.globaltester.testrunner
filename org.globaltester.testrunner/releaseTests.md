@@ -4,6 +4,6 @@ This document describes validation tests that shall be performed on the final pr
 
 1. [ ] __Perform Cheat Sheet__
 Launch the GlobalTester Platform product and perform the following cheat sheet
- - [ ] "Execute TestCase"
+ - [ ] "Execute TestCases as Campaign"
 
 <p style="page-break-after: always"/>
