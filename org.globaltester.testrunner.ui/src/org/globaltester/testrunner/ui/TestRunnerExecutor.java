@@ -51,7 +51,11 @@ public class TestRunnerExecutor implements TestResourceExecutor {
 				throw new IllegalArgumentException("No test campaign project could be found for the given resources.");
 			}
 			
-			return executeCampaign(campaign, getConfiguration(parameters));
+			Map<Class<?>, Object> config = getConfiguration(parameters);
+			if(config == null) {
+				return null;
+			}
+			return executeCampaign(campaign, config);
 		}
 		throw new IllegalArgumentException("These resources can not be executed as a test campaign");
 	}
@@ -141,6 +145,9 @@ public class TestRunnerExecutor implements TestResourceExecutor {
 				
 		//add SampleConfig
 		SampleConfig sampleConfig = getSampleConfig(parameters);
+		if(sampleConfig == null) {
+			return null;
+		}
 		configuration.put(sampleConfig.getClass(), sampleConfig);
 		
 		//add o.g.protocol.Activator 
