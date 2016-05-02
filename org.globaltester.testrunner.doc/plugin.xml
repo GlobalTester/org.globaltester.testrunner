@@ -22,6 +22,9 @@
       <toc
             file="toc/user/reference.xml">
       </toc>
+      <toc
+            file="toc/user/conceptstestcampaign.xml">
+      </toc>
    </extension>
 
 </plugin>
