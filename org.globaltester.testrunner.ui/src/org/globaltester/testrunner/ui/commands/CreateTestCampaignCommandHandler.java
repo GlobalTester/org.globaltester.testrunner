@@ -10,13 +10,18 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IPathEditorInput;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
+import org.eclipse.ui.part.EditorPart;
 import org.globaltester.base.ui.GtUiHelper;
 import org.globaltester.logging.legacy.logger.GtErrorLogger;
 import org.globaltester.testrunner.GtTestCampaignProject;
@@ -77,21 +82,35 @@ public class CreateTestCampaignCommandHandler extends AbstractHandler {
 	}
 
 	/**
+	 * Creates a TestCampaign using the selected Tests from the TestExplorer or
+	 * the opened testcase in the TestEditor
 	 * 
 	 * @param projectName name of created project
-	 * @param iSel selection that contains 
+	 * @param iSel selection that contains
 	 * @param shell Shell used for error dialogs
 	 * @return
 	 * @throws CoreException
 	 */
 	public static GtTestCampaignProject createTestCampaignProject(
 			String projectName, ISelection iSel, Shell shell) throws CoreException {
-
+		
 		LinkedList<IFile> selectedIFiles = GtUiHelper.getSelectedIResources(iSel, IFile.class);
 		if (selectedIFiles.isEmpty()) {
-			GtUiHelper.openErrorDialog(shell,
-				"No TestCampaign could be created because selection does not contain an executable test file.");
-			return null;
+			//try to use testfile opened in editor instead
+			IWorkbenchPart activePart = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActivePart();
+			
+			if(activePart instanceof EditorPart){ //avoid NPE if e.g. the outline is selected
+				EditorPart editor = (EditorPart) activePart;
+					IWorkspace workspace= ResourcesPlugin.getWorkspace(); 
+					IPathEditorInput input = (IPathEditorInput) editor.getEditorInput();
+					IPath location= input.getPath();
+					IFile file = workspace.getRoot().getFileForLocation(location); 
+					selectedIFiles.add(file);
+			} else {
+				GtUiHelper.openErrorDialog(shell,
+						"No TestCampaign could be created because selection does not contain an executable test file.");
+					return null;
+			}
 		}
 
 		return createTestCampaignProject(projectName, selectedIFiles, shell);
