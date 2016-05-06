@@ -10,11 +10,6 @@
       </command>
       <command
             defaultHandler="org.globaltester.testrunner.ui.commands.RunTestCommandHandler"
-            id="org.globaltester.testrunner.ui.commands.RunTestCampaignCommandHandler"
-            name="Run TestCampaign">
-      </command>
-      <command
-            defaultHandler="org.globaltester.testrunner.ui.commands.RunTestCommandHandler"
             id="org.globaltester.testrunner.ui.commands.RunTestCommand"
             name="Run TestCampaign">
          <commandParameter
@@ -39,7 +34,7 @@
                      commandId="org.globaltester.testrunner.ui.commands.RunTestCommand"
                      icon="icons/execute.png"
                      id="org.globaltester.testrunner.ui.RunDropDown"
-                     label="Run TestCampaign"
+                     label="Run Test"
                      style="pulldown"
                      tooltip="Execute TestCampaign">
                </command>
@@ -59,7 +54,7 @@
               <command
                     commandId="org.globaltester.testrunner.ui.commands.RunTestCommand"
                     icon="icons/execute.png"
-                    label="Run TestCampaign"
+                    label="Run Test"
                     style="push"
                     tooltip="Execute TestCampaign">
               </command>
@@ -67,7 +62,7 @@
                     commandId="org.globaltester.testrunner.ui.commands.RunTestCommand"
                     icon="icons/execute.png"
                     id="org.globaltester.testrunner.ui.commands.RunTestCommand.withSelection"
-                    label="Run TestCampaign with configuration selection"
+                    label="Run Test with configuration selection"
                     style="push"
                     tooltip="Execute TestCampaign with selected configuration">
                  <parameter
@@ -99,7 +94,7 @@
                  <command
                        commandId="org.globaltester.testrunner.ui.commands.RunTestCommand"
                        icon="icons/execute.png"
-                       label="Run TestCampaign"
+                       label="Run Test"
                        style="push"
                        tooltip="Execute TestCampaign">
                  </command>
