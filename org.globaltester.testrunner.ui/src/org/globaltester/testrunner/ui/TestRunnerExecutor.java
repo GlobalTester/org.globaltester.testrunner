@@ -36,7 +36,7 @@ public class TestRunnerExecutor implements TestResourceExecutor {
 
 	private GtTestCampaignProject campaign;
 
-	protected boolean canExecute(List<IResource> resources) {
+	public boolean canExecute(List<IResource> resources) {
 		return resources.size() == 1 && resources.iterator().next().getFileExtension().equals("gtcampaign");
 	}
 
