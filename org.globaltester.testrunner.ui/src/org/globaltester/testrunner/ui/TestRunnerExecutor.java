@@ -19,10 +19,10 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.ui.PlatformUI;
 import org.globaltester.base.ui.GtUiHelper;
 import org.globaltester.logging.legacy.logger.GtErrorLogger;
+import org.globaltester.sampleconfiguration.GtSampleConfigNature;
 import org.globaltester.sampleconfiguration.SampleConfig;
 import org.globaltester.sampleconfiguration.SampleConfigManager;
 import org.globaltester.sampleconfiguration.ui.SampleConfigSelectorDialog;
-import org.globaltester.sampleconfiguration.GtSampleConfigNature;
 import org.globaltester.scriptrunner.TestResourceExecutor;
 import org.globaltester.testrunner.GtTestCampaignProject;
 import org.globaltester.testrunner.testframework.TestCampaignExecution;
@@ -34,8 +34,8 @@ import org.globaltester.testrunner.testframework.TestCampaignExecution;
  */
 public class TestRunnerExecutor implements TestResourceExecutor {
 
-	private GtTestCampaignProject campaign;
-
+	private GtTestCampaignProject campaign = null;
+	
 	public boolean canExecute(List<IResource> resources) {
 		return resources.size() == 1 && resources.iterator().next().getFileExtension().equals("gtcampaign");
 	}
@@ -44,7 +44,6 @@ public class TestRunnerExecutor implements TestResourceExecutor {
 	public Object execute(List<IResource> resources, Map<?, ?> parameters) {
 
 		if (canExecute(resources)){
-			GtTestCampaignProject campaign;
 			try {
 				campaign = GtTestCampaignProject.getProjectForResource(resources.iterator().next());
 			} catch (CoreException e) {
@@ -55,6 +54,7 @@ public class TestRunnerExecutor implements TestResourceExecutor {
 			if(config == null) {
 				return null;
 			}
+			
 			return executeCampaign(campaign, config);
 		}
 		throw new IllegalArgumentException("These resources can not be executed as a test campaign");
@@ -138,18 +138,18 @@ public class TestRunnerExecutor implements TestResourceExecutor {
 		}
 		return null;
 	}
-
+	
 	protected Map<Class<?>, Object> getConfiguration(Map<?, ?> parameters) {
 		
 		Map<Class<?>, Object> configuration = new HashMap<>();
-				
+
 		//add SampleConfig
 		SampleConfig sampleConfig = getSampleConfig(parameters);
 		if(sampleConfig == null) {
 			return null;
 		}
-		configuration.put(sampleConfig.getClass(), sampleConfig);
 		
+		configuration.put(sampleConfig.getClass(), sampleConfig);
 		//add o.g.protocol.Activator 
 		configuration.put(org.globaltester.protocol.Activator.class, org.globaltester.protocol.Activator.getDefault());
 		
