@@ -1,7 +1,98 @@
-Version 3.0.5 (29.02.2016)
+Version 3.1.0 (06.05.2016)
 
+* Allow empty campaign variable while running
+* Removal of now obsolete command
+* Use reflection to find test executors
+* Merge remote-tracking branch 'origin/usr/jkoch/createCampaignFromEditor'
+* allow creating test campaign from tc opened in editor
+* Merge remote-tracking branch 'origin/usr/jkoch/clearUpOnlineHelp'
+* Enhance online help
+* replace screenshot
+* Reorganize Online Help
+* Merge remote-tracking branch 'origin/usr/cstroh/sampleConfigEditable'
+* Merge branch 'usr/amay/qa'
+* Handle canceling of sample config dialog
+* fix name of CheatSheet in ReleaseTest.md
+* Merge remote-tracking branch 'origin/usr/mboonk/profiles'
+* Merge branch 'usr/jkoch/fixLogging'
+* Fix scrolling when an entry in the Tree is selected
+* Merge TestLogger classes
+* Merge remote-tracking branch 'origin/usr/jkoch/execSuitesUnitsLayers'
+* Move parsing of TestSuites/Units/Layers in own method
+* command handles testsuits/units/layer
+* Allows running test scripts with arbitrary script root directory
+* Provides test case runtime information via RuntimeRequirementsProvider
+* Do not return children if the overall status is NOT_APPLICABLE
+* Merge branch 'usr/jkoch/gt2camp'
+* Remove Legacy execution and make non essential tags optional instead
+* Merge branch 'usr/cstroh/logLevelDialog'
+* Merge branch 'usr/amay/renameJdom'
+* Logfileeditor was moved into its own bundle
+* rename domparser library bundle
+* Merge branch 'usr/amay/renameConfigObject'
+* Refactor CardConfig
+* Resolves name clash of legacy logging packages
+* Merge branch 'usr/mboonk/hotfix927'
+* Only exit the context if the thread is currently still bound to one
+* Updated suffixes of test cases in cheat sheets
+* Changed wording from 'Create Campaign' to 'Run Campaign'
+* Merge remote-tracking branch 'origin/usr/mboonk/qaSprint15'
+* Set all build relevant settings to Java 1.8
+* Merge branch 'usr/amay/icsIntegration'
+* Change name of cheat sheet to distinguish between test case and campaign
+* Make o.g.protocols.Activator available in Script context
+* Fix the context menu entries for test case execution
+* Merge branch 'usr/cstroh/opensourcingPlatform'
+* Add LICENSE and NOTICE to build.properties
+* Add LICENSE and NOTICE files for our code
+* Add LICENSE and NOTICE files to gitattributes
+* Add README.md to repository
+* Merge remote-tracking branch 'origin/usr/cstroh/logFileEditor'
+* Merge branch 'usr/mboonk/consistentTestCaseExec'
+* Move o.g.logging.legacy.ui to o.g.logging.ui
+* Merge remote-tracking branch 'origin/usr/cstroh/gtProducts'
+* Adds environment documentation
+* Add related doc-bundle as optional dependency
+* Adapted help to new UI
+* Extracted new bundle o.g.scriptrunner from o.g.testrunner
+* Adapted help to new UI
+* Removes the dependencies from o.g.testrunner to o.g.testmanager
+* Removes the dependencies from o.g.testrunner to o.g.testmanager
+* Moved the ScriptRunner class to org.globaltester.testrunner
+* Seperates the GPRuntime from the ScriptRunner
+* Consolidated test case execution for all existing formats
+* Mode switching between using campaigns or not is possible
+* Execute test manager for GT2 test cases and test runner for all others
+* Moved the TestManager execution action into the TestRunner bundle
+* Merge branch 'usr/jkoch/mergeCoreBase'
+* code maintenance
+* Added previously moved test to FullTestSuite
+* adapt changes due to the refactoring of core.ui to base.ui
+* Adapt imports and add DateHelper from core bundle
+* Merge branch 'usr/amay/releaseBuild'
+* Update version numbers in POM
+* Remove anmespaces from POMs
+* Update version numbers
+* Merge remote-tracking branch 'origin/usr/mboonk/fixFileEndings'
+* update parent pom version
+* Updated the changelog
+* Added missing line endings at the end of text files
+* Remove warnings
+* Merge remote-tracking branch 'origin/usr/mboonk/hotfix821'
+* Organizes imports
+* Merge remote-tracking branch 'origin/usr/cstroh/fixGitAttributes'
+* Merge branch 'usr/cstroh/updateHelp'
+* Replace gitattributes by file from o.g.dev
+* Merge branch 'usr/jgoeke/fileEnding'
+* Fixed line endings
+* Hook in missing testrunner preference page help entry
 * changed file endings from xml to .gt, .gtsuite or .gtcampaign
-* Clearify labels of popup menu entries for running/debug tests
+* Merge remote-tracking branch 'origin/usr/cstroh/releaseTestsPlatform'
+* Merge branch 'usr/cstroh/preferenceTrees'
+* releaseTest.md for org.globaltester.testrunner
+* Merge remote-tracking branch 'origin/usr/cstroh/facelift'
+* Move GT3 testrunner preference page to correct preference tree
+* Changed labels of popup menu entries for running/debug tests
 * Code maintenance
 
 
