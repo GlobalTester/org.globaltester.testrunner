@@ -11,7 +11,7 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.core.runtime.SubMonitor;
 import org.globaltester.base.resources.GtResourceHelper;
 import org.globaltester.base.xml.XMLHelper;
 import org.globaltester.logging.legacy.logger.GtErrorLogger;
@@ -277,13 +277,10 @@ public class TestCampaignExecution extends FileTestExecution {
 	
 	public void execute(IProgressMonitor monitor, Map<String, Object> envSettings) throws CoreException {
 		
-		if (monitor == null) {
-			monitor= new NullProgressMonitor();
-		}
-		try {
-			monitor.beginTask("Execute TestCampaign: ", 2 + getTestCampaign().getTestCampaignElements().size());
+		SubMonitor progress = SubMonitor.convert(monitor, 100);
 		
-			monitor.subTask("Initialization");
+		try {
+			progress.subTask("Initialization");
 			
 			// (re)initialize the TestLogger
 			if (TestLogger.isInitialized()) {
@@ -297,19 +294,18 @@ public class TestCampaignExecution extends FileTestExecution {
 			TestLogger.init(project.getNewResultDir());
 			setLogFileName(TestLogger.getLogFileName());
 			
-			monitor.worked(1);
+			progress.worked(1);
+
 
 			RuntimeRequirementsProvider provider = new SampleConfigProviderImpl(sampleConfig);
 			
-			execute(provider, false, new SubProgressMonitor(monitor,
-					getTestCampaign().getTestCampaignElements().size()));
-
-			monitor.subTask("Shutdown");
+			execute(provider, false, progress.split(98));
+			
 			
 			// shutdown the TestLogger
+			progress.subTask("Shutdown");
 			TestLogger.shutdown();
-			
-			monitor.worked(1);
+			progress.worked(1);
 
 		} finally {
 			monitor.done();
