@@ -299,7 +299,7 @@ public class TestCampaignExecution extends FileTestExecution {
 
 			RuntimeRequirementsProvider provider = new SampleConfigProviderImpl(sampleConfig);
 			
-			execute(provider, false, progress.split(98));
+			execute(provider, false, progress.newChild(98));
 			
 			
 			// shutdown the TestLogger
