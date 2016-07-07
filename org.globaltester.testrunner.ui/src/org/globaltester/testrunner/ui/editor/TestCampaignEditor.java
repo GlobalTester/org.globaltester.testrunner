@@ -278,7 +278,10 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 		
 		//selection and Editor for SampleConfiguration
 		Composite sampleConfigComp = new Composite(grpExecutionresults, SWT.NONE);
-		sampleConfigComp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1));
+		GridData gdSampleConfigComp = new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1);
+		gdSampleConfigComp.heightHint = 230;
+		gdSampleConfigComp.widthHint = 120;
+		sampleConfigComp.setLayoutData(gdSampleConfigComp);
 		sampleConfigComp.setLayout(new GridLayout(1, false));
 		sampleConfigViewer = new SampleConfigEditorWidget(sampleConfigComp);
 		sampleConfigViewer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
