@@ -145,11 +145,10 @@ public class TestRunnerExecutor implements TestResourceExecutor {
 
 		//add SampleConfig
 		SampleConfig sampleConfig = getSampleConfig(parameters);
-		if(sampleConfig == null) {
-			return null;
+		if(sampleConfig != null) {
+			configuration.put(sampleConfig.getClass(), sampleConfig);
 		}
 		
-		configuration.put(sampleConfig.getClass(), sampleConfig);
 		//add o.g.protocol.Activator 
 		configuration.put(org.globaltester.protocol.Activator.class, org.globaltester.protocol.Activator.getDefault());
 		
