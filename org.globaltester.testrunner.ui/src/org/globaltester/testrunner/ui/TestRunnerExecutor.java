@@ -41,7 +41,7 @@ public class TestRunnerExecutor implements TestResourceExecutor {
 	}
 
 	@Override
-	public Object execute(List<IResource> resources, Map<?, ?> parameters) {
+	public Object execute(SampleConfig sampleConfig, List<IResource> resources) {
 
 		if (canExecute(resources)){
 			try {
@@ -50,7 +50,7 @@ public class TestRunnerExecutor implements TestResourceExecutor {
 				throw new IllegalArgumentException("No test campaign project could be found for the given resources.");
 			}
 			
-			Map<Class<?>, Object> config = getConfiguration(parameters);
+			Map<Class<?>, Object> config = getConfiguration(sampleConfig);
 			if(config == null) {
 				return null;
 			}
@@ -90,25 +90,6 @@ public class TestRunnerExecutor implements TestResourceExecutor {
 					// workspace manually, so do not open annoying dialog
 				}
 
-				// open the new TestCampaign in the Test Campaign Editor
-				PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
-
-							@Override
-							public void run() {
-								try {
-									GtUiHelper.openInEditor(campaign
-											.getTestCampaignIFile());
-								} catch (CoreException e) {
-									// log Exception to eclipse log
-									GtErrorLogger.log(Activator.PLUGIN_ID, e);
-
-									// users most probably will ignore this
-									// behavior and open editor manually, so do
-									// not open annoying dialog
-								}
-							}
-						});
-
 				return Status.OK_STATUS;
 			}
 		};
@@ -139,14 +120,13 @@ public class TestRunnerExecutor implements TestResourceExecutor {
 		return null;
 	}
 	
-	protected Map<Class<?>, Object> getConfiguration(Map<?, ?> parameters) {
+	protected Map<Class<?>, Object> getConfiguration(SampleConfig config) {
 		
 		Map<Class<?>, Object> configuration = new HashMap<>();
 
 		//add SampleConfig
-		SampleConfig sampleConfig = getSampleConfig(parameters);
-		if(sampleConfig != null) {
-			configuration.put(sampleConfig.getClass(), sampleConfig);
+		if(config != null) {
+			configuration.put(config.getClass(), config);
 		}
 		
 		//add o.g.protocol.Activator 
