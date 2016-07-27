@@ -27,4 +27,9 @@ public class RunTestCommandHandler extends org.globaltester.scriptrunner.ui.comm
 		}
 		return null;
 	}
+	
+	@Override
+	protected void modifyWorkbench() {
+		// does nothing as everything is shown in the campaign editor
+	}
 }
