@@ -10,6 +10,7 @@ import org.eclipse.ui.part.FileEditorInput;
 import org.globaltester.base.ui.GtUiHelper;
 import org.globaltester.sampleconfiguration.SampleConfig;
 import org.globaltester.testrunner.GtTestCampaignProject;
+import org.globaltester.testrunner.testframework.TestCampaignExecution;
 import org.globaltester.testrunner.ui.editor.TestCampaignEditor;
 import org.globaltester.testrunner.ui.editor.TestCampaignEditorInput;
 import org.globaltester.testspecification.ui.editors.TestSpecEditor;
@@ -44,8 +45,8 @@ public class RunTestCommandHandler extends org.globaltester.scriptrunner.ui.comm
 			GtUiHelper.openErrorDialog(PlatformUI.getWorkbench().getModalDialogShellProvider().getShell(), "Running failed: " + e.getMessage());
 			return null;
 		} 
-		if (candidate != null || selectionRequested){
-			return getSampleConfigFromDialog();	
+		if (candidate != null && !selectionRequested){
+			return candidate;	
 		}
 		return super.getSampleConfig(event);
 	}
@@ -53,7 +54,10 @@ public class RunTestCommandHandler extends org.globaltester.scriptrunner.ui.comm
 	private SampleConfig getSampleConfigFromResources() throws CoreException {
 		for (IResource current : getResources()){
 			if (current.getFileExtension().equals(GtTestCampaignProject.FILE_ENDING_GT_CAMPAIGN)){
-				return GtTestCampaignProject.getProjectForResource(current).getTestCampaign().getCurrentExecution().getSampleConfig();
+				TestCampaignExecution execution = GtTestCampaignProject.getProjectForResource(current).getTestCampaign().getCurrentExecution();
+				if (execution != null){
+					return execution.getSampleConfig();	
+				}
 			}
 		}
 		return null;
