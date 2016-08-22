@@ -23,7 +23,9 @@ import org.globaltester.sampleconfiguration.GtSampleConfigNature;
 import org.globaltester.sampleconfiguration.SampleConfig;
 import org.globaltester.sampleconfiguration.SampleConfigManager;
 import org.globaltester.sampleconfiguration.ui.SampleConfigSelectorDialog;
+import org.globaltester.scriptrunner.TestExecutionCallback;
 import org.globaltester.scriptrunner.TestResourceExecutor;
+import org.globaltester.scriptrunner.TestExecutionCallback.TestResult;
 import org.globaltester.testrunner.GtTestCampaignProject;
 import org.globaltester.testrunner.testframework.TestCampaignExecution;
 
@@ -41,7 +43,7 @@ public class TestRunnerExecutor implements TestResourceExecutor {
 	}
 
 	@Override
-	public Object execute(SampleConfig sampleConfig, List<IResource> resources) {
+	public Object execute(SampleConfig sampleConfig, List<IResource> resources, TestExecutionCallback callback) {
 
 		if (canExecute(resources)){
 			try {
@@ -55,12 +57,12 @@ public class TestRunnerExecutor implements TestResourceExecutor {
 				return null;
 			}
 			
-			return executeCampaign(campaign, config);
+			return executeCampaign(campaign, config, callback);
 		}
 		throw new IllegalArgumentException("These resources can not be executed as a test campaign");
 	}
 
-	private Object executeCampaign(final GtTestCampaignProject campaign, final Map<Class<?>, Object> configuration) {
+	private Object executeCampaign(final GtTestCampaignProject campaign, final Map<Class<?>, Object> configuration, final TestExecutionCallback callback) {
 		
 		// execute the TestCampaign
 		Job job = new Job("Test execution") {
@@ -70,8 +72,9 @@ public class TestRunnerExecutor implements TestResourceExecutor {
 				try {
 					if (campaign != null) {
 						Map<String, Object> emptyMap = Collections.emptyMap();
-						campaign.getTestCampaign().executeTests(configuration, monitor, emptyMap);
+						campaign.getTestCampaign().executeTests(configuration, monitor, emptyMap, callback);
 					} else {
+						callback.testExecutionFinished(new TestResult(0,4)); //return Status.UNDEFINED on callback
 						return Status.CANCEL_STATUS;
 					}
 				} catch (CoreException e) {
