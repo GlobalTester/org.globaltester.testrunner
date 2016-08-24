@@ -117,6 +117,4 @@ public class TestReport {
 		return elements;
 	}
 
-	// TODO add extension for e.g. forensic results see addForensic... in GT2
-
 }
