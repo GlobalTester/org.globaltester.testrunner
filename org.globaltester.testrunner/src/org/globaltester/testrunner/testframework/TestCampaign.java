@@ -13,6 +13,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.globaltester.base.xml.XMLHelper;
 import org.globaltester.sampleconfiguration.SampleConfig;
+import org.globaltester.scriptrunner.TestExecutionCallback;
 import org.globaltester.testrunner.GtTestCampaignProject;
 import org.globaltester.testspecification.testframework.FileTestExecutable;
 import org.jdom.Document;
@@ -179,11 +180,12 @@ public class TestCampaign {
 	 * previous execution associated
 	 * @param configuration 
 	 * @param monitor 
+	 * @param callback 
 	 * 
 	 * @throws CoreException
 	 */
 	public void executeTests(Map<Class<?>, Object> configuration, IProgressMonitor monitor, 
-			Map<String, Object> envSettings) throws CoreException {
+			Map<String, Object> envSettings, TestExecutionCallback callback) throws CoreException {
 
 		// create a new TestExecution this TestCampaignElement
 		TestCampaignExecution currentExecution = null;
@@ -211,6 +213,10 @@ public class TestCampaign {
 		// notify viewers of parent about this change
 		project.notifyTreeChangeListeners(false, elements.toArray(),
 				new String[] { "lastExecution" });
+		
+		//notify the callback about the execution results
+		callback.testExecutionFinished(new TestExecutionCallback.TestResult (currentExecution.getChildren().size(), currentExecution.getResult().status.ordinal()));
+		
 		
 		// refresh the project in workspace
 		project.getIProject().refreshLocal(IResource.DEPTH_INFINITE, null);

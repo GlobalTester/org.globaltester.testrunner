@@ -33,6 +33,9 @@ public class GtTestCampaignProject implements ITreeObservable {
 	public static final String SPEC_FOLDER = "TestSpecification";
 	public static final String STATE_FOLDER = "ExecutionState";
 	public static final String RESULT_FOLDER = "TestResults";
+	
+	public static final String FILE_ENDING_GT_CAMPAIGN = "gtcampaign";
+	public static final String DEFAULT_FILE_NAME_GT_CAMPAIGN = "testCampaign." + FILE_ENDING_GT_CAMPAIGN;
 
 	private static Hashtable<IProject, GtTestCampaignProject> instances = new Hashtable<IProject, GtTestCampaignProject>();
 	private IProject iProject; // IProject that is represented by this
@@ -144,7 +147,7 @@ public class GtTestCampaignProject implements ITreeObservable {
 	 * @throws CoreException
 	 */
 	public IFile getTestCampaignIFile() throws CoreException {
-		IFile file = getIProject().getFile("testCampaign.gtcampaign");
+		IFile file = getIProject().getFile(DEFAULT_FILE_NAME_GT_CAMPAIGN);
 		return file;
 	}
 
