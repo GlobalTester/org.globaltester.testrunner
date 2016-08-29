@@ -124,7 +124,7 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
-		//TODO handle progress in monitor
+		//IMPL handle progress in monitor
 		
 		//save selectedSampleConfiguration
 		sampleConfigViewer.doSave();
@@ -394,8 +394,6 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 
 									@Override
 									public void run() {
-										// TODO Auto-generated method
-										// stub
 										String message = "The selected destination folder is not empty, proceed?";
 										writeReport = MessageDialog
 												.openConfirm(null,
@@ -423,9 +421,6 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 								monitor.subTask("Create PDF");
 
 								try {
-									// TODO output XML-Report here, if no pdf is
-									// desired
-
 									// output pdf report
 									ReportPdfGenerator.writePdfReport(report);
 									monitor.worked(1);
@@ -446,7 +441,7 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 											StatusManager.SHOW);
 								}
 
-								// TODO copy relevant logfiles
+								//IMPL copy relevant logfiles
 
 								monitor.done();
 								return new Status(IStatus.OK, Activator.PLUGIN_ID,
@@ -762,7 +757,6 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 
 	@Override
 	public void widgetDefaultSelected(SelectionEvent e) {
-		// TODO Auto-generated method stub
 		
 	}
 

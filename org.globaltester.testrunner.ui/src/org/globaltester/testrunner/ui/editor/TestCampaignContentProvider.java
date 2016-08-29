@@ -47,8 +47,7 @@ public class TestCampaignContentProvider implements ITreeContentProvider,
 				return ((TestCampaignExecution) element)
 						.getGtTestCampaignProject();
 			} catch (CoreException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				// return nothing if this fails
 			}
 		}
 		return null;

@@ -29,8 +29,6 @@ public class TestCampaignElement {
 	}
 
 	private void initFromXmlElement(Element xmlElem) throws CoreException {
-		// TODO check the name of the given xmlElem
-
 		// extract TestExecutable
 		Element specElem = xmlElem.getChild(XML_ELEM_SPEC);
 		if (specElem != null) {
@@ -64,17 +62,12 @@ public class TestCampaignElement {
 	 *            data and functions for this execution
 	 * @param forceExecution
 	 * @return
+	 * @throws CoreException 
 	 */
-	FileTestExecution execute(RuntimeRequirementsProvider provider, boolean forceExecution, IProgressMonitor monitor) {
+	FileTestExecution execute(RuntimeRequirementsProvider provider, boolean forceExecution, IProgressMonitor monitor) throws CoreException {
 
 		// create a new TestExecution this TestCampaignElement
-		FileTestExecution testExecution = null;
-		try {
-			testExecution = FileTestExecutionFactory.createExecution(this);
-		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		FileTestExecution testExecution = FileTestExecutionFactory.createExecution(this);
 
 		if (testExecution != null) {
 			// execute the TestExecutable

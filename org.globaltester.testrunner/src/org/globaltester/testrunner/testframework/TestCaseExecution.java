@@ -123,7 +123,7 @@ public class TestCaseExecution extends FileTestExecution {
 		//make sure that failures are counted for each test case separately
 		ResultFactory.reset();
 		
-		// TODO use variable forceExecution
+		// IMPL use variable forceExecution
 		
 		// dump execution information to logfile
 		TestLogger.initTestExecutable(getId());
@@ -289,7 +289,6 @@ public class TestCaseExecution extends FileTestExecution {
 
 	@Override
 	public IExecution getParent() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -300,7 +299,6 @@ public class TestCaseExecution extends FileTestExecution {
 
 	@Override
 	public String getComment() {
-		// TODO Auto-generated method stub
 		return "";
 	}
 
@@ -311,7 +309,7 @@ public class TestCaseExecution extends FileTestExecution {
 
 	@Override
 	public double getTime() {
-		// TODO Auto-generated method stub
+		// IMPL TestCaseExecution time
 		return 0;
 	}
 

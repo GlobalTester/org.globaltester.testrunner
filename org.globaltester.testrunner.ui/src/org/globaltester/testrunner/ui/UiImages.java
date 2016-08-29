@@ -8,7 +8,6 @@ import org.eclipse.swt.graphics.Image;
  * This enumeration provides a number of images for the plugin.
  */
 public enum UiImages {
-	//TODO provide JUnit-Test for this class
 	/*
 	 * Based on work by Lothar Wendehals as published here:
 	 * http://blogs.itemis.de/wendehal/2010/07/08/pretty-elegant-way-to-provide-images-in-eclipse-ui-plug-ins/

@@ -34,12 +34,11 @@ import org.globaltester.logging.legacy.logger.TestLogger;
  * @author Holger Funke
  * 
  */
-//TODO check code copied from GT2
 public class Failure extends Result implements Serializable {
 
 	private static final long serialVersionUID = -1031815873323547519L;
 
-	//TODO replace following constants and mapping with enum type
+	//IMPL replace following constants and mapping with enum type
 	
 	// constants defining failure Rating
 	// do not change these values, as they are referred to in TestCase class for
