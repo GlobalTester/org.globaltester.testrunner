@@ -103,8 +103,6 @@ public class Result implements Serializable{
 		commentElement.addContent(comment);
 		root.addContent(commentElement);
 		
-		//TODO think about sub results
-		
 	}
 
 }

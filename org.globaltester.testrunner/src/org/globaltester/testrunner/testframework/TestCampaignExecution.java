@@ -50,9 +50,9 @@ public class TestCampaignExecution extends FileTestExecution {
 				}
 			}
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// ignore if no previous executions can be found
 		}
+		
 		try {
 			//extract test case executions
 			Element fileNames = root.getChild("FileNames");
@@ -75,8 +75,7 @@ public class TestCampaignExecution extends FileTestExecution {
 				result.rebuildStatus();
 			}
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// ignore empty set of executions
 		}
 	}
 
@@ -186,7 +185,6 @@ public class TestCampaignExecution extends FileTestExecution {
 
 	@Override
 	public String getDescription() {
-		// TODO Auto-generated method stub
 		return "";
 	}
 

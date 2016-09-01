@@ -39,7 +39,7 @@ public class CreateTestCampaignCommandHandler extends AbstractHandler {
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		// check for dirty files and save them
 		if (!PlatformUI.getWorkbench().saveAllEditors(true)) {
-			// TODO handle this case properly
+			// IMPL handle this case properly
 			return null;
 		}
 

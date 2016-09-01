@@ -177,7 +177,7 @@ public class TestRunnerEnvironmentInitializer {
 			OCFWrapper.start();
 		} catch (OpenCardPropertyLoadingException | CardServiceException | CardTerminalException
 				| ClassNotFoundException e1) {
-			// TODO Auto-generated catch block
+			// #831 log this appropriately, can't handle this here, but should be identifiable from logfile
 			e1.printStackTrace();
 		}
 		
@@ -219,8 +219,6 @@ public class TestRunnerEnvironmentInitializer {
 				String cmd = "";
 				cmd += "Card.prototype." + functionName
 						+ " = function(" + paramList + ") {\n";
-				// TODO following line should be optional (by
-				// preference)
 				cmd += "print(\"calling " + functionName + "\");\n";
 				cmd += implementation + "\n";
 				cmd += "}\n";

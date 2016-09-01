@@ -163,9 +163,6 @@ public class TestCampaign {
 				origTestExecutable);
 		elements.add(newElement);
 
-		// TODO invalidate all results(or check earlier and allow user to create
-		// a copy)
-
 		// notify viewers of parent about this change
 		project.notifyTreeChangeListeners(true,
 				new Object[] { this, newElement }, null);
@@ -188,14 +185,8 @@ public class TestCampaign {
 			Map<String, Object> envSettings, TestExecutionCallback callback) throws CoreException {
 
 		// create a new TestExecution this TestCampaignElement
-		TestCampaignExecution currentExecution = null;
-		try {
-			currentExecution = FileTestExecutionFactory.createExecution(this);
-		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
+		TestCampaignExecution currentExecution = FileTestExecutionFactory.createExecution(this);
+		
 		if (executions.size() > 0) {
 			// register this new execution
 			currentExecution.setPreviousExecution(executions.getFirst());

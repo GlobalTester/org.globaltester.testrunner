@@ -87,7 +87,7 @@ public class ActionStepExecutor {
 					}
 					int scriptLine = jse.lineNumber();
 					
-					//TODO handle interactive errors
+					//IMPL handle interactive errors
 					/*
 					if (msg
 							.startsWith("Card communication error: Pcsc10CardTerminal")) {

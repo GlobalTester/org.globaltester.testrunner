@@ -156,25 +156,21 @@ public abstract class ActionStepExecution extends AbstractTestExecution {
 
 	@Override
 	public String getComment() {
-		// TODO Auto-generated method stub
 		return "";
 	}
 
 	@Override
 	public String getDescription() {
-		// TODO Auto-generated method stub
 		return "";
 	}
 
 	@Override
 	public Status getStatus() {
-		// TODO Auto-generated method stub
 		return Status.UNDEFINED;
 	}
 
 	@Override
 	public double getTime() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 

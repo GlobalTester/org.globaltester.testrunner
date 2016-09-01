@@ -41,8 +41,8 @@ public class ReportXmlGenerator {
 
 		Element root = new Element("TESTREPORT");
 
-		//TODO fix and uncomment the following code to add features to Report
-//		// new tags for spec and release:
+
+		// new tags for spec and release:
 		Element reportSpecName = new Element("SPECNAME");
 		reportSpecName.setText(report.getSpecName());
 		root.addContent(reportSpecName);

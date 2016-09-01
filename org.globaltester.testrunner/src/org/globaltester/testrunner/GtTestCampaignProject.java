@@ -132,7 +132,6 @@ public class GtTestCampaignProject implements ITreeObservable {
 		try {
 			GtResourceHelper.createWithAllParents(defaultLoggingDir);
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

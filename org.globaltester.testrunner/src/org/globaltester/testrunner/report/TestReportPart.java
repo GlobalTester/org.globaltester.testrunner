@@ -29,7 +29,6 @@ public class TestReportPart {
 	}
 
 	public String getID() {
-		// TODO Auto-generated method stub
 		return id;
 	}
 
