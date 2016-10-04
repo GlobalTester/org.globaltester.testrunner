@@ -25,7 +25,6 @@ import org.globaltester.sampleconfiguration.SampleConfigManager;
 import org.globaltester.sampleconfiguration.ui.SampleConfigSelectorDialog;
 import org.globaltester.scriptrunner.TestExecutionCallback;
 import org.globaltester.scriptrunner.TestResourceExecutor;
-import org.globaltester.scriptrunner.TestExecutionCallback.TestResult;
 import org.globaltester.testrunner.GtTestCampaignProject;
 import org.globaltester.testrunner.testframework.TestCampaignExecution;
 
@@ -74,7 +73,12 @@ public class TestRunnerExecutor implements TestResourceExecutor {
 						Map<String, Object> emptyMap = Collections.emptyMap();
 						campaign.getTestCampaign().executeTests(configuration, monitor, emptyMap, callback);
 					} else {
-						callback.testExecutionFinished(new TestResult(0,4)); //return Status.UNDEFINED on callback
+
+						TestExecutionCallback.TestResult result = new TestExecutionCallback.TestResult();
+						result.testCases = 0;
+						result.overallResult = 4; //return Status.UNDEFINED on callback
+						
+						callback.testExecutionFinished(result);
 						return Status.CANCEL_STATUS;
 					}
 				} catch (CoreException e) {

@@ -206,7 +206,11 @@ public class TestCampaign {
 				new String[] { "lastExecution" });
 		
 		//notify the callback about the execution results
-		callback.testExecutionFinished(new TestExecutionCallback.TestResult (currentExecution.getChildren().size(), currentExecution.getResult().status.ordinal()));
+		TestExecutionCallback.TestResult result = new TestExecutionCallback.TestResult();
+		result.testCases = currentExecution.getChildren().size();
+		result.overallResult = currentExecution.getResult().status.ordinal();
+		//IMPL: propagate subresults
+		callback.testExecutionFinished(result);
 		
 		
 		// refresh the project in workspace
