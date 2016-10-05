@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: GT TestRunner Test
 Bundle-SymbolicName: org.globaltester.testrunner.test
 Bundle-Version: 3.1.0.qualifier
-Bundle-Vendor: HJP Consulting GmbH
+Bundle-Vendor: secunet Security Networks AG
 Fragment-Host: org.globaltester.testrunner
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.junit
