@@ -1,18 +1,3 @@
-/*
- * Project GlobalTester File Failure.java
- * 
- * Date 19.10.2005
- * 
- * 
- * Developed by HJP Consulting GmbH Lanfert 24 33106 Paderborn Germany
- * 
- * 
- * This software is the confidential and proprietary information of HJP
- * ("Confidential Information"). You shall not disclose such Confidential
- * Information and shall use it only in accordance with the terms of the
- * Non-Disclosure Agreement you entered into with HJP.
- */
-
 package org.globaltester.testrunner.testframework;
 
 import java.io.Serializable;
