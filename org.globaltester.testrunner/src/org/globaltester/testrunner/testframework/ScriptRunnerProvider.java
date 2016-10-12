@@ -1,5 +1,6 @@
 package org.globaltester.testrunner.testframework;
 
+import org.globaltester.scriptrunner.RuntimeRequirementsProvider;
 import org.globaltester.scriptrunner.ScriptRunner;
 
 /**

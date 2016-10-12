@@ -23,6 +23,8 @@ import org.globaltester.sampleconfiguration.GtSampleConfigNature;
 import org.globaltester.sampleconfiguration.SampleConfig;
 import org.globaltester.sampleconfiguration.SampleConfigManager;
 import org.globaltester.sampleconfiguration.ui.SampleConfigSelectorDialog;
+import org.globaltester.scriptrunner.RuntimeRequirementsProvider;
+import org.globaltester.scriptrunner.SampleConfigProvider;
 import org.globaltester.scriptrunner.TestExecutionCallback;
 import org.globaltester.scriptrunner.TestResourceExecutor;
 import org.globaltester.testrunner.GtTestCampaignProject;

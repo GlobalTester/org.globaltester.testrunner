@@ -2,6 +2,7 @@ package org.globaltester.testrunner.testframework;
 
 import org.globaltester.base.util.StringUtil;
 import org.globaltester.logging.legacy.logger.TestLogger;
+import org.globaltester.scriptrunner.RuntimeRequirementsProvider;
 import org.globaltester.scriptrunner.ScriptRunner;
 import org.globaltester.testrunner.testframework.Result.Status;
 import org.mozilla.javascript.EvaluatorException;
