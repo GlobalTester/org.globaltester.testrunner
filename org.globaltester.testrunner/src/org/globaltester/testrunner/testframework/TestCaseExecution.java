@@ -141,7 +141,7 @@ public class TestCaseExecution extends FileTestExecution {
 		
 		sr = setupScriptRunner((SampleConfigProvider) provider);
 		
-		provider = new TestCaseRuntimeProvider(sr, (SampleConfigProvider)provider);
+		provider = new TestCaseRuntimeProvider(sr, (SampleConfigProvider)provider, null);
 		
 		// check if test case is applicable
 		TestLogger.info("Check test case profiles");
