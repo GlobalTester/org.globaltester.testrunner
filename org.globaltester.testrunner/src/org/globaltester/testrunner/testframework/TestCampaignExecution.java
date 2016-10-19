@@ -17,6 +17,8 @@ import org.globaltester.base.xml.XMLHelper;
 import org.globaltester.logging.legacy.logger.GtErrorLogger;
 import org.globaltester.logging.legacy.logger.TestLogger;
 import org.globaltester.sampleconfiguration.SampleConfig;
+import org.globaltester.scriptrunner.RuntimeRequirementsProvider;
+import org.globaltester.scriptrunner.SampleConfigProviderImpl;
 import org.globaltester.testrunner.Activator;
 import org.globaltester.testrunner.GtTestCampaignProject;
 import org.jdom.Document;

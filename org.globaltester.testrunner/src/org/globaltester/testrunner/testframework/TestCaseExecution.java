@@ -13,6 +13,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.globaltester.base.xml.XMLHelper;
 import org.globaltester.logging.legacy.logger.TestLogger;
+import org.globaltester.scriptrunner.RuntimeRequirementsProvider;
+import org.globaltester.scriptrunner.SampleConfigProvider;
 import org.globaltester.scriptrunner.ScriptRunner;
 import org.globaltester.scriptrunner.ScshScope;
 import org.globaltester.testrunner.GtTestCampaignProject;
@@ -139,7 +141,7 @@ public class TestCaseExecution extends FileTestExecution {
 		
 		sr = setupScriptRunner((SampleConfigProvider) provider);
 		
-		provider = new TestCaseRuntimeProvider(sr, (SampleConfigProvider)provider);
+		provider = new TestCaseRuntimeProvider(sr, (SampleConfigProvider)provider, null);
 		
 		// check if test case is applicable
 		TestLogger.info("Check test case profiles");
