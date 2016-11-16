@@ -9,11 +9,13 @@ import org.globaltester.logging.legacy.logger.TestLogger;
 import org.globaltester.sampleconfiguration.SampleConfig;
 import org.globaltester.scriptrunner.EnvironmentNotInitializedException;
 import org.globaltester.scriptrunner.ScriptRunner;
+import org.globaltester.smartcardshell.GTWrapFactory;
 import org.globaltester.smartcardshell.ProtocolExtensions;
 import org.globaltester.smartcardshell.ocf.OCFWrapper;
 import org.globaltester.smartcardshell.preferences.PreferenceConstants;
 import org.globaltester.smartcardshell.protocols.IScshProtocolProvider;
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.WrapFactory;
 
 import opencard.core.service.CardServiceException;
 import opencard.core.service.SmartCard;
@@ -55,6 +57,9 @@ public class TestRunnerEnvironmentInitializer {
 				TestRunnerEnvironmentInitializer.cleanEnvironment();
 			}
 		});
+		
+		WrapFactory wf = new GTWrapFactory();
+		runner.getContext().setWrapFactory(wf);
 
 		assert (SmartCard.isStarted());
 

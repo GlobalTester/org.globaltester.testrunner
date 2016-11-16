@@ -3,10 +3,13 @@ package org.globaltester.testrunner.testframework;
 import org.globaltester.base.util.StringUtil;
 import org.globaltester.logging.legacy.logger.TestLogger;
 import org.globaltester.scriptrunner.RuntimeRequirementsProvider;
+import org.globaltester.scriptrunner.AssertionFailure;
+import org.globaltester.scriptrunner.AssertionWarning;
 import org.globaltester.scriptrunner.ScriptRunner;
 import org.globaltester.testrunner.testframework.Result.Status;
 import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.JavaScriptException;
+import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.WrappedException;
@@ -71,9 +74,7 @@ public class ActionStepExecutor {
 							jseo);
 					return ResultFactory.newFailure(rating, scriptLine, TestLogger.getLogFileLine(), msg, expectedValue,
 							receivedValue);
-				}
-
-				else if (jseo instanceof GPError) {
+				} else if (jseo instanceof GPError) {
 					GPError gpe = (GPError) jseo;
 					String msg = (String) gpe.get("message", gpe);
 					// Integer errorID = (Integer)gpe.getProperty(gpe,
@@ -88,54 +89,18 @@ public class ActionStepExecutor {
 					}
 					int scriptLine = jse.lineNumber();
 					
-					//IMPL handle interactive errors
-					/*
-					if (msg
-							.startsWith("Card communication error: Pcsc10CardTerminal")) {
-
-						String[] buttons = { "Resume", "Skip test",
-								"Abort session" };
-						MessageDialog md = new MessageDialog(Activator
-								.getDefault().getWorkbench()
-								.getActiveWorkbenchWindow().getShell(),
-								"Card communication error", null, msg,
-								MessageDialog.ERROR, buttons, ABORT_ID);
-
-						int ret = md.open();
-
-						if (ret == RESUME_ID) {
-							TestLogger.info("Test case resumed by user");
-							status = TestCase.STATUS_RESUMED;
-							return true;
-						}
-						if (ret == SKIP_ID) {
-							TestLogger.info("Test case skipped by user");
-							status = TestCase.STATUS_SKIPPED;
-							return false;
-
-						}
-						if (ret == ABORT_ID) {
-							TestLogger.info("Test session interrupted");
-							status = TestCase.STATUS_FAILURE;
-							return false;
-						}
-
-						return false;
-
-					}
-					
-					if (msg == "No card in reader or mute card.") {
-						Shell shell = Activator.getDefault().getWorkbench()
-								.getActiveWorkbenchWindow().getShell();
-						MessageDialog.openError(shell, "GlobalTester",
-								"No card reader available or no card present!");
-						// sr.close();
-						return false;
-					}
-					*/
 					return ResultFactory.newFailure(rating, scriptLine, TestLogger.getLogFileLine(), msg);
-					
-				} else { // if (jseo instanceof GPError)
+
+				} else if (jseo instanceof NativeJavaObject) {
+					Object nativeJavaObject = ((NativeJavaObject)jseo).unwrap();
+					if (nativeJavaObject instanceof AssertionFailure) {
+						AssertionFailure error = (AssertionFailure) nativeJavaObject;
+						return ResultFactory.newFailure(FileTestExecution.STATUS_FAILURE, jse.lineNumber(), TestLogger.getLogFileLine(), error.getMessage());
+					} else if (nativeJavaObject instanceof AssertionWarning) {
+						AssertionWarning error = (AssertionWarning) nativeJavaObject;
+						return ResultFactory.newFailure(FileTestExecution.STATUS_WARNING, jse.lineNumber(), TestLogger.getLogFileLine(), error.getMessage());
+						}
+				} else {
 					return ResultFactory.newFailure(FileTestExecution.STATUS_FAILURE, 0, TestLogger.getLogFileLine(), jse.toString());
 				}
 			} else {
