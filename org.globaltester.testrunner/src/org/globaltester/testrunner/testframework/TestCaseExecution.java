@@ -148,6 +148,7 @@ public class TestCaseExecution extends FileTestExecution {
 		if (!getTestCase().getProfileExpression().evaluate(((SampleConfigProvider) provider).getSampleConfig())){
 			result.status = Status.NOT_APPLICABLE;
 			result.comment = "Profiles not fulfilled.";
+			TestLogger.info("Test case not applicable");
 			return;
 		}
 
