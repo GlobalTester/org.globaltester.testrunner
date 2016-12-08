@@ -53,7 +53,7 @@ public class RunTestCommandHandler extends org.globaltester.scriptrunner.ui.comm
 	
 	private SampleConfig getSampleConfigFromResources() throws CoreException {
 		for (IResource current : getResources()){
-			if (current.getFileExtension().equals(GtTestCampaignProject.FILE_ENDING_GT_CAMPAIGN)){
+			if (GtTestCampaignProject.isTestCampaignProjectAvailableForResource(current)){
 				TestCampaignExecution execution = GtTestCampaignProject.getProjectForResource(current).getTestCampaign().getCurrentExecution();
 				if (execution != null){
 					return execution.getSampleConfig();	

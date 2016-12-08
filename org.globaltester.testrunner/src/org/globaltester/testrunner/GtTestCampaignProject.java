@@ -270,4 +270,20 @@ public class GtTestCampaignProject implements ITreeObservable {
 		}
 	}
 
+	public static boolean isTestCampaignProjectAvailableForResource(IResource resource) {
+		if (resource instanceof IProject) {
+			 try {
+				if (((IProject) resource).hasNature(GtTestCampaignNature.NATURE_ID)) {
+				return true;
+				 }
+			} catch (CoreException e) {
+				// seems not to be a TestCampaign
+			}
+		} else if ((resource instanceof IFile) && 
+			((IFile) resource).getFileExtension().equals(GtTestCampaignProject.FILE_ENDING_GT_CAMPAIGN)) {
+			return true;
+		}
+		return false;
+	}
+
 }
