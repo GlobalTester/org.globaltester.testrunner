@@ -42,7 +42,14 @@ public class TestRunnerExecutor implements TestResourceExecutor {
 	private GtTestCampaignProject campaign = null;
 	
 	public boolean canExecute(List<IResource> resources) {
-		return resources.size() == 1 && resources.iterator().next().getFileExtension().equals(GtTestCampaignProject.FILE_ENDING_GT_CAMPAIGN);
+		if (resources.size() != 1) return false;
+		IResource resource = resources.iterator().next();
+		
+		if (GtTestCampaignProject.isTestCampaignProjectAvailableForResource(resource)) {
+			 return true;
+		}
+		
+		return false;
 	}
 
 	@Override
