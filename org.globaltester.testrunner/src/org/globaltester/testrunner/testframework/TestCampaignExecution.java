@@ -74,7 +74,9 @@ public class TestCampaignExecution extends FileTestExecution {
 						result.addSubResult(exec.getResult());
 					}
 				}
-				result.rebuildStatus();
+				
+				Element status = root.getChild("LastExecutionResult").getChild("Status");
+				result.status = Result.Status.get(status.getTextTrim());
 			}
 		} catch (CoreException e) {
 			// ignore empty set of executions
