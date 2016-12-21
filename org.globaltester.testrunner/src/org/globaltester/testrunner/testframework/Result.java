@@ -17,12 +17,36 @@ import org.jdom.Element;
  * 
  */
 public class Result implements Serializable{
+	
+	public static final String STATUS_PASSED = "PASSED";
+	public static final String STATUS_FAILURE = "FAILURE";
+	public static final String STATUS_WARNING = "WARNING";
+	public static final String STATUS_NOT_APPLICABLE = "NOT APPLICABLE";
+	public static final String STATUS_UNDEFINED = "UNDEFINED";
 
 	private static final long serialVersionUID = 1690869079522455149L;
 
 	public enum Status {
 		PASSED, FAILURE, WARNING, NOT_APPLICABLE, UNDEFINED;
-
+		
+		@Override
+		public String toString() {
+			switch(this) {
+				case PASSED:
+					return STATUS_PASSED;
+				case FAILURE:
+					return STATUS_FAILURE;
+				case WARNING:
+					return STATUS_WARNING;
+				case NOT_APPLICABLE:
+					return STATUS_NOT_APPLICABLE;
+				case UNDEFINED:
+					return STATUS_UNDEFINED;
+				default:
+					return STATUS_UNDEFINED;
+			}
+		}
+		
 	}
 
 	protected Status status; // status this result represents
