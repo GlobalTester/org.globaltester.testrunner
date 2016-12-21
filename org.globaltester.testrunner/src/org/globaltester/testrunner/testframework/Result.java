@@ -97,7 +97,7 @@ public class Result implements Serializable{
 	/**
 	 * Recalculate the overall status of this result from the subResults.
 	 * 
-	 * By default this returns the worst status given by an sub result.
+	 * By default this returns the worst status given by a sub result.
 	 */
 	void rebuildStatus() {
 		Status tmpStatus = Status.PASSED;
