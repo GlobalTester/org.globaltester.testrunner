@@ -67,7 +67,7 @@ public class ResultFactory {
 		//extract status
 		Element statusElem = resultElement.getChild("Status");
 		if (statusElem != null) {
-			status = Status.valueOf(statusElem.getTextTrim());
+			status = Status.get(statusElem.getTextTrim());
 		}
 		if (status == null) {
 			throw new RuntimeException("XML-Element for Result does not contain valid Status Element");
