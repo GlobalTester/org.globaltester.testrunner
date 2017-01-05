@@ -200,7 +200,7 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 			PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
 				@Override
 				public void run() {
-					getSite().getPage().closeEditor(TestCampaignEditor.this, false); 
+					getSite().getPage().closeEditor(TestCampaignEditor.this, false);
 				}
 			});
 		}
@@ -210,8 +210,8 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 		
 		scrolledComposite = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL);
 		scrolledComposite.setExpandHorizontal(true);
-	    scrolledComposite.setExpandVertical(true);
-	    
+		scrolledComposite.setExpandVertical(true);
+
 		scrolledContent = new Composite(scrolledComposite, SWT.NONE);
 		scrolledContent.setLayout(new GridLayout(1, false));
 		scrolledComposite.setContent(scrolledContent);
@@ -273,7 +273,7 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 		btnNewest = new Button(historyComp, SWT.NONE);
 		btnNewest.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		btnNewest.setText(">>|");
-		btnNewest.addSelectionListener(this);		
+		btnNewest.addSelectionListener(this);
 		btnNewest.setEnabled(false);
 		
 		//selection and Editor for SampleConfiguration
@@ -719,7 +719,7 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 				scrolledContent.layout();
 
 			}
-		});		
+		});
 		
 	}
 	

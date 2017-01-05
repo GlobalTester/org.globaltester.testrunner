@@ -89,7 +89,7 @@ public class TestCaseExecution extends FileTestExecution {
 	@Override
 	protected void createIFile() {
 		if(!iFile.exists()){
-			Element root = new Element("TestCaseExecution");			
+			Element root = new Element("TestCaseExecution");
 			XMLHelper.saveDoc(iFile, root);
 		}
 	}
@@ -227,6 +227,7 @@ public class TestCaseExecution extends FileTestExecution {
 				exec.extractFromXml(preConditionExecutionElements.get(i));
 				preConExecutions.add(exec);
 				result.addSubResult(exec.getResult());
+				
 			}
 		}
 		
@@ -255,7 +256,9 @@ public class TestCaseExecution extends FileTestExecution {
 				result.addSubResult(exec.getResult());
 			}
 		}
-		result.rebuildStatus();
+		
+		Element status = root.getChild("LastExecutionResult").getChild("Status");
+		result.status = Result.Status.get(status.getTextTrim());
 	}
 	
 	private ScriptRunner setupScriptRunner(SampleConfigProvider sampleConfigProvider){

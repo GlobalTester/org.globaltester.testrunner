@@ -17,12 +17,46 @@ import org.jdom.Element;
  * 
  */
 public class Result implements Serializable{
+	
+	public static final String STATUS_PASSED = "PASSED";
+	public static final String STATUS_FAILURE = "FAILURE";
+	public static final String STATUS_WARNING = "WARNING";
+	public static final String STATUS_NOT_APPLICABLE = "NOT APPLICABLE";
+	public static final String STATUS_UNDEFINED = "UNDEFINED";
 
 	private static final long serialVersionUID = 1690869079522455149L;
 
 	public enum Status {
-		PASSED, FAILURE, WARNING, NOT_APPLICABLE, UNDEFINED;
-
+		PASSED(STATUS_PASSED), FAILURE(STATUS_FAILURE), WARNING(STATUS_WARNING), NOT_APPLICABLE(STATUS_NOT_APPLICABLE), UNDEFINED(STATUS_UNDEFINED);
+		
+		private String textualRepresentation;
+		
+		private Status(String textualRepresentation) {
+			this.textualRepresentation = textualRepresentation;
+		}
+		
+		@Override
+		public String toString() {
+			return textualRepresentation;
+		}
+		
+		/**
+		 * This method returns a {@link Status} object for a matching String representation.
+		 * If no match is found null is returned.
+		 * If more than one match is available, the first is returned.
+		 * @param textualRepresentation a textual representation of the {@link Status} object
+		 * @return the matched {@link Status} object
+		 */
+		public static Status get(String textualRepresentation) {
+			for(Status currentStatus : Status.values()) {
+				if(textualRepresentation.equals(currentStatus.toString())) {
+					return currentStatus;
+				}
+			}
+			
+			return null;
+		}
+		
 	}
 
 	protected Status status; // status this result represents
@@ -63,7 +97,7 @@ public class Result implements Serializable{
 	/**
 	 * Recalculate the overall status of this result from the subResults.
 	 * 
-	 * By default this returns the worst status given by an sub result.
+	 * By default this returns the worst status given by a sub result.
 	 */
 	void rebuildStatus() {
 		Status tmpStatus = Status.PASSED;

@@ -115,7 +115,7 @@ public class TestCampaignEditorInput extends FileEditorInput {
 	}
 
 	/**
-	 * Calculates a an Array of String containig lables representing the
+	 * Calculates a an Array of String containing labels representing the
 	 * TestCampaignExecutions while mentioning name execution start time and (if
 	 * present) the associated comment.
 	 * 
