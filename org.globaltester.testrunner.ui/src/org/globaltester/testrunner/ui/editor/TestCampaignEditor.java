@@ -75,6 +75,7 @@ import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.statushandlers.StatusManager;
 import org.eclipse.ui.texteditor.ITextEditor;
+import org.globaltester.base.resources.GtResourceHelper;
 import org.globaltester.base.ui.DialogOptions;
 import org.globaltester.base.ui.GtUiHelper;
 import org.globaltester.logging.legacy.logger.GTLogger;
@@ -423,6 +424,8 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 								try {
 									// output pdf report
 									ReportPdfGenerator.writePdfReport(report);
+									GtResourceHelper.copyFilesToDir(report.getLogFiles(), report.getReportDir().getAbsolutePath());
+									
 									monitor.worked(1);
 									PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
 
