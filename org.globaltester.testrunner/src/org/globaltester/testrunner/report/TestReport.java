@@ -1,13 +1,11 @@
 package org.globaltester.testrunner.report;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.globaltester.base.resources.GtResourceHelper;
 import org.globaltester.testrunner.testframework.IExecution;
 import org.globaltester.testrunner.testframework.TestCampaign;
 import org.globaltester.testrunner.testframework.TestCampaignExecution;
@@ -106,28 +104,6 @@ public class TestReport {
 	public TestReport(TestCampaignExecution testCampaignExecution, String baseDirName) {
 		this(testCampaignExecution);
 		this.baseDir = new File(baseDirName);
-	}
-	
-	/**
-	 * This method actually copies the log Files.
-	 */
-	public void copyLogFiles() {
-		File fileFrom, fileTo;
-		for(String currentFileName:logFiles) {
-			fileFrom = new File(currentFileName);
-			
-			if(!fileFrom.exists()) {
-				continue;
-			}
-			
-			fileTo = new File(baseDir, fileFrom.getName());
-			
-			try {
-				GtResourceHelper.copyFiles(fileFrom, fileTo);
-			} catch (IOException e) {
-				// do nothing
-			}
-		}
 	}
 	
 	public ArrayList<String> getLogFiles() {
