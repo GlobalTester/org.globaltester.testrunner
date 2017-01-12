@@ -40,6 +40,10 @@ public class TestReport {
 	private String executionTime = "unknown";
 	
 	private LinkedList<TestReportPart> elements = new LinkedList<TestReportPart>();
+	
+	private ArrayList<String> logFiles; // adding file names is unchecked
+	
+	
 
 	/**
 	 * Centralizes the extraction of relevant data from the given TestCampaign
@@ -57,6 +61,14 @@ public class TestReport {
 			IExecution iExecution = (IExecution) elemIter.next();
 			elements.add(new TestReportPart(iExecution));
 		}
+		
+		logFiles = new ArrayList<>();
+		logFiles.add(campaignExec.getLogFileName());
+		
+		for(IExecution currentIexecution: campaignExec.getChildren()) {
+			logFiles.add(currentIexecution.getLogFileName());
+		}
+		
 	}
 
 	/**
@@ -94,16 +106,14 @@ public class TestReport {
 	public TestReport(TestCampaignExecution testCampaignExecution, String baseDirName) {
 		this(testCampaignExecution);
 		this.baseDir = new File(baseDirName);
-		
-		ArrayList<String> logFilesToCopy = new ArrayList<>();
-		logFilesToCopy.add(testCampaignExecution.getLogFileName());
-		
-		for(IExecution currentIexecution: testCampaignExecution.getChildren()) {
-			logFilesToCopy.add(currentIexecution.getLogFileName());
-		}
-		
+	}
+	
+	/**
+	 * This method actually copies the log Files.
+	 */
+	public void copyLogFiles() {
 		File fileFrom, fileTo;
-		for(String currentFileName:logFilesToCopy) {
+		for(String currentFileName:logFiles) {
 			fileFrom = new File(currentFileName);
 			
 			if(!fileFrom.exists()) {
@@ -115,11 +125,13 @@ public class TestReport {
 			try {
 				GtResourceHelper.copyFiles(fileFrom, fileTo);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				// do nothing
 			}
 		}
-		
+	}
+	
+	public ArrayList<String> getLogFiles() {
+		return logFiles;
 	}
 
 	public String getFileName(String extension) {
