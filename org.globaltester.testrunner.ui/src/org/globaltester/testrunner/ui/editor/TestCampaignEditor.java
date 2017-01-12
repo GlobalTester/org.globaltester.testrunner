@@ -409,7 +409,7 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 							@Override
 							public IStatus run(IProgressMonitor monitor) {
 
-								monitor.beginTask("Export PDF report", 2);
+								monitor.beginTask("Export PDF report", 3);
 
 								monitor.subTask("Create report");
 
@@ -424,8 +424,8 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 								try {
 									// output pdf report
 									ReportPdfGenerator.writePdfReport(report);
+									monitor.worked(1);
 									GtResourceHelper.copyFilesToDir(report.getLogFiles(), report.getReportDir().getAbsolutePath());
-									
 									monitor.worked(1);
 									PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
 
@@ -443,8 +443,6 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 									StatusManager.getManager().handle(status,
 											StatusManager.SHOW);
 								}
-
-								//IMPL copy relevant logfiles
 
 								monitor.done();
 								return new Status(IStatus.OK, Activator.PLUGIN_ID,
