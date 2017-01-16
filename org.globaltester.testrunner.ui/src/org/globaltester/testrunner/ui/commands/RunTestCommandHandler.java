@@ -9,6 +9,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
 import org.globaltester.base.ui.GtUiHelper;
 import org.globaltester.sampleconfiguration.SampleConfig;
+import org.globaltester.scriptrunner.ui.SampleConfigSelectionException;
 import org.globaltester.testrunner.GtTestCampaignProject;
 import org.globaltester.testrunner.testframework.TestCampaignExecution;
 import org.globaltester.testrunner.ui.editor.TestCampaignEditor;
@@ -36,7 +37,7 @@ public class RunTestCommandHandler extends org.globaltester.scriptrunner.ui.comm
 	}
 	
 	@Override
-	protected SampleConfig getSampleConfig(ExecutionEvent event) {
+	protected SampleConfig getSampleConfig(ExecutionEvent event) throws SampleConfigSelectionException {
 		boolean selectionRequested = Boolean.parseBoolean(event.getParameter("org.globaltester.testrunner.ui.SelectSampleConfigParameter"));
 		SampleConfig candidate;
 		try {
