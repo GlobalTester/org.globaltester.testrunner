@@ -1,6 +1,7 @@
 package org.globaltester.testrunner.report;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,6 +38,10 @@ public class TestReport {
 	private String executionTime = "unknown";
 	
 	private LinkedList<TestReportPart> elements = new LinkedList<TestReportPart>();
+	
+	private ArrayList<String> logFiles; // adding file names is unchecked
+	
+	
 
 	/**
 	 * Centralizes the extraction of relevant data from the given TestCampaign
@@ -54,6 +59,14 @@ public class TestReport {
 			IExecution iExecution = (IExecution) elemIter.next();
 			elements.add(new TestReportPart(iExecution));
 		}
+		
+		logFiles = new ArrayList<>();
+		logFiles.add(campaignExec.getLogFileName());
+		
+		for(IExecution currentIexecution: campaignExec.getChildren()) {
+			logFiles.add(currentIexecution.getLogFileName());
+		}
+		
 	}
 
 	/**
@@ -91,6 +104,10 @@ public class TestReport {
 	public TestReport(TestCampaignExecution testCampaignExecution, String baseDirName) {
 		this(testCampaignExecution);
 		this.baseDir = new File(baseDirName);
+	}
+	
+	public ArrayList<String> getLogFiles() {
+		return logFiles;
 	}
 
 	public String getFileName(String extension) {
