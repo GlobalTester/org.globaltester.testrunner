@@ -76,11 +76,9 @@ public class ReportXmlGenerator {
 		reportUser.setText(report.getExecutingUser());
 		root.addContent(reportUser);
 
-//		Element platformID = new Element("PLATFORMID");
-//		String platformIDString = Activator.getDefault().getPreferenceStore()
-//				.getString(PreferenceConstants.P_CSVPLATFORMID);
-//		platformID.setText(platformIDString);
-//		root.addContent(platformID);
+		Element platformID = new Element("PLATFORMID");
+		platformID.setText(report.getPlatformId());
+		root.addContent(platformID);
 
 		Element sampleID = new Element("SAMPLEID");
 		sampleID.setText(report.getSampleId());

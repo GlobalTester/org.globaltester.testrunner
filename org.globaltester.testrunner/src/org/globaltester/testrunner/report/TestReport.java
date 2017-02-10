@@ -41,6 +41,7 @@ public class TestReport {
 	
 	private String executingUser = "unknown";
 	
+	private String platformId = "unknown";
 	private String sampleId = "unknown";
 
 	private LinkedList<TestReportPart> elements = new LinkedList<TestReportPart>();
@@ -79,6 +80,7 @@ public class TestReport {
 		executingUser = campaignExec.getExecutingUser();
 		
 		SampleConfig sampleConfig = campaignExec.getSampleConfig();
+		platformId = sampleConfig.getPlatformId();
 		sampleId = sampleConfig.getSampleId();
 		
 	}
@@ -101,6 +103,9 @@ public class TestReport {
 		executionTime = origReport.executionTime;
 		
 		executingUser = origReport.executingUser;
+		
+		sampleId = origReport.sampleId;
+		platformId = origReport.platformId;
 		
 		Iterator<TestReportPart> elemIter = origReport.elements.iterator();
 		while (elemIter.hasNext()) {
@@ -152,6 +157,10 @@ public class TestReport {
 	
 	public String getExecutingUser() {
 		return executingUser;
+	}
+	
+	public String getPlatformId() {
+		return platformId;
 	}
 	
 	public String getSampleId() {
