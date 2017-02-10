@@ -37,6 +37,8 @@ public class TestReport {
 
 	private String executionTime = "unknown";
 	
+	private String executingUser = "unknown";
+
 	private LinkedList<TestReportPart> elements = new LinkedList<TestReportPart>();
 	
 	private ArrayList<String> logFiles; // adding file names is unchecked
@@ -132,6 +134,10 @@ public class TestReport {
 	
 	public List<TestReportPart> getElements() {
 		return elements;
+	}
+	
+	public String getExecutingUser() {
+		return executingUser;
 	}
 
 }
