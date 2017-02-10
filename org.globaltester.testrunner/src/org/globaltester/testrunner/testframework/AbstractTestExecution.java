@@ -24,6 +24,7 @@ public abstract class AbstractTestExecution implements IExecution {
 	protected long lastExecutionDuration = 0;
 	private String logFileName;
 	private int logFileLine;
+	private String executingUser = "unknown";
 
 	public Result getResult() {
 		return result;
@@ -128,6 +129,8 @@ public abstract class AbstractTestExecution implements IExecution {
 
 		// calculate execution duration
 		lastExecutionDuration = new Date().getTime() - lastExecutionStartTime;
+		
+		executingUser = System.getProperty("user.name");
 
 	}
 
@@ -168,6 +171,10 @@ public abstract class AbstractTestExecution implements IExecution {
 	 * @return
 	 */
 	protected abstract String getXmlRootElementName();
+	
+	public String getExecutingUser() {
+		return executingUser;
+	}
 
 	
 }
