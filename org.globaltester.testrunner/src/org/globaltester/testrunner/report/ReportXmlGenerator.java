@@ -34,7 +34,8 @@ public class ReportXmlGenerator {
 	 * @return xml structure
 	 */
 	public static Element createXmlReport(TestReport report) {
-
+		
+		int executedTests = 0;
 		int passedTests = 0;
 		int failedTests = 0;
 		double sessionTime = 0;
@@ -122,11 +123,6 @@ public class ReportXmlGenerator {
 //		reportStatus.setText(testSuite.getTestSuiteStatus());
 //		root.addContent(reportStatus);
 //
-//		Element reportExcutedTests = new Element("EXECUTEDTESTS");
-//		reportExcutedTests.setText(new Integer(testSuite.getTestCases().size())
-//				.toString());
-//		root.addContent(reportExcutedTests);
-//
 //		Element reportFailures = new Element("FAILURES");
 //		reportFailures.setText((new Integer(testSuite.getFailures()))
 //				.toString());
@@ -189,6 +185,8 @@ public class ReportXmlGenerator {
 			Element reportTestCaseStatus = new Element("TESTCASESTATUS");
 			reportTestCaseStatus.setText(testReportPart.getStatus().toString());
 			reportTestCase.addContent(reportTestCaseStatus);
+			
+			executedTests++;
 			if (Status.PASSED.equals(testReportPart.getStatus())) {
 				passedTests++;
 			} else if (Status.FAILURE.equals(testReportPart.getStatus())) {
@@ -256,6 +254,10 @@ public class ReportXmlGenerator {
 			root.addContent(reportTestCase);
 
 		}
+		
+		Element reportExcutedTests = new Element("EXECUTEDTESTS");
+		reportExcutedTests.setText(Integer.valueOf(executedTests).toString());
+		root.addContent(reportExcutedTests);
 
 		Element reportTestsFailed = new Element("FAILEDTESTS");
 		reportTestsFailed.setText(Integer.valueOf(failedTests).toString());
