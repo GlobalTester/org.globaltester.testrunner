@@ -119,10 +119,6 @@ public class ReportXmlGenerator {
 //			root.addContent(reportAddInfo);
 //		}
 //
-//		Element reportStatus = new Element("STATUS");
-//		reportStatus.setText(testSuite.getTestSuiteStatus());
-//		root.addContent(reportStatus);
-//
 //		Element reportFailures = new Element("FAILURES");
 //		reportFailures.setText((new Integer(testSuite.getFailures()))
 //				.toString());
@@ -266,6 +262,15 @@ public class ReportXmlGenerator {
 		Element reportTestsPassed = new Element("PASSEDTESTS");
 		reportTestsPassed.setText(Integer.valueOf(passedTests).toString());
 		root.addContent(reportTestsPassed);
+		
+		Element reportStatus = new Element("STATUS");
+		
+		if(executedTests == passedTests) {
+			reportStatus.setText("SUCCESS");
+		} else{
+			reportStatus.setText("FAILURE");
+		}
+		root.addContent(reportStatus);
 
 		Element reportTestSessionTime = new Element("TESTSESSIONTIME");
 		reportTestSessionTime
