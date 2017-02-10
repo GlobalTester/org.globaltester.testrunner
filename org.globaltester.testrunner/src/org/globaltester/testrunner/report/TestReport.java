@@ -2,6 +2,7 @@ package org.globaltester.testrunner.report;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -68,6 +69,9 @@ public class TestReport {
 		for(IExecution currentIexecution: campaignExec.getChildren()) {
 			logFiles.add(currentIexecution.getLogFileName());
 		}
+		
+		Date date = new Date(campaignExec.getLastExecutionStartTime());
+		executionTime = date.toString();
 		
 	}
 
