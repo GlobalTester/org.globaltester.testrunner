@@ -71,10 +71,10 @@ public class ReportXmlGenerator {
 		reportDate.setText(report.getExecutionTime());
 		root.addContent(reportDate);
 
-//		Element reportUser = new Element("USER");
-//		reportUser.setText(System.getProperty("user.name"));
-//		root.addContent(reportUser);
-//
+		Element reportUser = new Element("USER");
+		reportUser.setText(report.getExecutingUser());
+		root.addContent(reportUser);
+
 //		Element platformID = new Element("PLATFORMID");
 //		String platformIDString = Activator.getDefault().getPreferenceStore()
 //				.getString(PreferenceConstants.P_CSVPLATFORMID);
