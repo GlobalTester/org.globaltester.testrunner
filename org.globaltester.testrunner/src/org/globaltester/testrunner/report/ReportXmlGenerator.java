@@ -81,13 +81,11 @@ public class ReportXmlGenerator {
 //				.getString(PreferenceConstants.P_CSVPLATFORMID);
 //		platformID.setText(platformIDString);
 //		root.addContent(platformID);
-//
-//		Element sampleID = new Element("SAMPLEID");
-//		String sampleIDString = Activator.getDefault().getPreferenceStore()
-//				.getString(PreferenceConstants.P_CSVSAMPLEID);
-//		sampleID.setText(sampleIDString);
-//		root.addContent(sampleID);
-//
+
+		Element sampleID = new Element("SAMPLEID");
+		sampleID.setText(report.getSampleId());
+		root.addContent(sampleID);
+
 //		Element readerName = new Element("READER");
 //		String cardReaderName = Activator.getDefault().getPreferenceStore()
 //				.getString(PreferenceConstants.P_CARDREADERNAME);

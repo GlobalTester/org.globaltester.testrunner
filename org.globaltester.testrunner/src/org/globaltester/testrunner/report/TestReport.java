@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.globaltester.sampleconfiguration.SampleConfig;
 import org.globaltester.testrunner.testframework.IExecution;
 import org.globaltester.testrunner.testframework.TestCampaign;
 import org.globaltester.testrunner.testframework.TestCampaignExecution;
@@ -39,6 +40,8 @@ public class TestReport {
 	private String executionTime = "unknown";
 	
 	private String executingUser = "unknown";
+	
+	private String sampleId = "unknown";
 
 	private LinkedList<TestReportPart> elements = new LinkedList<TestReportPart>();
 	
@@ -73,6 +76,11 @@ public class TestReport {
 		Date date = new Date(campaignExec.getLastExecutionStartTime());
 		executionTime = date.toString();
 		
+		executingUser = campaignExec.getExecutingUser();
+		
+		SampleConfig sampleConfig = campaignExec.getSampleConfig();
+		sampleId = sampleConfig.getSampleId();
+		
 	}
 
 	/**
@@ -91,6 +99,8 @@ public class TestReport {
 		specVersion = origReport.specVersion;
 		
 		executionTime = origReport.executionTime;
+		
+		executingUser = origReport.executingUser;
 		
 		Iterator<TestReportPart> elemIter = origReport.elements.iterator();
 		while (elemIter.hasNext()) {
@@ -142,6 +152,10 @@ public class TestReport {
 	
 	public String getExecutingUser() {
 		return executingUser;
+	}
+	
+	public String getSampleId() {
+		return sampleId;
 	}
 
 }
