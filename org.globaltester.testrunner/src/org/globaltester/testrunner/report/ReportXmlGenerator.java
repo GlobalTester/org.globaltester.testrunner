@@ -84,12 +84,11 @@ public class ReportXmlGenerator {
 		sampleID.setText(report.getSampleId());
 		root.addContent(sampleID);
 
-//		Element readerName = new Element("READER");
-//		String cardReaderName = Activator.getDefault().getPreferenceStore()
-//				.getString(PreferenceConstants.P_CARDREADERNAME);
-//		readerName.setText(cardReaderName);
-//		root.addContent(readerName);
-//
+		Element readerName = new Element("READER");
+		String cardReaderName = report.getCardReaderName();
+		readerName.setText(cardReaderName);
+		root.addContent(readerName);
+
 //		Element integrityOfTestSuite = new Element("INTEGRITY");
 //		String integrity = FileChecksum.RESULTS[Activator.getDefault()
 //				.getPreferenceStore()
