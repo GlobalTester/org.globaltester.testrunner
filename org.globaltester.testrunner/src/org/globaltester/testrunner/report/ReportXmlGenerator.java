@@ -358,40 +358,4 @@ public class ReportXmlGenerator {
 		}
 	}
 	
-
-//	/**
-//	 * Creates the neccessary environment for this test case
-//	 * 
-//	 * @param newReportDirName
-//	 *            directory name of test report
-//	 */
-//	private void createReportEnvironment(String newReportDirName,
-//			String newReportFileName) {
-//		// set dirname and filename
-//		reportDirName = newReportDirName;
-//		reportFileName = newReportFileName;
-//
-//		// create report directory if it does not exist
-//		File reportDir = new File(newReportDirName);
-//		if (!reportDir.exists()) {
-//			reportDir.mkdir();
-//		}
-//
-//		// copy stylesheets to report directory:
-//		IPath pluginDir = Activator.getPluginDir();
-//		String path = pluginDir + internalPath;
-//		File internalTRLogo = new File(path + testReportLogo);
-//		File externalTRLogo = new File(newReportDirName + testReportLogo);
-//		copy(internalTRLogo, externalTRLogo);
-//
-//		File internalTRDTD = new File(path + testReportDTD);
-//		File externalTRDTD = new File(newReportDirName + testReportDTD);
-//		copy(internalTRDTD, externalTRDTD);
-//
-//		File internalTRXSL = new File(path + testReportXSL);
-//		File externalTRXSL = new File(newReportDirName + testReportXSL);
-//		copy(internalTRXSL, externalTRXSL);
-//
-//	}
-	
 }
