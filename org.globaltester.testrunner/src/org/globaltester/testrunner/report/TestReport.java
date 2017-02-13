@@ -15,7 +15,8 @@ import org.globaltester.testrunner.testframework.IExecution;
 import org.globaltester.testrunner.testframework.TestCampaign;
 import org.globaltester.testrunner.testframework.TestCampaignExecution;
 import org.globaltester.testrunner.testframework.TestCaseExecution;
-import org.globaltester.testspecification.testframework.TestCase;
+import org.globaltester.testspecification.testframework.FileTestExecutable;
+import org.globaltester.testspecification.testframework.TestExecutableFactory;
 
 /**
  * Represents a test report with fixed values stored from the results of a
@@ -68,14 +69,14 @@ public class TestReport {
 		specName = campaign.getSpecName();
 		specVersion = campaign.getSpecVersion();
 		
-		TestCase currentTestCase;
+		FileTestExecutable fileTestExecutable;
 		for(IExecution currentIexecution : campaignExec.getChildren()) {
 			elements.add(new TestReportPart(currentIexecution));
 			
 			if(currentIexecution instanceof TestCaseExecution) {
 				try {
-					currentTestCase = new TestCase(((TestCaseExecution) currentIexecution).getIFile());
-					selectedProfiles.addAll(parseProfileString(currentTestCase.getProfileString()));
+					fileTestExecutable = TestExecutableFactory.getInstance(((TestCaseExecution) currentIexecution).getSpecFile());
+					selectedProfiles.addAll(parseProfileString(fileTestExecutable.getProfileString()));
 				} catch (CoreException e) {
 					// do nothing
 				}
