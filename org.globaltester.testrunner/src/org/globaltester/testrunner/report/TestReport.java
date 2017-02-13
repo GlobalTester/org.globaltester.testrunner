@@ -61,10 +61,8 @@ public class TestReport {
 		specName = campaign.getSpecName();
 		specVersion = campaign.getSpecVersion();
 		
-		Iterator<IExecution> elemIter = campaignExec.getChildren().iterator();
-		while (elemIter.hasNext()) {
-			IExecution iExecution = (IExecution) elemIter.next();
-			elements.add(new TestReportPart(iExecution));
+		for(IExecution currentIexecution : campaignExec.getChildren()) {
+			elements.add(new TestReportPart(currentIexecution));
 		}
 		
 		logFiles = new ArrayList<>();
