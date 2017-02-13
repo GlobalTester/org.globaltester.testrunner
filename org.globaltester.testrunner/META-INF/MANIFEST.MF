@@ -18,7 +18,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.globaltester.lib.apache.fop,
  org.globaltester.lib.apache.xml,
  org.globaltester.testrunner.doc;resolution:=optional,
- org.eclipse.core.commands
+ org.eclipse.core.commands,
+ org.globaltester.testmanager
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: org.globaltester.testrunner,
@@ -27,3 +28,4 @@ Export-Package: org.globaltester.testrunner,
  org.globaltester.testrunner.testframework,
  org.globaltester.testrunner.utils
 Eclipse-ExtensibleAPI: true
+Import-Package: org.globaltester.testmanager.testframework

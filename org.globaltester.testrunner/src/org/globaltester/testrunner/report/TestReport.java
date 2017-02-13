@@ -1,16 +1,21 @@
 package org.globaltester.testrunner.report;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.globaltester.sampleconfiguration.SampleConfig;
+import org.globaltester.testmanager.testframework.TestCase;
 import org.globaltester.testrunner.testframework.IExecution;
 import org.globaltester.testrunner.testframework.TestCampaign;
 import org.globaltester.testrunner.testframework.TestCampaignExecution;
+import org.globaltester.testrunner.testframework.TestCaseExecution;
 
 /**
  * Represents a test report with fixed values stored from the results of a
@@ -43,6 +48,8 @@ public class TestReport {
 	
 	private String platformId = "unknown";
 	private String sampleId = "unknown";
+	
+	private HashSet<String> selectedProfiles = new HashSet<>();
 
 	private LinkedList<TestReportPart> elements = new LinkedList<TestReportPart>();
 	
@@ -61,8 +68,20 @@ public class TestReport {
 		specName = campaign.getSpecName();
 		specVersion = campaign.getSpecVersion();
 		
+		TestCase currentTestCase;
 		for(IExecution currentIexecution : campaignExec.getChildren()) {
 			elements.add(new TestReportPart(currentIexecution));
+			
+			if(currentIexecution instanceof TestCaseExecution) {
+				try {
+					currentTestCase = new TestCase(((TestCaseExecution) currentIexecution).getIFile());
+					selectedProfiles.addAll(parseProfileString(currentTestCase.getTestCaseProfile()));
+				} catch (FileNotFoundException e) {
+					// do nothing
+				}
+				
+				
+			}
 		}
 		
 		logFiles = new ArrayList<>();
@@ -81,6 +100,29 @@ public class TestReport {
 		platformId = sampleConfig.getPlatformId();
 		sampleId = sampleConfig.getSampleId();
 		
+	}
+	
+	/**
+	 * This method parses a String separated by commas.
+	 * It returns a Set containing all unique trimmed single Strings.
+	 * @param profileString the String to be parsed
+	 * @return the resulting set, may be empty
+	 */
+	public static Set<String> parseProfileString(String profileString) {
+		String currentProfile;
+		String[] currentprofiles;
+		HashSet<String> parsedProfiles = new HashSet<>();
+		
+		currentprofiles = profileString.split(",");
+		
+		for(String currentSingleProfile : currentprofiles) {
+			currentProfile = currentSingleProfile.trim();
+			if(currentProfile.length() > 0) {
+				parsedProfiles.add(currentProfile);
+			}
+		}
+		
+		return parsedProfiles;
 	}
 
 	/**
@@ -104,6 +146,8 @@ public class TestReport {
 		
 		sampleId = origReport.sampleId;
 		platformId = origReport.platformId;
+		
+		selectedProfiles = origReport.selectedProfiles;
 		
 		Iterator<TestReportPart> elemIter = origReport.elements.iterator();
 		while (elemIter.hasNext()) {
@@ -163,6 +207,10 @@ public class TestReport {
 	
 	public String getSampleId() {
 		return sampleId;
+	}
+	
+	public Set<String> getSelectedProfiles() {
+		return selectedProfiles;
 	}
 
 }
