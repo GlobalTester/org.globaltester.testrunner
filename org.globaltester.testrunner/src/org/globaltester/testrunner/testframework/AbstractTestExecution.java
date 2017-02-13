@@ -148,6 +148,11 @@ public abstract class AbstractTestExecution implements IExecution {
 	public long getLastExecutionStartTime() {
 		return lastExecutionStartTime;
 	}
+	
+	@Override
+	public long getStartTime() {
+		return getLastExecutionStartTime();
+	}
 
 	public String getLastExecutionStartTimeAsString() {
 		return DateFormat.getDateTimeInstance().format(
@@ -156,6 +161,11 @@ public abstract class AbstractTestExecution implements IExecution {
 	
 	public long getLastExecutionDuration() {
 		return lastExecutionDuration;
+	}
+	
+	@Override
+	public long getDuration() {
+		return getLastExecutionDuration();
 	}
 
 	@Override

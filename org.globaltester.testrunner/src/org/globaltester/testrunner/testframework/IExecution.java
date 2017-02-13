@@ -22,7 +22,17 @@ public interface IExecution {
 
 	public abstract Status getStatus();
 
-	public abstract double getTime();
+	/**
+	 * Start time of this {@link IExecution}, formated as {@link java.util.Date#getTime()}
+	 * @return
+	 */
+	public abstract long getStartTime();
+	
+	/**
+	 * Duration of this {@link IExecution} in milliseconds
+	 * @return
+	 */
+	public abstract long getDuration();
 
 	public abstract String getId();
 	

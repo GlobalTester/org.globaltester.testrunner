@@ -171,11 +171,6 @@ public abstract class ActionStepExecution extends AbstractTestExecution {
 	}
 
 	@Override
-	public double getTime() {
-		return 0;
-	}
-
-	@Override
 	public String getId() {
 		return actionStep.getId();
 	}

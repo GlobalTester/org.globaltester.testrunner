@@ -25,7 +25,7 @@ public class TestReportPart {
 		comment = iExecution.getComment();
 		description = iExecution.getDescription();
 		status = iExecution.getStatus();
-		time = iExecution.getTime();
+		time = iExecution.getDuration();
 	}
 
 	public String getID() {

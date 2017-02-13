@@ -193,14 +193,14 @@ public class TestCampaignExecution extends FileTestExecution {
 	}
 
 	@Override
-	public double getTime() {
-		double time = 0;
+	public long getDuration() {
+		long duration = 0;
 		for (Iterator<IExecution> execIter = elementExecutions.iterator(); execIter
 				.hasNext();) {
-			time += execIter.next().getTime();
+			duration += execIter.next().getDuration();
 		}
 
-		return time;
+		return duration;
 	}
 
 	@Override

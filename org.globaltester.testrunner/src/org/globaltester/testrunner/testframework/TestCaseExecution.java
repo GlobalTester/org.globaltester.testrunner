@@ -314,12 +314,6 @@ public class TestCaseExecution extends FileTestExecution {
 	}
 
 	@Override
-	public double getTime() {
-		// IMPL TestCaseExecution time
-		return 0;
-	}
-
-	@Override
 	public String getId() {
 		return getTestCase().getTestCaseID();
 	}
