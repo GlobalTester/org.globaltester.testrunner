@@ -28,6 +28,7 @@ public class TestCampaignExecution extends FileTestExecution {
 	List<IExecution> elementExecutions = new ArrayList<IExecution>();
 	private TestCampaignExecution previousExecution;
 	private SampleConfig sampleConfig;
+	private String cardReaderName;
 	
 	@Override
 	void extractFromXml(Element root) {
@@ -37,6 +38,12 @@ public class TestCampaignExecution extends FileTestExecution {
 		Element sampleConfigElement = root.getChild("SampleConfiguration");
 		if (sampleConfigElement != null) {
 			sampleConfig = new SampleConfig(sampleConfigElement);
+		}
+		
+		// extract cardReaderName
+		Element cardReaderNameElement = root.getChild("CardReaderName");
+		if (sampleConfigElement != null) {
+			cardReaderName = cardReaderNameElement.getTextTrim();
 		}
 		
 		try {
@@ -92,6 +99,13 @@ public class TestCampaignExecution extends FileTestExecution {
 			Element sampleConfigElement = new Element("SampleConfiguration");
 			sampleConfig.dumpToXml(sampleConfigElement);
 			root.addContent(sampleConfigElement);
+		}
+		
+		// dump cardReaderName
+		if (cardReaderName != null) {
+			Element cardReaderNameElement = new Element("CardReaderName");
+			cardReaderNameElement.addContent(cardReaderName);
+			root.addContent(cardReaderNameElement);
 		}
 		
 		// dump previous execution
@@ -154,7 +168,6 @@ public class TestCampaignExecution extends FileTestExecution {
 			}
 			
 		}
-		
 	}
 
 	@Override
@@ -211,7 +224,7 @@ public class TestCampaignExecution extends FileTestExecution {
 	@Override
 	protected void createIFile() {
 		if(!iFile.exists()){
-			Element root = new Element("TestCampaignExecution");			
+			Element root = new Element("TestCampaignExecution");
 			XMLHelper.saveDoc(iFile, root);
 		}
 	}
@@ -348,6 +361,14 @@ public class TestCampaignExecution extends FileTestExecution {
 	public void setSampleConfig(SampleConfig newSampleConfig) {
 		this.sampleConfig = newSampleConfig;
 		
+	}
+
+	public String getCardReaderName() {
+		return cardReaderName;
+	}
+
+	public void setCardReaderName(String cardReaderName) {
+		this.cardReaderName = cardReaderName;
 	}
 
 }
