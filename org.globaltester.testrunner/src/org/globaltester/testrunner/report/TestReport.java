@@ -1,7 +1,6 @@
 package org.globaltester.testrunner.report;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -10,12 +9,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.core.runtime.CoreException;
 import org.globaltester.sampleconfiguration.SampleConfig;
-import org.globaltester.testmanager.testframework.TestCase;
 import org.globaltester.testrunner.testframework.IExecution;
 import org.globaltester.testrunner.testframework.TestCampaign;
 import org.globaltester.testrunner.testframework.TestCampaignExecution;
 import org.globaltester.testrunner.testframework.TestCaseExecution;
+import org.globaltester.testspecification.testframework.TestCase;
 
 /**
  * Represents a test report with fixed values stored from the results of a
@@ -75,12 +75,10 @@ public class TestReport {
 			if(currentIexecution instanceof TestCaseExecution) {
 				try {
 					currentTestCase = new TestCase(((TestCaseExecution) currentIexecution).getIFile());
-					selectedProfiles.addAll(parseProfileString(currentTestCase.getTestCaseProfile()));
-				} catch (FileNotFoundException e) {
+					selectedProfiles.addAll(parseProfileString(currentTestCase.getProfileString()));
+				} catch (CoreException e) {
 					// do nothing
 				}
-				
-				
 			}
 		}
 		
