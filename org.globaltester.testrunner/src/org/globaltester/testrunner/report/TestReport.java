@@ -49,6 +49,7 @@ public class TestReport {
 	
 	private String platformId = "unknown";
 	private String sampleId = "unknown";
+	private String cardReaderName = "unknown";
 	
 	private HashSet<String> selectedProfiles = new HashSet<>();
 
@@ -94,6 +95,8 @@ public class TestReport {
 		executionTime = date.toString();
 		
 		executingUser = campaignExec.getExecutingUser();
+		
+		cardReaderName = campaignExec.getCardReaderName();
 		
 		SampleConfig sampleConfig = campaignExec.getSampleConfig();
 		platformId = sampleConfig.getPlatformId();
@@ -145,6 +148,8 @@ public class TestReport {
 		
 		sampleId = origReport.sampleId;
 		platformId = origReport.platformId;
+		
+		cardReaderName = origReport.cardReaderName;
 		
 		selectedProfiles = origReport.selectedProfiles;
 		
@@ -210,6 +215,10 @@ public class TestReport {
 	
 	public Set<String> getSelectedProfiles() {
 		return selectedProfiles;
+	}
+
+	public String getCardReaderName() {
+		return cardReaderName;
 	}
 
 }
