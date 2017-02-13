@@ -96,11 +96,19 @@ public class ReportXmlGenerator {
 //				.getInt(PreferenceConstants.P_TESTSUITEINTEGRITY)];
 //		integrityOfTestSuite.setText(integrity);
 //		root.addContent(integrityOfTestSuite);
-//
-//		Element profileNames = new Element("PROFILES");
-//		profileNames.setText(testSuite.getProfiles());
-//		root.addContent(profileNames);
-//
+		
+		String profileString = "";
+		for(String currentProfile : report.getSelectedProfiles()) {
+			if(profileString.length() > 0) {
+				profileString += ", ";
+			}
+			profileString += currentProfile;
+		}
+		
+		Element profileNames = new Element("PROFILES");
+		profileNames.setText(profileString);
+		root.addContent(profileNames);
+
 //		Element reportAddInfo = new Element("ADDITIONALINFO");
 //		// let all dependent plug-ins integrate in start process
 //		Iterator<ITestExtender> iter = Activator.testExtenders.iterator();
