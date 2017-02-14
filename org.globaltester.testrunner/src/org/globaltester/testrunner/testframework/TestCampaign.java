@@ -199,6 +199,10 @@ public class TestCampaign {
 		String cardReaderName = PreferenceHelper.getPreferenceValue("org.globaltester.testmanager", "Card reader name");
 		currentExecution.setCardReaderName(cardReaderName);
 		
+		String integrityOfTestSuiteProvidedRaw = PreferenceHelper.getPreferenceValue("org.globaltester.testmanager", "Integrity of test suite");
+		boolean integrityOfTestSuiteProvided = Boolean.getBoolean(integrityOfTestSuiteProvidedRaw);
+		currentExecution.setIntegrityOfTestSuiteProvided(integrityOfTestSuiteProvided);
+		
 		// execute the TestExecutable
 		currentExecution.execute(monitor, envSettings);
 		
