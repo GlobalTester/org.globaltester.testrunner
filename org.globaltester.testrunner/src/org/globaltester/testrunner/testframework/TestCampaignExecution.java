@@ -29,6 +29,7 @@ public class TestCampaignExecution extends FileTestExecution {
 	private TestCampaignExecution previousExecution;
 	private SampleConfig sampleConfig;
 	private String cardReaderName;
+	private boolean integrityOfTestSuiteProvided;
 	
 	@Override
 	void extractFromXml(Element root) {
@@ -42,8 +43,14 @@ public class TestCampaignExecution extends FileTestExecution {
 		
 		// extract cardReaderName
 		Element cardReaderNameElement = root.getChild("CardReaderName");
-		if (sampleConfigElement != null) {
+		if (cardReaderNameElement != null) {
 			cardReaderName = cardReaderNameElement.getTextTrim();
+		}
+		
+		// extract integrityOfTestSuiteProvided
+		Element integrityOfTestSuiteProvidedElement = root.getChild("IntegrityOfTestSuiteProvided");
+		if (integrityOfTestSuiteProvidedElement != null) {
+			integrityOfTestSuiteProvided = Boolean.getBoolean(integrityOfTestSuiteProvidedElement.getTextTrim());
 		}
 		
 		try {
@@ -107,6 +114,11 @@ public class TestCampaignExecution extends FileTestExecution {
 			cardReaderNameElement.addContent(cardReaderName);
 			root.addContent(cardReaderNameElement);
 		}
+		
+		// dump integrityOfTestSuiteProvided
+		Element integrityOfTestSuiteProvidedElement = new Element("IntegrityOfTestSuiteProvided");
+		integrityOfTestSuiteProvidedElement.addContent(integrityOfTestSuiteProvidedElement);
+		root.addContent(integrityOfTestSuiteProvidedElement);
 		
 		// dump previous execution
 		if (previousExecution != null) {
@@ -369,6 +381,14 @@ public class TestCampaignExecution extends FileTestExecution {
 
 	public void setCardReaderName(String cardReaderName) {
 		this.cardReaderName = cardReaderName;
+	}
+
+	public boolean isIntegrityOfTestSuiteProvided() {
+		return integrityOfTestSuiteProvided;
+	}
+
+	public void setIntegrityOfTestSuiteProvided(boolean integrityOfTestSuiteProvided) {
+		this.integrityOfTestSuiteProvided = integrityOfTestSuiteProvided;
 	}
 
 }
