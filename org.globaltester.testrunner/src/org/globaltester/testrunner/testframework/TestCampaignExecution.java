@@ -117,7 +117,7 @@ public class TestCampaignExecution extends FileTestExecution {
 		
 		// dump integrityOfTestSuiteProvided
 		Element integrityOfTestSuiteProvidedElement = new Element("IntegrityOfTestSuiteProvided");
-		integrityOfTestSuiteProvidedElement.addContent(integrityOfTestSuiteProvidedElement);
+		integrityOfTestSuiteProvidedElement.addContent(String.valueOf(integrityOfTestSuiteProvided));
 		root.addContent(integrityOfTestSuiteProvidedElement);
 		
 		// dump previous execution
