@@ -282,7 +282,9 @@ public class ReportXmlGenerator {
 		root.addContent(reportTestSessionTime);
 		
 		Element reportLogFile = new Element("LOGFILE");
-		reportLogFile.setText(report.getLogFiles().get(0));
+		
+		String[] logFileNamePathElements = report.getLogFiles().get(0).split("\\" + File.separator);
+		reportLogFile.setText(logFileNamePathElements[logFileNamePathElements.length - 1]);
 		root.addContent(reportLogFile);
 
 		Element reportDirectory = new Element("REPORTDIR");
