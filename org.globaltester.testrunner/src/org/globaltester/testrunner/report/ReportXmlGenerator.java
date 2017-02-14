@@ -89,12 +89,9 @@ public class ReportXmlGenerator {
 		readerName.setText(cardReaderName);
 		root.addContent(readerName);
 
-//		Element integrityOfTestSuite = new Element("INTEGRITY");
-//		String integrity = FileChecksum.RESULTS[Activator.getDefault()
-//				.getPreferenceStore()
-//				.getInt(PreferenceConstants.P_TESTSUITEINTEGRITY)];
-//		integrityOfTestSuite.setText(integrity);
-//		root.addContent(integrityOfTestSuite);
+		Element integrityOfTestSuite = new Element("INTEGRITY");
+		integrityOfTestSuite.setText(String.valueOf(report.isIntegrityOfTestSuiteProvided()));
+		root.addContent(integrityOfTestSuite);
 		
 		String profileString = "";
 		for(String currentProfile : report.getSelectedProfiles()) {
