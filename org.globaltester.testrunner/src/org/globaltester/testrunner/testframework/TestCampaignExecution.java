@@ -319,7 +319,10 @@ public class TestCampaignExecution extends FileTestExecution {
 			GtResourceHelper.createWithAllParents(defaultLoggingDir);
 
 			TestLogger.init(project.getNewResultDir());
+			
+			//set the log file
 			setLogFileName(TestLogger.getLogFileName());
+			setLogFileLine(TestLogger.getLogFileLine());
 			
 			progress.worked(1);
 
