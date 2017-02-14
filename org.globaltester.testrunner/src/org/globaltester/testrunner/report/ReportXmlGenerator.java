@@ -276,6 +276,10 @@ public class ReportXmlGenerator {
 		reportTestSessionTime
 				.setText(String.valueOf(Math.rint(sessionTime) / 1000.));
 		root.addContent(reportTestSessionTime);
+		
+		Element reportLogFile = new Element("LOGFILE");
+		reportLogFile.setText(report.getLogFiles().get(0));
+		root.addContent(reportLogFile);
 
 		Element reportDirectory = new Element("REPORTDIR");
 		reportDirectory.setText(report.getReportDir().toURI().toString());
