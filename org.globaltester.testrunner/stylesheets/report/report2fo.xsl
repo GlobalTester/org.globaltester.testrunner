@@ -14,18 +14,9 @@
       <fo:page-sequence master-reference="A4-portrait">
         <fo:flow flow-name="xsl-region-body">
 
-          <fo:table text-align="center" border-spacing="0pt" width="100%" table-layout="fixed">
-            <fo:table-body>
-              <fo:table-row>
-                <fo:table-cell padding="0pt" >
-                  <fo:block text-align="left">
-                   <fo:external-graphic src="url('Header_GT.png')"
-                      content-width="17.0cm" />
-                  </fo:block>
-                </fo:table-cell>
-              </fo:table-row>
-            </fo:table-body>
-          </fo:table>
+          <fo:block text-align="left">
+            <fo:external-graphic src="url('Header_GT.png')" width="100%" content-width="scale-to-fit" content-height="100%" scaling="uniform"/>
+          </fo:block>
           
           <fo:block font-weight="bold" line-height="2"> GlobalTester Test Report</fo:block>
 
