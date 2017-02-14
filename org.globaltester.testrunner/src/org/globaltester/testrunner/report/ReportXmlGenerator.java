@@ -270,7 +270,7 @@ public class ReportXmlGenerator {
 		Element reportStatus = new Element("STATUS");
 		
 		if(executedTests == passedTests) {
-			reportStatus.setText("SUCCESS");
+			reportStatus.setText("PASSED");
 		} else{
 			reportStatus.setText("FAILURE");
 		}
