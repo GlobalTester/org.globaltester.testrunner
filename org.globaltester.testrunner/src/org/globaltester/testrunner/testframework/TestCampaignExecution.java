@@ -1,6 +1,5 @@
 package org.globaltester.testrunner.testframework;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -322,8 +321,7 @@ public class TestCampaignExecution extends FileTestExecution {
 			TestLogger.init(project.getNewResultDir());
 			
 			//set the log file
-			String[] logFileNamePathElements = TestLogger.getLogFileName().split("\\" + File.separator);
-			setLogFileName(logFileNamePathElements[logFileNamePathElements.length - 1]);
+			setLogFileName(TestLogger.getLogFileName());
 			setLogFileLine(TestLogger.getLogFileLine());
 			
 			progress.worked(1);
