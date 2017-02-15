@@ -28,6 +28,8 @@ public class TestCampaignExecution extends FileTestExecution {
 	List<IExecution> elementExecutions = new ArrayList<IExecution>();
 	private TestCampaignExecution previousExecution;
 	private SampleConfig sampleConfig;
+	private String cardReaderName;
+	private boolean integrityOfTestSuiteProvided;
 	
 	@Override
 	void extractFromXml(Element root) {
@@ -37,6 +39,18 @@ public class TestCampaignExecution extends FileTestExecution {
 		Element sampleConfigElement = root.getChild("SampleConfiguration");
 		if (sampleConfigElement != null) {
 			sampleConfig = new SampleConfig(sampleConfigElement);
+		}
+		
+		// extract cardReaderName
+		Element cardReaderNameElement = root.getChild("CardReaderName");
+		if (cardReaderNameElement != null) {
+			cardReaderName = cardReaderNameElement.getTextTrim();
+		}
+		
+		// extract integrityOfTestSuiteProvided
+		Element integrityOfTestSuiteProvidedElement = root.getChild("IntegrityOfTestSuiteProvided");
+		if (integrityOfTestSuiteProvidedElement != null) {
+			integrityOfTestSuiteProvided = Boolean.getBoolean(integrityOfTestSuiteProvidedElement.getTextTrim());
 		}
 		
 		try {
@@ -93,6 +107,18 @@ public class TestCampaignExecution extends FileTestExecution {
 			sampleConfig.dumpToXml(sampleConfigElement);
 			root.addContent(sampleConfigElement);
 		}
+		
+		// dump cardReaderName
+		if (cardReaderName != null) {
+			Element cardReaderNameElement = new Element("CardReaderName");
+			cardReaderNameElement.addContent(cardReaderName);
+			root.addContent(cardReaderNameElement);
+		}
+		
+		// dump integrityOfTestSuiteProvided
+		Element integrityOfTestSuiteProvidedElement = new Element("IntegrityOfTestSuiteProvided");
+		integrityOfTestSuiteProvidedElement.addContent(String.valueOf(integrityOfTestSuiteProvided));
+		root.addContent(integrityOfTestSuiteProvidedElement);
 		
 		// dump previous execution
 		if (previousExecution != null) {
@@ -154,7 +180,6 @@ public class TestCampaignExecution extends FileTestExecution {
 			}
 			
 		}
-		
 	}
 
 	@Override
@@ -211,7 +236,7 @@ public class TestCampaignExecution extends FileTestExecution {
 	@Override
 	protected void createIFile() {
 		if(!iFile.exists()){
-			Element root = new Element("TestCampaignExecution");			
+			Element root = new Element("TestCampaignExecution");
 			XMLHelper.saveDoc(iFile, root);
 		}
 	}
@@ -294,7 +319,10 @@ public class TestCampaignExecution extends FileTestExecution {
 			GtResourceHelper.createWithAllParents(defaultLoggingDir);
 
 			TestLogger.init(project.getNewResultDir());
+			
+			//set the log file
 			setLogFileName(TestLogger.getLogFileName());
+			setLogFileLine(TestLogger.getLogFileLine());
 			
 			progress.worked(1);
 
@@ -348,6 +376,22 @@ public class TestCampaignExecution extends FileTestExecution {
 	public void setSampleConfig(SampleConfig newSampleConfig) {
 		this.sampleConfig = newSampleConfig;
 		
+	}
+
+	public String getCardReaderName() {
+		return cardReaderName;
+	}
+
+	public void setCardReaderName(String cardReaderName) {
+		this.cardReaderName = cardReaderName;
+	}
+
+	public boolean isIntegrityOfTestSuiteProvided() {
+		return integrityOfTestSuiteProvided;
+	}
+
+	public void setIntegrityOfTestSuiteProvided(boolean integrityOfTestSuiteProvided) {
+		this.integrityOfTestSuiteProvided = integrityOfTestSuiteProvided;
 	}
 
 }

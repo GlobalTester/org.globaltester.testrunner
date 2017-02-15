@@ -129,7 +129,11 @@ public class TestCaseExecution extends FileTestExecution {
 		
 		// dump execution information to logfile
 		TestLogger.initTestExecutable(getId());
+		
+		//set the log file
 		setLogFileName(TestLogger.getTestCaseLogFileName());
+		setLogFileLine(TestLogger.getLogFileLine());
+		
 		getTestCase().dumpTestCaseInfos();
 		
 		// check provider capabilities

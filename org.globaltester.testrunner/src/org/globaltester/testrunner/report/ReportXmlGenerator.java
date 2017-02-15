@@ -34,7 +34,8 @@ public class ReportXmlGenerator {
 	 * @return xml structure
 	 */
 	public static Element createXmlReport(TestReport report) {
-
+		
+		int executedTests = 0;
 		int passedTests = 0;
 		int failedTests = 0;
 		double sessionTime = 0;
@@ -71,39 +72,43 @@ public class ReportXmlGenerator {
 		reportDate.setText(report.getExecutionTime());
 		root.addContent(reportDate);
 
-//		Element reportUser = new Element("USER");
-//		reportUser.setText(System.getProperty("user.name"));
-//		root.addContent(reportUser);
-//
-//		Element platformID = new Element("PLATFORMID");
-//		String platformIDString = Activator.getDefault().getPreferenceStore()
-//				.getString(PreferenceConstants.P_CSVPLATFORMID);
-//		platformID.setText(platformIDString);
-//		root.addContent(platformID);
-//
-//		Element sampleID = new Element("SAMPLEID");
-//		String sampleIDString = Activator.getDefault().getPreferenceStore()
-//				.getString(PreferenceConstants.P_CSVSAMPLEID);
-//		sampleID.setText(sampleIDString);
-//		root.addContent(sampleID);
-//
-//		Element readerName = new Element("READER");
-//		String cardReaderName = Activator.getDefault().getPreferenceStore()
-//				.getString(PreferenceConstants.P_CARDREADERNAME);
-//		readerName.setText(cardReaderName);
-//		root.addContent(readerName);
-//
-//		Element integrityOfTestSuite = new Element("INTEGRITY");
-//		String integrity = FileChecksum.RESULTS[Activator.getDefault()
-//				.getPreferenceStore()
-//				.getInt(PreferenceConstants.P_TESTSUITEINTEGRITY)];
-//		integrityOfTestSuite.setText(integrity);
-//		root.addContent(integrityOfTestSuite);
-//
-//		Element profileNames = new Element("PROFILES");
-//		profileNames.setText(testSuite.getProfiles());
-//		root.addContent(profileNames);
-//
+		Element reportUser = new Element("USER");
+		reportUser.setText(report.getExecutingUser());
+		root.addContent(reportUser);
+
+		Element platformID = new Element("PLATFORMID");
+		platformID.setText(report.getPlatformId());
+		root.addContent(platformID);
+
+		Element sampleID = new Element("SAMPLEID");
+		sampleID.setText(report.getSampleId());
+		root.addContent(sampleID);
+
+		Element readerName = new Element("READER");
+		String cardReaderName = report.getCardReaderName();
+		readerName.setText(cardReaderName);
+		root.addContent(readerName);
+
+		Element integrityOfTestSuite = new Element("INTEGRITY");
+		if(report.isIntegrityOfTestSuiteProvided()) {
+			integrityOfTestSuite.setText("valid");
+		} else{
+			integrityOfTestSuite.setText("inconsistent");
+		}
+		root.addContent(integrityOfTestSuite);
+		
+		String profileString = "";
+		for(String currentProfile : report.getSelectedProfiles()) {
+			if(profileString.length() > 0) {
+				profileString += ", ";
+			}
+			profileString += currentProfile;
+		}
+		
+		Element profileNames = new Element("PROFILES");
+		profileNames.setText(profileString);
+		root.addContent(profileNames);
+
 //		Element reportAddInfo = new Element("ADDITIONALINFO");
 //		// let all dependent plug-ins integrate in start process
 //		Iterator<ITestExtender> iter = Activator.testExtenders.iterator();
@@ -117,15 +122,6 @@ public class ReportXmlGenerator {
 //			}
 //			root.addContent(reportAddInfo);
 //		}
-//
-//		Element reportStatus = new Element("STATUS");
-//		reportStatus.setText(testSuite.getTestSuiteStatus());
-//		root.addContent(reportStatus);
-//
-//		Element reportExcutedTests = new Element("EXECUTEDTESTS");
-//		reportExcutedTests.setText(new Integer(testSuite.getTestCases().size())
-//				.toString());
-//		root.addContent(reportExcutedTests);
 //
 //		Element reportFailures = new Element("FAILURES");
 //		reportFailures.setText((new Integer(testSuite.getFailures()))
@@ -189,6 +185,8 @@ public class ReportXmlGenerator {
 			Element reportTestCaseStatus = new Element("TESTCASESTATUS");
 			reportTestCaseStatus.setText(testReportPart.getStatus().toString());
 			reportTestCase.addContent(reportTestCaseStatus);
+			
+			executedTests++;
 			if (Status.PASSED.equals(testReportPart.getStatus())) {
 				passedTests++;
 			} else if (Status.FAILURE.equals(testReportPart.getStatus())) {
@@ -256,6 +254,10 @@ public class ReportXmlGenerator {
 			root.addContent(reportTestCase);
 
 		}
+		
+		Element reportExcutedTests = new Element("EXECUTEDTESTS");
+		reportExcutedTests.setText(Integer.valueOf(executedTests).toString());
+		root.addContent(reportExcutedTests);
 
 		Element reportTestsFailed = new Element("FAILEDTESTS");
 		reportTestsFailed.setText(Integer.valueOf(failedTests).toString());
@@ -264,11 +266,26 @@ public class ReportXmlGenerator {
 		Element reportTestsPassed = new Element("PASSEDTESTS");
 		reportTestsPassed.setText(Integer.valueOf(passedTests).toString());
 		root.addContent(reportTestsPassed);
+		
+		Element reportStatus = new Element("STATUS");
+		
+		if(executedTests == passedTests) {
+			reportStatus.setText("PASSED");
+		} else{
+			reportStatus.setText("FAILURE");
+		}
+		root.addContent(reportStatus);
 
 		Element reportTestSessionTime = new Element("TESTSESSIONTIME");
 		reportTestSessionTime
 				.setText(String.valueOf(Math.rint(sessionTime) / 1000.));
 		root.addContent(reportTestSessionTime);
+		
+		Element reportLogFile = new Element("LOGFILE");
+		
+		String[] logFileNamePathElements = report.getLogFiles().get(0).split("\\" + File.separator);
+		reportLogFile.setText(logFileNamePathElements[logFileNamePathElements.length - 1]);
+		root.addContent(reportLogFile);
 
 		Element reportDirectory = new Element("REPORTDIR");
 		reportDirectory.setText(report.getReportDir().toURI().toString());
@@ -354,41 +371,5 @@ public class ReportXmlGenerator {
 			GtErrorLogger.log(Activator.PLUGIN_ID, ex);
 		}
 	}
-	
-
-//	/**
-//	 * Creates the neccessary environment for this test case
-//	 * 
-//	 * @param newReportDirName
-//	 *            directory name of test report
-//	 */
-//	private void createReportEnvironment(String newReportDirName,
-//			String newReportFileName) {
-//		// set dirname and filename
-//		reportDirName = newReportDirName;
-//		reportFileName = newReportFileName;
-//
-//		// create report directory if it does not exist
-//		File reportDir = new File(newReportDirName);
-//		if (!reportDir.exists()) {
-//			reportDir.mkdir();
-//		}
-//
-//		// copy stylesheets to report directory:
-//		IPath pluginDir = Activator.getPluginDir();
-//		String path = pluginDir + internalPath;
-//		File internalTRLogo = new File(path + testReportLogo);
-//		File externalTRLogo = new File(newReportDirName + testReportLogo);
-//		copy(internalTRLogo, externalTRLogo);
-//
-//		File internalTRDTD = new File(path + testReportDTD);
-//		File externalTRDTD = new File(newReportDirName + testReportDTD);
-//		copy(internalTRDTD, externalTRDTD);
-//
-//		File internalTRXSL = new File(path + testReportXSL);
-//		File externalTRXSL = new File(newReportDirName + testReportXSL);
-//		copy(internalTRXSL, externalTRXSL);
-//
-//	}
 	
 }

@@ -1,7 +1,6 @@
 package org.globaltester.testrunner.testframework;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.globaltester.base.xml.XMLHelper;
@@ -103,7 +102,7 @@ public abstract class FileTestExecution extends AbstractTestExecution {
 	 * 
 	 * @return the iFile
 	 */
-	public IResource getIFile() {
+	public IFile getIFile() {
 		return iFile;
 	}
 

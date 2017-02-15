@@ -4,7 +4,6 @@ import java.text.DateFormat;
 import java.util.Date;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.globaltester.logging.legacy.logger.TestLogger;
 import org.globaltester.scriptrunner.RuntimeRequirementsProvider;
 import org.globaltester.testrunner.testframework.Result.Status;
 import org.jdom.Element;
@@ -22,8 +21,9 @@ public abstract class AbstractTestExecution implements IExecution {
 	// store time and duration of last execution
 	protected long lastExecutionStartTime = 0;
 	protected long lastExecutionDuration = 0;
-	private String logFileName;
+	private String logFileName = "unknown";
 	private int logFileLine;
+	private String executingUser = "unknown";
 
 	public Result getResult() {
 		return result;
@@ -39,6 +39,10 @@ public abstract class AbstractTestExecution implements IExecution {
 	
 	public int getLogFileLine(){
 		return logFileLine;
+	}
+
+	public void setLogFileLine(int logFileLine) {
+		this.logFileLine = logFileLine;
 	}
 
 	/**
@@ -118,16 +122,14 @@ public abstract class AbstractTestExecution implements IExecution {
 		boolean reExecution = lastExecutionStartTime != 0;
 
 		lastExecutionStartTime = new Date().getTime();
-
-		//set the log file
-		logFileName = TestLogger.getTestCaseLogFileName();
-		logFileLine = TestLogger.getLogFileLine();
 		
 		// forward the execution to the implementing class
 		execute(provider, forceExecution, reExecution, monitor);
 
 		// calculate execution duration
 		lastExecutionDuration = new Date().getTime() - lastExecutionStartTime;
+		
+		executingUser = System.getProperty("user.name");
 
 	}
 
@@ -178,6 +180,10 @@ public abstract class AbstractTestExecution implements IExecution {
 	 * @return
 	 */
 	protected abstract String getXmlRootElementName();
+	
+	public String getExecutingUser() {
+		return executingUser;
+	}
 
 	
 }

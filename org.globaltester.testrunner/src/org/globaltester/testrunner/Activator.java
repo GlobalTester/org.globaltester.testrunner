@@ -1,5 +1,11 @@
 package org.globaltester.testrunner;
 
+import java.io.IOException;
+import java.net.URL;
+
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
@@ -30,6 +36,22 @@ public class Activator implements BundleActivator {
 	 */
 	public void stop(BundleContext bundleContext) throws Exception {
 		Activator.setContext(null);
+	}
+	
+	/**
+	 * Returns the current path of GlobalTester_Plugin
+	 */
+	public static IPath getPluginDir() {
+		URL url = context.getBundle().getEntry("/");
+		
+		IPath pluginDir = null;
+		try {
+			pluginDir = new Path(FileLocator.toFileURL(url).getPath());
+			return pluginDir;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 }

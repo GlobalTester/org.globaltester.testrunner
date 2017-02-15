@@ -11,6 +11,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.globaltester.base.PreferenceHelper;
 import org.globaltester.base.xml.XMLHelper;
 import org.globaltester.sampleconfiguration.SampleConfig;
 import org.globaltester.scriptrunner.TestExecutionCallback;
@@ -194,7 +195,14 @@ public class TestCampaign {
 		executions.addFirst(currentExecution);
 
 		currentExecution.setSampleConfig((SampleConfig)configuration.get(SampleConfig.class));
-
+		
+		String cardReaderName = PreferenceHelper.getPreferenceValue("org.globaltester.testmanager", "Card reader name");
+		currentExecution.setCardReaderName(cardReaderName);
+		
+		String integrityOfTestSuiteProvidedRaw = PreferenceHelper.getPreferenceValue("org.globaltester.testmanager", "Integrity of test suite");
+		boolean integrityOfTestSuiteProvided = Boolean.getBoolean(integrityOfTestSuiteProvidedRaw);
+		currentExecution.setIntegrityOfTestSuiteProvided(integrityOfTestSuiteProvided);
+		
 		// execute the TestExecutable
 		currentExecution.execute(monitor, envSettings);
 		
