@@ -12,6 +12,7 @@ import java.util.Set;
 import org.eclipse.core.runtime.CoreException;
 import org.globaltester.sampleconfiguration.SampleConfig;
 import org.globaltester.testrunner.testframework.IExecution;
+import org.globaltester.testrunner.testframework.Result.Status;
 import org.globaltester.testrunner.testframework.TestCampaign;
 import org.globaltester.testrunner.testframework.TestCampaignExecution;
 import org.globaltester.testrunner.testframework.TestCaseExecution;
@@ -72,13 +73,18 @@ public class TestReport {
 		specVersion = campaign.getSpecVersion();
 		
 		FileTestExecutable fileTestExecutable;
+		TestCaseExecution currentTestCaseExecution;
 		for(IExecution currentIexecution : campaignExec.getChildren()) {
 			elements.add(new TestReportPart(currentIexecution));
 			
 			if(currentIexecution instanceof TestCaseExecution) {
 				try {
-					fileTestExecutable = TestExecutableFactory.getInstance(((TestCaseExecution) currentIexecution).getSpecFile());
-					selectedProfiles.addAll(parseProfileString(fileTestExecutable.getProfileString()));
+					currentTestCaseExecution = ((TestCaseExecution) currentIexecution);
+					fileTestExecutable = TestExecutableFactory.getInstance(currentTestCaseExecution.getSpecFile());
+					
+					if(!(currentTestCaseExecution.getStatus().equals(Status.NOT_APPLICABLE))) {
+						selectedProfiles.addAll(parseProfileString(fileTestExecutable.getProfileString()));
+					}
 				} catch (CoreException e) {
 					// do nothing
 				}
