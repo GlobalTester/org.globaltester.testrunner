@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.util.Date;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.globaltester.logging.legacy.logger.TestLogger;
 import org.globaltester.scriptrunner.RuntimeRequirementsProvider;
 import org.globaltester.testrunner.testframework.Result.Status;
 import org.jdom.Element;
@@ -122,6 +123,10 @@ public abstract class AbstractTestExecution implements IExecution {
 		boolean reExecution = lastExecutionStartTime != 0;
 
 		lastExecutionStartTime = new Date().getTime();
+		
+		//set the log file
+		setLogFileName(TestLogger.getTestCaseLogFileName());
+		setLogFileLine(TestLogger.getLogFileLine());
 		
 		// forward the execution to the implementing class
 		execute(provider, forceExecution, reExecution, monitor);
