@@ -36,7 +36,7 @@
                      id="org.globaltester.testrunner.ui.RunDropDown"
                      label="Run Test"
                      style="pulldown"
-                     tooltip="Execute TestCampaign">
+                     tooltip="Execute tests">
                </command>
                  <command
                        commandId="org.globaltester.testrunner.ui.commands.CreateTestCampaignCommand"
@@ -56,15 +56,15 @@
                     icon="icons/execute.png"
                     label="Run Test"
                     style="push"
-                    tooltip="Execute TestCampaign">
+                    tooltip="Execute tests">
               </command>
               <command
                     commandId="org.globaltester.testrunner.ui.commands.RunTestCommand"
                     icon="icons/execute.png"
                     id="org.globaltester.testrunner.ui.commands.RunTestCommand.withSelection"
-                    label="Run Test with configuration selection"
+                    label="Run tests with configuration selection"
                     style="push"
-                    tooltip="Execute TestCampaign with selected configuration">
+                    tooltip="Execute tests with selected configuration">
                  <parameter
                        name="org.globaltester.testrunner.ui.SelectSampleConfigParameter"
                        value="true">
@@ -96,7 +96,7 @@
                        icon="icons/execute.png"
                        label="Run Test"
                        style="push"
-                       tooltip="Execute TestCampaign">
+                       tooltip="Execute tests">
                  </command>
                  <command
                        commandId="org.globaltester.testrunner.ui.commands.CreateTestCampaignCommand"
