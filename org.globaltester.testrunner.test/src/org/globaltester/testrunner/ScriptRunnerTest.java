@@ -54,7 +54,7 @@ public class ScriptRunnerTest {
 
 		sr.close();
 		// asserts
-		assertEquals("Returned default MRZ does not match", "P<D<<MUSTERMANN<<ERIKA<<<<<<<<<<<<<<<<<<<<<<C11T002JM4D<<9608122F1310317<<<<<<<<<<<<<<<6", result);
+		assertEquals("Returned default MRZ does not match", "P<D<<MUSTERMANN<<ERIKA<<<<<<<<<<<<<<<<<<<<<<C11T002JM4D<<9608122F2310314<<<<<<<<<<<<<<<4", result);
 	}
 
 	/**
