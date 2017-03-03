@@ -16,7 +16,9 @@ import org.eclipse.core.commands.IHandler;
 public class CreateAndRunTestCampaignCommandHandler extends CreateTestCampaignCommandHandler {
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		super.execute(event);
-		return new RunTestCommandHandler().execute(event);
+		if (super.execute(event) != null) {
+			return new RunTestCommandHandler().execute(event);
+		}
+		return null;
 	}
 }
