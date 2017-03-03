@@ -374,7 +374,7 @@ public class TestCampaignExecution extends FileTestExecution {
 	}
 
 	public void setSampleConfig(SampleConfig newSampleConfig) {
-		this.sampleConfig = newSampleConfig;
+		this.sampleConfig = newSampleConfig.getCloneForExecution();
 		
 	}
 
