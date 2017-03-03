@@ -12,6 +12,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
@@ -55,6 +56,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
@@ -376,8 +378,19 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 		Button btnGenerateReport = new Button(buttonAreaComp, SWT.NONE);
 		btnGenerateReport.setText("Generate Report");
 		btnGenerateReport.setImage(UiImages.RESULT_ICON.getImage());
+		
+		TestCampaignEditor editor = this;
+		
 		btnGenerateReport.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
+				// check dirty flag
+				if(isDirty()) {
+					int returnCode = openSaveDialog();
+					if(returnCode == SWT.YES) {
+						editor.doSave(new NullProgressMonitor());
+					}
+				}
+				
 				// ask for report location
 				DialogOptions dialogOptions = new DialogOptions();
 				dialogOptions.setMessage("Please select location to store the report files");
@@ -790,6 +803,13 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 				}
 			}
 		}
+	}
+	
+	private int openSaveDialog() {
+		MessageBox mb = new MessageBox(PlatformUI.getWorkbench().getModalDialogShellProvider().getShell(), SWT.ICON_QUESTION | SWT.YES | SWT.NO);
+		mb.setText("Save " + this.getTitle());
+		mb.setMessage("'"+this.getEditorInput().getName()+"' has been modified.\nThe report will only contain changes since the last save.\n\nSave changes?");
+		return mb.open();
 	}
 
 	@Override
