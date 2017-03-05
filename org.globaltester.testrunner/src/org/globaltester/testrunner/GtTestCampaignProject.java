@@ -175,6 +175,20 @@ public class GtTestCampaignProject implements ITreeObservable {
 	}
 
 	/**
+	 * Returns the IFolder that is used to persist TestSpecifications. Although
+	 * IResource operations are handle operations only this will create the
+	 * folder (and its parents if needed).
+	 * 
+	 * @return the IFolder that is used to persist TestSpecifications
+	 * @throws CoreException 
+	 */
+	public IFolder getSpecificationFolder() throws CoreException {
+		IFolder specFolder = iProject.getFolder(SPEC_FOLDER);
+		GtResourceHelper.createWithAllParents(specFolder);
+		return specFolder;
+	}
+
+	/**
 	 * Returns a new IFile where the given TestExecution file for the given
 	 * TestExecutable should be stored for usage by this run
 	 * 

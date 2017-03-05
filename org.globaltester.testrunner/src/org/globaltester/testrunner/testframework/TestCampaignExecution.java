@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -21,6 +22,7 @@ import org.globaltester.scriptrunner.RuntimeRequirementsProvider;
 import org.globaltester.scriptrunner.SampleConfigProviderImpl;
 import org.globaltester.testrunner.Activator;
 import org.globaltester.testrunner.GtTestCampaignProject;
+import org.globaltester.testrunner.utils.TestSpecIntegrityChecker;
 import org.jdom.Document;
 import org.jdom.Element;
 
@@ -29,7 +31,7 @@ public class TestCampaignExecution extends FileTestExecution {
 	private TestCampaignExecution previousExecution;
 	private SampleConfig sampleConfig;
 	private String cardReaderName;
-	private boolean integrityOfTestSuiteProvided;
+	private boolean integrityOfTestSpec;
 	
 	@Override
 	void extractFromXml(Element root) {
@@ -50,7 +52,7 @@ public class TestCampaignExecution extends FileTestExecution {
 		// extract integrityOfTestSuiteProvided
 		Element integrityOfTestSuiteProvidedElement = root.getChild("IntegrityOfTestSuiteProvided");
 		if (integrityOfTestSuiteProvidedElement != null) {
-			integrityOfTestSuiteProvided = Boolean.getBoolean(integrityOfTestSuiteProvidedElement.getTextTrim());
+			integrityOfTestSpec = Boolean.getBoolean(integrityOfTestSuiteProvidedElement.getTextTrim());
 		}
 		
 		try {
@@ -117,7 +119,7 @@ public class TestCampaignExecution extends FileTestExecution {
 		
 		// dump integrityOfTestSuiteProvided
 		Element integrityOfTestSuiteProvidedElement = new Element("IntegrityOfTestSuiteProvided");
-		integrityOfTestSuiteProvidedElement.addContent(String.valueOf(integrityOfTestSuiteProvided));
+		integrityOfTestSuiteProvidedElement.addContent(String.valueOf(integrityOfTestSpec));
 		root.addContent(integrityOfTestSuiteProvidedElement);
 		
 		// dump previous execution
@@ -325,11 +327,18 @@ public class TestCampaignExecution extends FileTestExecution {
 			setLogFileLine(TestLogger.getLogFileLine());
 			
 			progress.worked(1);
+			
+			progress.subTask("IntegrityCheck");
+			IResource[] specsToCheck = project.getSpecificationFolder().members();
+			TestSpecIntegrityChecker integrityChecker = new TestSpecIntegrityChecker();
+			integrityChecker.addSpecsToCheck(specsToCheck);
+			integrityOfTestSpec = integrityChecker.check(false);
+			progress.worked(1);
 
 
 			RuntimeRequirementsProvider provider = new SampleConfigProviderImpl(sampleConfig);
 			
-			execute(provider, false, progress.newChild(98));
+			execute(provider, false, progress.newChild(97));
 			
 			
 			// shutdown the TestLogger
@@ -387,11 +396,7 @@ public class TestCampaignExecution extends FileTestExecution {
 	}
 
 	public boolean isIntegrityOfTestSuiteProvided() {
-		return integrityOfTestSuiteProvided;
-	}
-
-	public void setIntegrityOfTestSuiteProvided(boolean integrityOfTestSuiteProvided) {
-		this.integrityOfTestSuiteProvided = integrityOfTestSuiteProvided;
+		return integrityOfTestSpec;
 	}
 
 }
