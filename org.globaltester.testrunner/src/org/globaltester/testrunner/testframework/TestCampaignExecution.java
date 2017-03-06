@@ -2,10 +2,12 @@ package org.globaltester.testrunner.testframework;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
@@ -22,6 +24,7 @@ import org.globaltester.scriptrunner.RuntimeRequirementsProvider;
 import org.globaltester.scriptrunner.SampleConfigProviderImpl;
 import org.globaltester.testrunner.Activator;
 import org.globaltester.testrunner.GtTestCampaignProject;
+import org.globaltester.testrunner.utils.IntegrityCheckResult;
 import org.globaltester.testrunner.utils.TestSpecIntegrityChecker;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -31,7 +34,7 @@ public class TestCampaignExecution extends FileTestExecution {
 	private TestCampaignExecution previousExecution;
 	private SampleConfig sampleConfig;
 	private String cardReaderName;
-	private boolean integrityOfTestSpec;
+	private String integrityOfTestSpec;
 	
 	@Override
 	void extractFromXml(Element root) {
@@ -52,7 +55,7 @@ public class TestCampaignExecution extends FileTestExecution {
 		// extract integrityOfTestSuiteProvided
 		Element integrityOfTestSuiteProvidedElement = root.getChild("IntegrityOfTestSuiteProvided");
 		if (integrityOfTestSuiteProvidedElement != null) {
-			integrityOfTestSpec = Boolean.getBoolean(integrityOfTestSuiteProvidedElement.getTextTrim());
+			integrityOfTestSpec = integrityOfTestSuiteProvidedElement.getTextTrim();
 		}
 		
 		try {
@@ -328,11 +331,38 @@ public class TestCampaignExecution extends FileTestExecution {
 			
 			progress.worked(1);
 			
-			progress.subTask("IntegrityCheck");
+			progress.subTask("Integrity check of TestSpecifications");
 			IResource[] specsToCheck = project.getSpecificationFolder().members();
 			TestSpecIntegrityChecker integrityChecker = new TestSpecIntegrityChecker();
-			integrityChecker.addSpecsToCheck(specsToCheck);
-			integrityOfTestSpec = integrityChecker.check(false);
+			for (IResource curResource : specsToCheck) {
+				if (curResource instanceof IContainer) {
+					integrityChecker.addSpecsToCheck((IContainer) curResource);
+				}
+			}
+			Map<String, IntegrityCheckResult> integrityResult = integrityChecker.check();
+			ArrayList<String> specNames = new ArrayList<>(integrityResult.keySet());
+			Collections.sort(specNames);
+			String nonValidProjects = "";
+			for (String curSpec: specNames) {
+				TestLogger.info("Checksum of "+ curSpec + " is "+ integrityResult.get(curSpec).getStatus());
+				TestLogger.trace("Expected checksum: "+ integrityResult.get(curSpec).getExpectedChecksum());
+				TestLogger.trace("Actual checksum: "+ integrityResult.get(curSpec).getCalculatedChecksum());
+				
+				if (integrityResult.get(curSpec).getStatus() != IntegrityCheckResult.IntegrityCheckStatus.VALID) {
+					nonValidProjects+="\n-"+curSpec + ": " +integrityResult.get(curSpec).getStatus() ;
+				} 
+			}
+
+			
+			if (!nonValidProjects.isEmpty()) {
+
+				String message = "Integrity of test cases is not assured!\n\nThe following Scripts are modified since delivery:\n"
+						+ nonValidProjects + "\n\nExecute test case(s) anyway?";
+
+				TestLogger.warn(message);	
+			}
+
+			integrityOfTestSpec = TestSpecIntegrityChecker.getSimplifiedCheckResult(integrityResult);
 			progress.worked(1);
 
 
@@ -395,7 +425,7 @@ public class TestCampaignExecution extends FileTestExecution {
 		this.cardReaderName = cardReaderName;
 	}
 
-	public boolean isIntegrityOfTestSuiteProvided() {
+	public String getIntegrityOfTestSpec() {
 		return integrityOfTestSpec;
 	}
 

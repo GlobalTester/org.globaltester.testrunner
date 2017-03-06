@@ -51,7 +51,7 @@ public class TestReport {
 	private String platformId = "unknown";
 	private String sampleId = "unknown";
 	private String cardReaderName = "unknown";
-	private boolean integrityOfTestSuiteProvided = false;
+	private String integrityOfTestSpec = "UNCHECKED";
 	
 	private HashSet<String> selectedProfiles = new HashSet<>();
 
@@ -105,7 +105,7 @@ public class TestReport {
 		
 		cardReaderName = campaignExec.getCardReaderName();
 		
-		integrityOfTestSuiteProvided = campaignExec.isIntegrityOfTestSuiteProvided();
+		integrityOfTestSpec = campaignExec.getIntegrityOfTestSpec();
 		
 		SampleConfig sampleConfig = campaignExec.getSampleConfig();
 		platformId = sampleConfig.getPlatformId();
@@ -160,7 +160,7 @@ public class TestReport {
 		
 		cardReaderName = origReport.cardReaderName;
 		
-		integrityOfTestSuiteProvided = origReport.integrityOfTestSuiteProvided;
+		integrityOfTestSpec = origReport.integrityOfTestSpec;
 		
 		selectedProfiles = origReport.selectedProfiles;
 		
@@ -232,8 +232,8 @@ public class TestReport {
 		return cardReaderName;
 	}
 
-	public boolean isIntegrityOfTestSuiteProvided() {
-		return integrityOfTestSuiteProvided;
+	public String getIntegrityOfTestSpec() {
+		return integrityOfTestSpec;
 	}
 
 }

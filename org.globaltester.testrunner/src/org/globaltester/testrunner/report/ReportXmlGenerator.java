@@ -90,11 +90,7 @@ public class ReportXmlGenerator {
 		root.addContent(readerName);
 
 		Element integrityOfTestSuite = new Element("INTEGRITY");
-		if(report.isIntegrityOfTestSuiteProvided()) {
-			integrityOfTestSuite.setText("valid");
-		} else{
-			integrityOfTestSuite.setText("inconsistent");
-		}
+		integrityOfTestSuite.setText(report.getIntegrityOfTestSpec());
 		root.addContent(integrityOfTestSuite);
 		
 		String profileString = "";
