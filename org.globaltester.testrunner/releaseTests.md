@@ -6,4 +6,12 @@ This document describes validation tests that shall be performed on the final pr
 Launch the GlobalTester Platform product and perform the following cheat sheet
  - [ ] "Execute TestCases as Campaign"
 
+2. [ ] __Check TestCampaign behavior__
+Launch the GlobalTester Platform product and perform the following steps
+ - [ ] Select several test cases and a test suite
+ - [ ] Use the "Create TestCampaign and execute it" button from the campaign drop down menu
+     - [ ] The TestCampaign is executed with expected results depending on test cases and environment
+ - [ ] Right click a SampleConfiguration project and select "Create TestCampaign"
+     - [ ] An error message appears
+
 <p style="page-break-after: always"/>
