@@ -125,15 +125,12 @@ public class GtTestCampaignProject implements ITreeObservable {
 	}
 
 	// create a new ResultDirectory
-	public String getNewResultDir() {
+	public String getNewResultDir() throws CoreException {
 		// initialize test logging for this test session
 		IFolder defaultLoggingDir = iProject.getFolder(RESULT_FOLDER
 				+ File.separator + GtDateHelper.getCurrentTimeString());
-		try {
-			GtResourceHelper.createWithAllParents(defaultLoggingDir);
-		} catch (CoreException e) {
-			e.printStackTrace();
-		}
+		
+		GtResourceHelper.createWithAllParents(defaultLoggingDir);
 
 		return defaultLoggingDir.getLocation().toOSString();
 
