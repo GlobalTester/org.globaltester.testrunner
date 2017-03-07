@@ -33,14 +33,7 @@ import org.jdom.Element;
 public class TestCampaignExecution extends FileTestExecution {
 	List<IExecution> elementExecutions = new ArrayList<IExecution>();
 	private TestCampaignExecution previousExecution;
-	/**
-	 * This {@link SampleConfig} is the persisted one for storage and display
-	 */
 	private SampleConfig sampleConfig;
-	/**
-	 * This is used for actual execution of the test case and later persisted as clone.
-	 */
-	private SampleConfig sampleConfigForExecution;
 	private String cardReaderName;
 	private String integrityOfTestSpec;
 	
@@ -52,7 +45,6 @@ public class TestCampaignExecution extends FileTestExecution {
 		Element sampleConfigElement = root.getChild("SampleConfiguration");
 		if (sampleConfigElement != null) {
 			sampleConfig = new SampleConfig(sampleConfigElement);
-			sampleConfigForExecution = sampleConfig;
 		}
 		
 		// extract cardReaderName
@@ -116,12 +108,8 @@ public class TestCampaignExecution extends FileTestExecution {
 		super.dumpToXml(root);
 		
 		// dump sampleConfig
-		Element sampleConfigElement = new Element("SampleConfiguration");
-		
-		if (sampleConfigForExecution != null) {
-			sampleConfigForExecution.dumpToXml(sampleConfigElement);
-			root.addContent(sampleConfigElement);
-		} else if (sampleConfig != null) {
+		if (sampleConfig != null) {
+			Element sampleConfigElement = new Element("SampleConfiguration");
 			sampleConfig.dumpToXml(sampleConfigElement);
 			root.addContent(sampleConfigElement);
 		}
