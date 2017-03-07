@@ -288,7 +288,7 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 		sampleConfigComp.setLayout(new GridLayout(1, false));
 		sampleConfigViewer = new SampleConfigEditorWidget(sampleConfigComp);
 		sampleConfigViewer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
-		sampleConfigViewer.setEditable(false);
+		sampleConfigViewer.setActive(false);
 		
 		Composite execStateTreeComp = new Composite(grpExecutionresults, SWT.NONE);
 		execStateTreeComp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1));
