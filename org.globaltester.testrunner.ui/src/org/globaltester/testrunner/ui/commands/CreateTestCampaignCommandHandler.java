@@ -71,7 +71,7 @@ public class CreateTestCampaignCommandHandler extends AbstractHandler {
 			}
 		}
 
-		return null;
+		return newProject;
 	}
 
 	public static String getNewProjectName() {
