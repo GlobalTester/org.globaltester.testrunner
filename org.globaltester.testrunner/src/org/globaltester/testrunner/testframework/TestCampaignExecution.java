@@ -32,7 +32,14 @@ import org.jdom.Element;
 public class TestCampaignExecution extends FileTestExecution {
 	List<IExecution> elementExecutions = new ArrayList<IExecution>();
 	private TestCampaignExecution previousExecution;
+	/**
+	 * This {@link SampleConfig} is the persisted one for storage and display
+	 */
 	private SampleConfig sampleConfig;
+	/**
+	 * This is used for actual execution of the test case and later persisted as clone.
+	 */
+	private SampleConfig sampleConfigForExecution;
 	private String cardReaderName;
 	private String integrityOfTestSpec;
 	
@@ -44,6 +51,7 @@ public class TestCampaignExecution extends FileTestExecution {
 		Element sampleConfigElement = root.getChild("SampleConfiguration");
 		if (sampleConfigElement != null) {
 			sampleConfig = new SampleConfig(sampleConfigElement);
+			sampleConfigForExecution = sampleConfig;
 		}
 		
 		// extract cardReaderName
@@ -107,8 +115,12 @@ public class TestCampaignExecution extends FileTestExecution {
 		super.dumpToXml(root);
 		
 		// dump sampleConfig
-		if (sampleConfig != null) {
-			Element sampleConfigElement = new Element("SampleConfiguration");
+		Element sampleConfigElement = new Element("SampleConfiguration");
+		
+		if (sampleConfigForExecution != null) {
+			sampleConfigForExecution.dumpToXml(sampleConfigElement);
+			root.addContent(sampleConfigElement);
+		} else if (sampleConfig != null) {
 			sampleConfig.dumpToXml(sampleConfigElement);
 			root.addContent(sampleConfigElement);
 		}
@@ -366,7 +378,7 @@ public class TestCampaignExecution extends FileTestExecution {
 			progress.worked(1);
 
 
-			RuntimeRequirementsProvider provider = new SampleConfigProviderImpl(sampleConfig);
+			RuntimeRequirementsProvider provider = new SampleConfigProviderImpl(sampleConfigForExecution);
 			
 			execute(provider, false, progress.newChild(97));
 			
@@ -412,9 +424,18 @@ public class TestCampaignExecution extends FileTestExecution {
 		}
 	}
 
-	public void setSampleConfig(SampleConfig newSampleConfig) {
-		this.sampleConfig = newSampleConfig;
-		
+	/**
+	 * This sets a sample config object to be used when executing this
+	 * {@link TestCampaignExecution}.
+	 * 
+	 * @param newSampleConfig
+	 */
+	public void setSampleConfigForExecution(SampleConfig newSampleConfig) {
+		this.sampleConfigForExecution = newSampleConfig;
+
+		Element xmlRepresentation = new Element("SampleConfiguration");
+		dumpToXml(xmlRepresentation);
+		this.sampleConfig = new SampleConfig(xmlRepresentation);
 	}
 
 	public String getCardReaderName() {

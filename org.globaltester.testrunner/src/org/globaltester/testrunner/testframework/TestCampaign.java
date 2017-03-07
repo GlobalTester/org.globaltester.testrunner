@@ -194,7 +194,7 @@ public class TestCampaign {
 		}
 		executions.addFirst(currentExecution);
 
-		currentExecution.setSampleConfig((SampleConfig)configuration.get(SampleConfig.class));
+		currentExecution.setSampleConfigForExecution((SampleConfig)configuration.get(SampleConfig.class));
 		
 		String cardReaderName = PreferenceHelper.getPreferenceValue("org.globaltester.testmanager", "Card reader name");
 		currentExecution.setCardReaderName(cardReaderName);
