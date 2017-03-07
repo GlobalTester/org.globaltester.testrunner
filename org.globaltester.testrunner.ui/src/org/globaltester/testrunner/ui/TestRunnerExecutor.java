@@ -1,6 +1,5 @@
 package org.globaltester.testrunner.ui;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,7 +29,6 @@ import org.globaltester.scriptrunner.TestExecutionCallback;
 import org.globaltester.scriptrunner.TestResourceExecutor;
 import org.globaltester.scriptrunner.UserInteractionProvider;
 import org.globaltester.testrunner.GtTestCampaignProject;
-import org.globaltester.testrunner.testframework.TestCampaignExecution;
 
 /**
  * This implementation of {@link TestResourceExecutor} executes TestCampaigns.
@@ -91,8 +89,7 @@ public class TestRunnerExecutor implements TestResourceExecutor {
 				// execute tests
 				try {
 					if (campaign != null) {
-						Map<String, Object> emptyMap = Collections.emptyMap();
-						campaign.getTestCampaign().executeTests(configuration, monitor, emptyMap, callback);
+						campaign.getTestCampaign().executeTests(configuration, monitor, callback);
 					} else {
 
 						TestExecutionCallback.TestResult result = new TestExecutionCallback.TestResult();
@@ -126,27 +123,6 @@ public class TestRunnerExecutor implements TestResourceExecutor {
 
 		return null;
 	}
-
-
-	private SampleConfig getLastSampleConfigFromTestCampaignProject(
-			GtTestCampaignProject parentCampaingProject) {
-		if (parentCampaingProject == null){
-			return null;
-		}
-		TestCampaignExecution currentExecution = parentCampaingProject
-				.getTestCampaign().getCurrentExecution();
-		if (currentExecution != null) {
-			SampleConfig config = currentExecution.getSampleConfig();
-			if (config != null){
-				String sampleConfigName = currentExecution.getSampleConfig().getName();
-				
-				if (SampleConfigManager.isAvailableAsProject(sampleConfigName)) {
-					return SampleConfigManager.get(sampleConfigName);
-				}	
-			}
-		}
-		return null;
-	}
 	
 	protected Map<Class<?>, Object> getConfiguration(SampleConfig config, UserInteraction interaction) {
 		
@@ -175,11 +151,6 @@ public class TestRunnerExecutor implements TestResourceExecutor {
 		boolean forceSelection = (selectSampleConfigParam != null)
 				&& selectSampleConfigParam.trim().toLowerCase().equals("true");
 		if (!forceSelection) {
-			if (campaign != null){
-				// try to get SampleConfig from last CampaignExecution
-				sampleConfig = getLastSampleConfigFromTestCampaignProject(campaign);	
-			}
-
 			// try to get SampleConfig from Selection if none was defined in
 			// TestCampaign
 			if (sampleConfig == null) {

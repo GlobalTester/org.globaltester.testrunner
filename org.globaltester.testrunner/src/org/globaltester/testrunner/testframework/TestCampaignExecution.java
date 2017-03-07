@@ -21,9 +21,10 @@ import org.globaltester.logging.legacy.logger.GtErrorLogger;
 import org.globaltester.logging.legacy.logger.TestLogger;
 import org.globaltester.sampleconfiguration.SampleConfig;
 import org.globaltester.scriptrunner.RuntimeRequirementsProvider;
-import org.globaltester.scriptrunner.SampleConfigProviderImpl;
+import org.globaltester.scriptrunner.SampleConfigProvider;
 import org.globaltester.testrunner.Activator;
 import org.globaltester.testrunner.GtTestCampaignProject;
+import org.globaltester.testrunner.testframework.Result.Status;
 import org.globaltester.testrunner.utils.IntegrityCheckResult;
 import org.globaltester.testrunner.utils.TestSpecIntegrityChecker;
 import org.jdom.Document;
@@ -266,48 +267,6 @@ public class TestCampaignExecution extends FileTestExecution {
 		if (monitor == null) {
 			monitor = new NullProgressMonitor();
 		}
-		try {
-		
-			monitor.beginTask("Execute TestCase ", elementExecutions.size());
-			
-			// execute all included TestCampaignElements
-			for (Iterator<IExecution> elemIter = elementExecutions.iterator(); elemIter
-					.hasNext() && !monitor.isCanceled();) {
-				IExecution curExec= elemIter.next();
-				monitor.subTask(curExec.getName());
-				curExec.execute(provider, false,
-						new NullProgressMonitor());
-				result.addSubResult(curExec.getResult());
-				monitor.worked(1);
-			}
-		}finally{
-			monitor.done();	
-		}
-	}
-
-	/**
-	 * checks whether the given file represents an TestCaseExecution object
-	 * 
-	 * @param iFile
-	 * @return
-	 */
-	public static boolean isFileRepresentation(IFile iFile) {
-		Document doc = XMLHelper.readDocument(iFile);
-		Element rootElem = doc.getRootElement();
-
-		// check that root element has correct name
-		if (!rootElem.getName().equals("TestCampaignExecution")) {
-			return false;
-		}
-
-		return true;
-	}
-
-	public SampleConfig getSampleConfig() {
-		return sampleConfig;
-	}
-	
-	public void execute(IProgressMonitor monitor, Map<String, Object> envSettings) throws CoreException {
 		
 		SubMonitor progress = SubMonitor.convert(monitor, 100);
 		
@@ -357,28 +316,64 @@ public class TestCampaignExecution extends FileTestExecution {
 			if (!nonValidProjects.isEmpty()) {
 
 				String message = "Integrity of test cases is not assured!\n\nThe following Scripts are modified since delivery:\n"
-						+ nonValidProjects + "\n\nExecute test case(s) anyway?";
+						+ nonValidProjects + "\n";
 
 				TestLogger.warn(message);	
 			}
 
 			integrityOfTestSpec = TestSpecIntegrityChecker.getSimplifiedCheckResult(integrityResult);
 			progress.worked(1);
-
-
-			RuntimeRequirementsProvider provider = new SampleConfigProviderImpl(sampleConfig);
 			
-			execute(provider, false, progress.newChild(97));
+			progress.beginTask("Execute TestCase ", elementExecutions.size());
 			
+			if (provider instanceof SampleConfigProvider){
+				Element xmlRepresentation = new Element("SampleConfiguration");
+				((SampleConfigProvider) provider).getSampleConfig().dumpToXml(xmlRepresentation);
+				this.sampleConfig = new SampleConfig(xmlRepresentation);	
+			}
+			
+			// execute all included TestCampaignElements
+			for (Iterator<IExecution> elemIter = elementExecutions.iterator(); elemIter
+					.hasNext() && !monitor.isCanceled();) {
+				IExecution curExec= elemIter.next();
+				monitor.subTask(curExec.getName());
+				curExec.execute(provider, false,
+						new NullProgressMonitor());
+				result.addSubResult(curExec.getResult());
+				monitor.worked(1);
+			}	
 			
 			// shutdown the TestLogger
 			progress.subTask("Shutdown");
 			TestLogger.shutdown();
 			progress.worked(1);
-
+		} catch(CoreException e){
+			result = new Result(Status.FAILURE, e.getMessage());
 		} finally {
 			monitor.done();
 		}
+	}
+
+	/**
+	 * checks whether the given file represents an TestCaseExecution object
+	 * 
+	 * @param iFile
+	 * @return
+	 */
+	public static boolean isFileRepresentation(IFile iFile) {
+		Document doc = XMLHelper.readDocument(iFile);
+		Element rootElem = doc.getRootElement();
+
+		// check that root element has correct name
+		if (!rootElem.getName().equals("TestCampaignExecution")) {
+			return false;
+		}
+
+		return true;
+	}
+
+	public SampleConfig getSampleConfig() {
+		return sampleConfig;
 	}
 	
 	/**
@@ -410,11 +405,6 @@ public class TestCampaignExecution extends FileTestExecution {
 		if (previousExecution != null) {
 			previousExecution.doSave();
 		}
-	}
-
-	public void setSampleConfig(SampleConfig newSampleConfig) {
-		this.sampleConfig = newSampleConfig.getCloneForExecution();
-		
 	}
 
 	public String getCardReaderName() {
