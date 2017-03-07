@@ -5,6 +5,10 @@ This document describes validation tests that shall be performed on the final pr
 1. [ ] __Perform Cheat Sheet__
 Launch the GlobalTester Platform product and perform the following cheat sheet
  - [ ] "Execute TestCases as Campaign"
+ 
+1. [ ] __Check TestCampaign report generation behavior__
+ - [ ] Create TestCampaign and do _not_ execute it
+     - [ ] Press "Generate Report" button, this should lead to an error dialog and not uncaught exceptions
 
 2. [ ] __Check TestCampaign behavior__
 Launch the GlobalTester Platform product and perform the following steps

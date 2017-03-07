@@ -391,6 +391,23 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 					}
 				}
 				
+				//check whether an actual execution exists and abort if not
+				final TestCampaignExecution currentExecution = input.getCurrentlyDisplayedTestCampaignExecution();
+				if (currentExecution == null) {
+					PlatformUI.getWorkbench().getDisplay()
+					.syncExec(new Runnable() {
+
+						@Override
+						public void run() {
+							String message = "No current TestCampaignExecution selected. Please select a valid TestCampaignExecution and try again.";
+							MessageDialog.openError(null,
+											"Error",
+											message);
+						}
+					});
+					return;
+				}
+				
 				// ask for report location
 				DialogOptions dialogOptions = new DialogOptions();
 				dialogOptions.setMessage("Please select location to store the report files");
@@ -428,7 +445,7 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 
 								// create report
 								TestReport report = new TestReport(
-										input.getCurrentlyDisplayedTestCampaignExecution(),
+										currentExecution,
 										baseDirName);
 
 								monitor.worked(1);
