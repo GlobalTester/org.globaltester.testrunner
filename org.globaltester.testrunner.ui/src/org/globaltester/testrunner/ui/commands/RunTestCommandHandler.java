@@ -1,17 +1,9 @@
 package org.globaltester.testrunner.ui.commands;
 
-import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
-import org.globaltester.base.ui.GtUiHelper;
-import org.globaltester.sampleconfiguration.SampleConfig;
-import org.globaltester.scriptrunner.ui.SampleConfigSelectionException;
-import org.globaltester.testrunner.GtTestCampaignProject;
-import org.globaltester.testrunner.testframework.TestCampaignExecution;
 import org.globaltester.testrunner.ui.editor.TestCampaignEditor;
 import org.globaltester.testrunner.ui.editor.TestCampaignEditorInput;
 import org.globaltester.testspecification.ui.editors.TestSpecEditor;
@@ -31,34 +23,6 @@ public class RunTestCommandHandler extends org.globaltester.scriptrunner.ui.comm
 				return editorInput.getGtTestCampaignProject().getTestCampaignIFile();
 			} catch (CoreException e) {
 				// expected behavior for some inputs
-			}
-		}
-		return null;
-	}
-	
-	@Override
-	protected SampleConfig getSampleConfig(ExecutionEvent event) throws SampleConfigSelectionException {
-		boolean selectionRequested = Boolean.parseBoolean(event.getParameter("org.globaltester.testrunner.ui.SelectSampleConfigParameter"));
-		SampleConfig candidate;
-		try {
-			candidate = getSampleConfigFromResources();
-		} catch (CoreException e) {
-			GtUiHelper.openErrorDialog(PlatformUI.getWorkbench().getModalDialogShellProvider().getShell(), "Running failed: " + e.getMessage());
-			return null;
-		} 
-		if (candidate != null && !selectionRequested){
-			return candidate;	
-		}
-		return super.getSampleConfig(event);
-	}
-	
-	private SampleConfig getSampleConfigFromResources() throws CoreException {
-		for (IResource current : getResources()){
-			if (GtTestCampaignProject.isTestCampaignProjectAvailableForResource(current)){
-				TestCampaignExecution execution = GtTestCampaignProject.getProjectForResource(current).getTestCampaign().getCurrentExecution();
-				if (execution != null){
-					return execution.getSampleConfig();	
-				}
 			}
 		}
 		return null;
