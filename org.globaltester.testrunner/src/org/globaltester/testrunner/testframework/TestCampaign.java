@@ -14,6 +14,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.globaltester.base.PreferenceHelper;
 import org.globaltester.base.xml.XMLHelper;
 import org.globaltester.sampleconfiguration.SampleConfig;
+import org.globaltester.scriptrunner.RuntimeRequirementsProvider;
+import org.globaltester.scriptrunner.SampleConfigProviderImpl;
 import org.globaltester.scriptrunner.TestExecutionCallback;
 import org.globaltester.testrunner.GtTestCampaignProject;
 import org.globaltester.testspecification.testframework.FileTestExecutable;
@@ -182,8 +184,7 @@ public class TestCampaign {
 	 * 
 	 * @throws CoreException
 	 */
-	public void executeTests(Map<Class<?>, Object> configuration, IProgressMonitor monitor, 
-			Map<String, Object> envSettings, TestExecutionCallback callback) throws CoreException {
+	public void executeTests(Map<Class<?>, Object> configuration, IProgressMonitor monitor, TestExecutionCallback callback) throws CoreException {
 
 		// create a new TestExecution this TestCampaignElement
 		TestCampaignExecution currentExecution = FileTestExecutionFactory.createExecution(this);
@@ -193,14 +194,14 @@ public class TestCampaign {
 			currentExecution.setPreviousExecution(executions.getFirst());
 		}
 		executions.addFirst(currentExecution);
-
-		currentExecution.setSampleConfigForExecution((SampleConfig)configuration.get(SampleConfig.class));
 		
 		String cardReaderName = PreferenceHelper.getPreferenceValue("org.globaltester.testmanager", "Card reader name");
 		currentExecution.setCardReaderName(cardReaderName);
 		
+		RuntimeRequirementsProvider provider = new SampleConfigProviderImpl((SampleConfig)configuration.get(SampleConfig.class));
+		
 		// execute the TestExecutable
-		currentExecution.execute(monitor, envSettings);
+		currentExecution.execute(provider, false, false, monitor);
 		
 		// save the new state
 		project.doSave();

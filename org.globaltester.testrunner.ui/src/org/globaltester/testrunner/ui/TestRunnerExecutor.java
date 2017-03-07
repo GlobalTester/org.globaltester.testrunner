@@ -1,6 +1,5 @@
 package org.globaltester.testrunner.ui;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -90,8 +89,7 @@ public class TestRunnerExecutor implements TestResourceExecutor {
 				// execute tests
 				try {
 					if (campaign != null) {
-						Map<String, Object> emptyMap = Collections.emptyMap();
-						campaign.getTestCampaign().executeTests(configuration, monitor, emptyMap, callback);
+						campaign.getTestCampaign().executeTests(configuration, monitor, callback);
 					} else {
 
 						TestExecutionCallback.TestResult result = new TestExecutionCallback.TestResult();
