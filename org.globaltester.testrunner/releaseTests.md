@@ -5,7 +5,8 @@ This document describes validation tests that shall be performed on the final pr
 1. [ ] __Perform Cheat Sheet__
 Launch the GlobalTester Platform product and perform the following cheat sheet
  - [ ] "Execute TestCases as Campaign"
-     - [ ] Check that the names of SampleConfigs in TestCampaignExecutions are shown 
+     - [ ] Check that the names of SampleConfigs in TestCampaignExecutions are shown
+     
 1. [ ] __Check TestCampaign report generation behavior__
  - [ ] Create TestCampaign and do _not_ execute it
      - [ ] Press "Generate Report" button, this should lead to an error dialog and not uncaught exceptions
@@ -17,5 +18,14 @@ Launch the GlobalTester Platform product and perform the following steps
      - [ ] The TestCampaign is executed with expected results depending on test cases and environment
  - [ ] Right click a SampleConfiguration project and select "Create TestCampaign"
      - [ ] An error message appears
+     
+1. [ ] __Check TestCampaign behavior with write error__
+Launch the GlobalTester Platform product and perform the following steps
+ - [ ] Right click a test case and select "Create TestCampaign"
+ - [ ] Execute the campaign
+ - [ ] Mark the "TestResults" directory in the Campaign as read only in the file system (e.g. chmod -w TestResults)
+ - [ ] Execute the campaign
+     - [ ] An error message appears in the comment field alongside the test campaign result "FAILURE"
+ 
 
 <p style="page-break-after: always"/>
