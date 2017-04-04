@@ -1,10 +1,11 @@
 package org.globaltester.testrunner;
 
 import java.io.File;
-import java.util.Enumeration;
 import java.util.Iterator;
 
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.globaltester.logging.legacy.logger.TestLogger;
 import org.globaltester.sampleconfiguration.SampleConfig;
 import org.globaltester.scriptrunner.EnvironmentNotInitializedException;
@@ -13,15 +14,14 @@ import org.globaltester.smartcardshell.GTWrapFactory;
 import org.globaltester.smartcardshell.ProtocolExtensions;
 import org.globaltester.smartcardshell.ocf.OCFWrapper;
 import org.globaltester.smartcardshell.preferences.PreferenceConstants;
+import org.globaltester.smartcardshell.preferences.ReaderSelection;
 import org.globaltester.smartcardshell.protocols.IScshProtocolProvider;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.WrapFactory;
 
 import opencard.core.service.CardServiceException;
 import opencard.core.service.SmartCard;
-import opencard.core.terminal.CardTerminal;
 import opencard.core.terminal.CardTerminalException;
-import opencard.core.terminal.CardTerminalRegistry;
 import opencard.core.util.OpenCardPropertyLoadingException;
 
 /**
@@ -97,42 +97,20 @@ public class TestRunnerEnvironmentInitializer {
 	 */
 	private static void setVariables(ScriptRunner runner){
 		// set the _reader and _manualReader variables
-		boolean manualReaderSetting = Platform.getPreferencesService()
-				.getBoolean(Activator.PLUGIN_ID,
-						PreferenceConstants.OCF_MANUAL_READERSELECT, false,
-						null);
-
-		String currentReaderName = "";
-		if (manualReaderSetting) {
-			// get selected reader name from preferences
-			String selectedReader = Platform.getPreferencesService().getString(
-					Activator.PLUGIN_ID, PreferenceConstants.OCF_READER, "",
-					null);
-
-			// make sure that selected reader is available
-			CardTerminalRegistry ctr = CardTerminalRegistry.getRegistry();
-			Enumeration<?> ctlist = ctr.getCardTerminals();
-			while (ctlist.hasMoreElements()) {
-				CardTerminal ct = (CardTerminal) ctlist.nextElement();
-				currentReaderName = ct.getName();
-				if (currentReaderName.equals(selectedReader)) {
-					break;
-				}
-				currentReaderName = "";
-			}
-
-		} else {
-			currentReaderName = "";
-		}
-
+		boolean manualReaderSetting = ReaderSelection.isManualReader();
+		
+		String currentReaderName = ReaderSelection.getSuggestedReaderName();
+		
+		TestLogger.debug("Setting _reader to: " + currentReaderName);
+		IEclipsePreferences preferenceNodeScsh = InstanceScope.INSTANCE.getNode(org.globaltester.smartcardshell.Activator.PLUGIN_ID);
+		preferenceNodeScsh.put(org.globaltester.smartcardshell.preferences.PreferenceConstants.P_CARDREADERNAME, currentReaderName);
+		
 		String cmdReader = "_reader = \"" + currentReaderName + "\";";
 		runner.exec(cmdReader);
-
+		
 		String cmdManualReader = "_manualReader = " + manualReaderSetting + ";";
 		runner.exec(cmdManualReader);
 		
-		
-
 		// init card variable
 		String cmd = "card = new Card(_reader);";
 		runner.exec(cmd, null, -1); // do not send "" as source filename,
