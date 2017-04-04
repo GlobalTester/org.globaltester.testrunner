@@ -17,6 +17,7 @@ import org.globaltester.sampleconfiguration.SampleConfig;
 import org.globaltester.scriptrunner.RuntimeRequirementsProvider;
 import org.globaltester.scriptrunner.SampleConfigProviderImpl;
 import org.globaltester.scriptrunner.TestExecutionCallback;
+import org.globaltester.smartcardshell.preferences.PreferenceConstants;
 import org.globaltester.testrunner.GtTestCampaignProject;
 import org.globaltester.testspecification.testframework.FileTestExecutable;
 import org.jdom.Document;
@@ -195,7 +196,8 @@ public class TestCampaign {
 		}
 		executions.addFirst(currentExecution);
 		
-		String cardReaderName = PreferenceHelper.getPreferenceValue("org.globaltester.testmanager", "Card reader name");
+		String cardReaderName = PreferenceHelper.getPreferenceValue(org.globaltester.smartcardshell.Activator.PLUGIN_ID, PreferenceConstants.P_CARDREADERNAME);
+		
 		currentExecution.setCardReaderName(cardReaderName);
 		
 		RuntimeRequirementsProvider provider = new SampleConfigProviderImpl((SampleConfig)configuration.get(SampleConfig.class));
