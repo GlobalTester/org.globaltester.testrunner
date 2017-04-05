@@ -196,10 +196,6 @@ public class TestCampaign {
 		}
 		executions.addFirst(currentExecution);
 		
-		String cardReaderName = PreferenceHelper.getPreferenceValue(org.globaltester.smartcardshell.Activator.PLUGIN_ID, PreferenceConstants.P_CARDREADERNAME);
-		
-		currentExecution.setCardReaderName(cardReaderName);
-		
 		RuntimeRequirementsProvider provider = new SampleConfigProviderImpl((SampleConfig)configuration.get(SampleConfig.class));
 		
 		// execute the TestExecutable
@@ -219,10 +215,14 @@ public class TestCampaign {
 		//IMPL: propagate subresults
 		callback.testExecutionFinished(result);
 		
-		
 		// refresh the project in workspace
 		project.getIProject().refreshLocal(IResource.DEPTH_INFINITE, null);
-
+		
+		// The card reader is selected as part of the test case execution and stored in preferences,
+		// hence the actual reader information is only available _after_ test case execution otherwise
+		// the retrieved card reader name may refer to a previous test run
+		String cardReaderName = PreferenceHelper.getPreferenceValue(org.globaltester.smartcardshell.Activator.PLUGIN_ID, PreferenceConstants.P_CARDREADERNAME);
+		currentExecution.setCardReaderName(cardReaderName);
 	}
 	
 	public String getLogFileName(){
