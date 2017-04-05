@@ -13,7 +13,6 @@ import org.globaltester.base.resources.GtResourceHelper;
 import org.globaltester.base.xml.XMLHelper;
 import org.globaltester.logging.legacy.logger.GtErrorLogger;
 import org.globaltester.testrunner.Activator;
-import org.globaltester.testrunner.testframework.Result.Status;
 import org.jdom.DocType;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -35,9 +34,16 @@ public class ReportXmlGenerator {
 	 */
 	public static Element createXmlReport(TestReport report) {
 		
-		int executedTests = 0;
+		// test counters below represent all possible Status options
 		int passedTests = 0;
 		int failedTests = 0;
+//		int warningTests = 0;
+		int notApplicableTests = 0;
+//		int undefinedTests = 0;
+		
+		// counter for executed tests should be equivalent to the sum of the above counters
+		int executedTests = 0;
+		
 		double sessionTime = 0;
 
 		Element root = new Element("TESTREPORT");
@@ -183,10 +189,20 @@ public class ReportXmlGenerator {
 			reportTestCase.addContent(reportTestCaseStatus);
 			
 			executedTests++;
-			if (Status.PASSED.equals(testReportPart.getStatus())) {
-				passedTests++;
-			} else if (Status.FAILURE.equals(testReportPart.getStatus())) {
-				failedTests++;
+			
+			switch(testReportPart.getStatus()) {
+				case PASSED:
+					passedTests++;
+					break;
+				case FAILURE:
+					failedTests++;
+					break;
+				case NOT_APPLICABLE:
+					notApplicableTests++;
+					break;
+				default:
+					// Status warning & undefined are currently not counted
+					break;
 			}
 			
 			Element reportTestCaseComment = new Element("TESTCASECOMMENT");
@@ -265,7 +281,7 @@ public class ReportXmlGenerator {
 		
 		Element reportStatus = new Element("STATUS");
 		
-		if(executedTests == passedTests) {
+		if(executedTests == (passedTests + notApplicableTests)) {
 			reportStatus.setText("PASSED");
 		} else{
 			reportStatus.setText("FAILURE");
