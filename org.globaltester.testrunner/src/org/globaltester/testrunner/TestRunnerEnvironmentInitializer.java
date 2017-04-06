@@ -3,7 +3,6 @@ package org.globaltester.testrunner;
 import java.io.File;
 import java.util.Iterator;
 
-import org.eclipse.core.runtime.Platform;
 import org.globaltester.logging.legacy.logger.TestLogger;
 import org.globaltester.sampleconfiguration.SampleConfig;
 import org.globaltester.scriptrunner.EnvironmentNotInitializedException;
@@ -11,7 +10,6 @@ import org.globaltester.scriptrunner.ScriptRunner;
 import org.globaltester.smartcardshell.GTWrapFactory;
 import org.globaltester.smartcardshell.ProtocolExtensions;
 import org.globaltester.smartcardshell.ocf.OCFWrapper;
-import org.globaltester.smartcardshell.preferences.PreferenceConstants;
 import org.globaltester.smartcardshell.preferences.SmartCardShellInfo;
 import org.globaltester.smartcardshell.protocols.IScshProtocolProvider;
 import org.mozilla.javascript.Context;
@@ -63,7 +61,10 @@ public class TestRunnerEnvironmentInitializer {
 
 		initOcf(runner);
 
-		executeConfigJs(runner);
+		// execute SCSH config.js
+		String sCSHconfigFileName = SmartCardShellInfo.getConfigFile();
+		File scshConfigFile = new File(sCSHconfigFileName);
+		runner.evaluateFile(scshConfigFile.getAbsolutePath());
 		
 		// define variables
 		setVariables(runner);
@@ -77,10 +78,9 @@ public class TestRunnerEnvironmentInitializer {
 		initExtensionPoints(runner);
 		
 		// load helper
-		String jsHelperFile = org.globaltester.smartcardshell.Activator.getPluginDir().toPortableString()
-				+ "jsHelper" + File.separator + "AllHelpers.js";
-		File f = new File(jsHelperFile);
-		runner.evaluateFile(f.getAbsolutePath());
+		String jsHelperFileName = SmartCardShellInfo.getPluginDir().toPortableString() + "jsHelper" + File.separator + "AllHelpers.js";
+		File jsHelperFile = new File(jsHelperFileName);
+		runner.evaluateFile(jsHelperFile.getAbsolutePath());
 	}
 	
 	/**
@@ -115,21 +115,6 @@ public class TestRunnerEnvironmentInitializer {
 		runner.exec(cmd, null, -1); // do not send "" as source filename,
 									// since Rhino debugger crashes in that
 									// case
-	}
-
-	private static void executeConfigJs(ScriptRunner runner) {
-		File f;
-		// execute SCSH config.js
-		String sCSHconfigFile = org.globaltester.smartcardshell.Activator.getPluginDir().toPortableString()
-				+ org.globaltester.smartcardshell.Activator.SCSH_FOLDER + File.separator + "config.js";
-		if (Platform.getPreferencesService().getBoolean(Activator.PLUGIN_ID,
-				PreferenceConstants.JS_CONF_MANUAL, false, null)) {
-			sCSHconfigFile = Platform.getPreferencesService().getString(
-					Activator.PLUGIN_ID, PreferenceConstants.JS_CONF_FILE,
-					sCSHconfigFile, null);
-		}
-		f = new File(sCSHconfigFile);
-		runner.evaluateFile(f.getAbsolutePath());
 	}
 	
 	public static void cleanEnvironment(){
