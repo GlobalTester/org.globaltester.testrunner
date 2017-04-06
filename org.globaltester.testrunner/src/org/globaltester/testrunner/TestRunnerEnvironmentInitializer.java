@@ -4,8 +4,6 @@ import java.io.File;
 import java.util.Iterator;
 
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.globaltester.logging.legacy.logger.TestLogger;
 import org.globaltester.sampleconfiguration.SampleConfig;
 import org.globaltester.scriptrunner.EnvironmentNotInitializedException;
@@ -14,7 +12,7 @@ import org.globaltester.smartcardshell.GTWrapFactory;
 import org.globaltester.smartcardshell.ProtocolExtensions;
 import org.globaltester.smartcardshell.ocf.OCFWrapper;
 import org.globaltester.smartcardshell.preferences.PreferenceConstants;
-import org.globaltester.smartcardshell.preferences.ReaderSelection;
+import org.globaltester.smartcardshell.preferences.SmartCardShellInfo;
 import org.globaltester.smartcardshell.protocols.IScshProtocolProvider;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.WrapFactory;
@@ -97,16 +95,12 @@ public class TestRunnerEnvironmentInitializer {
 	 */
 	private static void setVariables(ScriptRunner runner){
 		// set the _reader and _manualReader variables
-		boolean manualReaderSetting = ReaderSelection.isManualReader();
+		boolean manualReaderSetting = SmartCardShellInfo.isManualReader();
 		
-		String currentReaderName = ReaderSelection.getSuggestedReaderName();
-		
-		TestLogger.debug("Setting _reader to: " + currentReaderName);
-		IEclipsePreferences preferenceNodeScsh = InstanceScope.INSTANCE.getNode(org.globaltester.smartcardshell.Activator.PLUGIN_ID);
-		preferenceNodeScsh.put(org.globaltester.smartcardshell.preferences.PreferenceConstants.P_CARDREADERNAME, currentReaderName);
-		
+		String currentReaderName = SmartCardShellInfo.setActiveReaderName();
 		String cmdReader = "_reader = \"" + currentReaderName + "\";";
 		runner.exec(cmdReader);
+		TestLogger.info("Active card reader: " + currentReaderName);
 		
 		String cmdManualReader = "_manualReader = " + manualReaderSetting + ";";
 		runner.exec(cmdManualReader);

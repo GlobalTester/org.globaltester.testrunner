@@ -11,13 +11,12 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.globaltester.base.PreferenceHelper;
 import org.globaltester.base.xml.XMLHelper;
 import org.globaltester.sampleconfiguration.SampleConfig;
 import org.globaltester.scriptrunner.RuntimeRequirementsProvider;
 import org.globaltester.scriptrunner.SampleConfigProviderImpl;
 import org.globaltester.scriptrunner.TestExecutionCallback;
-import org.globaltester.smartcardshell.preferences.PreferenceConstants;
+import org.globaltester.smartcardshell.preferences.SmartCardShellInfo;
 import org.globaltester.testrunner.GtTestCampaignProject;
 import org.globaltester.testspecification.testframework.FileTestExecutable;
 import org.jdom.Document;
@@ -218,10 +217,10 @@ public class TestCampaign {
 		// refresh the project in workspace
 		project.getIProject().refreshLocal(IResource.DEPTH_INFINITE, null);
 		
-		// The card reader is selected as part of the test case execution and stored in preferences,
+		// The card reader is selected as part of the test case execution and stored for reference,
 		// hence the actual reader information is only available _after_ test case execution otherwise
-		// the retrieved card reader name may refer to a previous test run
-		String cardReaderName = PreferenceHelper.getPreferenceValue(org.globaltester.smartcardshell.Activator.PLUGIN_ID, PreferenceConstants.P_CARDREADERNAME);
+		// the retrieved card reader name may be undefined or refer to a previous test run
+		String cardReaderName = SmartCardShellInfo.getActiveReaderName();
 		currentExecution.setCardReaderName(cardReaderName);
 	}
 	
