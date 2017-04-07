@@ -39,8 +39,6 @@ public class ReportXmlGenerator {
 		int testsPassed = 0;
 		int testsFailed = 0;
 		int testsWarning = 0;
-		int testsNotApplicable = 0;
-		int testsUndefined = 0;
 		
 		// counter for executed tests should be equivalent to the sum of the above counters
 		int executedTests = 0;
@@ -202,10 +200,10 @@ public class ReportXmlGenerator {
 					testsWarning++;
 					break;
 				case NOT_APPLICABLE:
-					testsNotApplicable++;
+					// currently NOT_APPLICABLE is not counted
 					break;
 				case UNDEFINED:
-					testsUndefined++;
+					// currently UNDEFINED is not counted
 					break;
 				// default not required as all options have been dealt with
 			}
@@ -298,19 +296,15 @@ public class ReportXmlGenerator {
 		
 		Element reportStatus = new Element("STATUS");
 		
-		if(executedTests == (testsPassed + testsNotApplicable)) {
-			reportStatus.setText(Status.PASSED.toString());
-		} else{
-			if(testsFailed > 0) {
-				reportStatus.setText(Status.FAILURE.toString());
-			} else{
-				if(testsWarning > 0) {
-					reportStatus.setText(Status.WARNING.toString());
-				} else{
-					reportStatus.setText(Status.UNDEFINED.toString());
-				}
-			}
+		String status = Status.PASSED.getTextualRepresentation();
+		if(testsWarning > 0) {
+			status = Status.WARNING.getTextualRepresentation();
 		}
+		if(testsFailed > 0) {
+			status = Status.FAILURE.getTextualRepresentation();
+		}
+		
+		reportStatus.setText(status);
 		root.addContent(reportStatus);
 
 		Element reportTestSessionTime = new Element("TESTSESSIONTIME");
