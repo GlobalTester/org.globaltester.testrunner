@@ -23,9 +23,6 @@ public abstract class FileTestExecution extends AbstractTestExecution {
 	public static final int STATUS_FAILURE = 2;
 	public static final int STATUS_UNDEFINED = 3;
 	public static final int STATUS_NOT_APPLICABLE = 4;
-	public static final int STATUS_ABORTED = 5;
-	public static final int STATUS_SKIPPED = 6;
-	public static final int STATUS_RESUMED = 7;
 
 	IFile iFile;
 	protected IFile specFile;
