@@ -22,15 +22,6 @@ import org.globaltester.logging.legacy.logger.TestLogger;
 public class Failure extends Result implements Serializable {
 
 	private static final long serialVersionUID = -1031815873323547519L;
-
-	//IMPL replace following constants and mapping with enum type
-	
-	// constants defining failure Rating
-	// do not change these values, as they are referred to in TestCase class for
-	// further constants
-	public static final int WARNING = 1;
-	public static final int FAILURE = 2;
-	
 	
 	//map failure ratings to strings
 	public static final String[] RATING_STRINGS = new String[] { "undefined", "FAILURE",
@@ -100,7 +91,7 @@ public class Failure extends Result implements Serializable {
 	public Failure(int id, int rating, int lineScript, int lineLogFile,
 			String failureText, String expectedValue, String receivedValue) {
 		super(Status.FAILURE);
-		if ((rating != Failure.FAILURE) && (rating != Failure.WARNING))
+		if ((rating != FileTestExecution.STATUS_FAILURE) && (rating != FileTestExecution.STATUS_WARNING))
 			throw new RuntimeException("Failure rating must be either FAILURE or WARNING");
 		this.id = id;
 		this.rating = rating;
@@ -151,7 +142,7 @@ public class Failure extends Result implements Serializable {
 			}
 			
 			//set severity
-			if (getRating() == Failure.WARNING) {
+			if (getRating() == FileTestExecution.STATUS_WARNING) {
 				marker.setAttribute(IMarker.SEVERITY,
 						IMarker.SEVERITY_WARNING);
 			} else {
