@@ -37,10 +37,6 @@ public class Result implements Serializable{
 			this.rating = rating;
 		}
 		
-		public int getRating() {
-			return rating;
-		}
-		
 		@Override
 		public String toString() {
 			return getTextualRepresentation();
@@ -52,7 +48,7 @@ public class Result implements Serializable{
 		
 		/**
 		 * This method returns a {@link Status} object for a matching String representation.
-		 * If no match is found null is returned.
+		 * If no match is found an IllegalArgumentException is thrown.
 		 * If more than one match is available, the first is returned.
 		 * @param textualRepresentation a textual representation of the {@link Status} object
 		 * @return the matched {@link Status} object
@@ -64,7 +60,24 @@ public class Result implements Serializable{
 				}
 			}
 			
-			return null;
+			throw new IllegalArgumentException("The value \"" + textualRepresentation + "\" does not represent a known status.");
+		}
+		
+		/**
+		 * This method returns a {@link Status} object for a matching int representation.
+		 * If no match is found an IllegalArgumentException is thrown.
+		 * If more than one match is available, the first is returned.
+		 * @param intRepresentation an int representation of the {@link Status} object
+		 * @return the matched {@link Status} object
+		 */
+		public static Status get(int intRepresentation) {
+			for(Status currentStatus : Status.values()) {
+				if(intRepresentation == currentStatus.rating) {
+					return currentStatus;
+				}
+			}
+			
+			throw new IllegalArgumentException("The value \"" + intRepresentation + "\" does not represent a known status.");
 		}
 		
 	}
