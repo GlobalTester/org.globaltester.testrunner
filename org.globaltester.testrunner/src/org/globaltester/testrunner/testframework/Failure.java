@@ -22,10 +22,6 @@ import org.globaltester.logging.legacy.logger.TestLogger;
 public class Failure extends Result implements Serializable {
 
 	private static final long serialVersionUID = -1031815873323547519L;
-	
-	//map failure ratings to strings
-	public static final String[] RATING_STRINGS = new String[] { "undefined", "FAILURE",
-		"WARNING"};
 
 	// explicit identifier for each failure in test session and log file
 	private int id;
