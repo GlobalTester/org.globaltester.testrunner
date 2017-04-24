@@ -2,16 +2,15 @@ package org.globaltester.testrunner.testframework;
 
 import org.globaltester.base.util.StringUtil;
 import org.globaltester.logging.legacy.logger.TestLogger;
-import org.globaltester.scriptrunner.RuntimeRequirementsProvider;
 import org.globaltester.scriptrunner.AssertionFailure;
 import org.globaltester.scriptrunner.AssertionWarning;
+import org.globaltester.scriptrunner.RuntimeRequirementsProvider;
 import org.globaltester.scriptrunner.ScriptRunner;
 import org.globaltester.testrunner.testframework.Result.Status;
 import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.JavaScriptException;
 import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.WrappedException;
 
 import de.cardcontact.scdp.gp.GPError;
@@ -59,14 +58,9 @@ public class ActionStepExecutor {
 					String msg = (String) jseo.get("message", jseo);
 					// Integer errorID = (Integer)gpe.getProperty(gpe,
 					// "reason");
-
-					Status status;
-					if (jseo.get("reason", jseo).equals(
-							Integer.valueOf(Status.WARNING.getRating()))) {
-						status = Status.WARNING;
-					} else {
-						status = Status.FAILURE;
-					}
+					
+					Status status = Status.get((Integer) jseo.get("reason", jseo));
+					
 					int scriptLine = jse.lineNumber();
 					String expectedValue = (String) jseo.get("expectedValue",
 							jseo);
@@ -80,13 +74,8 @@ public class ActionStepExecutor {
 					// Integer errorID = (Integer)gpe.getProperty(gpe,
 					// "reason");
 
-					Status status;
-					if (ScriptableObject.getProperty(gpe, "reason").equals(
-							Integer.valueOf(Status.WARNING.getRating()))) {
-						status = Status.WARNING;
-					} else {
-						status = Status.FAILURE;
-					}
+					Status status = Status.get((Integer) jseo.get("reason", jseo));
+					
 					int scriptLine = jse.lineNumber();
 					
 					return ResultFactory.newFailure(status, scriptLine, TestLogger.getLogFileLine(), msg);
