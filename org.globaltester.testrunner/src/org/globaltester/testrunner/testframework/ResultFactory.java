@@ -20,23 +20,23 @@ public class ResultFactory {
 	
 	/**
 	 * Create a new Failure, with a new ID 
-	 * @param rating
+	 * @param status
 	 * @param scriptLine
 	 * @param logFileLine
 	 * @param failureText
 	 * @return
 	 */
-	public static Failure newFailure(int rating, int scriptLine, int logFileLine,
+	public static Failure newFailure(Status status, int scriptLine, int logFileLine,
 			String failureText) {
 		int failureID = getNewFailureID();
-		Failure failure = new Failure(failureID, rating, scriptLine, logFileLine,
+		Failure failure = new Failure(failureID, status, scriptLine, logFileLine,
 				failureText);
 		return failure;
 	}
 	
 	/**
 	 * Create a new Failure, with a new ID 
-	 * @param rating
+	 * @param status
 	 * @param scriptLine
 	 * @param logFileLine
 	 * @param failureText
@@ -44,10 +44,10 @@ public class ResultFactory {
 	 * @param receivedValue
 	 * @return
 	 */
-	public static Failure newFailure(int rating, int scriptLine, int logFileLine,
+	public static Failure newFailure(Status status, int scriptLine, int logFileLine,
 			String failureText, String expectedValue, String receivedValue) {
 		int failureID = getNewFailureID();
-		Failure failure = new Failure(failureID, rating, scriptLine, logFileLine,
+		Failure failure = new Failure(failureID, status, scriptLine, logFileLine,
 				failureText, expectedValue, receivedValue);
 		return failure;
 	}

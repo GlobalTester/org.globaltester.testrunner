@@ -30,10 +30,6 @@ public class Failure extends Result implements Serializable {
 	// explicit identifier for each failure in test session and log file
 	private int id;
 
-	// failure must match one of TestCase.STATUS_WARNING or
-	// TestCase.STATUS_FAILURE
-	private int rating;
-
 	// the line in script where the failure occured
 	private int lineScript;
 
@@ -55,8 +51,8 @@ public class Failure extends Result implements Serializable {
 	 * @param id
 	 *            explicit identifier for each failure in test session and log
 	 *            file
-	 * @param rating
-	 *            failure could be "WARNING" or "FAILURE"
+	 * @param status
+	 *            valid status information would be either "WARNING" or "FAILURE"
 	 * @param lineScript
 	 *            the line in script where the failure occured
 	 * @param lineLogFile
@@ -64,9 +60,9 @@ public class Failure extends Result implements Serializable {
 	 * @param failureText
 	 *            failure describing text
 	 */
-	public Failure(int id, int rating, int lineScript, int lineLogFile,
+	public Failure(int id, Status status, int lineScript, int lineLogFile,
 			String failureText) {
-		this(id, rating, lineScript, lineLogFile, failureText, "", "");
+		this(id, status, lineScript, lineLogFile, failureText, "", "");
 	}
 
 	/**
@@ -75,12 +71,12 @@ public class Failure extends Result implements Serializable {
 	 * @param id
 	 *            explicit identifier for each failure in test session and log
 	 *            file
-	 * @param rating
-	 *            failure could be "WARNING" or "FAILURE"
+	 * @param status
+	 *            valid status information would be either "WARNING" or "FAILURE"
 	 * @param lineScript
-	 *            the line in script where the failure occured
+	 *            the line in script where the failure occurred
 	 * @param lineLogFile
-	 *            the line in log file where the failure occured
+	 *            the line in log file where the failure occurred
 	 * @param failureText
 	 *            failure describing text
 	 * @param expectedValue
@@ -88,13 +84,14 @@ public class Failure extends Result implements Serializable {
 	 * @param receivedValue
 	 *            receivedValuee
 	 */
-	public Failure(int id, int rating, int lineScript, int lineLogFile,
-			String failureText, String expectedValue, String receivedValue) {
-		super(Status.FAILURE);
-		if ((rating != FileTestExecution.STATUS_FAILURE) && (rating != FileTestExecution.STATUS_WARNING))
+	public Failure(int id, Status status, int lineScript, int lineLogFile, String failureText, String expectedValue, String receivedValue) {
+		
+		super(status);
+		if ((status != Status.FAILURE) && (status != Status.WARNING)) {
 			throw new RuntimeException("Failure rating must be either FAILURE or WARNING");
+		}
+		
 		this.id = id;
-		this.rating = rating;
 		this.lineScript = lineScript;
 		this.lineLogFile = lineLogFile;
 		this.failureText = failureText;
@@ -118,7 +115,7 @@ public class Failure extends Result implements Serializable {
 			addMarker(tcLogFile);
 		}
 	}
-		   
+	
 	private void addMarker(IFile file) {
 			if (file == null) return;
 		try {
@@ -142,7 +139,7 @@ public class Failure extends Result implements Serializable {
 			}
 			
 			//set severity
-			if (getRating() == FileTestExecution.STATUS_WARNING) {
+			if (getStatus() == Status.WARNING) {
 				marker.setAttribute(IMarker.SEVERITY,
 						IMarker.SEVERITY_WARNING);
 			} else {
@@ -199,15 +196,6 @@ public class Failure extends Result implements Serializable {
 	 */
 	public int getLineScript() {
 		return lineScript;
-	}
-
-	/**
-	 * Getter for rating
-	 * 
-	 * @return rating
-	 */
-	public int getRating() {
-		return rating;
 	}
 
 	/**
