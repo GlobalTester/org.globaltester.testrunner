@@ -17,13 +17,6 @@ import org.jdom.Element;
  */
 public abstract class FileTestExecution extends AbstractTestExecution {
 
-	// Constants defining status of specific testexecution
-	public static final int STATUS_PASSED = 0;
-	public static final int STATUS_WARNING = 1;
-	public static final int STATUS_FAILURE = 2;
-	public static final int STATUS_UNDEFINED = 3;
-	public static final int STATUS_NOT_APPLICABLE = 4;
-
 	IFile iFile;
 	protected IFile specFile;
 

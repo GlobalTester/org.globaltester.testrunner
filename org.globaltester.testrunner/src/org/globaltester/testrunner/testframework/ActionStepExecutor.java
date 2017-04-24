@@ -62,7 +62,7 @@ public class ActionStepExecutor {
 
 					Status status;
 					if (jseo.get("reason", jseo).equals(
-							Integer.valueOf(FileTestExecution.STATUS_WARNING))) {
+							Integer.valueOf(Status.WARNING.getRating()))) {
 						status = Status.WARNING;
 					} else {
 						status = Status.FAILURE;
@@ -82,7 +82,7 @@ public class ActionStepExecutor {
 
 					Status status;
 					if (ScriptableObject.getProperty(gpe, "reason").equals(
-							Integer.valueOf(FileTestExecution.STATUS_WARNING))) {
+							Integer.valueOf(Status.WARNING.getRating()))) {
 						status = Status.WARNING;
 					} else {
 						status = Status.FAILURE;
