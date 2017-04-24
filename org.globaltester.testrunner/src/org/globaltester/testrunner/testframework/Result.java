@@ -93,6 +93,11 @@ public class Result implements Serializable{
 	public Status getStatus() {
 		return status;
 	}
+	
+	@Override
+	public String toString() {
+		return "Result overall status: " + getStatus();
+	}
 
 	/**
 	 * Add a new subResult and rebuild the overall status
