@@ -56,25 +56,17 @@ public class ActionStepExecutor {
 				
 				if (jseo.getClassName() == "AssertionError") {
 					String msg = (String) jseo.get("message", jseo);
-					
-					Status status = Status.get((Integer) jseo.get("reason", jseo));
-					
+					int rating = (Integer) jseo.get("reason", jseo);
 					int scriptLine = jse.lineNumber();
-					String expectedValue = (String) jseo.get("expectedValue",
-							jseo);
-					String receivedValue = (String) jseo.get("receivedValue",
-							jseo);
-					return ResultFactory.newFailure(status, scriptLine, TestLogger.getLogFileLine(), msg, expectedValue, receivedValue);
+					String expectedValue = (String) jseo.get("expectedValue", jseo);
+					String receivedValue = (String) jseo.get("receivedValue", jseo);
+					return ResultFactory.newFailure(rating, scriptLine, TestLogger.getLogFileLine(), msg, expectedValue, receivedValue);
 				} else if (jseo instanceof GPError) {
 					GPError gpe = (GPError) jseo;
 					String msg = (String) gpe.get("message", gpe);
-
-					Status status = Status.get((Integer) jseo.get("reason", jseo));
-					
+					int rating = (Integer) jseo.get("reason", jseo);
 					int scriptLine = jse.lineNumber();
-					
-					return ResultFactory.newFailure(status, scriptLine, TestLogger.getLogFileLine(), msg);
-
+					return ResultFactory.newFailure(rating, scriptLine, TestLogger.getLogFileLine(), msg);
 				} else if (jseo instanceof NativeJavaObject) {
 					Object nativeJavaObject = ((NativeJavaObject)jseo).unwrap();
 					if (nativeJavaObject instanceof AssertionFailure) {

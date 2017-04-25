@@ -26,12 +26,23 @@ public class ResultFactory {
 	 * @param failureText
 	 * @return
 	 */
-	public static Failure newFailure(Status status, int scriptLine, int logFileLine,
-			String failureText) {
+	public static Failure newFailure(Status status, int scriptLine, int logFileLine, String failureText) {
 		int failureID = getNewFailureID();
-		Failure failure = new Failure(failureID, status, scriptLine, logFileLine,
-				failureText);
+		Failure failure = new Failure(failureID, status, scriptLine, logFileLine, failureText);
 		return failure;
+	}
+	
+	/**
+	 * Create a new Failure, with a new ID 
+	 * @param rating
+	 * @param scriptLine
+	 * @param logFileLine
+	 * @param failureText
+	 * @return
+	 */
+	public static Failure newFailure(int rating, int scriptLine, int logFileLine, String failureText) {
+		Status status = Status.get(rating);
+		return newFailure(status, scriptLine, logFileLine, failureText);
 	}
 	
 	/**
@@ -44,12 +55,25 @@ public class ResultFactory {
 	 * @param receivedValue
 	 * @return
 	 */
-	public static Failure newFailure(Status status, int scriptLine, int logFileLine,
-			String failureText, String expectedValue, String receivedValue) {
+	public static Failure newFailure(Status status, int scriptLine, int logFileLine, String failureText, String expectedValue, String receivedValue) {
 		int failureID = getNewFailureID();
-		Failure failure = new Failure(failureID, status, scriptLine, logFileLine,
-				failureText, expectedValue, receivedValue);
+		Failure failure = new Failure(failureID, status, scriptLine, logFileLine, failureText, expectedValue, receivedValue);
 		return failure;
+	}
+	
+	/**
+	 * Create a new Failure, with a new ID 
+	 * @param rating
+	 * @param scriptLine
+	 * @param logFileLine
+	 * @param failureText
+	 * @param expectedValue
+	 * @param receivedValue
+	 * @return
+	 */
+	public static Failure newFailure(int rating, int scriptLine, int logFileLine, String failureText, String expectedValue, String receivedValue) {
+		Status status = Status.get(rating);
+		return newFailure(status, scriptLine, logFileLine, failureText, expectedValue, receivedValue);
 	}
 
 	public static void reset() {
