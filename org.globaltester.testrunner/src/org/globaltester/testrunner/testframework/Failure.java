@@ -26,10 +26,10 @@ public class Failure extends Result implements Serializable {
 	// explicit identifier for each failure in test session and log file
 	private int id;
 
-	// the line in script where the failure occured
+	// the line in script where the failure occurred
 	private int lineScript;
 
-	// the line in log file where the failure occured
+	// the line in log file where the failure occurred
 	private int lineLogFile;
 
 	// failure describing text
