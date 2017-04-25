@@ -13,7 +13,8 @@ import org.globaltester.base.resources.GtResourceHelper;
 import org.globaltester.logging.legacy.logger.TestLogger;
 
 /**
- * This class implements the information of a test failure.
+ * This class extends the usual test execution {@link Result} to provide additional information about script issues that occurred during execution.
+ * This includes i.e. the kind off issue like error or warning as well as the respective line numbers in script and log files, see provided object methods.
  * 
  * @version Release 2.2.0
  * @author Holger Funke
