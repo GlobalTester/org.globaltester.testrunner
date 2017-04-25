@@ -53,7 +53,7 @@ public class ActionStepExecutor {
 				JavaScriptException jse = (JavaScriptException) ex;
 				// Some form of JavaScript error.
 				Scriptable jseo = (Scriptable) jse.getValue();
-
+				
 				if (jseo.getClassName() == "AssertionError") {
 					String msg = (String) jseo.get("message", jseo);
 					
@@ -64,8 +64,7 @@ public class ActionStepExecutor {
 							jseo);
 					String receivedValue = (String) jseo.get("receivedValue",
 							jseo);
-					return ResultFactory.newFailure(status, scriptLine, TestLogger.getLogFileLine(), msg, expectedValue,
-							receivedValue);
+					return ResultFactory.newFailure(status, scriptLine, TestLogger.getLogFileLine(), msg, expectedValue, receivedValue);
 				} else if (jseo instanceof GPError) {
 					GPError gpe = (GPError) jseo;
 					String msg = (String) gpe.get("message", gpe);
