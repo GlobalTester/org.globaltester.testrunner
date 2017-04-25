@@ -51,9 +51,9 @@ public class Failure extends Result implements Serializable {
 	 * @param status
 	 *            valid status information would be either "WARNING" or "FAILURE"
 	 * @param lineScript
-	 *            the line in script where the failure occured
+	 *            the line in script where the failure occurred
 	 * @param lineLogFile
-	 *            the line in log file where the failure occured
+	 *            the line in log file where the failure occurred
 	 * @param failureText
 	 *            failure describing text
 	 */
@@ -79,7 +79,7 @@ public class Failure extends Result implements Serializable {
 	 * @param expectedValue
 	 *            expected value of this failure
 	 * @param receivedValue
-	 *            receivedValuee
+	 *            receivedValue
 	 */
 	public Failure(int id, Status status, int lineScript, int lineLogFile, String failureText, String expectedValue, String receivedValue) {
 		
