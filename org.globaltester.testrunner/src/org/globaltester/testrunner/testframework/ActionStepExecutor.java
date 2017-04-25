@@ -56,8 +56,6 @@ public class ActionStepExecutor {
 
 				if (jseo.getClassName() == "AssertionError") {
 					String msg = (String) jseo.get("message", jseo);
-					// Integer errorID = (Integer)gpe.getProperty(gpe,
-					// "reason");
 					
 					Status status = Status.get((Integer) jseo.get("reason", jseo));
 					
@@ -71,8 +69,6 @@ public class ActionStepExecutor {
 				} else if (jseo instanceof GPError) {
 					GPError gpe = (GPError) jseo;
 					String msg = (String) gpe.get("message", gpe);
-					// Integer errorID = (Integer)gpe.getProperty(gpe,
-					// "reason");
 
 					Status status = Status.get((Integer) jseo.get("reason", jseo));
 					
