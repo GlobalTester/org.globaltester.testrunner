@@ -27,14 +27,12 @@ public class Result implements Serializable{
 	private static final long serialVersionUID = 1690869079522455149L;
 
 	public enum Status {
-		PASSED(STATUS_PASSED, 0), WARNING(STATUS_WARNING, 1), FAILURE(STATUS_FAILURE, 2), UNDEFINED(STATUS_UNDEFINED, 3), NOT_APPLICABLE(STATUS_NOT_APPLICABLE, 4);
+		PASSED(STATUS_PASSED), WARNING(STATUS_WARNING), FAILURE(STATUS_FAILURE), UNDEFINED(STATUS_UNDEFINED), NOT_APPLICABLE(STATUS_NOT_APPLICABLE);
 		
 		private String textualRepresentation;
-		private int rating;
 		
-		private Status(String textualRepresentation, int rating) {
+		private Status(String textualRepresentation) {
 			this.textualRepresentation = textualRepresentation;
-			this.rating = rating;
 		}
 		
 		@Override
@@ -72,7 +70,7 @@ public class Result implements Serializable{
 		 */
 		public static Status get(int intRepresentation) {
 			for(Status currentStatus : Status.values()) {
-				if(intRepresentation == currentStatus.rating) {
+				if(intRepresentation == currentStatus.ordinal()) {
 					return currentStatus;
 				}
 			}
