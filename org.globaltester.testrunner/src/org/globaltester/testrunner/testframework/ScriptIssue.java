@@ -20,7 +20,7 @@ import org.globaltester.logging.legacy.logger.TestLogger;
  * @author Holger Funke
  * 
  */
-public class Failure extends Result implements Serializable {
+public class ScriptIssue extends Result implements Serializable {
 
 	private static final long serialVersionUID = -1031815873323547519L;
 
@@ -57,7 +57,7 @@ public class Failure extends Result implements Serializable {
 	 * @param failureText
 	 *            failure describing text
 	 */
-	public Failure(int id, Status status, int lineScript, int lineLogFile,
+	public ScriptIssue(int id, Status status, int lineScript, int lineLogFile,
 			String failureText) {
 		this(id, status, lineScript, lineLogFile, failureText, "", "");
 	}
@@ -81,7 +81,7 @@ public class Failure extends Result implements Serializable {
 	 * @param receivedValue
 	 *            receivedValue
 	 */
-	public Failure(int id, Status status, int lineScript, int lineLogFile, String failureText, String expectedValue, String receivedValue) {
+	public ScriptIssue(int id, Status status, int lineScript, int lineLogFile, String failureText, String expectedValue, String receivedValue) {
 		
 		super(status);
 		if ((status != Status.FAILURE) && (status != Status.WARNING)) {

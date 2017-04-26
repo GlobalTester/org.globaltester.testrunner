@@ -26,9 +26,9 @@ public class ResultFactory {
 	 * @param failureText
 	 * @return
 	 */
-	public static Failure newFailure(Status status, int scriptLine, int logFileLine, String failureText) {
+	public static ScriptIssue newFailure(Status status, int scriptLine, int logFileLine, String failureText) {
 		int failureID = getNewFailureID();
-		Failure failure = new Failure(failureID, status, scriptLine, logFileLine, failureText);
+		ScriptIssue failure = new ScriptIssue(failureID, status, scriptLine, logFileLine, failureText);
 		return failure;
 	}
 	
@@ -40,7 +40,7 @@ public class ResultFactory {
 	 * @param failureText
 	 * @return
 	 */
-	public static Failure newFailure(int rating, int scriptLine, int logFileLine, String failureText) {
+	public static ScriptIssue newFailure(int rating, int scriptLine, int logFileLine, String failureText) {
 		Status status = Status.get(rating);
 		return newFailure(status, scriptLine, logFileLine, failureText);
 	}
@@ -55,9 +55,9 @@ public class ResultFactory {
 	 * @param receivedValue
 	 * @return
 	 */
-	public static Failure newFailure(Status status, int scriptLine, int logFileLine, String failureText, String expectedValue, String receivedValue) {
+	public static ScriptIssue newFailure(Status status, int scriptLine, int logFileLine, String failureText, String expectedValue, String receivedValue) {
 		int failureID = getNewFailureID();
-		Failure failure = new Failure(failureID, status, scriptLine, logFileLine, failureText, expectedValue, receivedValue);
+		ScriptIssue failure = new ScriptIssue(failureID, status, scriptLine, logFileLine, failureText, expectedValue, receivedValue);
 		return failure;
 	}
 	
@@ -71,7 +71,7 @@ public class ResultFactory {
 	 * @param receivedValue
 	 * @return
 	 */
-	public static Failure newFailure(int rating, int scriptLine, int logFileLine, String failureText, String expectedValue, String receivedValue) {
+	public static ScriptIssue newFailure(int rating, int scriptLine, int logFileLine, String failureText, String expectedValue, String receivedValue) {
 		Status status = Status.get(rating);
 		return newFailure(status, scriptLine, logFileLine, failureText, expectedValue, receivedValue);
 	}
