@@ -85,7 +85,7 @@ public class Failure extends Result implements Serializable {
 		
 		super(status);
 		if ((status != Status.FAILURE) && (status != Status.WARNING)) {
-			throw new RuntimeException("Failure rating must be either FAILURE or WARNING");
+			throw new RuntimeException("Failure rating must be either FAILURE or WARNING but is: " + status);
 		}
 		
 		this.id = id;
