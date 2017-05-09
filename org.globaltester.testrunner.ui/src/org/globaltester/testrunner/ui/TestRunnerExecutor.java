@@ -27,6 +27,7 @@ import org.globaltester.scriptrunner.RuntimeRequirementsProvider;
 import org.globaltester.scriptrunner.SampleConfigProvider;
 import org.globaltester.scriptrunner.TestExecutionCallback;
 import org.globaltester.scriptrunner.TestResourceExecutor;
+import org.globaltester.scriptrunner.TestResourceExecutorLock;
 import org.globaltester.scriptrunner.UserInteractionProvider;
 import org.globaltester.testrunner.GtTestCampaignProject;
 
@@ -86,7 +87,7 @@ public class TestRunnerExecutor implements TestResourceExecutor {
 		Job job = new Job("Test execution") {
 
 			protected IStatus run(IProgressMonitor monitor) {
-				TestResourceExecutor.lock.lock();
+				TestResourceExecutorLock.lock.lock();
 				// execute tests
 				try {
 					if (campaign != null) {
@@ -103,7 +104,7 @@ public class TestRunnerExecutor implements TestResourceExecutor {
 				} catch (CoreException e) {
 					GtErrorLogger.log(Activator.PLUGIN_ID, e);
 				} finally {
-					TestResourceExecutor.lock.unlock();
+					TestResourceExecutorLock.lock.unlock();
 				}
 
 				// refresh the workspace
