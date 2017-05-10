@@ -87,7 +87,7 @@ public class TestRunnerExecutor implements TestResourceExecutor {
 		Job job = new Job("Test execution") {
 
 			protected IStatus run(IProgressMonitor monitor) {
-				TestResourceExecutorLock.lock.lock();
+				TestResourceExecutorLock.getLock().lock();
 				// execute tests
 				try {
 					if (campaign != null) {
@@ -104,7 +104,7 @@ public class TestRunnerExecutor implements TestResourceExecutor {
 				} catch (CoreException e) {
 					GtErrorLogger.log(Activator.PLUGIN_ID, e);
 				} finally {
-					TestResourceExecutorLock.lock.unlock();
+					TestResourceExecutorLock.getLock().unlock();
 				}
 
 				// refresh the workspace
