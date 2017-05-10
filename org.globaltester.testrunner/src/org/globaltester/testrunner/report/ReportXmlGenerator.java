@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Iterator;
+import java.util.StringJoiner;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
@@ -27,6 +28,11 @@ import org.osgi.framework.Bundle;
  *
  */
 public class ReportXmlGenerator {
+	
+	//this class is not meant to be instantiated
+	private ReportXmlGenerator() {
+		
+	}
 
 	/**
 	 * Generates a new xml structure representing this test report
@@ -57,22 +63,6 @@ public class ReportXmlGenerator {
 		reportSpecVersion.setText(report.getSpecVersion());
 		root.addContent(reportSpecVersion);
 
-//		Element reportID = new Element("TESTSUITEID");
-//		reportID.setText(testSuite.testSuiteID);
-//		root.addContent(reportID);
-//
-//		Element reportDescr = new Element("SHORTDESCRIPTION");
-//		reportDescr.setText(testSuite.testSuiteShortDescr);
-//		root.addContent(reportDescr);
-//
-//		Element reportRelease = new Element("RELEASE");
-//		reportRelease.setText(testSuite.testSuiteVersion);
-//		root.addContent(reportRelease);
-//
-//		Element reportReleaseDate = new Element("RELEASEDATE");
-//		reportReleaseDate.setText(testSuite.testSuiteDate);
-//		root.addContent(reportReleaseDate);
-
 		Element reportDate = new Element("DATE");
 		reportDate.setText(report.getExecutionTime());
 		root.addContent(reportDate);
@@ -98,71 +88,18 @@ public class ReportXmlGenerator {
 		integrityOfTestSuite.setText(report.getIntegrityOfTestSpec());
 		root.addContent(integrityOfTestSuite);
 		
-		String profileString = "";
+		StringJoiner profileStringJoiner = new StringJoiner(", ");
 		for(String currentProfile : report.getSelectedProfiles()) {
-			if(profileString.length() > 0) {
-				profileString += ", ";
-			}
-			profileString += currentProfile;
+			profileStringJoiner.add(currentProfile);
 		}
 		
 		Element profileNames = new Element("PROFILES");
-		profileNames.setText(profileString);
+		profileNames.setText(profileStringJoiner.toString());
 		root.addContent(profileNames);
-
-//		Element reportAddInfo = new Element("ADDITIONALINFO");
-//		// let all dependent plug-ins integrate in start process
-//		Iterator<ITestExtender> iter = Activator.testExtenders.iterator();
-//		while (iter.hasNext()) {
-//			iter.next().extendReport(reportAddInfo);
-//		}
-//		if (reportAddInfo.getChildren().size() != 0) {
-//			if (DataStore.includeForensicData()) {
-//				modulationType = reportAddInfo.getChild("INFOELEMENT")
-//						.getChildText("INFOTEXT");
-//			}
-//			root.addContent(reportAddInfo);
-//		}
-//
-//		Element reportFailures = new Element("FAILURES");
-//		reportFailures.setText((new Integer(testSuite.getFailures()))
-//				.toString());
-//		root.addContent(reportFailures);
-//
-//		Element reportWarnings = new Element("WARNINGS");
-//		reportWarnings.setText((new Integer(testSuite.getWarnings()))
-//				.toString());
-//		root.addContent(reportWarnings);
-//
-//		// Element reportReferences = new Element("REFERENCES");
-//		// reportReferences.setText(testSuite.testSuiteReferences);
-//		// root.addContent(reportReferences);
-//
-//		// <link href="link.to.what.ever">Textlink</link>
-//		Element reportLogFile = new Element("LOGFILE");
-//		// reportLogFile.setText("file://"+TestLogger.getLogFileName());
-//		// reportLogFile.setText("<link href=\"www.heise.de\">textlink</link>");
-//
-//		File logFile = new File(TestLogger.getLogFileName());
-//		reportLogFile.setText(logFile.getName());
-//		root.addContent(reportLogFile);
-//
-//		// Element reportLogFile = new Element("LOGFILE");
-//		// reportLogFile.setText("file://"+log.getHtmlFileName());
-//		// // String link =
-//		// "<link href=\"file://"+log.getHtmlFileName()+"\">Name</link>";
-//		// // reportLogFile.setText(link);
-//		// // <link href="file://C:\Dokumente und
-//		// Einstellungen\hfunke\runtime-EclipseApplication\ePassport Conformity
-//		// Testing Layer6/Logging/globaltester_20060404141549.html">Name</link>
-//		// root.addContent(reportLogFile);
-//
-//		// Element reportTestFailure = new Element("TESTFAILURE");
 
 		Iterator<TestReportPart> elemIter = report.getElements().iterator();
 		while (elemIter.hasNext()) {
-			TestReportPart testReportPart = (TestReportPart) elemIter
-					.next();
+			TestReportPart testReportPart = elemIter.next();
 			Element reportTestCase = new Element("TESTCASE");
 			Element reportTestCaseID = new Element("TESTCASEID");
 			reportTestCaseID.setText(testReportPart.getID());
@@ -173,15 +110,6 @@ public class ReportXmlGenerator {
 					.rint(testReportPart.getTime()) / 1000.));
 			reportTestCase.addContent(reportTestCaseTime);
 			sessionTime = sessionTime + testReportPart.getTime();
-
-			// Element reportTestCaseLink = new Element ("TESTCASELINK");
-			//
-			// // get path to test case:
-			// String currentTestCase = (String)testCaseList.get(i);
-			// String pathTestCase = new String();
-			// pathTestCase = "file://"+workingDirectory +"//"+ currentTestCase;
-			// reportTestCaseLink.setText(pathTestCase);
-			// reportTestCase.addContent(reportTestCaseLink);
 
 			Element reportTestCaseStatus = new Element("TESTCASESTATUS");
 			reportTestCaseStatus.setText(testReportPart.getStatus().toString());
@@ -199,13 +127,8 @@ public class ReportXmlGenerator {
 				case WARNING:
 					testsWarning++;
 					break;
-				case NOT_APPLICABLE:
-					// currently NOT_APPLICABLE is not counted
-					break;
-				case UNDEFINED:
-					// currently UNDEFINED is not counted
-					break;
-				// default not required as all options have been dealt with
+				default:
+					// currently NOT_APPLICABLE and UNDEFINED are not counted
 			}
 			
 			Element reportTestCaseComment = new Element("TESTCASECOMMENT");
@@ -215,84 +138,22 @@ public class ReportXmlGenerator {
 			Element reportTestCaseDescr = new Element("TESTCASEDESCR");
 			reportTestCaseDescr.setText(testReportPart.getDescription());
 			reportTestCase.addContent(reportTestCaseDescr);
-
-//			LinkedList<Failure> failureList = tc.getFailureList();
-//			if (failureList != null) {
-//				for (int j = 0; j < failureList.size(); j++) {
-//					Element failure = new Element("TESTCASEFAILURE");
-//					Failure currentFailure = failureList.get(j);
-//
-//					Element failureID = new Element("FAILUREID");
-//					// <a name="failureID2">@FailureID2</a>
-//					failureID.setText((new Integer(currentFailure.getId()))
-//							.toString());
-//					failure.addContent(failureID);
-//
-//					Element failureRating = new Element("RATING");
-//					failureRating.setText(Failure.RATING_STRINGS[currentFailure
-//							.getRating()]);
-//					failure.addContent(failureRating);
-//
-//					Element failureText = new Element("DESCRIPTION");
-//					failureText.setText(currentFailure.getFailureText());
-//					failure.addContent(failureText);
-//
-//					Element failureLineScript = new Element("LINESCRIPT");
-//					failureLineScript.setText((new Integer(currentFailure
-//							.getLineScript())).toString());
-//					failure.addContent(failureLineScript);
-//
-//					Element failureLineLogFile = new Element("LINELOGFILE");
-//					failureLineLogFile.setText((new Integer(currentFailure
-//							.getLineLogFile())).toString());
-//					failure.addContent(failureLineLogFile);
-//
-//					Element failureExpectedVal = new Element("EXPECTEDVALUE");
-//					failureExpectedVal.setText(currentFailure
-//							.getExpectedValue());
-//					failure.addContent(failureExpectedVal);
-//
-//					Element failureReceivedVal = new Element("RECEIVEDVALUE");
-//					failureReceivedVal.setText(currentFailure
-//							.getReceivedValue());
-//					failure.addContent(failureReceivedVal);
-//
-//					if (testCaseAdd) {
-//						reportTestCase.addContent(failure);
-//						// reportTestFailure.addContent(failure);
-//					}
-//
-//				}
-//			}
-
 			
 			root.addContent(reportTestCase);
 
 		}
 		
 		Element reportExcutedTests = new Element("EXECUTEDTESTS");
-		reportExcutedTests.setText(Integer.valueOf(executedTests).toString());
+		reportExcutedTests.setText(Integer.toString(executedTests));
 		root.addContent(reportExcutedTests);
 
 		Element reportTestsPassed = new Element("PASSEDTESTS");
-		reportTestsPassed.setText(Integer.valueOf(testsPassed).toString());
+		reportTestsPassed.setText(Integer.toString(testsPassed));
 		root.addContent(reportTestsPassed);
 		
 		Element reportTestsFailed = new Element("FAILEDTESTS");
-		reportTestsFailed.setText(Integer.valueOf(testsFailed).toString());
+		reportTestsFailed.setText(Integer.toString(testsFailed));
 		root.addContent(reportTestsFailed);
-		
-//		Element reportTestsWarning = new Element("WARNINGTESTS");
-//		reportTestsWarning.setText(Integer.valueOf(testsWarning).toString());
-//		root.addContent(reportTestsWarning);
-//		
-//		Element reportTestsNotApplicable = new Element("NOTAPPLICABLETESTS");
-//		reportTestsNotApplicable.setText(Integer.valueOf(testsNotApplicable).toString());
-//		root.addContent(reportTestsNotApplicable);
-//		
-//		Element reportTestsUndefined = new Element("UNDEFINEDTESTS");
-//		reportTestsUndefined.setText(Integer.valueOf(testsUndefined).toString());
-//		root.addContent(reportTestsUndefined);
 		
 		Element reportStatus = new Element("STATUS");
 		
@@ -314,8 +175,8 @@ public class ReportXmlGenerator {
 		
 		Element reportLogFile = new Element("LOGFILE");
 		
-		String[] logFileNamePathElements = report.getLogFiles().get(0).split("\\" + File.separator);
-		reportLogFile.setText(logFileNamePathElements[logFileNamePathElements.length - 1]);
+		File f = new File(report.getLogFiles().get(0));
+		reportLogFile.setText(f.getName());
 		root.addContent(reportLogFile);
 
 		Element reportDirectory = new Element("REPORTDIR");
@@ -360,17 +221,12 @@ public class ReportXmlGenerator {
 			IPath styleSheetSourcePath = new Path(FileLocator.toFileURL(url).getPath())
 			.append("stylesheets/report/");
 			File stylesheetSource = styleSheetSourcePath.toFile();
+			File stylesheetTarget = outputFile.getParentFile();
 
 			String[] files = { "Header_GT.png", "testreport.dtd",
 					"testreport.xsl" };
 			for (String currentFile : files) {
-				try {
-					GtResourceHelper.copyFiles(
-							new File(stylesheetSource, currentFile), new File(
-									outputFile.getParent(), currentFile));
-				} catch (IOException e) {
-					GtErrorLogger.log(Activator.PLUGIN_ID, e);
-				}
+				copyFile(stylesheetSource, stylesheetTarget, currentFile);
 			}
 		} catch (IOException ex) {
 			GtErrorLogger.log(Activator.PLUGIN_ID, ex);
@@ -390,16 +246,27 @@ public class ReportXmlGenerator {
 					"sts_passed.png",
 					"sts_warning.png" };
 			for (String currentFile : files) {
-				try {
-					GtResourceHelper.copyFiles(
-							new File(iconSource, currentFile), new File(
-									iconTarget, currentFile));
-				} catch (IOException e) {
-					GtErrorLogger.log(Activator.PLUGIN_ID, e);
-				}
+				copyFile(iconSource, iconTarget, currentFile);
 			}
 		} catch (IOException ex) {
 			GtErrorLogger.log(Activator.PLUGIN_ID, ex);
+		}
+	}
+
+	/**
+	 * Copy a single file and just log any exceptions potentially thrown
+	 * 
+	 * @param srcDir
+	 * @param targetDir
+	 * @param fileName
+	 */
+	private static void copyFile(File srcDir, File targetDir, String fileName) {
+		try {
+			GtResourceHelper.copyFiles(
+					new File(srcDir, fileName), new File(
+							targetDir, fileName));
+		} catch (IOException e) {
+			GtErrorLogger.log(Activator.PLUGIN_ID, e);
 		}
 	}
 	
