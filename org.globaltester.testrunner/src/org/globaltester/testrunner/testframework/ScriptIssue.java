@@ -13,103 +13,88 @@ import org.globaltester.base.resources.GtResourceHelper;
 import org.globaltester.logging.legacy.logger.TestLogger;
 
 /**
- * This class implements the information of a test failure.
+ * This class extends the usual test execution {@link Result} to provide additional information about script issues that occurred during execution.
+ * This includes i.e. the kind off issue like error or warning as well as the respective line numbers in script and log files, see provided object methods.
  * 
  * @version Release 2.2.0
  * @author Holger Funke
  * 
  */
-public class Failure extends Result implements Serializable {
+public class ScriptIssue extends Result implements Serializable {
 
 	private static final long serialVersionUID = -1031815873323547519L;
 
-	//IMPL replace following constants and mapping with enum type
-	
-	// constants defining failure Rating
-	// do not change these values, as they are referred to in TestCase class for
-	// further constants
-	public static final int WARNING = 1;
-	public static final int FAILURE = 2;
-	
-	
-	//map failure ratings to strings
-	public static final String[] RATING_STRINGS = new String[] { "undefined", "FAILURE",
-		"WARNING"};
-
-	// explicit identifier for each failure in test session and log file
+	// explicit identifier for each issue in test session and log file
 	private int id;
 
-	// failure must match one of TestCase.STATUS_WARNING or
-	// TestCase.STATUS_FAILURE
-	private int rating;
-
-	// the line in script where the failure occured
+	// the line in script where the issue occurred
 	private int lineScript;
 
-	// the line in log file where the failure occured
+	// the line in log file where the issue occurred
 	private int lineLogFile;
 
-	// failure describing text
-	private String failureText;
+	// issue describing text
+	private String issueText;
 
-	// expected value of this failure
+	// expected value of this issue
 	private String expectedValue;
 
-	// received value of this failure
+	// received value of this issue
 	private String receivedValue;
 
 	/**
-	 * Implements Failure constructor
+	 * Implements {@link ScriptIssue} constructor
 	 * 
 	 * @param id
-	 *            explicit identifier for each failure in test session and log
+	 *            explicit identifier for each issue in test session and log
 	 *            file
-	 * @param rating
-	 *            failure could be "WARNING" or "FAILURE"
+	 * @param status
+	 *            valid status information would be either "WARNING" or "FAILURE"
 	 * @param lineScript
-	 *            the line in script where the failure occured
+	 *            the line in script where the issue occurred
 	 * @param lineLogFile
-	 *            the line in log file where the failure occured
-	 * @param failureText
-	 *            failure describing text
+	 *            the line in log file where the issue occurred
+	 * @param issueText
+	 *            issue describing text
 	 */
-	public Failure(int id, int rating, int lineScript, int lineLogFile,
-			String failureText) {
-		this(id, rating, lineScript, lineLogFile, failureText, "", "");
+	public ScriptIssue(int id, Status status, int lineScript, int lineLogFile,
+			String issueText) {
+		this(id, status, lineScript, lineLogFile, issueText, "", "");
 	}
 
 	/**
-	 * Implements Failure constructor
+	 * Implements {@link ScriptIssue} constructor
 	 * 
 	 * @param id
-	 *            explicit identifier for each failure in test session and log
+	 *            explicit identifier for each issue in test session and log
 	 *            file
-	 * @param rating
-	 *            failure could be "WARNING" or "FAILURE"
+	 * @param status
+	 *            valid status information would be either "WARNING" or "FAILURE"
 	 * @param lineScript
-	 *            the line in script where the failure occured
+	 *            the line in script where the issue occurred
 	 * @param lineLogFile
-	 *            the line in log file where the failure occured
-	 * @param failureText
-	 *            failure describing text
+	 *            the line in log file where the issue occurred
+	 * @param issueText
+	 *            issue describing text
 	 * @param expectedValue
-	 *            expected value of this failure
+	 *            expected value of this issue
 	 * @param receivedValue
-	 *            receivedValuee
+	 *            receivedValue
 	 */
-	public Failure(int id, int rating, int lineScript, int lineLogFile,
-			String failureText, String expectedValue, String receivedValue) {
-		super(Status.FAILURE);
-		if ((rating != Failure.FAILURE) && (rating != Failure.WARNING))
-			throw new RuntimeException("Failure rating must be either FAILURE or WARNING");
+	public ScriptIssue(int id, Status status, int lineScript, int lineLogFile, String issueText, String expectedValue, String receivedValue) {
+		
+		super(status);
+		if ((status != Status.FAILURE) && (status != Status.WARNING)) {
+			throw new RuntimeException("ScriptIssue status must be either FAILURE or WARNING but is: " + status);
+		}
+		
 		this.id = id;
-		this.rating = rating;
 		this.lineScript = lineScript;
 		this.lineLogFile = lineLogFile;
-		this.failureText = failureText;
+		this.issueText = issueText;
 		this.expectedValue = expectedValue;
 		this.receivedValue = receivedValue;
-		TestLogger.info("@FailureID" + id + ":  " + failureText);
+		TestLogger.info("@FailureID" + id + ":  " + issueText);
 		
 		// refresh the workspace
 		try {
@@ -127,7 +112,7 @@ public class Failure extends Result implements Serializable {
 			addMarker(tcLogFile);
 		}
 	}
-		   
+	
 	private void addMarker(IFile file) {
 			if (file == null) return;
 		try {
@@ -140,18 +125,18 @@ public class Failure extends Result implements Serializable {
 			//set message
 			if (getExpectedValue() != null
 					&& getReceivedValue() != null) {
-				String message = getFailureText()
+				String message = getIssueText()
 						+ " (Expected value: "
 						+ getExpectedValue()
 						+ "; received value: "
 						+ getReceivedValue() + ")";
 				marker.setAttribute(IMarker.MESSAGE, message);
 			} else {
-				marker.setAttribute(IMarker.MESSAGE, getFailureText());
+				marker.setAttribute(IMarker.MESSAGE, getIssueText());
 			}
 			
 			//set severity
-			if (getRating() == Failure.WARNING) {
+			if (getStatus() == Status.WARNING) {
 				marker.setAttribute(IMarker.SEVERITY,
 						IMarker.SEVERITY_WARNING);
 			} else {
@@ -211,15 +196,6 @@ public class Failure extends Result implements Serializable {
 	}
 
 	/**
-	 * Getter for rating
-	 * 
-	 * @return rating
-	 */
-	public int getRating() {
-		return rating;
-	}
-
-	/**
 	 * Return failureID when using toString()
 	 * 
 	 * @return failureID String
@@ -229,12 +205,12 @@ public class Failure extends Result implements Serializable {
 	}
 
 	/**
-	 * Getter for failureText
+	 * Getter for issueText
 	 * 
-	 * @return failureText String
+	 * @return issueText String
 	 */
-	public String getFailureText() {
-		return failureText;
+	public String getIssueText() {
+		return issueText;
 	}
 
 	/**

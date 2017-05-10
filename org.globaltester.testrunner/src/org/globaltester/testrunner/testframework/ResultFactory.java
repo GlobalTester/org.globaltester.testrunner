@@ -20,17 +20,44 @@ public class ResultFactory {
 	
 	/**
 	 * Create a new Failure, with a new ID 
+	 * @param status
+	 * @param scriptLine
+	 * @param logFileLine
+	 * @param failureText
+	 * @return
+	 */
+	public static ScriptIssue newFailure(Status status, int scriptLine, int logFileLine, String failureText) {
+		int failureID = getNewFailureID();
+		ScriptIssue failure = new ScriptIssue(failureID, status, scriptLine, logFileLine, failureText);
+		return failure;
+	}
+	
+	/**
+	 * Create a new Failure, with a new ID 
 	 * @param rating
 	 * @param scriptLine
 	 * @param logFileLine
 	 * @param failureText
 	 * @return
 	 */
-	public static Failure newFailure(int rating, int scriptLine, int logFileLine,
-			String failureText) {
+	public static ScriptIssue newFailure(int rating, int scriptLine, int logFileLine, String failureText) {
+		Status status = Status.get(rating);
+		return newFailure(status, scriptLine, logFileLine, failureText);
+	}
+	
+	/**
+	 * Create a new Failure, with a new ID 
+	 * @param status
+	 * @param scriptLine
+	 * @param logFileLine
+	 * @param failureText
+	 * @param expectedValue
+	 * @param receivedValue
+	 * @return
+	 */
+	public static ScriptIssue newFailure(Status status, int scriptLine, int logFileLine, String failureText, String expectedValue, String receivedValue) {
 		int failureID = getNewFailureID();
-		Failure failure = new Failure(failureID, rating, scriptLine, logFileLine,
-				failureText);
+		ScriptIssue failure = new ScriptIssue(failureID, status, scriptLine, logFileLine, failureText, expectedValue, receivedValue);
 		return failure;
 	}
 	
@@ -44,12 +71,9 @@ public class ResultFactory {
 	 * @param receivedValue
 	 * @return
 	 */
-	public static Failure newFailure(int rating, int scriptLine, int logFileLine,
-			String failureText, String expectedValue, String receivedValue) {
-		int failureID = getNewFailureID();
-		Failure failure = new Failure(failureID, rating, scriptLine, logFileLine,
-				failureText, expectedValue, receivedValue);
-		return failure;
+	public static ScriptIssue newFailure(int rating, int scriptLine, int logFileLine, String failureText, String expectedValue, String receivedValue) {
+		Status status = Status.get(rating);
+		return newFailure(status, scriptLine, logFileLine, failureText, expectedValue, receivedValue);
 	}
 
 	public static void reset() {

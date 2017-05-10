@@ -27,7 +27,7 @@ public class Result implements Serializable{
 	private static final long serialVersionUID = 1690869079522455149L;
 
 	public enum Status {
-		PASSED(STATUS_PASSED), FAILURE(STATUS_FAILURE), WARNING(STATUS_WARNING), NOT_APPLICABLE(STATUS_NOT_APPLICABLE), UNDEFINED(STATUS_UNDEFINED);
+		PASSED(STATUS_PASSED), WARNING(STATUS_WARNING), FAILURE(STATUS_FAILURE), UNDEFINED(STATUS_UNDEFINED), NOT_APPLICABLE(STATUS_NOT_APPLICABLE);
 		
 		private String textualRepresentation;
 		
@@ -37,12 +37,16 @@ public class Result implements Serializable{
 		
 		@Override
 		public String toString() {
+			return getTextualRepresentation();
+		}
+		
+		public String getTextualRepresentation() {
 			return textualRepresentation;
 		}
 		
 		/**
 		 * This method returns a {@link Status} object for a matching String representation.
-		 * If no match is found null is returned.
+		 * If no match is found an IllegalArgumentException is thrown.
 		 * If more than one match is available, the first is returned.
 		 * @param textualRepresentation a textual representation of the {@link Status} object
 		 * @return the matched {@link Status} object
@@ -54,7 +58,24 @@ public class Result implements Serializable{
 				}
 			}
 			
-			return null;
+			throw new IllegalArgumentException("The value \"" + textualRepresentation + "\" does not represent a known status.");
+		}
+		
+		/**
+		 * This method returns a {@link Status} object for a matching int representation.
+		 * If no match is found an IllegalArgumentException is thrown.
+		 * If more than one match is available, the first is returned.
+		 * @param intRepresentation an int representation of the {@link Status} object
+		 * @return the matched {@link Status} object
+		 */
+		public static Status get(int intRepresentation) {
+			for(Status currentStatus : Status.values()) {
+				if(intRepresentation == currentStatus.ordinal()) {
+					return currentStatus;
+				}
+			}
+			
+			throw new IllegalArgumentException("The value \"" + intRepresentation + "\" does not represent a known status.");
 		}
 		
 	}
@@ -82,6 +103,11 @@ public class Result implements Serializable{
 
 	public Status getStatus() {
 		return status;
+	}
+	
+	@Override
+	public String toString() {
+		return "Result overall status: " + getStatus();
 	}
 
 	/**

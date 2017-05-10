@@ -35,9 +35,14 @@ public class ReportXmlGenerator {
 	 */
 	public static Element createXmlReport(TestReport report) {
 		
+		// test counters below represent all possible Status options
+		int testsPassed = 0;
+		int testsFailed = 0;
+		int testsWarning = 0;
+		
+		// counter for executed tests should be equivalent to the sum of the above counters
 		int executedTests = 0;
-		int passedTests = 0;
-		int failedTests = 0;
+		
 		double sessionTime = 0;
 
 		Element root = new Element("TESTREPORT");
@@ -183,10 +188,24 @@ public class ReportXmlGenerator {
 			reportTestCase.addContent(reportTestCaseStatus);
 			
 			executedTests++;
-			if (Status.PASSED.equals(testReportPart.getStatus())) {
-				passedTests++;
-			} else if (Status.FAILURE.equals(testReportPart.getStatus())) {
-				failedTests++;
+			
+			switch(testReportPart.getStatus()) {
+				case PASSED:
+					testsPassed++;
+					break;
+				case FAILURE:
+					testsFailed++;
+					break;
+				case WARNING:
+					testsWarning++;
+					break;
+				case NOT_APPLICABLE:
+					// currently NOT_APPLICABLE is not counted
+					break;
+				case UNDEFINED:
+					// currently UNDEFINED is not counted
+					break;
+				// default not required as all options have been dealt with
 			}
 			
 			Element reportTestCaseComment = new Element("TESTCASECOMMENT");
@@ -255,21 +274,37 @@ public class ReportXmlGenerator {
 		reportExcutedTests.setText(Integer.valueOf(executedTests).toString());
 		root.addContent(reportExcutedTests);
 
-		Element reportTestsFailed = new Element("FAILEDTESTS");
-		reportTestsFailed.setText(Integer.valueOf(failedTests).toString());
-		root.addContent(reportTestsFailed);
-
 		Element reportTestsPassed = new Element("PASSEDTESTS");
-		reportTestsPassed.setText(Integer.valueOf(passedTests).toString());
+		reportTestsPassed.setText(Integer.valueOf(testsPassed).toString());
 		root.addContent(reportTestsPassed);
+		
+		Element reportTestsFailed = new Element("FAILEDTESTS");
+		reportTestsFailed.setText(Integer.valueOf(testsFailed).toString());
+		root.addContent(reportTestsFailed);
+		
+//		Element reportTestsWarning = new Element("WARNINGTESTS");
+//		reportTestsWarning.setText(Integer.valueOf(testsWarning).toString());
+//		root.addContent(reportTestsWarning);
+//		
+//		Element reportTestsNotApplicable = new Element("NOTAPPLICABLETESTS");
+//		reportTestsNotApplicable.setText(Integer.valueOf(testsNotApplicable).toString());
+//		root.addContent(reportTestsNotApplicable);
+//		
+//		Element reportTestsUndefined = new Element("UNDEFINEDTESTS");
+//		reportTestsUndefined.setText(Integer.valueOf(testsUndefined).toString());
+//		root.addContent(reportTestsUndefined);
 		
 		Element reportStatus = new Element("STATUS");
 		
-		if(executedTests == passedTests) {
-			reportStatus.setText("PASSED");
-		} else{
-			reportStatus.setText("FAILURE");
+		String status = Status.PASSED.getTextualRepresentation();
+		if(testsWarning > 0) {
+			status = Status.WARNING.getTextualRepresentation();
 		}
+		if(testsFailed > 0) {
+			status = Status.FAILURE.getTextualRepresentation();
+		}
+		
+		reportStatus.setText(status);
 		root.addContent(reportStatus);
 
 		Element reportTestSessionTime = new Element("TESTSESSIONTIME");
