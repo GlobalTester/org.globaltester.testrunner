@@ -87,7 +87,7 @@ public class ScriptIssue extends Result implements Serializable {
 		
 		super(status);
 		if ((status != Status.FAILURE) && (status != Status.WARNING)) {
-			throw new RuntimeException("ScriptIssue status must be either FAILURE or WARNING but is: " + status);
+			throw new IllegalArgumentException("ScriptIssue status must be either FAILURE or WARNING but is: " + status);
 		}
 		
 		this.id = id;
@@ -203,6 +203,7 @@ public class ScriptIssue extends Result implements Serializable {
 	 * 
 	 * @return failureID String
 	 */
+	@Override
 	public String toString() {
 		return "FailureID" + id;
 	}
