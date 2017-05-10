@@ -10,7 +10,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.IPreferencesService;
 import org.globaltester.base.resources.GtResourceHelper;
+import org.globaltester.logging.legacy.logger.GtErrorLogger;
 import org.globaltester.logging.legacy.logger.TestLogger;
+import org.globaltester.testrunner.Activator;
 
 /**
  * This class extends the usual test execution {@link Result} to provide additional information about script issues that occurred during execution.
@@ -101,7 +103,8 @@ public class ScriptIssue extends Result implements Serializable {
 			ResourcesPlugin.getWorkspace().getRoot()
 					.refreshLocal(IResource.DEPTH_INFINITE, null);
 		} catch (CoreException e) {
-			//ignore, this may lead to problems later when adding markers, but these will be hendled then
+			//ignore, this may lead to problems later when adding markers, but these will be handled then
+			GtErrorLogger.log(Activator.PLUGIN_ID, e);
 		}
 		
 		//add markers
@@ -154,7 +157,7 @@ public class ScriptIssue extends Result implements Serializable {
 			}
 			
 		} catch (CoreException e) {
-			e.printStackTrace();
+			GtErrorLogger.log(Activator.PLUGIN_ID, e);
 		}
 	}
 
