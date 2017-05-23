@@ -1,6 +1,5 @@
 package org.globaltester.testrunner.ui;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -16,19 +15,16 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.ui.PlatformUI;
-import org.globaltester.base.UserInteraction;
 import org.globaltester.base.ui.GtUiHelper;
 import org.globaltester.logging.legacy.logger.GtErrorLogger;
 import org.globaltester.sampleconfiguration.GtSampleConfigNature;
 import org.globaltester.sampleconfiguration.SampleConfig;
 import org.globaltester.sampleconfiguration.SampleConfigManager;
 import org.globaltester.sampleconfiguration.ui.SampleConfigSelectorDialog;
-import org.globaltester.scriptrunner.RuntimeRequirementsProvider;
-import org.globaltester.scriptrunner.SampleConfigProvider;
+import org.globaltester.scriptrunner.GtRuntimeRequirements;
 import org.globaltester.scriptrunner.TestExecutionCallback;
 import org.globaltester.scriptrunner.TestResourceExecutor;
 import org.globaltester.scriptrunner.TestResourceExecutorLock;
-import org.globaltester.scriptrunner.UserInteractionProvider;
 import org.globaltester.testrunner.GtTestCampaignProject;
 
 /**
@@ -52,7 +48,7 @@ public class TestRunnerExecutor implements TestResourceExecutor {
 	}
 
 	@Override
-	public Object execute(RuntimeRequirementsProvider runtimeRequirements, List<IResource> resources, TestExecutionCallback callback) {
+	public Object execute(GtRuntimeRequirements runtimeRequirements, List<IResource> resources, TestExecutionCallback callback) {
 
 		if (canExecute(resources)){
 			try {
@@ -61,27 +57,14 @@ public class TestRunnerExecutor implements TestResourceExecutor {
 				throw new IllegalArgumentException("No test campaign project could be found for the given resources.");
 			}
 			
-			UserInteraction interaction = null;
-			if (runtimeRequirements instanceof UserInteractionProvider){
-				interaction = ((UserInteractionProvider)runtimeRequirements).getUserInteraction();
-			}
+			addCommonRuntimeRequirements(runtimeRequirements);
 			
-			SampleConfig sampleConfig = null;
-			if (runtimeRequirements instanceof SampleConfigProvider){
-				sampleConfig = ((SampleConfigProvider)runtimeRequirements).getSampleConfig();
-			}
-			
-			Map<Class<?>, Object> config = getConfiguration(sampleConfig, interaction);
-			if(config == null) {
-				return null;
-			}
-			
-			return executeCampaign(campaign, runtimeRequirements, config, callback);
+			return executeCampaign(campaign, runtimeRequirements, callback);
 		}
 		throw new IllegalArgumentException("These resources can not be executed as a test campaign");
 	}
 
-	private Object executeCampaign(final GtTestCampaignProject campaign, RuntimeRequirementsProvider runtimeRequirements, final Map<Class<?>, Object> configuration, final TestExecutionCallback callback) {
+	private Object executeCampaign(final GtTestCampaignProject campaign, GtRuntimeRequirements runtimeRequirements, final TestExecutionCallback callback) {
 		
 		// execute the TestCampaign
 		Job job = new Job("Test execution") {
@@ -91,7 +74,7 @@ public class TestRunnerExecutor implements TestResourceExecutor {
 				// execute tests
 				try {
 					if (campaign != null) {
-						campaign.getTestCampaign().executeTests(configuration, monitor, callback);
+						campaign.getTestCampaign().executeTests(runtimeRequirements, monitor, callback);
 					} else {
 
 						TestExecutionCallback.TestResult result = new TestExecutionCallback.TestResult();
@@ -128,23 +111,18 @@ public class TestRunnerExecutor implements TestResourceExecutor {
 		return null;
 	}
 	
-	protected Map<Class<?>, Object> getConfiguration(SampleConfig config, UserInteraction interaction) {
-		
-		Map<Class<?>, Object> configuration = new HashMap<>();
-		
-		//add SampleConfig
-		if(config != null) {
-			configuration.put(config.getClass(), config);
-		}
+	/**
+	 * Add RuntimeRequirements that are commonly used
+	 * 
+	 * @param config
+	 * @param interaction
+	 */
+	protected void addCommonRuntimeRequirements(GtRuntimeRequirements runtimeReqs) {
 		
 		//add o.g.protocol.Activator 
-		configuration.put(org.globaltester.protocol.Activator.class, org.globaltester.protocol.Activator.getDefault());
-		
-		if(interaction != null){
-			configuration.put(UserInteraction.class, interaction);
+		if (!runtimeReqs.containsKey(org.globaltester.protocol.Activator.class)) {
+			runtimeReqs.put(org.globaltester.protocol.Activator.class, org.globaltester.protocol.Activator.getDefault());
 		}
-		
-		return configuration;
 	}
 		
 	protected SampleConfig getSampleConfig(Map<?, ?> parameters) {	

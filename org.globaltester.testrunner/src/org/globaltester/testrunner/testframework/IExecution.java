@@ -3,7 +3,7 @@ package org.globaltester.testrunner.testframework;
 import java.util.Collection;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.globaltester.scriptrunner.RuntimeRequirementsProvider;
+import org.globaltester.scriptrunner.GtRuntimeRequirements;
 import org.globaltester.testrunner.testframework.Result.Status;
 
 public interface IExecution {
@@ -42,7 +42,7 @@ public interface IExecution {
 
 	public abstract Result getResult();
 
-	public abstract void execute(RuntimeRequirementsProvider provider, boolean b,
+	public abstract void execute(GtRuntimeRequirements runtimeReqs, boolean b,
 			IProgressMonitor monitor);
 
 }

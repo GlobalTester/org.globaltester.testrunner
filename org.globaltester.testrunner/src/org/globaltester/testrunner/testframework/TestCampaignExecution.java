@@ -20,8 +20,7 @@ import org.globaltester.base.xml.XMLHelper;
 import org.globaltester.logging.legacy.logger.GtErrorLogger;
 import org.globaltester.logging.legacy.logger.TestLogger;
 import org.globaltester.sampleconfiguration.SampleConfig;
-import org.globaltester.scriptrunner.RuntimeRequirementsProvider;
-import org.globaltester.scriptrunner.SampleConfigProvider;
+import org.globaltester.scriptrunner.GtRuntimeRequirements;
 import org.globaltester.testrunner.Activator;
 import org.globaltester.testrunner.GtTestCampaignProject;
 import org.globaltester.testrunner.testframework.Result.Status;
@@ -262,7 +261,7 @@ public class TestCampaignExecution extends FileTestExecution {
 	}
 
 	@Override
-	protected void execute(RuntimeRequirementsProvider provider, boolean forceExecution,
+	protected void execute(GtRuntimeRequirements runtimeReqs, boolean forceExecution,
 			boolean reExecution, IProgressMonitor monitor) {
 		if (monitor == null) {
 			monitor = new NullProgressMonitor();
@@ -326,9 +325,10 @@ public class TestCampaignExecution extends FileTestExecution {
 			
 			progress.beginTask("Execute TestCase ", elementExecutions.size());
 			
-			if (provider instanceof SampleConfigProvider){
+			//persist SampleConfig used
+			if (runtimeReqs.containsKey(SampleConfig.class)){
 				Element xmlRepresentation = new Element("SampleConfiguration");
-				((SampleConfigProvider) provider).getSampleConfig().dumpToXml(xmlRepresentation);
+				runtimeReqs.get(SampleConfig.class).dumpToXml(xmlRepresentation);
 				this.sampleConfig = new SampleConfig(xmlRepresentation);	
 			}
 			
@@ -337,7 +337,7 @@ public class TestCampaignExecution extends FileTestExecution {
 					.hasNext() && !monitor.isCanceled();) {
 				IExecution curExec= elemIter.next();
 				monitor.subTask(curExec.getName());
-				curExec.execute(provider, false,
+				curExec.execute(runtimeReqs, false,
 						new NullProgressMonitor());
 				result.addSubResult(curExec.getResult());
 				monitor.worked(1);

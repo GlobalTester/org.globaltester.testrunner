@@ -5,7 +5,7 @@ import java.util.Date;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.globaltester.logging.legacy.logger.TestLogger;
-import org.globaltester.scriptrunner.RuntimeRequirementsProvider;
+import org.globaltester.scriptrunner.GtRuntimeRequirements;
 import org.globaltester.testrunner.testframework.Result.Status;
 import org.jdom.Element;
 
@@ -110,15 +110,15 @@ public abstract class AbstractTestExecution implements IExecution {
 	/**
 	 * (Re)Execute the code associated with this test execution
 	 * 
-	 * @param provider
-	 *            The {@link RuntimeRequirementsProvider} to deliver all needed
+	 * @param runtimeReqs
+	 *            The {@link GtRuntimeRequirements} to deliver all needed
 	 *            data and functions for this execution
 	 * @param forceExecution
 	 *            if true the code is executed regardless if previous execution
 	 *            is still valid, if true code is only executed if no previous
 	 *            execution is still valid
 	 */
-	public void execute(RuntimeRequirementsProvider provider, boolean forceExecution, IProgressMonitor monitor) {
+	public void execute(GtRuntimeRequirements runtimeReqs, boolean forceExecution, IProgressMonitor monitor) {
 		// set the execution time
 		boolean reExecution = lastExecutionStartTime != 0;
 
@@ -129,7 +129,7 @@ public abstract class AbstractTestExecution implements IExecution {
 		setLogFileLine(TestLogger.getLogFileLine());
 		
 		// forward the execution to the implementing class
-		execute(provider, forceExecution, reExecution, monitor);
+		execute(runtimeReqs, forceExecution, reExecution, monitor);
 
 		// calculate execution duration
 		lastExecutionDuration = new Date().getTime() - lastExecutionStartTime;
@@ -141,8 +141,8 @@ public abstract class AbstractTestExecution implements IExecution {
 	/**
 	 * (Re)Execute the code associated with this test execution
 	 * 
-	 * @param provider
-	 *            The {@link RuntimeRequirementsProvider} to deliver all needed
+	 * @param runtimeReqs
+	 *            The {@link GtRuntimeRequirements} to deliver all needed
 	 *            data and functions for this execution
 	 * @param forceExecution
 	 *            if true the code is executed regardless if previous execution
@@ -150,7 +150,7 @@ public abstract class AbstractTestExecution implements IExecution {
 	 *            execution is still valid
 	 * @param monitor 
 	 */
-	protected abstract void execute(RuntimeRequirementsProvider provider, boolean forceExecution, boolean reExecution, IProgressMonitor monitor);
+	protected abstract void execute(GtRuntimeRequirements runtimeReqs, boolean forceExecution, boolean reExecution, IProgressMonitor monitor);
 
 	public long getLastExecutionStartTime() {
 		return lastExecutionStartTime;

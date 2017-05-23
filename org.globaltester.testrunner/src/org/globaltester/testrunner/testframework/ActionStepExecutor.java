@@ -4,7 +4,7 @@ import org.globaltester.base.util.StringUtil;
 import org.globaltester.logging.legacy.logger.TestLogger;
 import org.globaltester.scriptrunner.AssertionFailure;
 import org.globaltester.scriptrunner.AssertionWarning;
-import org.globaltester.scriptrunner.RuntimeRequirementsProvider;
+import org.globaltester.scriptrunner.GtRuntimeRequirements;
 import org.globaltester.scriptrunner.ScriptRunner;
 import org.globaltester.testrunner.testframework.Result.Status;
 import org.mozilla.javascript.EvaluatorException;
@@ -17,17 +17,17 @@ import de.cardcontact.scdp.gp.GPError;
 
 public class ActionStepExecutor {
 
-	private RuntimeRequirementsProvider provider;
+	private GtRuntimeRequirements runtimeReqs;
 	
-	public ActionStepExecutor(RuntimeRequirementsProvider provider) {
-		this.provider = provider;
+	public ActionStepExecutor(GtRuntimeRequirements provider) {
+		this.runtimeReqs = provider;
 	}
 
 	public Result execute(String code, String sourceName) {
-		if (!(provider instanceof ScriptRunnerProvider)){
-			return ResultFactory.newFailure(Status.NOT_APPLICABLE, 0, 0, "No script runner available");
+		ScriptRunner scriptRunner = runtimeReqs.get(ScriptRunner.class);
+		if (scriptRunner == null) {
+			return new Result(Status.UNDEFINED, "No script runner available");
 		}
-		ScriptRunner scriptRunner = ((ScriptRunnerProvider)provider).getScriptRunner();
 		
 		//unindent code
 		code = StringUtil.formatCode(code);
