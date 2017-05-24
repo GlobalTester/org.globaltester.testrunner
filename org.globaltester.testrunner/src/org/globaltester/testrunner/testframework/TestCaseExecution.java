@@ -128,7 +128,10 @@ public class TestCaseExecution extends FileTestExecution {
 		// IMPL use variable forceExecution
 		
 		// dump execution information to logfile
-		TestLogger.initTestExecutable(getId());
+		TestLogger.initTestCase(getId());
+		// Put info of new TestExecutable into log file(s)
+		TestLogger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+		TestLogger.info("Starting new test executable" + getId());
 		
 		//set the log file
 		setLogFileName(TestLogger.getTestCaseLogFileName());
@@ -193,8 +196,9 @@ public class TestCaseExecution extends FileTestExecution {
 			if (sr != null){
 				sr.close();
 			}
-			// dump execution information to logfile
-			TestLogger.shutdownTestExecutableLogger();
+			TestLogger.info("End execution of " + getId());
+			TestLogger.info("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< -");
+			TestLogger.shutdownTestCase();
 			monitor.done();
 		}
 		
