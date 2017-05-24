@@ -9,13 +9,11 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
-import org.globaltester.base.resources.GtResourceHelper;
 import org.globaltester.base.xml.XMLHelper;
 import org.globaltester.logging.legacy.logger.GtErrorLogger;
 import org.globaltester.logging.legacy.logger.TestLogger;
@@ -273,16 +271,8 @@ public class TestCampaignExecution extends FileTestExecution {
 		try {
 			progress.subTask("Initialization");
 			
-			// (re)initialize the TestLogger
-			if (TestLogger.isInitialized()) {
-				TestLogger.shutdown();
-			}
 			// initialize test logging for this test session
 			GtTestCampaignProject project = getTestCampaign().getProject();
-			IFolder defaultLoggingDir = project.getDefaultLoggingDir();
-			GtResourceHelper.createWithAllParents(defaultLoggingDir);
-
-			TestLogger.init(project.getNewResultDir());
 			
 			//set the log file
 			setLogFileName(TestLogger.getLogFileName());
@@ -345,7 +335,6 @@ public class TestCampaignExecution extends FileTestExecution {
 			
 			// shutdown the TestLogger
 			progress.subTask("Shutdown");
-			TestLogger.shutdown();
 			progress.worked(1);
 		} catch(CoreException e){
 			result = new Result(Status.FAILURE, e.getMessage());

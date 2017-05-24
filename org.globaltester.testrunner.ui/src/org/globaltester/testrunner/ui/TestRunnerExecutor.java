@@ -12,6 +12,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -24,8 +25,10 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.ui.PlatformUI;
 import org.globaltester.base.UserInteraction;
+import org.globaltester.base.resources.GtResourceHelper;
 import org.globaltester.base.ui.GtUiHelper;
 import org.globaltester.logging.legacy.logger.GtErrorLogger;
+import org.globaltester.logging.legacy.logger.TestLogger;
 import org.globaltester.sampleconfiguration.GtSampleConfigNature;
 import org.globaltester.sampleconfiguration.SampleConfig;
 import org.globaltester.sampleconfiguration.SampleConfigManager;
@@ -88,13 +91,13 @@ public class TestRunnerExecutor implements TestResourceExecutor {
 		throw new IllegalArgumentException("These resources can not be executed as a test campaign");
 	}
 
-	private Object executeCampaign(final GtTestCampaignProject campaign, RuntimeRequirementsProvider runtimeRequirements, final Map<Class<?>, Object> configuration, final TestExecutionCallback callback) {
+	private Object executeCampaign(final GtTestCampaignProject campaignProject, RuntimeRequirementsProvider runtimeRequirements, final Map<Class<?>, Object> configuration, final TestExecutionCallback callback) {
 		
 		// execute the TestCampaign
 		Job job = new Job("Test execution") {
 
 			protected IStatus run(IProgressMonitor monitor) {
-				ThreadGroup threadGroup = new ThreadGroup("TestManager test execution thread group " + Calendar.getInstance().getTimeInMillis());
+				ThreadGroup threadGroup = new ThreadGroup("TestRunner test execution thread group " + Calendar.getInstance().getTimeInMillis());
 				ExecutorService executor = Executors.newSingleThreadExecutor(new ThreadFactory() {
 					
 					@Override
@@ -109,8 +112,23 @@ public class TestRunnerExecutor implements TestResourceExecutor {
 						TestResourceExecutorLock.getLock().lock();
 						// execute tests
 						try {
-							if (campaign != null) {
-								campaign.getTestCampaign().executeTests(configuration, monitor, callback);
+							if (campaignProject != null) {
+
+								
+								// (re)initialize the TestLogger
+								if (TestLogger.isInitialized()) {
+									TestLogger.shutdown();
+								}
+								// initialize test logging for this test session
+								GtTestCampaignProject project = campaignProject;
+								IFolder defaultLoggingDir = project.getDefaultLoggingDir();
+								GtResourceHelper.createWithAllParents(defaultLoggingDir);
+
+								TestLogger.init(project.getNewResultDir());
+								
+								campaignProject.getTestCampaign().executeTests(configuration, monitor, callback);
+								
+								TestLogger.shutdown();
 							} else {
 
 								TestExecutionCallback.TestResult result = new TestExecutionCallback.TestResult();
