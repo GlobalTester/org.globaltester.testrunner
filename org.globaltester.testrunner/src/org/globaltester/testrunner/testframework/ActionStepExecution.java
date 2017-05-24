@@ -47,9 +47,8 @@ public abstract class ActionStepExecution extends AbstractTestExecution {
 			monitor.beginTask("Execute " + actionStep.getName() + ": ", 2+expectedResults); //workitems: initialization + technicalCommand, + one per Result
 		
 			monitor.subTask("Initialization");
-		
 		//log TestStep ID and Command
-		TestLogger.info(String.format(TestLogger.DEFAULTFORMAT, "TestStep: "+ actionStep.getId()));
+		TestLogger.info("TestStep: "+ actionStep.getId());
 		Element commandElem = actionStep.getCommand();
 		if (commandElem != null) {
 			String command = commandElem.getTextNormalize();
@@ -57,10 +56,10 @@ public abstract class ActionStepExecution extends AbstractTestExecution {
 			if (commandTextElem != null) {
 				command = command + commandTextElem.getTextNormalize();
 			}
-			TestLogger.info(String.format(TestLogger.DEFAULTFORMAT, "Command: "+command));
+			TestLogger.info("Command: "+command);
 			Element commandApduElem = commandElem.getChild("APDU", commandElem.getNamespace());
 			if (commandApduElem != null) {
-				TestLogger.info(String.format(TestLogger.DEFAULTFORMAT, "APDU: "+commandApduElem.getTextNormalize()));
+				TestLogger.info("APDU: "+commandApduElem.getTextNormalize());
 			}
 		}
 		
@@ -69,7 +68,7 @@ public abstract class ActionStepExecution extends AbstractTestExecution {
 		if(descriptions!=null){
 			Iterator<String> descrIter = descriptions .iterator();
 			while (descrIter.hasNext()) {
-				TestLogger.debug(String.format(TestLogger.DEFAULTFORMAT, "Description: "+descrIter.next()));			
+				TestLogger.debug("Description: "+descrIter.next());			
 			}
 		}
 		
@@ -97,12 +96,12 @@ public abstract class ActionStepExecution extends AbstractTestExecution {
 				ExpectedResult curResult = expResultIter.next();
 				
 				monitor.subTask("ExpectedResult: " + curResult.getId());
-				TestLogger.info(String.format(TestLogger.DEFAULTFORMAT, "ExpectedResult: " + curResult.getId()));
+				TestLogger.info("ExpectedResult: " + curResult.getId());
 				
 				//log ExpectedResult descriptions
 				Iterator<String> descrIter = curResult.getDescriptions().iterator();
 				while (descrIter.hasNext()) {
-					TestLogger.debug(String.format(TestLogger.DEFAULTFORMAT, "Description: "+descrIter.next()));
+					TestLogger.debug("Description: "+descrIter.next());
 				}
 				
 				//execute the current expected result

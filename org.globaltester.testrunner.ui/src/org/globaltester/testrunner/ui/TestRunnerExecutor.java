@@ -1,9 +1,16 @@
 package org.globaltester.testrunner.ui;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadFactory;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -87,39 +94,60 @@ public class TestRunnerExecutor implements TestResourceExecutor {
 		Job job = new Job("Test execution") {
 
 			protected IStatus run(IProgressMonitor monitor) {
-				TestResourceExecutorLock.getLock().lock();
-				// execute tests
-				try {
-					if (campaign != null) {
-						campaign.getTestCampaign().executeTests(configuration, monitor, callback);
-					} else {
-
-						TestExecutionCallback.TestResult result = new TestExecutionCallback.TestResult();
-						result.testCases = 0;
-						result.overallResult = 4; //return Status.UNDEFINED on callback
-						
-						callback.testExecutionFinished(result);
-						return Status.CANCEL_STATUS;
+				ThreadGroup threadGroup = new ThreadGroup("TestManager test execution thread group " + Calendar.getInstance().getTimeInMillis());
+				ExecutorService executor = Executors.newSingleThreadExecutor(new ThreadFactory() {
+					
+					@Override
+					public Thread newThread(Runnable r) {
+						return new Thread(threadGroup, r);
 					}
-				} catch (CoreException e) {
-					GtErrorLogger.log(Activator.PLUGIN_ID, e);
-				} finally {
-					TestResourceExecutorLock.getLock().unlock();
-				}
+				});
+				Future<IStatus> future = executor.submit(new Callable<IStatus>() {
 
-				// refresh the workspace
+					@Override
+					public IStatus call() throws Exception {
+						TestResourceExecutorLock.getLock().lock();
+						// execute tests
+						try {
+							if (campaign != null) {
+								campaign.getTestCampaign().executeTests(configuration, monitor, callback);
+							} else {
+
+								TestExecutionCallback.TestResult result = new TestExecutionCallback.TestResult();
+								result.testCases = 0;
+								result.overallResult = 4; //return Status.UNDEFINED on callback
+								
+								callback.testExecutionFinished(result);
+								return Status.CANCEL_STATUS;
+							}
+						} catch (CoreException e) {
+							GtErrorLogger.log(Activator.PLUGIN_ID, e);
+						} finally {
+							TestResourceExecutorLock.getLock().unlock();
+						}
+
+						// refresh the workspace
+						try {
+							ResourcesPlugin.getWorkspace().getRoot()
+									.refreshLocal(IResource.DEPTH_INFINITE, null);
+						} catch (CoreException e) {
+							// log Exception to eclipse log
+							GtErrorLogger.log(Activator.PLUGIN_ID, e);
+
+							// users most probably will ignore this behavior and refresh
+							// workspace manually, so do not open annoying dialog
+						}
+						return Status.OK_STATUS;
+					}
+				});
+				
+				
+				
 				try {
-					ResourcesPlugin.getWorkspace().getRoot()
-							.refreshLocal(IResource.DEPTH_INFINITE, null);
-				} catch (CoreException e) {
-					// log Exception to eclipse log
-					GtErrorLogger.log(Activator.PLUGIN_ID, e);
-
-					// users most probably will ignore this behavior and refresh
-					// workspace manually, so do not open annoying dialog
+					return future.get();
+				} catch (InterruptedException | ExecutionException e) {
+					return Status.CANCEL_STATUS;
 				}
-
-				return Status.OK_STATUS;
 			}
 		};
 		job.setUser(true);

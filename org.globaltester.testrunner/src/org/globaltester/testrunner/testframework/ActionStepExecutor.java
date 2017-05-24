@@ -33,8 +33,7 @@ public class ActionStepExecutor {
 		code = StringUtil.formatCode(code);
 		
 		//get and execute the code
-		String codeFormat = String.format(TestLogger.DEFAULTFORMAT, "Code:");
-		TestLogger.trace(codeFormat + "\n" + code);
+		TestLogger.trace("Code:\n" + code);
 		try {
 			scriptRunner.exec(code, sourceName, -1);
 		} catch (EvaluatorException ex) {
