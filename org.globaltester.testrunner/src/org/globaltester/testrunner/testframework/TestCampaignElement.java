@@ -3,7 +3,7 @@ package org.globaltester.testrunner.testframework;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.globaltester.scriptrunner.RuntimeRequirementsProvider;
+import org.globaltester.scriptrunner.GtRuntimeRequirements;
 import org.globaltester.testspecification.testframework.FileTestExecutable;
 import org.globaltester.testspecification.testframework.TestExecutableFactory;
 import org.jdom.Element;
@@ -58,21 +58,21 @@ public class TestCampaignElement {
 	/**
 	 * Execute the given executable and all following
 	 *
-	 * @param provider
-	 *            The {@link RuntimeRequirementsProvider} to deliver all needed
+	 * @param runtimeReqs
+	 *            The {@link GtRuntimeRequirements} to deliver all needed
 	 *            data and functions for this execution
 	 * @param forceExecution
 	 * @return
 	 * @throws CoreException 
 	 */
-	FileTestExecution execute(RuntimeRequirementsProvider provider, boolean forceExecution, IProgressMonitor monitor) throws CoreException {
+	FileTestExecution execute(GtRuntimeRequirements runtimeReqs, boolean forceExecution, IProgressMonitor monitor) throws CoreException {
 
 		// create a new TestExecution this TestCampaignElement
 		FileTestExecution testExecution = FileTestExecutionFactory.createExecution(this);
 
 		if (testExecution != null) {
 			// execute the TestExecutable
-			testExecution.execute(provider, forceExecution, monitor);
+			testExecution.execute(runtimeReqs, forceExecution, monitor);
 		}
 		
 		return testExecution;

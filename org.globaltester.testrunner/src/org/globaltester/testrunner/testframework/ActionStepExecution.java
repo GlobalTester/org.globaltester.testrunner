@@ -7,7 +7,7 @@ import java.util.List;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.globaltester.logging.legacy.logger.TestLogger;
-import org.globaltester.scriptrunner.RuntimeRequirementsProvider;
+import org.globaltester.scriptrunner.GtRuntimeRequirements;
 import org.globaltester.testrunner.testframework.Result.Status;
 import org.globaltester.testspecification.testframework.ActionStep;
 import org.globaltester.testspecification.testframework.ExpectedResult;
@@ -33,7 +33,7 @@ public abstract class ActionStepExecution extends AbstractTestExecution {
 	}
 
 	@Override
-	public void execute(RuntimeRequirementsProvider provider, boolean forceExecution, boolean reExecution, IProgressMonitor monitor) {
+	public void execute(GtRuntimeRequirements provider, boolean forceExecution, boolean reExecution, IProgressMonitor monitor) {
 		if (monitor == null) {
 			monitor= new NullProgressMonitor();
 		}

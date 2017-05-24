@@ -2,7 +2,6 @@ package org.globaltester.testrunner.testframework;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,8 +12,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.globaltester.base.xml.XMLHelper;
 import org.globaltester.logging.legacy.logger.TestLogger;
-import org.globaltester.scriptrunner.RuntimeRequirementsProvider;
-import org.globaltester.scriptrunner.SampleConfigProvider;
+import org.globaltester.sampleconfiguration.SampleConfig;
+import org.globaltester.scriptrunner.GtRuntimeRequirements;
 import org.globaltester.scriptrunner.ScriptRunner;
 import org.globaltester.scriptrunner.ScshScope;
 import org.globaltester.testrunner.GtTestCampaignProject;
@@ -113,7 +112,7 @@ public class TestCaseExecution extends FileTestExecution {
 	}
 
 	@Override
-	protected void execute(RuntimeRequirementsProvider provider, boolean forceExecution, boolean reExecution, IProgressMonitor monitor) {
+	protected void execute(GtRuntimeRequirements runtimeReqs, boolean forceExecution, boolean reExecution, IProgressMonitor monitor) {
 		if (monitor == null){
 			monitor = new NullProgressMonitor();
 		}
@@ -140,19 +139,19 @@ public class TestCaseExecution extends FileTestExecution {
 		getTestCase().dumpTestCaseInfos();
 		
 		// check provider capabilities
-		if (!(provider instanceof SampleConfigProvider)){
+		if (!runtimeReqs.containsKey(SampleConfig.class)) {
 			result.status = Status.NOT_APPLICABLE;
 			result.comment = "Runtime requirements not fulfilled.";
 			return;
 		}
 		
-		sr = setupScriptRunner((SampleConfigProvider) provider);
-		
-		provider = new TestCaseRuntimeProvider(sr, (SampleConfigProvider)provider, null);
+		sr = new ScriptRunner(getIFile().getProject().getFolder(GtTestCampaignProject.SPEC_FOLDER), getIFile().getLocation().toOSString(), runtimeReqs);
+		sr.init(new ScshScope(sr));
+		runtimeReqs.put(ScriptRunner.class, sr);
 		
 		// check if test case is applicable
 		TestLogger.info("Check test case profiles");
-		if (!getTestCase().getProfileExpression().evaluate(((SampleConfigProvider) provider).getSampleConfig())){
+		if (!getTestCase().getProfileExpression().evaluate(runtimeReqs.get(SampleConfig.class))){
 			result.status = Status.NOT_APPLICABLE;
 			result.comment = "Profiles not fulfilled.";
 			TestLogger.info("Test case not applicable");
@@ -164,7 +163,7 @@ public class TestCaseExecution extends FileTestExecution {
 		for (Iterator<ActionStepExecution> preConIter = preConExecutions.iterator(); preConIter
 				.hasNext() && !monitor.isCanceled();) {
 			ActionStepExecution curStepExec = preConIter.next();
-			curStepExec.execute(provider, forceExecution, new NullProgressMonitor());
+			curStepExec.execute(runtimeReqs, forceExecution, new NullProgressMonitor());
 			
 			result.addSubResult(curStepExec.getResult());
 			monitor.worked(1);
@@ -175,7 +174,7 @@ public class TestCaseExecution extends FileTestExecution {
 		for (Iterator<ActionStepExecution> testStepIter = testStepExecutions.iterator(); testStepIter
 				.hasNext() && !monitor.isCanceled();) {
 			ActionStepExecution curStepExec = testStepIter.next();
-			curStepExec.execute(provider, forceExecution, new NullProgressMonitor());
+			curStepExec.execute(runtimeReqs, forceExecution, new NullProgressMonitor());
 			
 			result.addSubResult(curStepExec.getResult());
 			monitor.worked(1);
@@ -187,7 +186,7 @@ public class TestCaseExecution extends FileTestExecution {
 		for (Iterator<ActionStepExecution> postConIter = postConExecutions.iterator(); postConIter
 				.hasNext() && !monitor.isCanceled();) {
 			ActionStepExecution curStepExec = postConIter.next();
-			curStepExec.execute(provider, forceExecution, new NullProgressMonitor());
+			curStepExec.execute(runtimeReqs, forceExecution, new NullProgressMonitor());
 			
 			result.addSubResult(curStepExec.getResult());
 			monitor.worked(1);
@@ -267,14 +266,6 @@ public class TestCaseExecution extends FileTestExecution {
 		
 		Element status = root.getChild("LastExecutionResult").getChild("Status");
 		result.status = Result.Status.get(status.getTextTrim());
-	}
-	
-	private ScriptRunner setupScriptRunner(SampleConfigProvider sampleConfigProvider){
-		HashMap<Class<?>, Object> configuration = new HashMap<>();
-		configuration.put(sampleConfigProvider.getSampleConfig().getClass(), sampleConfigProvider.getSampleConfig());
-		ScriptRunner sr = new ScriptRunner(getIFile().getProject().getFolder(GtTestCampaignProject.SPEC_FOLDER), getIFile().getLocation().toOSString(), configuration);
-		sr.init(new ScshScope(sr));
-		return sr;
 	}
 
 	@Override

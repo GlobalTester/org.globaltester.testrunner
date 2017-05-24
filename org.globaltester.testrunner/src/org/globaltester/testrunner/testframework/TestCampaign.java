@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
@@ -12,9 +11,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.globaltester.base.xml.XMLHelper;
-import org.globaltester.sampleconfiguration.SampleConfig;
-import org.globaltester.scriptrunner.RuntimeRequirementsProvider;
-import org.globaltester.scriptrunner.SampleConfigProviderImpl;
+import org.globaltester.scriptrunner.GtRuntimeRequirements;
 import org.globaltester.scriptrunner.TestExecutionCallback;
 import org.globaltester.smartcardshell.preferences.SmartCardShellInfo;
 import org.globaltester.testrunner.GtTestCampaignProject;
@@ -178,13 +175,13 @@ public class TestCampaign {
 	/**
 	 * Execute all tests that need to be executed e.g. which do not have a valid
 	 * previous execution associated
-	 * @param configuration 
+	 * @param runtimeReqs 
 	 * @param monitor 
 	 * @param callback 
 	 * 
 	 * @throws CoreException
 	 */
-	public void executeTests(Map<Class<?>, Object> configuration, IProgressMonitor monitor, TestExecutionCallback callback) throws CoreException {
+	public void executeTests(GtRuntimeRequirements runtimeReqs, IProgressMonitor monitor, TestExecutionCallback callback) throws CoreException {
 
 		// create a new TestExecution this TestCampaignElement
 		TestCampaignExecution currentExecution = FileTestExecutionFactory.createExecution(this);
@@ -195,10 +192,8 @@ public class TestCampaign {
 		}
 		executions.addFirst(currentExecution);
 		
-		RuntimeRequirementsProvider provider = new SampleConfigProviderImpl((SampleConfig)configuration.get(SampleConfig.class));
-		
 		// execute the TestExecutable
-		currentExecution.execute(provider, false, monitor);
+		currentExecution.execute(runtimeReqs, false, monitor);
 		
 		// save the new state
 		project.doSave();
