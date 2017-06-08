@@ -17,7 +17,9 @@ public class CreateAndRunTestCampaignCommandHandler extends CreateTestCampaignCo
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		if (super.execute(event) != null) {
-			return new RunTestCommandHandler().execute(event);
+			RunTestCommandHandler rtch = new RunTestCommandHandler();
+			rtch.setIgnoreDirty(true);
+			return rtch.execute(event);
 		}
 		return null;
 	}
