@@ -304,7 +304,7 @@ public class TestCampaignExecution extends FileTestExecution {
 			
 			if (!nonValidProjects.isEmpty()) {
 
-				String message = "Integrity of test cases is not assured!\n\nThe following Scripts are modified since delivery:\n"
+				String message = "Functional integrity of testcases is not assured!\n\nThe following Scripts have been modified since delivery or remain unchecked:\n"
 						+ nonValidProjects + "\n";
 
 				TestLogger.warn(message);	
