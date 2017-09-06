@@ -9,7 +9,6 @@ import org.globaltester.scriptrunner.EnvironmentNotInitializedException;
 import org.globaltester.scriptrunner.ScriptRunner;
 import org.globaltester.smartcardshell.GTWrapFactory;
 import org.globaltester.smartcardshell.ProtocolExtensions;
-import org.globaltester.smartcardshell.ocf.OCFWrapper;
 import org.globaltester.smartcardshell.preferences.SmartCardShellInfo;
 import org.globaltester.smartcardshell.protocols.IScshProtocolProvider;
 import org.mozilla.javascript.Context;
@@ -57,9 +56,12 @@ public class TestRunnerEnvironmentInitializer {
 		WrapFactory wf = new GTWrapFactory();
 		runner.getContext().setWrapFactory(wf);
 
-		assert (SmartCard.isStarted());
-
-		initOcf(runner);
+		try {
+			SmartCard.start();
+		} catch (OpenCardPropertyLoadingException | CardServiceException | CardTerminalException
+				| ClassNotFoundException e) {
+			TestLogger.error(e);
+		}
 
 		// execute SCSH config.js
 		String sCSHconfigFileName = SmartCardShellInfo.getConfigFile();
@@ -124,26 +126,9 @@ public class TestRunnerEnvironmentInitializer {
 		} catch (Exception e) {
 			TestLogger.error(e);
 		}
-		try {
-			OCFWrapper.shutdown();
-		} catch (CardTerminalException e) {
-			TestLogger.error(e);
-		}
 		if (Context.getCurrentContext() != null){
 			Context.exit();	
 		}
-	}
-
-	private static void initOcf(ScriptRunner runner) {
-		try {
-			OCFWrapper.start();
-		} catch (OpenCardPropertyLoadingException | CardServiceException | CardTerminalException
-				| ClassNotFoundException e1) {
-			// #831 log this appropriately, can't handle this here, but should be identifiable from logfile
-			e1.printStackTrace();
-		}
-		
-
 	}
 	
 	/**
