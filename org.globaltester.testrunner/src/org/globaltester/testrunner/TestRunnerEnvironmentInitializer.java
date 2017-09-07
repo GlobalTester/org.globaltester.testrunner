@@ -111,7 +111,7 @@ public class TestRunnerEnvironmentInitializer {
 									// since Rhino debugger crashes in that
 									// case
 		// set SampleConfig as member variable
-		cmd = "card.gt_sampleConfig = _" + SampleConfig.class.getCanonicalName().replace('.', '_') + ";";
+		cmd = "card.gt_sampleConfig = getRunnerInstance().getRuntimeRequirement(Packages.org.globaltester.sampleconfiguration.SampleConfig);";
 		runner.exec(cmd, null, -1); // do not send "" as source filename,
 									// since Rhino debugger crashes in that
 									// case
