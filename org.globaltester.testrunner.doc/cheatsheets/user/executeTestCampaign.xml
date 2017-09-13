@@ -38,7 +38,7 @@
          title="Run TestCampaign">
       <description>
         To execute the newly created TestCampaign select the campaign file in the campaign project and click
-        &quot;Run TestCampaign&quot; after opening the context menu.
+        &quot;Run TestCampaign&quot; after opening the context menu. If no sample config was created beforehand, a dialog will open that allows to create one.
         Both TestCases will have a &quot;FAILURE&quot; - notice in their &quot;Status&quot;-column in the TestCampaign editor.
       </description>
    </item>
