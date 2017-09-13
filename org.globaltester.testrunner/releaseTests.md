@@ -12,7 +12,7 @@ Launch the GlobalTester Platform product and perform the following cheat sheet
      - [ ] Press "Generate Report" button, this should lead to an error dialog and not uncaught exceptions
 
 1. [ ] __Check TestCampaign behavior__
-Launch the GlobalTester Platform product and perform the following steps
+Launch a GlobalTester Prove product and perform the following steps
  - [ ] Select several test cases and a test suite
  - [ ] Use the "Create TestCampaign and execute it" button from the campaign drop down menu
      - [ ] The TestCampaign is executed with expected results depending on test cases and environment
