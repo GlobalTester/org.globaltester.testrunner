@@ -121,6 +121,7 @@ public class ReportXmlGenerator {
 				case PASSED:
 					testsPassed++;
 					break;
+				case REQUIREMENT_MISSING:
 				case FAILURE:
 					testsFailed++;
 					break;

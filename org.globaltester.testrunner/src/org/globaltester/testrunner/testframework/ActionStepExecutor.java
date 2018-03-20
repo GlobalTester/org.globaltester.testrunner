@@ -1,7 +1,10 @@
 package org.globaltester.testrunner.testframework;
 
+import org.globaltester.base.SeverityLevel;
+import org.globaltester.base.UserInteraction;
 import org.globaltester.base.util.StringUtil;
 import org.globaltester.logging.legacy.logger.TestLogger;
+import org.globaltester.platform.ExecutionRequirementsException;
 import org.globaltester.scriptrunner.AssertionFailure;
 import org.globaltester.scriptrunner.AssertionWarning;
 import org.globaltester.scriptrunner.GtRuntimeRequirements;
@@ -18,9 +21,11 @@ import de.cardcontact.scdp.gp.GPError;
 public class ActionStepExecutor {
 
 	private GtRuntimeRequirements runtimeReqs;
+	private boolean ignoreExecutionRequirements;
 	
-	public ActionStepExecutor(GtRuntimeRequirements provider) {
+	public ActionStepExecutor(GtRuntimeRequirements provider, boolean ignoreExecutionRequirements) {
 		this.runtimeReqs = provider;
+		this.ignoreExecutionRequirements = ignoreExecutionRequirements;
 	}
 
 	public Result execute(String code, String sourceName) {
@@ -42,6 +47,15 @@ public class ActionStepExecutor {
 			Throwable unwrappedEx = ex;
 			if (ex instanceof WrappedException) {
 				unwrappedEx = ex.getCause();
+				if (unwrappedEx instanceof ExecutionRequirementsException) {
+					if (!ignoreExecutionRequirements) {
+						if (runtimeReqs.containsKey(UserInteraction.class)) {
+							runtimeReqs.get(UserInteraction.class).notify(SeverityLevel.ERROR, ((ExecutionRequirementsException) unwrappedEx).getUserMessage());
+						}
+						return ResultFactory.newFailure(Status.REQUIREMENT_MISSING,
+								0, TestLogger.getLogFileLine(), unwrappedEx.toString());	
+					}
+				}
 			}
 			return ResultFactory.newFailure(Status.FAILURE,
 					0, TestLogger.getLogFileLine(), unwrappedEx.toString());

@@ -23,11 +23,12 @@ public class Result implements Serializable{
 	public static final String STATUS_WARNING = "WARNING";
 	public static final String STATUS_NOT_APPLICABLE = "NOT APPLICABLE";
 	public static final String STATUS_UNDEFINED = "UNDEFINED";
+	public static final String STATUS_REQUIREMENT_MISSING = "REQUIREMENT_MISSING";
 
 	private static final long serialVersionUID = 1690869079522455149L;
 
 	public enum Status {
-		PASSED(STATUS_PASSED), WARNING(STATUS_WARNING), FAILURE(STATUS_FAILURE), UNDEFINED(STATUS_UNDEFINED), NOT_APPLICABLE(STATUS_NOT_APPLICABLE);
+		PASSED(STATUS_PASSED), WARNING(STATUS_WARNING), FAILURE(STATUS_FAILURE), UNDEFINED(STATUS_UNDEFINED), NOT_APPLICABLE(STATUS_NOT_APPLICABLE), REQUIREMENT_MISSING(STATUS_REQUIREMENT_MISSING);
 		
 		private String textualRepresentation;
 		
@@ -138,6 +139,9 @@ public class Result implements Serializable{
 					tmpStatus = Status.UNDEFINED;
 				}
 				break;
+			case REQUIREMENT_MISSING:
+				tmpStatus = Status.REQUIREMENT_MISSING;
+				break iterationLoop;
 			case WARNING:
 				tmpStatus = Status.WARNING;
 				break;

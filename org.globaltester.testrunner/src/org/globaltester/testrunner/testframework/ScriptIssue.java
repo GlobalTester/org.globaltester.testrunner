@@ -86,8 +86,8 @@ public class ScriptIssue extends Result implements Serializable {
 	public ScriptIssue(int id, Status status, int lineScript, int lineLogFile, String issueText, String expectedValue, String receivedValue) {
 		
 		super(status);
-		if ((status != Status.FAILURE) && (status != Status.WARNING)) {
-			throw new IllegalArgumentException("ScriptIssue status must be either FAILURE or WARNING but is: " + status);
+		if ((status != Status.FAILURE) && (status != Status.WARNING) && (status != Status.REQUIREMENT_MISSING)) {
+			throw new IllegalArgumentException("ScriptIssue status must be either FAILURE or WARNING or REQUIREMENT_MISSING but is: " + status);
 		}
 		
 		this.id = id;

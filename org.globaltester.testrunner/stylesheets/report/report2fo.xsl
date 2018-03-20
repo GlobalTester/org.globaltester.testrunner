@@ -72,9 +72,9 @@
 
           <fo:table border="0.8pt solid black" text-align="left" font-size="8pt" width="100%" table-layout="fixed">
             <fo:table-column column-width="20%"/>
-            <fo:table-column column-width="55%"/>
+            <fo:table-column column-width="47%"/>
             <fo:table-column column-width="10%"/>
-            <fo:table-column column-width="15%"/>
+            <fo:table-column column-width="23%"/>
             <fo:table-body>
               <fo:table-row>
                 <fo:table-cell padding="1pt" border="0.8pt solid black" font-weight="bold" text-align="center" background-color="lightgrey">
@@ -105,6 +105,9 @@
                   <fo:table-cell padding="1pt" border="0.8pt solid black">
                     <xsl:if test="TESTCASESTATUS='PASSED'">
                       <fo:block color="green"> <fo:external-graphic src="url('icons/sts_passed.png')" content-height="50%" content-width="50%" padding-right="3pt"/> <xsl:value-of select="TESTCASESTATUS" /> </fo:block>
+                    </xsl:if>
+                    <xsl:if test="TESTCASESTATUS='REQUIREMENT_MISSING'">
+                      <fo:block color="red"> <fo:external-graphic src="url('icons/sts_failed.png')" content-height="50%" content-width="50%" padding-right="3pt"/> <xsl:value-of select="TESTCASESTATUS" /> </fo:block>
                     </xsl:if>
                     <xsl:if test="TESTCASESTATUS='FAILURE'">
                       <fo:block color="red"> <fo:external-graphic src="url('icons/sts_failed.png')" content-height="50%" content-width="50%" padding-right="3pt"/> <xsl:value-of select="TESTCASESTATUS" /> </fo:block>

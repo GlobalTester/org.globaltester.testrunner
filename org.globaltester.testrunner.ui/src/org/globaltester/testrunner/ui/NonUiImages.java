@@ -76,6 +76,7 @@ public enum NonUiImages {
 		switch (status) {
 		case PASSED:
 			return STS_PASSED_ICON;
+		case REQUIREMENT_MISSING:
 		case FAILURE:
 			return STS_FAILED_ICON;
 		case WARNING:
