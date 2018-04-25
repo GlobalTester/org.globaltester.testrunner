@@ -78,10 +78,14 @@ public class Result implements Serializable{
 			
 			throw new IllegalArgumentException("The value \"" + intRepresentation + "\" does not represent a known status.");
 		}
+
+		public static boolean isExecuted(Status s) {
+			return (s != NOT_APPLICABLE) && (s != UNDEFINED);
+		}
 		
 	}
 
-	protected Status status; // status this result represents
+	public Status status; // status this result represents
 	protected String comment; // comment associated with this result
 	protected ArrayList<Result> subResults = new ArrayList<Result>();
 

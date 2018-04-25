@@ -89,6 +89,7 @@ public class GtTestCampaignProject implements ITreeObservable {
 
 	public static GtTestCampaignProject getProjectForResource(
 			IResource selectedResource) throws CoreException {
+		if (selectedResource == null) return null;
 
 		IProject iProject = selectedResource.getProject();
 

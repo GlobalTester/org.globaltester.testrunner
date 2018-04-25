@@ -32,7 +32,7 @@ public abstract class FileTestExecution extends AbstractTestExecution {
 	 */
 	public FileTestExecution(IFile iFile) throws CoreException {
 		this.iFile = iFile;
-		if (!iFile.exists()) {
+		if ((iFile != null) && (!iFile.exists())) {
 			// create the IFile
 			createIFile();
 		}
@@ -118,6 +118,8 @@ public abstract class FileTestExecution extends AbstractTestExecution {
 	 * 
 	 */
 	public void doSave() {
+		if (iFile == null) return;
+		
 		// save this element
 		Element root = new Element(getXmlRootElementName());
 		dumpToXml(root);

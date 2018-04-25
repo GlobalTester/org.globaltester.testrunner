@@ -83,6 +83,8 @@ import org.globaltester.base.ui.GtUiHelper;
 import org.globaltester.logging.legacy.logger.GTLogger;
 import org.globaltester.logging.logfileeditor.ui.editors.LogfileEditor;
 import org.globaltester.sampleconfiguration.ui.SampleConfigEditorWidget;
+import org.globaltester.testrunner.report.ReportCsvGenerator;
+import org.globaltester.testrunner.report.ReportJunitGenerator;
 import org.globaltester.testrunner.report.ReportPdfGenerator;
 import org.globaltester.testrunner.report.TestReport;
 import org.globaltester.testrunner.testframework.AbstractTestExecution;
@@ -439,9 +441,9 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 							@Override
 							public IStatus run(IProgressMonitor monitor) {
 
-								monitor.beginTask("Export PDF report", 3);
+								monitor.beginTask("Export report", 5);
 
-								monitor.subTask("Create report");
+								monitor.subTask("Prepare reports");
 
 								// create report
 								TestReport report = new TestReport(
@@ -449,11 +451,16 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 										baseDirName);
 
 								monitor.worked(1);
-								monitor.subTask("Create PDF");
 
 								try {
-									// output pdf report
+									monitor.subTask("Create CSV report");
+									ReportCsvGenerator.writeCsvReport(report);
+									monitor.worked(1);
+									monitor.subTask("Create PDF report");
 									ReportPdfGenerator.writePdfReport(report);
+									monitor.worked(1);
+									monitor.subTask("Create JUnit report");
+									ReportJunitGenerator.writeJUnitReport(report);
 									monitor.worked(1);
 									GtResourceHelper.copyFilesToDir(report.getLogFiles(), report.getReportDir().getAbsolutePath());
 									monitor.worked(1);

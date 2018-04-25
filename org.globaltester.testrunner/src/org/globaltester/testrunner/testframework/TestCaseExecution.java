@@ -6,7 +6,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -42,7 +44,11 @@ public class TestCaseExecution extends FileTestExecution {
 		super(iFile);
 
 		//persist the specFile to the GtTestCampaignProject
-		specFile = getGtTestCampaignProject().persistTestExecutable(testCase).getIFile();
+		if (getGtTestCampaignProject() != null) { 
+			specFile = getGtTestCampaignProject().persistTestExecutable(testCase).getIFile();
+		} else {
+			specFile = testCase.getIFile();
+		}
 		
 		//create execution instances from testcase
 		initFromTestCase();
@@ -145,7 +151,14 @@ public class TestCaseExecution extends FileTestExecution {
 			return;
 		}
 		
-		sr = new ScriptRunner(getIFile().getProject().getFolder(GtTestCampaignProject.SPEC_FOLDER), getIFile().getLocation().toOSString(), runtimeReqs);
+		IContainer scriptRoot;
+		if (isPartOfTestCampaign()) {
+			scriptRoot = getIFile().getProject().getFolder(GtTestCampaignProject.SPEC_FOLDER);
+		} else {
+			scriptRoot = ResourcesPlugin.getWorkspace().getRoot();
+		}
+		String workingDir = getTestCase().getIFile().getParent().getLocation().toOSString();
+		sr = new ScriptRunner(scriptRoot, workingDir, runtimeReqs);
 		sr.init(new ScshScope(sr));
 		runtimeReqs.put(ScriptRunner.class, sr);
 		
@@ -201,6 +214,14 @@ public class TestCaseExecution extends FileTestExecution {
 			monitor.done();
 		}
 		
+	}
+
+	private boolean isPartOfTestCampaign() {
+		try {
+			return getGtTestCampaignProject() != null;
+		} catch (CoreException e) {
+			return false;
+		}
 	}
 
 	private TestCase getTestCase() {

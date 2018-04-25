@@ -45,4 +45,8 @@ public interface IExecution {
 	public abstract void execute(GtRuntimeRequirements runtimeReqs, boolean b,
 			IProgressMonitor monitor);
 
+	static boolean isExecuted(IExecution execution){
+		return Status.isExecuted(execution.getStatus());
+	}
+
 }
