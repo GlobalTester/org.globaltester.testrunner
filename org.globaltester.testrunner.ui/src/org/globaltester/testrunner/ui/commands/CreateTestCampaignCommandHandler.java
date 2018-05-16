@@ -190,7 +190,7 @@ public class CreateTestCampaignCommandHandler extends AbstractHandler {
 			}
 		}
 		
-		if (runProject.getTestCampaign().getTestCampaignElements().size() <= 0) {
+		if (runProject.getTestCampaign().getTestSet().isEmpty()) {
 			GtUiHelper.openErrorDialog(shell,
 				"None of the given files represents an executable test. Refuse to create empty TestCampaign.");
 			iProject.delete(true, true, new NullProgressMonitor());

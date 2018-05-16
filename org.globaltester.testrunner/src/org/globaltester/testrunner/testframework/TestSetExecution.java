@@ -31,7 +31,11 @@ import org.globaltester.testspecification.testframework.TestSet;
 import org.jdom.Document;
 import org.jdom.Element;
 
+//FIXME AAB read this class for consistency (e.g. string labels etc)
 public class TestSetExecution extends AbstractTestExecution {
+
+	public static final String XML_ELEMENT = "TestSetExecution";
+	
 	List<IExecution> elementExecutions = new ArrayList<IExecution>();
 
 	private SampleConfig sampleConfig;
@@ -39,6 +43,11 @@ public class TestSetExecution extends AbstractTestExecution {
 	private String integrityOfTestSpec;
 
 	private HashSet<IProject> specsToCheck = new HashSet<>();
+
+
+	public TestSetExecution(Element testSetExecutionElement) {
+		extractFromXml(testSetExecutionElement);
+	}
 	
 	@Override
 	void extractFromXml(Element root) {
@@ -241,7 +250,7 @@ public class TestSetExecution extends AbstractTestExecution {
 				this.sampleConfig = new SampleConfig(xmlRepresentation);	
 			}
 			
-			// execute all included TestCampaignElements
+			// execute all included TestExecutables
 			for (Iterator<IExecution> elemIter = elementExecutions.iterator(); elemIter
 					.hasNext() && !monitor.isCanceled();) {
 				IExecution curExec= elemIter.next();
@@ -294,7 +303,7 @@ public class TestSetExecution extends AbstractTestExecution {
 	}
 
 	/**
-	 * checks whether the given file represents an TestCaseExecution object
+	 * checks whether the given file represents an TestSetExecution object
 	 * 
 	 * @param iFile
 	 * @return
@@ -333,6 +342,11 @@ public class TestSetExecution extends AbstractTestExecution {
 
 	public long getNumberOfTestsWithStatus(Status expectedStatus) {
 		return elementExecutions.stream().filter(exec -> exec.getStatus() == expectedStatus).count();
+	}
+
+	public void doSaveChildren() {
+		// FIXME AAA Auto-generated method stub
+		
 	}
 
 }

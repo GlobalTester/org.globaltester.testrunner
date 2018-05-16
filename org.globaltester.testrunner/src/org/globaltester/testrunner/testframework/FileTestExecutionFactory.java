@@ -54,11 +54,6 @@ public class FileTestExecutionFactory {
 				+ testExecutable);
 	}
 
-	public static FileTestExecution createExecution(
-			TestCampaignElement testCampaignElement) throws CoreException {
-		return createExecution(testCampaignElement.getExecutable(), testCampaignElement.getTestCampaign());
-	}
-
 	public static TestCampaignExecution createExecution(
 			TestCampaign testCampaign) throws CoreException {
 		IFile stateFile = testCampaign.getProject().getNewCampaignStateIFile();

@@ -1,7 +1,5 @@
 package org.globaltester.testrunner.testframework;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -13,9 +11,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.globaltester.base.xml.XMLHelper;
 import org.globaltester.scriptrunner.GtRuntimeRequirements;
 import org.globaltester.scriptrunner.TestExecutionCallback;
-import org.globaltester.smartcardshell.preferences.SmartCardShellInfo;
 import org.globaltester.testrunner.GtTestCampaignProject;
 import org.globaltester.testspecification.testframework.FileTestExecutable;
+import org.globaltester.testspecification.testframework.TestSet;
 import org.jdom.Document;
 import org.jdom.Element;
 
@@ -29,7 +27,7 @@ import org.jdom.Element;
 public class TestCampaign {
 
 	private GtTestCampaignProject project;
-	private ArrayList<TestCampaignElement> elements = new ArrayList<TestCampaignElement>();
+	private TestSet testSet = new TestSet();
 	
 	private String specName = "";
 	private String specVersion = "unknown";
@@ -65,6 +63,12 @@ public class TestCampaign {
 		if (specVersionElem != null) {
 			specVersion = specVersionElem.getTextTrim();
 		}
+		
+		// extract the TestSet
+		Element testSetElem = root.getChild(TestSet.XML_ELEMENT);
+		if (testSetElem != null) {
+			testSet = new TestSet(testSetElem);
+		}
 
 		// extract the last executions, if any
 		Element lastExecElem = root.getChild("LastExecution");
@@ -81,22 +85,6 @@ public class TestCampaign {
 				executions.add(lastExecution);
 			}
 		}
-		
-		// extract TestExecutables
-		@SuppressWarnings("unchecked")
-		Iterator<Element> testExecutionIter = root.getChildren(
-				TestCampaignElement.XML_ELEMENT).iterator();
-		while (testExecutionIter.hasNext()) {
-			Element xmlElem = (Element) testExecutionIter.next();
-			TestCampaignElement curTestCampaignElement = new TestCampaignElement(
-					this, xmlElem);
-			if (curTestCampaignElement != null) {
-				elements.add(curTestCampaignElement);
-			}
-
-		}
-		
-		
 
 	}
 
@@ -115,6 +103,9 @@ public class TestCampaign {
 		Element specVersionElem = new Element("SpecificationVersion");
 		specVersionElem.addContent(specVersion);
 		root.addContent(specVersionElem);
+
+		// add TestCampaignElements to data to be stored
+		root.addContent(testSet.getXmlRepresentation());
 		
 		// add the newest execution
 		if (executions.size() > 0){
@@ -124,12 +115,6 @@ public class TestCampaign {
 			root.addContent(lastExecElem);
 		}
 		
-		// add TestCampaignElements to data to be stored
-		Iterator<TestCampaignElement> elemIter = elements.iterator();
-		while (elemIter.hasNext()) {
-			TestCampaignElement curElem = elemIter.next();
-			root.addContent(curElem.getXmlRepresentation());
-		}
 
 		// create file if it does not exist yet
 		if (!iFile.exists()) {
@@ -156,16 +141,13 @@ public class TestCampaign {
 		}
 	}
 
-	public void addExecutable(FileTestExecutable origTestExecutable)
+	public void addExecutable(FileTestExecutable newChild)
 			throws CoreException {
-		// create a new TestCampaignElement and add it
-		TestCampaignElement newElement = new TestCampaignElement(this,
-				origTestExecutable);
-		elements.add(newElement);
+		testSet.add(newChild);
 
 		// notify viewers of parent about this change
 		project.notifyTreeChangeListeners(true,
-				new Object[] { this, newElement }, null);
+				new Object[] { this, newChild }, null);
 	}
 
 	public String getName() {
@@ -199,7 +181,7 @@ public class TestCampaign {
 		project.doSave();
 
 		// notify viewers of parent about this change
-		project.notifyTreeChangeListeners(false, elements.toArray(),
+		project.notifyTreeChangeListeners(false, new Object[] {testSet},
 				new String[] { "lastExecution" });
 		
 		//notify the callback about the execution results
@@ -212,11 +194,13 @@ public class TestCampaign {
 		// refresh the project in workspace
 		project.getIProject().refreshLocal(IResource.DEPTH_INFINITE, null);
 		
+		
+		//FIXME AAC check whether this can be removed
 		// The card reader is selected as part of the test case execution and stored for reference,
 		// hence the actual reader information is only available _after_ test case execution otherwise
 		// the retrieved card reader name may be undefined or refer to a previous test run
-		String cardReaderName = SmartCardShellInfo.getActiveReaderName();
-		currentExecution.setCardReaderName(cardReaderName);
+//		String cardReaderName = SmartCardShellInfo.getActiveReaderName();
+//		currentExecution.setCardReaderName(cardReaderName);
 	}
 	
 	public String getLogFileName(){
@@ -246,15 +230,6 @@ public class TestCampaign {
 		specVersion = newVersion;
 	}
 
-	public List<TestCampaignElement> getTestCampaignElements() {
-		ArrayList<TestCampaignElement> children = new ArrayList<TestCampaignElement>();
-
-		// add elements to list of children
-		children.addAll(elements);
-
-		return children;
-	}
-
 	public TestCampaignExecution getCurrentExecution() {
 		if (executions.size() >0){
 			return executions.getFirst();
@@ -265,6 +240,10 @@ public class TestCampaign {
 
 	public List<TestCampaignExecution> getCampaignExecutions(){
 		return executions;
+	}
+
+	public TestSet getTestSet() {
+		return testSet;
 	}
 	
 }

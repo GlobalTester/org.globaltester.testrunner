@@ -7,13 +7,12 @@ import org.globaltester.testrunner.testframework.AbstractTestExecution;
 import org.globaltester.testrunner.testframework.ActionStepExecution;
 import org.globaltester.testrunner.testframework.IExecution;
 import org.globaltester.testrunner.testframework.TestCampaign;
-import org.globaltester.testrunner.testframework.TestCampaignElement;
 import org.globaltester.testrunner.testframework.TestCampaignExecution;
 import org.globaltester.testrunner.testframework.TestCaseExecution;
 import org.globaltester.testrunner.ui.NonUiImages;
 import org.globaltester.testrunner.ui.UiImages;
 
-public class TestCampaignTableLabelProvider implements ITableLabelProvider {
+public class TestExecutionResultLabelProvider implements ITableLabelProvider {
 
 	public Image getColumnImage(Object element, int columnIndex) {
 		switch (columnIndex) {
@@ -69,10 +68,12 @@ public class TestCampaignTableLabelProvider implements ITableLabelProvider {
 	}
 
 	public boolean isLabelProperty(Object element, String property) {
-		if ((element instanceof TestCampaignElement)
-				&& ("lastExecution".equals(property)))
-			return true;
-		return false;
+		//FIXME AAC check below code and mybe implement this method
+//		if ((element instanceof TestCampaignElement)
+//				&& ("lastExecution".equals(property)))
+//			return true;
+//		return false;
+		return true;
 	}
 
 	public void removeListener(ILabelProviderListener listener) {

@@ -24,7 +24,7 @@ import org.globaltester.testrunner.testframework.TestCampaignExecution;
  * @author amay
  * 
  */
-public class TestCampaignContentProvider implements ITreeContentProvider,
+public class TestExecutionResultContentProvider implements ITreeContentProvider,
 		ITreeChangeListener {
 	private Map<ITreeObservable, Set<Viewer>> listenerMapping = new HashMap<ITreeObservable, Set<Viewer>>();
 

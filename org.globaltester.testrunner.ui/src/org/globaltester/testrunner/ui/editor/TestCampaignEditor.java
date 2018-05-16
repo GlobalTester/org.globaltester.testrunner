@@ -9,34 +9,12 @@ import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuListener;
-import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.layout.TreeColumnLayout;
-import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.jface.viewers.ColumnPixelData;
-import org.eclipse.jface.viewers.ColumnWeightData;
-import org.eclipse.jface.viewers.DoubleClickEvent;
-import org.eclipse.jface.viewers.EditingSupport;
-import org.eclipse.jface.viewers.IDoubleClickListener;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.TextCellEditor;
-import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ModifyEvent;
@@ -55,44 +33,24 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MessageBox;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.Tree;
-import org.eclipse.swt.widgets.TreeColumn;
-import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.IWorkbenchActionConstants;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.statushandlers.StatusManager;
-import org.eclipse.ui.texteditor.ITextEditor;
 import org.globaltester.base.resources.GtResourceHelper;
 import org.globaltester.base.ui.DialogOptions;
 import org.globaltester.base.ui.GtUiHelper;
-import org.globaltester.logging.legacy.logger.GTLogger;
-import org.globaltester.logging.logfileeditor.ui.editors.LogfileEditor;
 import org.globaltester.sampleconfiguration.ui.SampleConfigEditorWidget;
 import org.globaltester.testrunner.report.ReportCsvGenerator;
 import org.globaltester.testrunner.report.ReportJunitGenerator;
 import org.globaltester.testrunner.report.ReportPdfGenerator;
 import org.globaltester.testrunner.report.TestReport;
-import org.globaltester.testrunner.testframework.AbstractTestExecution;
-import org.globaltester.testrunner.testframework.ActionStepExecution;
-import org.globaltester.testrunner.testframework.FileTestExecution;
-import org.globaltester.testrunner.testframework.IExecution;
-import org.globaltester.testrunner.testframework.Result;
-import org.globaltester.testrunner.testframework.TestCampaign;
 import org.globaltester.testrunner.testframework.TestCampaignExecution;
 import org.globaltester.testrunner.ui.Activator;
 import org.globaltester.testrunner.ui.UiImages;
@@ -107,16 +65,12 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 	private Composite scrolledContent;
 	
 	private SampleConfigEditorWidget sampleConfigViewer;
-	private Tree executionStateTree;
-	private TreeViewer treeViewer;
+	private TestExecutionResultViewer resultViewer;
+	
 	private boolean dirty = false;
 	private Text txtSpecName;
 	private Text txtSpecVersion;
 
-	// some actions defined for this view
-	private Action actionShowSpec;
-	private Action actionShowLog;
-	private Action doubleClickAction;
 	private Button btnOldest;
 	private Button btnStepBack;
 	private Combo cmbExecutionSelector;
@@ -294,82 +248,22 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 		
 		Composite execStateTreeComp = new Composite(grpExecutionresults, SWT.NONE);
 		execStateTreeComp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1));
-		executionStateTree = new Tree(execStateTreeComp, SWT.BORDER
-				| SWT.FULL_SELECTION | SWT.NO_SCROLL);
-		executionStateTree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-		executionStateTree.setHeaderVisible(true);
-		executionStateTree.addSelectionListener(this);
-		treeViewer = new TreeViewer(executionStateTree);
 		
-		TreeColumn columnName = new TreeColumn(executionStateTree, SWT.LEFT);
-		executionStateTree.setLinesVisible(true);
-		columnName.setAlignment(SWT.LEFT);
-		columnName.setText("Test case");
-		TreeColumn columnLastExec = new TreeColumn(executionStateTree,
-				SWT.RIGHT);
-		columnLastExec.setAlignment(SWT.LEFT);
-		columnLastExec.setText("Last executed");
-		TreeColumn columnStatus = new TreeColumn(executionStateTree, SWT.RIGHT);
-		columnStatus.setAlignment(SWT.LEFT);
-		columnStatus.setText("Status");
-		TreeColumn columnComment = new TreeColumn(executionStateTree, SWT.RIGHT);
-		columnComment.setAlignment(SWT.LEFT);
-		columnComment.setText("Comment");
+		//show the ExecutionResults of the currently selected TestCampaignExecution
+		resultViewer = new TestExecutionResultViewer(execStateTreeComp, this);
+		resultViewer.setInput(input.getCurrentTestCampaignExecution());
+		resultViewer.expandAll();
 		
-		//make comment column editable
-		TreeViewerColumn viewerColumnComment = new TreeViewerColumn(treeViewer, columnComment);
-		viewerColumnComment.setEditingSupport(new EditingSupport(treeViewer) {
-			
+		//Allow scrolling in the scrolled composite when an entry in the Tree is selected
+		resultViewer.addListener(SWT.MouseWheel, new Listener() {
 			@Override
-			protected void setValue(Object element, Object value) {
-				if (element instanceof AbstractTestExecution && value instanceof String){
-					Result result = ((AbstractTestExecution) element).getResult();
-					if (!result.getComment().equals(value)){
-						result.setComment((String)value);
-						treeViewer.refresh();
-					}
-				}
-			}
-			
-			@Override
-			protected Object getValue(Object element) {
-				if (element instanceof AbstractTestExecution)
-					return ((AbstractTestExecution) element).getResult().getComment();
-				return null;
-			}
-			
-			@Override
-			protected CellEditor getCellEditor(Object element) {
-				if (element instanceof AbstractTestExecution){
-					// set editor dirty if cell is going to be edited
-					setDirty(true);
-					return new TextCellEditor(treeViewer.getTree());
-				}
-				return null;
-			}
-			
-			@Override
-			protected boolean canEdit(Object element) {
-				return true;
+			public void handleEvent(Event event) {
+				scrolledComposite.setFocus();
 			}
 		});
+
+
 		
-		//set column widths
-		TreeColumnLayout execStateTreeLayout = new TreeColumnLayout();
-		execStateTreeComp.setLayout( execStateTreeLayout );
-		execStateTreeLayout.setColumnData( columnName, new ColumnWeightData( 50 ) );
-		execStateTreeLayout.setColumnData( columnLastExec, new ColumnPixelData( 120 ) );
-		execStateTreeLayout.setColumnData( columnStatus, new ColumnPixelData( 100 ) );
-		execStateTreeLayout.setColumnData( columnComment, new ColumnWeightData( 100 ) );
-
-		treeViewer.setContentProvider(new TestCampaignContentProvider());
-		treeViewer.setLabelProvider(new TestCampaignTableLabelProvider());
-		treeViewer.setInput(input.getCurrentTestCampaignExecution());
-		treeViewer.expandAll();
-
-		makeActions();
-		hookContextMenu();
-		hookDoubleClickAction();
 
 		// below a little button area to report generation and maybe later other
 		// tasks
@@ -414,7 +308,7 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 				DialogOptions dialogOptions = new DialogOptions();
 				dialogOptions.setMessage("Please select location to store the report files");
 				dialogOptions.setFilterPath(null); // do not filter at all
-				baseDirName = GtUiHelper.openDirectoryDialog(getShell(), dialogOptions);
+				baseDirName = GtUiHelper.openDirectoryDialog(getSite().getShell(), dialogOptions);
 				
 				if (baseDirName != null){
 					writeReport = true;
@@ -495,212 +389,12 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 
 			}
 		});
-		
-		//Allow scrolling in the scrolled composite when an entry in the Tree is selected
-		executionStateTree.addListener(SWT.MouseWheel, new Listener() {
-			@Override
-			public void handleEvent(Event event) {
-				scrolledComposite.setFocus();
-			}
-		});
 
 		updateEditor();
 
 		//unset dirty flag as input is just loaded from file
 		setDirty(false);
 
-	}
-
-
-	private void hookContextMenu() {
-		MenuManager menuMgr = new MenuManager("#PopupMenu");
-		menuMgr.setRemoveAllWhenShown(true);
-		menuMgr.addMenuListener(new IMenuListener() {
-			public void menuAboutToShow(IMenuManager manager) {
-				TestCampaignEditor.this.fillContextMenu(manager);
-			}
-		});
-		Menu menu = menuMgr.createContextMenu(treeViewer.getControl());
-		treeViewer.getControl().setMenu(menu);
-		getSite().registerContextMenu(menuMgr, treeViewer);
-	}
-
-	private void fillContextMenu(IMenuManager manager) {
-		manager.add(actionShowSpec);
-		manager.add(actionShowLog);
-		
-		// Other plug-ins can contribute there actions here
-		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
-	}
-
-	private void openTestCase() {
-		ISelection selection = treeViewer.getSelection();
-		Object obj = ((IStructuredSelection) selection)
-		.getFirstElement();
-		FileTestExecution fte = null;
-		
-		if (obj instanceof TestCampaign) {
-			GtUiHelper.openErrorDialog(getShell(),
-					"Open TestCase is not available for TestCampaigns");
-		} else if (obj != null) {
-			if (obj instanceof FileTestExecution) {
-				fte = (FileTestExecution) obj;
-			} else if (obj instanceof ActionStepExecution) {
-				IExecution ie = ((ActionStepExecution) obj).getParent();
-				if (ie instanceof FileTestExecution) {
-					fte = (FileTestExecution) ie;
-				}
-			}
-			if (fte != null) {
-				IFile file = fte.getSpecFile();
-				showFile(file, 0, null);
-			}
-		}
-	}
-
-	private void openLogFile() {
-		ISelection selection = treeViewer.getSelection();
-		Object obj = ((IStructuredSelection) selection).getFirstElement();
-		if (obj instanceof IExecution) {
-			String logFileName = ((IExecution) obj).getLogFileName();
-			int logFileLine = ((IExecution) obj).getLogFileLine();
-			openFileOrShowErrorMessage(logFileName, logFileLine);
-		} else {
-			GtUiHelper.openErrorDialog(getShell(),
-					"Selected element is not an IExecution");
-		}
-	}
-
-	/**
-	 * Define actions of this view
-	 * 
-	 */
-	private void makeActions() {
-
-		// show test case:
-		actionShowSpec = new Action() {
-			public void run(){
-				openTestCase();
-			}
-		};
-
-		actionShowSpec.setText("Show specification");
-		actionShowSpec.setToolTipText("Show test case");
-		actionShowSpec.setImageDescriptor(PlatformUI.getWorkbench()
-				.getSharedImages().getImageDescriptor(
-						ISharedImages.IMG_TOOL_PASTE));
-
-		// show log file:
-		actionShowLog = new Action() {
-			public void run() {
-				openLogFile();
-			}
-		};
-
-		actionShowLog.setText("Show log file");
-		actionShowLog.setToolTipText("Show log file");
-		actionShowLog.setImageDescriptor(PlatformUI.getWorkbench()
-				.getSharedImages().getImageDescriptor(
-						ISharedImages.IMG_TOOL_PASTE));
-
-		// double click -> show test case
-		doubleClickAction = new Action() {
-
-			public void run(){
-				int customizedDoubleClick = Platform.getPreferencesService().getInt(org.globaltester.testrunner.Activator.PLUGIN_ID,
-						org.globaltester.testrunner.preferences.PreferenceConstants.P_DOUBLECLICKRESULTVIEW, 0, null);
-				if(customizedDoubleClick == 0) {
-					openTestCase();
-				}
-				else{
-					openLogFile();
-				}
-			}
-		};
-	}
-
-	private void hookDoubleClickAction() {
-		treeViewer.addDoubleClickListener(new IDoubleClickListener() {
-			@Override
-			public void doubleClick(DoubleClickEvent event) {
-				doubleClickAction.run();
-				
-			}
-		});
-	}
-
-	/**
-	 * Show files from local workspace in and editor and select given line
-	 * 
-	 * @param file
-	 *            the IFile to be opened
-	 * @param line
-	 *            line to be highlighted
-	 * @param editorID
-	 *            ID of Editor to use, if null the method tries to resolve the
-	 *            editor based on content-type bindings as well as traditional
-	 *            name/extension bindings.
-	 */
-	private void showFile(IFile file, int line, String editorID) {
-
-		IEditorPart editor;
-		ITextEditor textEditor = null;
-		IWorkbench workbench = PlatformUI.getWorkbench();
-		IWorkbenchWindow window = workbench.getWorkbenchWindows()[0];
-		IWorkbenchPage page = window.getActivePage();
-
-		try {
-			if (file != null && file.exists()) {
-				if (editorID != null) {
-					editor = IDE.openEditor(page, file, editorID);
-				} else {
-					editor = IDE.openEditor(page, file, true);
-				}
-				textEditor = (ITextEditor) editor.getAdapter(ITextEditor.class);
-			} else {
-				GtUiHelper.openErrorDialog(getShell(),
-						"File does not exist, thus can not be displayed.");
-				return;
-			}
-		} catch (PartInitException ex) {
-			GTLogger.getInstance().error(ex);
-		}
-
-		if ((line > 0) && (textEditor != null)) {
-			try {
-				line--; // document starts with 0
-				IDocument document = textEditor.getDocumentProvider()
-				.getDocument(textEditor.getEditorInput());
-
-				textEditor.selectAndReveal(document.getLineOffset(line),
-						document.getLineLength(line));
-
-			} catch (BadLocationException e) {
-				// invalid text position -> do nothing
-			}
-		}
-	}
-
-	/**
-	 * Show files from local workspace in an editor and select given line
-	 * 
-	 * @param fileName				name of file to be opened
-	 * @param line					line to be highlighted
-	 */
-	private void openFileOrShowErrorMessage(String fileName, int line) {
-
-		if ((fileName == null) || (fileName == "")) {
-			GtUiHelper.openErrorDialog(getShell(),
-					"No file name given, thus file can not be displayed.");
-			return;
-		}
-		
-		IPath path = new Path(fileName);
-		// file exists in local workspace
-		IFile file = ResourcesPlugin.getWorkspace().getRoot()
-		.getFileForLocation(path);
-
-		showFile(file, line, LogfileEditor.EDITOR_ID);
 	}
 
 
@@ -713,10 +407,6 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 		this.dirty = isDirty;
 		input.setDirty(isDirty);
 		firePropertyChange(IEditorPart.PROP_DIRTY);
-	}
-
-	private Shell getShell() {
-		return treeViewer.getControl().getShell();
 	}
 
 	/**
@@ -735,9 +425,11 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 				//update inputs
 				TestCampaignExecution toDisplay = input.getCurrentlyDisplayedTestCampaignExecution();
 				if (toDisplay != null) {
-					sampleConfigViewer.setInput(toDisplay.getSampleConfig());
-					treeViewer.setInput(input);
-					treeViewer.expandAll();
+					resultViewer.setInput(toDisplay);
+					resultViewer.expandAll();
+					if (toDisplay.getTestSetExecution() != null) {
+					sampleConfigViewer.setInput(toDisplay.getTestSetExecution().getSampleConfig());
+					}					
 				}
 				
 				// set buttons according to displayed TestCampaignExecution
@@ -763,22 +455,6 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 	
 	@Override
 	public void widgetSelected(SelectionEvent e) {
-		if (e.getSource() == executionStateTree){
-			boolean enableLogAction = false;
-			boolean enableSpecAction = false;
-			if ( e.item instanceof TreeItem) {
-				TreeItem treeItem = (TreeItem) e.item;
-				Object data = treeItem.getData();
-				if (data instanceof AbstractTestExecution) {
-					String logFileName = ((AbstractTestExecution)data).getLogFileName();
-					enableLogAction = (logFileName != null) && (logFileName.trim().length() > 0);
-					enableSpecAction = !(data instanceof TestCampaignExecution);
-				}
-			}
-			actionShowLog.setEnabled(enableLogAction);
-			actionShowSpec.setEnabled(enableSpecAction);
-			return;
-		}
 		if (e.getSource() == btnNewest){
 			input.stepToNewest();
 		} else if (e.getSource() == btnOldest){

@@ -71,50 +71,13 @@ public class TestReport {
 	 * @param campaign
 	 */
 	private TestReport(TestCampaignExecution campaignExec) {
+		this(campaignExec.getTestSetExecution());
+		
 		TestCampaign campaign = campaignExec.getTestCampaign();
 		fileName = campaign.getName();
 		
 		specName = campaign.getSpecName();
 		specVersion = campaign.getSpecVersion();
-		
-		FileTestExecutable fileTestExecutable;
-		TestCaseExecution currentTestCaseExecution;
-		for(IExecution currentIexecution : campaignExec.getChildren()) {
-			elements.add(new TestReportPart(currentIexecution));
-			
-			if(currentIexecution instanceof TestCaseExecution) {
-				try {
-					currentTestCaseExecution = ((TestCaseExecution) currentIexecution);
-					fileTestExecutable = TestExecutableFactory.getInstance(currentTestCaseExecution.getSpecFile());
-					
-					if(!(currentTestCaseExecution.getStatus().equals(Status.NOT_APPLICABLE))) {
-						selectedProfiles.addAll(parseProfileString(fileTestExecutable.getProfileString()));
-					}
-				} catch (CoreException e) {
-					// do nothing
-				}
-			}
-		}
-		
-		logFiles = new ArrayList<>();
-		logFiles.add(campaignExec.getLogFileName());
-		
-		for(IExecution currentIexecution: campaignExec.getChildren()) {
-			logFiles.add(currentIexecution.getLogFileName());
-		}
-		
-		Date date = new Date(campaignExec.getLastExecutionStartTime());
-		executionTime = date.toString();
-		
-		executingUser = campaignExec.getExecutingUser();
-		
-		cardReaderName = campaignExec.getCardReaderName();
-		
-		integrityOfTestSpec = campaignExec.getIntegrityOfTestSpec();
-		
-		SampleConfig sampleConfig = campaignExec.getSampleConfig();
-		platformId = sampleConfig.getPlatformId();
-		sampleId = sampleConfig.getSampleId();
 		
 	}
 	

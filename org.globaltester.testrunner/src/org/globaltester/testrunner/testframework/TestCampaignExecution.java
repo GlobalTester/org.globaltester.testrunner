@@ -2,58 +2,29 @@ package org.globaltester.testrunner.testframework;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.SubMonitor;
 import org.globaltester.base.xml.XMLHelper;
-import org.globaltester.logging.legacy.logger.GtErrorLogger;
-import org.globaltester.logging.legacy.logger.TestLogger;
-import org.globaltester.sampleconfiguration.SampleConfig;
 import org.globaltester.scriptrunner.GtRuntimeRequirements;
-import org.globaltester.testrunner.Activator;
-import org.globaltester.testrunner.GtTestCampaignProject;
-import org.globaltester.testrunner.testframework.Result.Status;
-import org.globaltester.testrunner.utils.IntegrityCheckResult;
-import org.globaltester.testrunner.utils.TestSpecIntegrityChecker;
 import org.jdom.Document;
 import org.jdom.Element;
 
 public class TestCampaignExecution extends FileTestExecution {
-	List<IExecution> elementExecutions = new ArrayList<IExecution>();
+	
+	private TestSetExecution testSetExecution;
 	private TestCampaignExecution previousExecution;
-	private SampleConfig sampleConfig;
-	private String cardReaderName;
-	private String integrityOfTestSpec;
 	
 	@Override
 	void extractFromXml(Element root) {
 		super.extractFromXml(root);
 
-		// extract sampleConfig
-		Element sampleConfigElement = root.getChild("SampleConfiguration");
-		if (sampleConfigElement != null) {
-			sampleConfig = new SampleConfig(sampleConfigElement);
-		}
-		
-		// extract cardReaderName
-		Element cardReaderNameElement = root.getChild("CardReaderName");
-		if (cardReaderNameElement != null) {
-			cardReaderName = cardReaderNameElement.getTextTrim();
-		}
-		
-		// extract integrityOfTestSuiteProvided
-		Element integrityOfTestSuiteProvidedElement = root.getChild("IntegrityOfTestSuiteProvided");
-		if (integrityOfTestSuiteProvidedElement != null) {
-			integrityOfTestSpec = integrityOfTestSuiteProvidedElement.getTextTrim();
+		// extract testSetExecution
+		Element testSetExecutionElement = root.getChild(TestSetExecution.XML_ELEMENT);
+		if (testSetExecutionElement != null) {
+			testSetExecution = new TestSetExecution(testSetExecutionElement);
 		}
 		
 		try {
@@ -72,56 +43,18 @@ public class TestCampaignExecution extends FileTestExecution {
 			// ignore if no previous executions can be found
 		}
 		
-		try {
-			//extract test case executions
-			Element fileNames = root.getChild("FileNames");
-			if (fileNames != null) {
-				@SuppressWarnings("unchecked")
-				List<Element> children = fileNames.getChildren("FileName");
-				for (Element child : children) {
-					String filename = child.getTextTrim();
-					FileTestExecution fileTestExecution;
-
-					fileTestExecution = FileTestExecutionFactory
-							.getInstance(iFile.getProject().getFile(filename));
-
-					if (fileTestExecution instanceof TestCaseExecution) {
-						TestCaseExecution exec = (TestCaseExecution) fileTestExecution;
-						elementExecutions.add(exec);
-						result.addSubResult(exec.getResult());
-					}
-				}
-				
-				Element status = root.getChild("LastExecutionResult").getChild("Status");
-				result.status = Result.Status.get(status.getTextTrim());
-			}
-		} catch (CoreException e) {
-			// ignore empty set of executions
-		}
 	}
 
 	@Override
 	void dumpToXml(Element root) {
 		super.dumpToXml(root);
 		
-		// dump sampleConfig
-		if (sampleConfig != null) {
-			Element sampleConfigElement = new Element("SampleConfiguration");
-			sampleConfig.dumpToXml(sampleConfigElement);
-			root.addContent(sampleConfigElement);
+		// dump testSetExecution
+		if (testSetExecution != null) {
+			Element testSetExecutionElement = new Element(TestSetExecution.XML_ELEMENT);
+			testSetExecution.dumpToXml(testSetExecutionElement);
+			root.addContent(testSetExecutionElement);
 		}
-		
-		// dump cardReaderName
-		if (cardReaderName != null) {
-			Element cardReaderNameElement = new Element("CardReaderName");
-			cardReaderNameElement.addContent(cardReaderName);
-			root.addContent(cardReaderNameElement);
-		}
-		
-		// dump integrityOfTestSuiteProvided
-		Element integrityOfTestSuiteProvidedElement = new Element("IntegrityOfTestSuiteProvided");
-		integrityOfTestSuiteProvidedElement.addContent(String.valueOf(integrityOfTestSpec));
-		root.addContent(integrityOfTestSuiteProvidedElement);
 		
 		// dump previous execution
 		if (previousExecution != null) {
@@ -135,15 +68,16 @@ public class TestCampaignExecution extends FileTestExecution {
 		Element fileNames = new Element("FileNames");
 		root.addContent(fileNames);
 		
-		Iterator<IExecution> iter = this.getChildren().iterator();
-		while (iter.hasNext()){
-			IExecution current = iter.next();
-			if (current instanceof TestCaseExecution){
-				Element childElement = new Element("FileName");
-				childElement.addContent(((TestCaseExecution) current).getIFile().getProjectRelativePath().toString());
-				fileNames.addContent(childElement);
-			}
-		}
+		//FIXME AAA check what to do with this code
+//		Iterator<IExecution> iter = this.getChildren().iterator();
+//		while (iter.hasNext()){
+//			IExecution current = iter.next();
+//			if (current instanceof TestCaseExecution){
+//				Element childElement = new Element("FileName");
+//				childElement.addContent(((TestCaseExecution) current).getIFile().getProjectRelativePath().toString());
+//				fileNames.addContent(childElement);
+//			}
+//		}
 		
 	}
 
@@ -166,34 +100,21 @@ public class TestCampaignExecution extends FileTestExecution {
 		doSave();
 	}
 
-	private void initFromTestCampaign() {
-		
-		List<TestCampaignElement> elements = getTestCampaign().getTestCampaignElements();
-		for (Iterator<TestCampaignElement> elemIter = elements.iterator(); elemIter
-				.hasNext();) {
-			TestCampaignElement curElem = elemIter.next();
-			
-			// create a new TestExecution this TestCampaignElement
-			FileTestExecution curExec = null;
-			try {
-				curExec = FileTestExecutionFactory.createExecution(curElem);
-				elementExecutions.add(curExec);
-			} catch (CoreException e) {
-				GtErrorLogger.log(Activator.PLUGIN_ID, e);
-			}
-			
-		}
+	private void initFromTestCampaign() {		
+		//FIXME AAA persist TestCaseExecutions (optionally) from TestSetExecution
+//		testSetExecution = new TestSetExecution(getTestCampaign().getTestSet(), getTestCampaign());
+		testSetExecution = new TestSetExecution(getTestCampaign().getTestSet());
 	}
 
 	@Override
 	public boolean hasChildren() {
-		return !elementExecutions.isEmpty();
+		return testSetExecution != null && testSetExecution.hasChildren();
 	}
 
 	@Override
 	public Collection<IExecution> getChildren() {
 		ArrayList<IExecution> children = new ArrayList<IExecution>();
-		children.addAll(elementExecutions);
+		children.addAll(testSetExecution.getChildren());
 		return children;
 	}
 
@@ -222,13 +143,7 @@ public class TestCampaignExecution extends FileTestExecution {
 
 	@Override
 	public long getDuration() {
-		long duration = 0;
-		for (Iterator<IExecution> execIter = elementExecutions.iterator(); execIter
-				.hasNext();) {
-			duration += execIter.next().getDuration();
-		}
-
-		return duration;
+		return testSetExecution.getDuration();
 	}
 
 	@Override
@@ -261,86 +176,8 @@ public class TestCampaignExecution extends FileTestExecution {
 	@Override
 	protected void execute(GtRuntimeRequirements runtimeReqs, boolean forceExecution,
 			boolean reExecution, IProgressMonitor monitor) {
-		if (monitor == null) {
-			monitor = new NullProgressMonitor();
-		}
-		
-		SubMonitor progress = SubMonitor.convert(monitor, 100);
-		
-		try {
-			progress.subTask("Initialization");
-			
-			// initialize test logging for this test session
-			GtTestCampaignProject project = getTestCampaign().getProject();
-			
-			//set the log file
-			setLogFileName(TestLogger.getLogFileName());
-			setLogFileLine(TestLogger.getLogFileLine());
-			
-			progress.worked(1);
-			
-			progress.subTask("Integrity check of TestSpecifications");
-			IResource[] specsToCheck = project.getSpecificationFolder().members();
-			TestSpecIntegrityChecker integrityChecker = new TestSpecIntegrityChecker();
-			for (IResource curResource : specsToCheck) {
-				if (curResource instanceof IContainer) {
-					integrityChecker.addSpecsToCheck((IContainer) curResource);
-				}
-			}
-			Map<String, IntegrityCheckResult> integrityResult = integrityChecker.check();
-			ArrayList<String> specNames = new ArrayList<>(integrityResult.keySet());
-			Collections.sort(specNames);
-			String nonValidProjects = "";
-			for (String curSpec: specNames) {
-				TestLogger.info("Checksum of "+ curSpec + " is "+ integrityResult.get(curSpec).getStatus());
-				TestLogger.trace("Expected checksum: "+ integrityResult.get(curSpec).getExpectedChecksum());
-				TestLogger.trace("Actual checksum: "+ integrityResult.get(curSpec).getCalculatedChecksum());
-				
-				if (integrityResult.get(curSpec).getStatus() != IntegrityCheckResult.IntegrityCheckStatus.VALID) {
-					nonValidProjects+="\n-"+curSpec + ": " +integrityResult.get(curSpec).getStatus() ;
-				} 
-			}
-
-			
-			if (!nonValidProjects.isEmpty()) {
-
-				String message = "Functional integrity of testcases is not assured!\n\nThe following Scripts have been modified since delivery or remain unchecked:\n"
-						+ nonValidProjects + "\n";
-
-				TestLogger.warn(message);	
-			}
-
-			integrityOfTestSpec = TestSpecIntegrityChecker.getSimplifiedCheckResult(integrityResult);
-			progress.worked(1);
-			
-			progress.beginTask("Execute TestCase ", elementExecutions.size());
-			
-			//persist SampleConfig used
-			if (runtimeReqs.containsKey(SampleConfig.class)){
-				Element xmlRepresentation = new Element("SampleConfiguration");
-				runtimeReqs.get(SampleConfig.class).dumpToXml(xmlRepresentation);
-				this.sampleConfig = new SampleConfig(xmlRepresentation);	
-			}
-			
-			// execute all included TestCampaignElements
-			for (Iterator<IExecution> elemIter = elementExecutions.iterator(); elemIter
-					.hasNext() && !monitor.isCanceled();) {
-				IExecution curExec= elemIter.next();
-				monitor.subTask(curExec.getName());
-				curExec.execute(runtimeReqs, false,
-						new NullProgressMonitor());
-				result.addSubResult(curExec.getResult());
-				monitor.worked(1);
-			}	
-			
-			// shutdown the TestLogger
-			progress.subTask("Shutdown");
-			progress.worked(1);
-		} catch(CoreException e){
-			result = new Result(Status.FAILURE, e.getMessage());
-		} finally {
-			monitor.done();
-		}
+		//just need to execute the TestSet here
+		testSetExecution.execute(runtimeReqs, forceExecution, monitor);
 	}
 
 	/**
@@ -359,10 +196,6 @@ public class TestCampaignExecution extends FileTestExecution {
 		}
 
 		return true;
-	}
-
-	public SampleConfig getSampleConfig() {
-		return sampleConfig;
 	}
 	
 	/**
@@ -383,11 +216,9 @@ public class TestCampaignExecution extends FileTestExecution {
 	public void doSave() {
 		super.doSave();
 		
-		// save element executions
-		for (IExecution element : elementExecutions){
-			if (element instanceof TestCaseExecution){
-				((TestCaseExecution) element).doSave();
-			}
+		// save testSetExecution
+		if (testSetExecution != null) {
+			testSetExecution.doSaveChildren();
 		}
 		
 		// save previous executions recursively
@@ -396,16 +227,7 @@ public class TestCampaignExecution extends FileTestExecution {
 		}
 	}
 
-	public String getCardReaderName() {
-		return cardReaderName;
+	public TestSetExecution getTestSetExecution() {
+		return testSetExecution;
 	}
-
-	public void setCardReaderName(String cardReaderName) {
-		this.cardReaderName = cardReaderName;
-	}
-
-	public String getIntegrityOfTestSpec() {
-		return integrityOfTestSpec;
-	}
-
 }

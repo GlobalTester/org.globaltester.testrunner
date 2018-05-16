@@ -27,6 +27,7 @@ Require-Bundle: org.eclipse.ui,
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: org.globaltester.testrunner.ui,
- org.globaltester.testrunner.ui.commands
+ org.globaltester.testrunner.ui.commands,
+ org.globaltester.testrunner.ui.editor
 Import-Package: org.eclipse.jface.text,
  org.eclipse.ui.texteditor
