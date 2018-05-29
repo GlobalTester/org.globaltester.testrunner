@@ -42,16 +42,19 @@ public class FileTestExecutionFactory {
 	public static FileTestExecution createExecution(FileTestExecutable testExecutable,
 			TestCampaign testCampaign) throws CoreException {
 
-		IFile stateFile = testCampaign.getProject().getNewStateIFile(testExecutable);
+		IFile stateFile = null;
+		if (testCampaign != null) {
+			stateFile = testCampaign.getProject().getNewStateIFile(testExecutable);
+		}
 
 		if (testExecutable instanceof TestCase) {
 			TestCaseExecution tcExecution = new TestCaseExecution(
 					stateFile, (TestCase) testExecutable);
 			return tcExecution;
+		} else {
+			throw new RuntimeException("Unsupported type of TestExecutable: "
+					+ testExecutable);
 		}
-
-		throw new RuntimeException("Unsupported type of TestExecutable: "
-				+ testExecutable);
 	}
 
 	public static TestCampaignExecution createExecution(

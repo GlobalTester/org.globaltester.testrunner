@@ -12,9 +12,13 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.SubMonitor;
 import org.globaltester.base.xml.XMLHelper;
 import org.globaltester.logging.legacy.logger.GtErrorLogger;
@@ -25,6 +29,7 @@ import org.globaltester.testrunner.Activator;
 import org.globaltester.testrunner.testframework.Result.Status;
 import org.globaltester.testrunner.utils.IntegrityCheckResult;
 import org.globaltester.testrunner.utils.TestSpecIntegrityChecker;
+import org.globaltester.testspecification.testframework.FileTestExecutable;
 import org.globaltester.testspecification.testframework.ITestExecutable;
 import org.globaltester.testspecification.testframework.TestCase;
 import org.globaltester.testspecification.testframework.TestSet;
@@ -34,9 +39,15 @@ import org.jdom.Element;
 //FIXME AAB read this class for consistency (e.g. string labels etc)
 public class TestSetExecution extends AbstractTestExecution {
 
+	private static final String XML_CHILD_EXECUTION_REFERENCES = "FileNames";
+	private static final String XML_CHILD_EXECUTIONREFERENCE = "FileName";
 	public static final String XML_ELEMENT = "TestSetExecution";
+	private static final String XML_CHILD_SAMPLECONFIG = "SampleConfiguration";
+	private static final String XML_CHILD_CARDREADER = "CardReaderName";
+	private static final String XML_CHILD_INTEGRITY = "IntegrityOfTestSuiteProvided";
+
 	
-	List<IExecution> elementExecutions = new ArrayList<IExecution>();
+	List<FileTestExecution> childExecutions = new ArrayList<>();
 
 	private SampleConfig sampleConfig;
 	private String cardReaderName;
@@ -54,50 +65,50 @@ public class TestSetExecution extends AbstractTestExecution {
 		super.extractFromXml(root);
 
 		// extract sampleConfig
-		Element sampleConfigElement = root.getChild("SampleConfiguration");
+		Element sampleConfigElement = root.getChild(XML_CHILD_SAMPLECONFIG);
 		if (sampleConfigElement != null) {
 			sampleConfig = new SampleConfig(sampleConfigElement);
 		}
 		
 		// extract cardReaderName
-		Element cardReaderNameElement = root.getChild("CardReaderName");
+		Element cardReaderNameElement = root.getChild(XML_CHILD_CARDREADER);
 		if (cardReaderNameElement != null) {
 			cardReaderName = cardReaderNameElement.getTextTrim();
 		}
 		
 		// extract integrityOfTestSuiteProvided
-		Element integrityOfTestSuiteProvidedElement = root.getChild("IntegrityOfTestSuiteProvided");
+		Element integrityOfTestSuiteProvidedElement = root.getChild(XML_CHILD_INTEGRITY);
 		if (integrityOfTestSuiteProvidedElement != null) {
 			integrityOfTestSpec = integrityOfTestSuiteProvidedElement.getTextTrim();
 		}
 
-		// FIXME AAA
-//		try {
-//			//extract test case executions
-//			Element fileNames = root.getChild("FileNames");
-//			if (fileNames != null) {
-//				@SuppressWarnings("unchecked")
-//				List<Element> children = fileNames.getChildren("FileName");
-//				for (Element child : children) {
-//					String filename = child.getTextTrim();
-//					FileTestExecution fileTestExecution;
-//
-//					fileTestExecution = FileTestExecutionFactory
-//							.getInstance(iFile.getProject().getFile(filename));
-//
-//					if (fileTestExecution instanceof TestCaseExecution) {
-//						TestCaseExecution exec = (TestCaseExecution) fileTestExecution;
-//						elementExecutions.add(exec);
-//						result.addSubResult(exec.getResult());
-//					}
-//				}
-//				
-//				Element status = root.getChild("LastExecutionResult").getChild("Status");
-//				result.status = Result.Status.get(status.getTextTrim());
-//			}
-//		} catch (CoreException e) {
-//			// ignore empty set of executions
-//		}
+		try {
+			//extract test case executions
+			Element fileNames = root.getChild(XML_CHILD_EXECUTION_REFERENCES);
+			if (fileNames != null) {
+				@SuppressWarnings("unchecked")
+				List<Element> children = fileNames.getChildren(XML_CHILD_EXECUTIONREFERENCE);
+				IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
+				for (Element curChildElem : children) {
+					IPath fileName = new Path(curChildElem.getTextTrim());
+					IFile curChildIFile = workspaceRoot.getFile(fileName);
+					
+					FileTestExecution fileTestExecution = FileTestExecutionFactory
+							.getInstance(curChildIFile);
+					
+					if (fileTestExecution instanceof TestCaseExecution) {
+						TestCaseExecution exec = (TestCaseExecution) fileTestExecution;
+						childExecutions.add(exec);
+						result.addSubResult(exec.getResult());
+					}
+				}
+				
+				Element status = root.getChild("LastExecutionResult").getChild("Status");
+				result.status = Result.Status.get(status.getTextTrim());
+			}
+		} catch (CoreException e) {
+			// ignore empty set of executions
+		}
 	}
 
 	@Override
@@ -106,49 +117,53 @@ public class TestSetExecution extends AbstractTestExecution {
 		
 		// dump sampleConfig
 		if (sampleConfig != null) {
-			Element sampleConfigElement = new Element("SampleConfiguration");
+			Element sampleConfigElement = new Element(XML_CHILD_SAMPLECONFIG);
 			sampleConfig.dumpToXml(sampleConfigElement);
 			root.addContent(sampleConfigElement);
 		}
 		
 		// dump cardReaderName
 		if (cardReaderName != null) {
-			Element cardReaderNameElement = new Element("CardReaderName");
+			Element cardReaderNameElement = new Element(XML_CHILD_CARDREADER);
 			cardReaderNameElement.addContent(cardReaderName);
 			root.addContent(cardReaderNameElement);
 		}
 		
 		// dump integrityOfTestSuiteProvided
-		Element integrityOfTestSuiteProvidedElement = new Element("IntegrityOfTestSuiteProvided");
+		Element integrityOfTestSuiteProvidedElement = new Element(XML_CHILD_INTEGRITY);
 		integrityOfTestSuiteProvidedElement.addContent(String.valueOf(integrityOfTestSpec));
 		root.addContent(integrityOfTestSuiteProvidedElement);
 		
 
-		//FIXME AAA
-		// dump filenames for children
-//		Element fileNames = new Element("FileNames");
-//		root.addContent(fileNames);
-//		
-//		Iterator<IExecution> iter = this.getChildren().iterator();
-//		while (iter.hasNext()){
-//			IExecution current = iter.next();
-//			if (current instanceof TestCaseExecution){
-//				Element childElement = new Element("FileName");
-//				childElement.addContent(((TestCaseExecution) current).getIFile().getProjectRelativePath().toString());
-//				fileNames.addContent(childElement);
-//			}
-//		}
+		// dump references to children
+		Element fileNames = new Element(XML_CHILD_EXECUTION_REFERENCES);
+		root.addContent(fileNames);
+		
+		Iterator<IExecution> iter = this.getChildren().iterator();
+		while (iter.hasNext()){
+			IExecution current = iter.next();
+			if (current instanceof TestCaseExecution){
+				Element childElement = new Element(XML_CHILD_EXECUTIONREFERENCE);
+				childElement.addContent(((TestCaseExecution) current).getIFile().getFullPath().toString());
+				fileNames.addContent(childElement);
+			}
+		}
 		
 	}
 
-	public TestSetExecution(TestSet testSet) {
+	/**
+	 * 
+	 * @param testSet
+	 * @param campaign to store ExecutionStateFiles in, or null if no execution state needs to be preserved
+	 */
+	public TestSetExecution(TestSet testSet, TestCampaign campaign) {
 		// create executions for children
 		for (ITestExecutable curTestExecutable : testSet.getChildren()) {
 			try {
-				if (curTestExecutable instanceof TestCase) {
+				if (curTestExecutable instanceof FileTestExecutable) {
 					TestCase curTestCase = (TestCase) curTestExecutable;
-					TestCaseExecution tcExecution = new TestCaseExecution(null, curTestCase);
-					elementExecutions.add(tcExecution);
+					FileTestExecution tcExecution = FileTestExecutionFactory.createExecution(curTestCase, campaign);
+					childExecutions.add(tcExecution);
 					specsToCheck .add(curTestCase.getIFile().getProject());
 				} else {
 
@@ -165,13 +180,13 @@ public class TestSetExecution extends AbstractTestExecution {
 
 	@Override
 	public boolean hasChildren() {
-		return !elementExecutions.isEmpty();
+		return !childExecutions.isEmpty();
 	}
 
 	@Override
 	public Collection<IExecution> getChildren() {
 		ArrayList<IExecution> children = new ArrayList<IExecution>();
-		children.addAll(elementExecutions);
+		children.addAll(childExecutions);
 		return children;
 	}
 
@@ -201,7 +216,7 @@ public class TestSetExecution extends AbstractTestExecution {
 	@Override
 	public long getDuration() {
 		long duration = 0;
-		for (Iterator<IExecution> execIter = elementExecutions.iterator(); execIter
+		for (Iterator<FileTestExecution> execIter = childExecutions.iterator(); execIter
 				.hasNext();) {
 			duration += execIter.next().getDuration();
 		}
@@ -241,17 +256,17 @@ public class TestSetExecution extends AbstractTestExecution {
 			performIntegrityCheck();
 			progress.worked(1);
 			
-			progress.beginTask("Execute TestCase ", elementExecutions.size());
+			progress.beginTask("Execute TestCase ", childExecutions.size());
 			
 			//persist SampleConfig used
 			if (runtimeReqs.containsKey(SampleConfig.class)){
-				Element xmlRepresentation = new Element("SampleConfiguration");
+				Element xmlRepresentation = new Element(XML_CHILD_SAMPLECONFIG);
 				runtimeReqs.get(SampleConfig.class).dumpToXml(xmlRepresentation);
 				this.sampleConfig = new SampleConfig(xmlRepresentation);	
 			}
 			
 			// execute all included TestExecutables
-			for (Iterator<IExecution> elemIter = elementExecutions.iterator(); elemIter
+			for (Iterator<FileTestExecution> elemIter = childExecutions.iterator(); elemIter
 					.hasNext() && !monitor.isCanceled();) {
 				IExecution curExec= elemIter.next();
 				monitor.subTask(curExec.getName());
@@ -337,16 +352,17 @@ public class TestSetExecution extends AbstractTestExecution {
 	}
 
 	public long getNumberOfExecutedTests() {
-		return elementExecutions.stream().filter(IExecution::isExecuted).count();
+		return childExecutions.stream().filter(IExecution::isExecuted).count();
 	}
 
 	public long getNumberOfTestsWithStatus(Status expectedStatus) {
-		return elementExecutions.stream().filter(exec -> exec.getStatus() == expectedStatus).count();
+		return childExecutions.stream().filter(exec -> exec.getStatus() == expectedStatus).count();
 	}
 
 	public void doSaveChildren() {
-		// FIXME AAA Auto-generated method stub
-		
+		for (FileTestExecution curElemExecution : childExecutions) {
+			curElemExecution.doSave();
+		}
 	}
 
 }

@@ -103,7 +103,7 @@ public class TestCampaignExecution extends FileTestExecution {
 	private void initFromTestCampaign() {		
 		//FIXME AAA persist TestCaseExecutions (optionally) from TestSetExecution
 //		testSetExecution = new TestSetExecution(getTestCampaign().getTestSet(), getTestCampaign());
-		testSetExecution = new TestSetExecution(getTestCampaign().getTestSet());
+		testSetExecution = new TestSetExecution(getTestCampaign().getTestSet(), getTestCampaign());
 	}
 
 	@Override
