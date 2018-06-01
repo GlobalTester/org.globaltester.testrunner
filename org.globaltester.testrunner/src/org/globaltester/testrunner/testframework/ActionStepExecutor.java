@@ -87,7 +87,9 @@ public class ActionStepExecutor {
 					} else if (nativeJavaObject instanceof AssertionWarning) {
 						AssertionWarning error = (AssertionWarning) nativeJavaObject;
 						return ResultFactory.newFailure(Status.WARNING, jse.lineNumber(), TestLogger.getLogFileLine(), error.getMessage());
-						}
+					} else {
+						return ResultFactory.newFailure(Status.FAILURE, jse.lineNumber(), TestLogger.getLogFileLine(), jse.toString());
+					}
 				} else {
 					return ResultFactory.newFailure(Status.FAILURE, 0, TestLogger.getLogFileLine(), jse.toString());
 				}
