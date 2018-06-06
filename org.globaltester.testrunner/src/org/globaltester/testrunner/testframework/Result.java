@@ -28,11 +28,12 @@ public class Result implements Serializable{
 	private static final long serialVersionUID = 1690869079522455149L;
 
 	public enum Status {
-		PASSED(STATUS_PASSED), WARNING(STATUS_WARNING), FAILURE(STATUS_FAILURE), UNDEFINED(STATUS_UNDEFINED), NOT_APPLICABLE(STATUS_NOT_APPLICABLE), REQUIREMENT_MISSING(STATUS_REQUIREMENT_MISSING);
+		PASSED(STATUS_PASSED,0), WARNING(STATUS_WARNING,2), FAILURE(STATUS_FAILURE,1), UNDEFINED(STATUS_UNDEFINED,4), NOT_APPLICABLE(STATUS_NOT_APPLICABLE,3), REQUIREMENT_MISSING(STATUS_REQUIREMENT_MISSING,5);
 		
 		private String textualRepresentation;
+		private int rating;
 		
-		private Status(String textualRepresentation) {
+		private Status(String textualRepresentation, int rating) {
 			this.textualRepresentation = textualRepresentation;
 		}
 		
@@ -43,6 +44,10 @@ public class Result implements Serializable{
 		
 		public String getTextualRepresentation() {
 			return textualRepresentation;
+		}
+		
+		public int getRating() {
+			return rating;
 		}
 		
 		/**

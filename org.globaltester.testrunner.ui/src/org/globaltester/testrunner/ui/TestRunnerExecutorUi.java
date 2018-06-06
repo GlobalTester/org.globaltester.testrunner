@@ -17,6 +17,7 @@ import org.globaltester.testrunner.GtTestCampaignProject;
 import org.osgi.framework.Bundle;
 
 public class TestRunnerExecutorUi implements TestResourceExecutorUi {
+	//FIXME AAD is this class obsolete now? 
 
 	@Override
 	public void show(List<IResource> resources) {
@@ -65,7 +66,7 @@ public class TestRunnerExecutorUi implements TestResourceExecutorUi {
 
 	@Override
 	public boolean canShow(List<IResource> resources) {
-		return new TestRunnerExecutor().canExecute(resources);
+		return new TestCampaignExecutor().canExecute(resources);
 	}
 
 }

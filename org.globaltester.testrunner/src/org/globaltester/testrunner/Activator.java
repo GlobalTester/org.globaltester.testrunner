@@ -6,12 +6,15 @@ import java.net.URL;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
 public class Activator implements BundleActivator {
 
 	public static final String PLUGIN_ID = "org.globaltester.testrunner";
+	public static final String VERSION = "Release " + Platform.getBundle(PLUGIN_ID).getVersion();
+	
 	private static BundleContext context;
 
 	static BundleContext getContext() {

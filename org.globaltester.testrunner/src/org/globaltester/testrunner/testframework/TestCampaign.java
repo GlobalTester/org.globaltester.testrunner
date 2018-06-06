@@ -4,13 +4,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.globaltester.base.xml.XMLHelper;
-import org.globaltester.scriptrunner.GtRuntimeRequirements;
-import org.globaltester.scriptrunner.TestExecutionCallback;
 import org.globaltester.testrunner.GtTestCampaignProject;
 import org.globaltester.testspecification.testframework.FileTestExecutable;
 import org.globaltester.testspecification.testframework.TestSet;
@@ -155,52 +151,16 @@ public class TestCampaign {
 	}
 
 	/**
-	 * Execute all tests that need to be executed e.g. which do not have a valid
-	 * previous execution associated
-	 * @param runtimeReqs 
-	 * @param monitor 
-	 * @param callback 
-	 * 
-	 * @throws CoreException
+	 * Register a new TestCampaignExecution within this TestCampaign.
+	 * Also register the last Execution of this TestCampaign as previousExecution if any.
+	 * @param newExecution
 	 */
-	public void executeTests(GtRuntimeRequirements runtimeReqs, IProgressMonitor monitor, TestExecutionCallback callback) throws CoreException {
-
-		// create a new TestExecution this TestCampaignElement
-		TestCampaignExecution currentExecution = FileTestExecutionFactory.createExecution(this);
-		
+	public void registerNewExecution(TestCampaignExecution newExecution) {
 		if (executions.size() > 0) {
 			// register this new execution
-			currentExecution.setPreviousExecution(executions.getFirst());
+			newExecution.setPreviousExecution(executions.getFirst());
 		}
-		executions.addFirst(currentExecution);
-		
-		// execute the TestExecutable
-		currentExecution.execute(runtimeReqs, false, monitor);
-		
-		// save the new state
-		project.doSave();
-
-		// notify viewers of parent about this change
-		project.notifyTreeChangeListeners(false, new Object[] {testSet},
-				new String[] { "lastExecution" });
-		
-		//notify the callback about the execution results
-		TestExecutionCallback.TestResult result = new TestExecutionCallback.TestResult();
-		result.testCases = currentExecution.getChildren().size();
-		result.overallResult = currentExecution.getResult().status.ordinal();
-		//IMPL: propagate subresults
-		callback.testExecutionFinished(result);
-		
-		// refresh the project in workspace
-		project.getIProject().refreshLocal(IResource.DEPTH_INFINITE, null);
-		
-		
-		//FIXME AAC check whether this can be removed
-		// The card reader is selected as part of the test case execution and stored for reference,
-		// hence the actual reader information is only available _after_ test case execution otherwise
-		// the retrieved card reader name may be undefined or refer to a previous test run
-//		String cardReaderName = SmartCardShellInfo.getActiveReaderName();
-//		currentExecution.setCardReaderName(cardReaderName);
+		executions.addFirst(newExecution);
 	}
 	
 	public String getLogFileName(){

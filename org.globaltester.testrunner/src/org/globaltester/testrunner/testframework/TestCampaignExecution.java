@@ -2,12 +2,13 @@ package org.globaltester.testrunner.testframework;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.globaltester.base.xml.XMLHelper;
+import org.globaltester.logging.BasicLogger;
+import org.globaltester.logging.tags.LogLevel;
 import org.globaltester.scriptrunner.GtRuntimeRequirements;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -176,8 +177,23 @@ public class TestCampaignExecution extends FileTestExecution {
 	@Override
 	protected void execute(GtRuntimeRequirements runtimeReqs, boolean forceExecution,
 			boolean reExecution, IProgressMonitor monitor) {
-		//just need to execute the TestSet here
+		
+		getTestCampaign().registerNewExecution(this);
+		
+		//execute the TestSet
 		testSetExecution.execute(runtimeReqs, forceExecution, monitor);
+		
+		try {
+			//FIXME AAD check whether this is late enough
+			// save the new state
+			getGtTestCampaignProject().doSave();
+
+			// notify viewers of parent about this change
+			getGtTestCampaignProject().notifyTreeChangeListeners(false, new Object[] {getTestCampaign().getTestSet()},
+						new String[] { "lastExecution" });
+		} catch (CoreException e) {
+			BasicLogger.logException("Unable to persist/propagate new ExecutionState in TestCampaign", e, LogLevel.WARN);
+		}
 	}
 
 	/**
