@@ -17,6 +17,11 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
+import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.legacy.logger.GtErrorLogger;
 import org.globaltester.logging.legacy.logger.TestLogger;
 import org.globaltester.scriptrunner.GtRuntimeRequirements;
@@ -28,6 +33,9 @@ import org.globaltester.testrunner.EnvironmentInspector;
 import org.globaltester.testrunner.testframework.AbstractTestExecution;
 import org.globaltester.testrunner.testframework.IExecution;
 import org.globaltester.testrunner.testframework.TestCaseExecution;
+import org.globaltester.testrunner.ui.views.ResultView;
+
+import de.cardcontact.scdp.js.GPTracer.LogLevel;
 
 public abstract class TestResourceExecutor extends TestExecutor {
 
@@ -89,7 +97,8 @@ public abstract class TestResourceExecutor extends TestExecutor {
 					// create TestExecution from resources					
 					execution = buildTestExecution(resources);
 					
-					//show estExecution in ResultView
+					//show TestExecution in ResultView
+					showTestExecutionInResultView(execution);
 					
 					// (re)initialize the TestLogger
 					if (TestLogger.isInitialized()) {
@@ -125,6 +134,11 @@ public abstract class TestResourceExecutor extends TestExecutor {
 
 					// execute the TestExecutable
 					execution.execute(runtimeRequirements, false, monitor);
+					
+
+					
+					//FIXME AAA show TestExecution in ResultView, check whether this should work via propertyChangeMechanisms here
+					showTestExecutionInResultView(execution);
 					
 					//FIXME AAA return positive results to callback
 					
@@ -183,6 +197,30 @@ public abstract class TestResourceExecutor extends TestExecutor {
 		};
 	}
 
+	private void showTestExecutionInResultView(AbstractTestExecution execution) {
+		try {
+			PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+				public void run() {
+					IWorkbenchPage page = Activator.getDefault().getWorkbench()
+							.getActiveWorkbenchWindow().getActivePage();
+					IViewPart vp = null;
+					try {
+						vp = page.showView("org.globaltester.testrunner.ui.views.ResultView");
+					} catch (PartInitException e) {
+						BasicLogger.logException("ResultView could not be initialized", e, org.globaltester.logging.tags.LogLevel.WARN);
+					}
+
+					if (vp instanceof ResultView) {
+						ResultView resultView = (ResultView) vp;
+						resultView.setInput(execution);
+					}
+				}
+			});
+		} catch (Exception ex) {
+			TestLogger.error(ex);
+		}
+	}
+
 	/**
 	 * Notify the callback about the execution results
 	 * 
@@ -207,7 +245,8 @@ public abstract class TestResourceExecutor extends TestExecutor {
 					SubTestResult curSubResult = new TestExecutionCallback.SubTestResult();
 					curSubResult.testCaseId = currTestCaseResult.getId();
 					curSubResult.logFileName = currTestCaseResult.getLogFileName();
-					curSubResult.resultString = currTestCaseResult.getResult().toString();	
+					curSubResult.resultString = currTestCaseResult.getResult().toString();
+					subResults.add(curSubResult);
 				}
 			}
 			if (!subResults.isEmpty()) {

@@ -256,7 +256,7 @@ public class TestSetExecution extends AbstractTestExecution {
 			performIntegrityCheck();
 			progress.worked(1);
 			
-			progress.beginTask("Execute TestCase ", childExecutions.size());
+			progress.beginTask("Execute TestCases ", childExecutions.size());
 			
 			//persist SampleConfig used
 			if (runtimeReqs.containsKey(SampleConfig.class)){
