@@ -2,6 +2,7 @@ package org.globaltester.testrunner.testframework;
 
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.HashSet;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.globaltester.logging.legacy.logger.TestLogger;
@@ -135,6 +136,15 @@ public abstract class AbstractTestExecution implements IExecution {
 		lastExecutionDuration = new Date().getTime() - lastExecutionStartTime;
 		
 		executingUser = System.getProperty("user.name");
+		
+		notifyResultChangeListeners();
+		
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 	}
 
@@ -188,6 +198,22 @@ public abstract class AbstractTestExecution implements IExecution {
 	
 	public String getExecutingUser() {
 		return executingUser;
+	}
+
+	HashSet<ResultChangeListener> resultChangeListeners = new HashSet<>();
+	
+	public void addResultListener(ResultChangeListener newListener) {
+		resultChangeListeners.add(newListener);
+	}
+
+	public void removeResultListener(ResultChangeListener obsoleteListener) {
+		resultChangeListeners.remove(obsoleteListener);
+	}
+
+	protected void notifyResultChangeListeners() {
+		for (ResultChangeListener resultChangeListener : resultChangeListeners) {
+			resultChangeListener.resultChanged();
+		}
 	}
 
 	

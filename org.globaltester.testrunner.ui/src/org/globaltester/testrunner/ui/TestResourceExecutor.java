@@ -138,9 +138,7 @@ public abstract class TestResourceExecutor extends TestExecutor {
 
 					
 					//FIXME AAA show TestExecution in ResultView, check whether this should work via propertyChangeMechanisms here
-					showTestExecutionInResultView(execution);
-					
-					//FIXME AAA return positive results to callback
+//					showTestExecutionInResultView(execution);
 					
 					//FIXME AAD warning message when no testcases where executed
 					// display warning message if no test cases where executed (and the user was not informed about the abort earlier)
@@ -216,7 +214,7 @@ public abstract class TestResourceExecutor extends TestExecutor {
 					}
 				}
 			});
-		} catch (Exception ex) {
+		} catch (RuntimeException ex) {
 			TestLogger.error(ex);
 		}
 	}

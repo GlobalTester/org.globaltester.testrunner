@@ -68,6 +68,7 @@ public abstract class FileTestExecution extends AbstractTestExecution {
 		super.extractFromXml(root);
 
 		// extract SpecificationResource
+		//FIXME AAAA check for NPE here when opening Campaign
 		String specFileName = root.getChild("SpecificationResource")
 				.getTextTrim();
 		specFile = iFile.getProject().getFile(specFileName);

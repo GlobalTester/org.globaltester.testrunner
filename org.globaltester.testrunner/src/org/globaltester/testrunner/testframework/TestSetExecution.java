@@ -1,7 +1,6 @@
 package org.globaltester.testrunner.testframework;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -37,7 +36,7 @@ import org.jdom.Document;
 import org.jdom.Element;
 
 //FIXME AAB read this class for consistency (e.g. string labels etc)
-public class TestSetExecution extends AbstractTestExecution {
+public class TestSetExecution extends CompositeTestExecution {
 
 	private static final String XML_CHILD_EXECUTION_REFERENCES = "FileNames";
 	private static final String XML_CHILD_EXECUTIONREFERENCE = "FileName";
@@ -47,8 +46,6 @@ public class TestSetExecution extends AbstractTestExecution {
 	private static final String XML_CHILD_INTEGRITY = "IntegrityOfTestSuiteProvided";
 
 	
-	List<FileTestExecution> childExecutions = new ArrayList<>();
-
 	private SampleConfig sampleConfig;
 	private String cardReaderName;
 	private String integrityOfTestSpec;
@@ -98,7 +95,7 @@ public class TestSetExecution extends AbstractTestExecution {
 					
 					if (fileTestExecution instanceof TestCaseExecution) {
 						TestCaseExecution exec = (TestCaseExecution) fileTestExecution;
-						childExecutions.add(exec);
+						addChildExecution(exec);
 						result.addSubResult(exec.getResult());
 					}
 				}
@@ -163,7 +160,7 @@ public class TestSetExecution extends AbstractTestExecution {
 				if (curTestExecutable instanceof FileTestExecutable) {
 					TestCase curTestCase = (TestCase) curTestExecutable;
 					FileTestExecution tcExecution = FileTestExecutionFactory.createExecution(curTestCase, campaign);
-					childExecutions.add(tcExecution);
+					addChildExecution(tcExecution);
 					specsToCheck .add(curTestCase.getIFile().getProject());
 				} else {
 
@@ -176,18 +173,6 @@ public class TestSetExecution extends AbstractTestExecution {
 			
 		}
 
-	}
-
-	@Override
-	public boolean hasChildren() {
-		return !childExecutions.isEmpty();
-	}
-
-	@Override
-	public Collection<IExecution> getChildren() {
-		ArrayList<IExecution> children = new ArrayList<IExecution>();
-		children.addAll(childExecutions);
-		return children;
 	}
 
 	@Override
@@ -211,17 +196,6 @@ public class TestSetExecution extends AbstractTestExecution {
 	@Override
 	public String getDescription() {
 		return "";
-	}
-
-	@Override
-	public long getDuration() {
-		long duration = 0;
-		for (Iterator<FileTestExecution> execIter = childExecutions.iterator(); execIter
-				.hasNext();) {
-			duration += execIter.next().getDuration();
-		}
-
-		return duration;
 	}
 
 	@Override

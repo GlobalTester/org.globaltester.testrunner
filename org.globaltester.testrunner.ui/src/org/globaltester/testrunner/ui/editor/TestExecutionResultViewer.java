@@ -36,6 +36,7 @@ import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPage;
@@ -46,6 +47,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.globaltester.base.ui.GtUiHelper;
+import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.legacy.logger.GTLogger;
 import org.globaltester.logging.logfileeditor.ui.editors.LogfileEditor;
 import org.globaltester.testrunner.testframework.AbstractTestExecution;
@@ -53,10 +55,13 @@ import org.globaltester.testrunner.testframework.ActionStepExecution;
 import org.globaltester.testrunner.testframework.FileTestExecution;
 import org.globaltester.testrunner.testframework.IExecution;
 import org.globaltester.testrunner.testframework.Result;
+import org.globaltester.testrunner.testframework.ResultChangeListener;
 import org.globaltester.testrunner.testframework.TestCampaign;
 import org.globaltester.testrunner.testframework.TestCampaignExecution;
+import org.globaltester.testrunner.ui.Activator;
+import org.globaltester.testrunner.ui.views.ResultView;
 
-public class TestExecutionResultViewer implements SelectionListener {
+public class TestExecutionResultViewer implements SelectionListener, ResultChangeListener {
 
 	private IWorkbenchPart part;
 	
@@ -378,7 +383,14 @@ public class TestExecutionResultViewer implements SelectionListener {
 	}
 
 	public void setInput(AbstractTestExecution newInput) {
+		Object formerInput = treeViewer.getInput();
+		if (formerInput instanceof AbstractTestExecution) {
+			((AbstractTestExecution) formerInput).removeResultListener(this);
+		}
+		
 		treeViewer.setInput(newInput);
+		newInput.addResultListener(this);
+		
 	}
 
 	public void expandAll() {
@@ -398,6 +410,18 @@ public class TestExecutionResultViewer implements SelectionListener {
 
 	public void refresh() {
 		treeViewer.refresh();
+	}
+
+	@Override
+	public void resultChanged() {
+		//FIXME AAA try to make this a little less performance hungry
+		PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+			public void run() {
+				if (!executionStateTree.isDisposed()) {
+					refresh();
+				}
+			}
+		});
 	}
 	
 	
