@@ -34,19 +34,6 @@ public class ResultFactory {
 	
 	/**
 	 * Create a new Failure, with a new ID 
-	 * @param rating
-	 * @param scriptLine
-	 * @param logFileLine
-	 * @param failureText
-	 * @return
-	 */
-	public static ScriptIssue newFailure(int rating, int scriptLine, int logFileLine, String failureText) {
-		Status status = Status.get(rating);
-		return newFailure(status, scriptLine, logFileLine, failureText);
-	}
-	
-	/**
-	 * Create a new Failure, with a new ID 
 	 * @param status
 	 * @param scriptLine
 	 * @param logFileLine
@@ -59,21 +46,6 @@ public class ResultFactory {
 		int failureID = getNewFailureID();
 		ScriptIssue failure = new ScriptIssue(failureID, status, scriptLine, logFileLine, failureText, expectedValue, receivedValue);
 		return failure;
-	}
-	
-	/**
-	 * Create a new Failure, with a new ID 
-	 * @param rating
-	 * @param scriptLine
-	 * @param logFileLine
-	 * @param failureText
-	 * @param expectedValue
-	 * @param receivedValue
-	 * @return
-	 */
-	public static ScriptIssue newFailure(int rating, int scriptLine, int logFileLine, String failureText, String expectedValue, String receivedValue) {
-		Status status = Status.get(rating);
-		return newFailure(status, scriptLine, logFileLine, failureText, expectedValue, receivedValue);
 	}
 
 	public static void reset() {

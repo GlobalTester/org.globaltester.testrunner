@@ -139,6 +139,8 @@ public abstract class AbstractTestExecution implements IExecution {
 		
 		notifyResultChangeListeners();
 		
+		
+		//FIXME AAA remove this sleep		
 		try {
 			Thread.sleep(500);
 		} catch (InterruptedException e) {

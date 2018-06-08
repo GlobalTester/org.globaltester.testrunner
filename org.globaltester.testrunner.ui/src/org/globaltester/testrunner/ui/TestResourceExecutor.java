@@ -35,8 +35,6 @@ import org.globaltester.testrunner.testframework.IExecution;
 import org.globaltester.testrunner.testframework.TestCaseExecution;
 import org.globaltester.testrunner.ui.views.ResultView;
 
-import de.cardcontact.scdp.js.GPTracer.LogLevel;
-
 public abstract class TestResourceExecutor extends TestExecutor {
 
 	@Override
@@ -233,7 +231,7 @@ public abstract class TestResourceExecutor extends TestExecutor {
 		
 		if (currentExecution != null) {
 			result.testCases = currentExecution.getChildren().size();
-			result.overallResult = currentExecution.getResult().status.ordinal();	
+			result.overallResult = currentExecution.getResult().status.getRating();	
 			
 			ArrayList<TestExecutionCallback.SubTestResult> subResults = new ArrayList<>();
 			
@@ -252,7 +250,7 @@ public abstract class TestResourceExecutor extends TestExecutor {
 			}
 		} else {
 			result.testCases = 0;
-			result.overallResult = org.globaltester.testrunner.testframework.Result.Status.UNDEFINED.ordinal(); // return Status.UNDEFINED on callback	
+			result.overallResult = org.globaltester.testrunner.testframework.Result.Status.UNDEFINED.getRating();	
 		}
 
 		
