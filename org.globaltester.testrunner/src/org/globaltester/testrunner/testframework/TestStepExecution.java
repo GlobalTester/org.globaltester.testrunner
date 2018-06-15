@@ -1,19 +1,37 @@
 package org.globaltester.testrunner.testframework;
 
-import org.globaltester.testspecification.testframework.TestStep;
+import org.eclipse.core.runtime.CoreException;
+import org.jdom.Element;
 
 public class TestStepExecution extends ActionStepExecution {
 
+	public static final String XML_ELEMENT = "TestStepExecution";
+
 	/**
-	 * @param actionStep	TestStep this execution instance should execute
+	 * Constructor for new TestStepExecution
+	 * 
+	 * @param parent parent execution (used to dereference the specification) 
+	 * @param childId id of this child within parent
 	 */
-	public TestStepExecution(TestStep actionStep, IExecution parent) {
-		super(actionStep, parent);
+	public TestStepExecution(IExecution parent, int childIndex) {
+		super(parent, childIndex);
+	}
+
+	/**
+	 * Constructor for new TestStepExecution to be restored from XML
+	 * 
+	 * @param parent parent execution (used to dereference the specification) 
+	 * @param childId id of this child within parent
+	 * @throws CoreException 
+	 */
+	public TestStepExecution(IExecution parent, int childIndex, Element xmlElement) throws CoreException {
+		super(parent, childIndex);
+		extractFromXml(xmlElement);
 	}
 
 	@Override
-	protected String getXmlRootElementName() {
-		return "TestStepExecution";
+	public String getXmlRootElementName() {
+		return XML_ELEMENT;
 	}
 
 }

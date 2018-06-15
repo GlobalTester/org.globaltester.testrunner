@@ -36,7 +36,6 @@ import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPage;
@@ -47,7 +46,6 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.globaltester.base.ui.GtUiHelper;
-import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.legacy.logger.GTLogger;
 import org.globaltester.logging.logfileeditor.ui.editors.LogfileEditor;
 import org.globaltester.testrunner.testframework.AbstractTestExecution;
@@ -58,8 +56,6 @@ import org.globaltester.testrunner.testframework.Result;
 import org.globaltester.testrunner.testframework.ResultChangeListener;
 import org.globaltester.testrunner.testframework.TestCampaign;
 import org.globaltester.testrunner.testframework.TestCampaignExecution;
-import org.globaltester.testrunner.ui.Activator;
-import org.globaltester.testrunner.ui.views.ResultView;
 
 public class TestExecutionResultViewer implements SelectionListener, ResultChangeListener {
 
@@ -389,7 +385,14 @@ public class TestExecutionResultViewer implements SelectionListener, ResultChang
 		}
 		
 		treeViewer.setInput(newInput);
-		newInput.addResultListener(this);
+		if (newInput != null) {
+			newInput.addResultListener(this);
+			
+			if (newInput.getChildren().size() == 1) {
+				treeViewer.expandToLevel(2);
+			}
+		}
+		
 		
 	}
 
@@ -414,7 +417,7 @@ public class TestExecutionResultViewer implements SelectionListener, ResultChang
 
 	@Override
 	public void resultChanged() {
-		//FIXME AAA try to make this a little less performance hungry
+		//FIXME AAE try to make this a little less performance hungry
 		PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
 			public void run() {
 				if (!executionStateTree.isDisposed()) {

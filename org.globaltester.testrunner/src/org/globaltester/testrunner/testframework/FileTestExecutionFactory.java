@@ -5,6 +5,9 @@ import java.util.Hashtable;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.globaltester.testspecification.testframework.TestCase;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.globaltester.base.xml.XMLHelper;
 import org.globaltester.testspecification.testframework.FileTestExecutable;
 
 public class FileTestExecutionFactory {
@@ -19,24 +22,26 @@ public class FileTestExecutionFactory {
 	 * @throws CoreException
 	 */
 	public static FileTestExecution getInstance(IFile iFile) throws CoreException {
-
 		if (!instances.containsKey(iFile)) {
-			FileTestExecution newExecutionInstance = null;
-
-			if (TestCaseExecution.isFileRepresentation(iFile)) {
-				newExecutionInstance = new TestCaseExecution(iFile);
-			} else if (TestCampaignExecution.isFileRepresentation(iFile)) {
-				newExecutionInstance = new TestCampaignExecution(iFile);
-			}
-
-			if (newExecutionInstance != null) {
-				instances.put(iFile, newExecutionInstance);
-			} else {
-				return null;
-			}
+			createFileTestExecution(iFile);
 		}
-
+		
 		return instances.get(iFile);
+	}
+
+
+
+	public static void createFileTestExecution(IFile iFile) throws CoreException {
+		Document doc = XMLHelper.readDocument(iFile);
+		Element rootElem = doc.getRootElement();
+		
+		if (TestCaseExecution.XML_ELEMENT.equals(rootElem.getName())) {
+			instances.put(iFile, new TestCaseExecution(iFile));
+		} else if (TestCampaignExecution.XML_ELEMENT.equals(rootElem.getName())) {
+			instances.put(iFile, new TestCampaignExecution(iFile));
+		} else if (TestSetExecution.XML_ELEMENT.equals(rootElem.getName())) {
+			instances.put(iFile, new TestSetExecution(iFile));
+		}
 	}
 
 	public static FileTestExecution createExecution(FileTestExecutable testExecutable,
@@ -57,8 +62,7 @@ public class FileTestExecutionFactory {
 		}
 	}
 
-	public static TestCampaignExecution createExecution(
-			TestCampaign testCampaign) throws CoreException {
+	public static FileTestExecution createExecution(TestCampaign testCampaign) throws CoreException {
 		IFile stateFile = testCampaign.getProject().getNewCampaignStateIFile();
 
 		return new TestCampaignExecution(stateFile, testCampaign);

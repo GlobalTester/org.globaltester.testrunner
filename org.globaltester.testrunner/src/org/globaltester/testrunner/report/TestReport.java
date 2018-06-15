@@ -268,7 +268,7 @@ public class TestReport {
 	}
 
 	public static File getDefaultDestinationDir() {
-		//FIXME
+		//FIXME AAB
 //            boolean fixedDir = Activator.getDefault().getPreferenceStore().getBoolean(PreferenceConstants.P_FIXEDDIRSETTINGS);
 //            if(fixedDir) {
 //                    String fixedDirPath = Activator.getDefault().getPreferenceStore().getString(PreferenceConstants.P_REPORTDIR);

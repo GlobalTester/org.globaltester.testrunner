@@ -1,36 +1,27 @@
 package org.globaltester.testrunner.testframework;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.globaltester.base.xml.XMLHelper;
 import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.tags.LogLevel;
 import org.globaltester.scriptrunner.GtRuntimeRequirements;
-import org.jdom.Document;
 import org.jdom.Element;
 
 public class TestCampaignExecution extends FileTestExecution {
 	
-	private TestSetExecution testSetExecution;
+	public static final String XML_ELEMENT = "TestCampaignExecution";
+	private static final String XML_CHILD_PREVIOUS_EXECUTION = "PreviousExecution";
+	
 	private TestCampaignExecution previousExecution;
 	
 	@Override
-	void extractFromXml(Element root) {
+	public void extractFromXml(Element root) throws CoreException {
 		super.extractFromXml(root);
 
-		// extract testSetExecution
-		Element testSetExecutionElement = root.getChild(TestSetExecution.XML_ELEMENT);
-		if (testSetExecutionElement != null) {
-			testSetExecution = new TestSetExecution(testSetExecutionElement);
-		}
-		
 		try {
 			// extract previous execution
-			Element prevExecFileElement = root.getChild("PreviousExecution");
+			Element prevExecFileElement = root.getChild(XML_CHILD_PREVIOUS_EXECUTION);
 
 			if (prevExecFileElement != null) {
 				String prevExecFileName = prevExecFileElement.getTextTrim();
@@ -47,45 +38,21 @@ public class TestCampaignExecution extends FileTestExecution {
 	}
 
 	@Override
-	void dumpToXml(Element root) {
+	public void dumpToXml(Element root) {
 		super.dumpToXml(root);
-		
-		// dump testSetExecution
-		if (testSetExecution != null) {
-			Element testSetExecutionElement = new Element(TestSetExecution.XML_ELEMENT);
-			testSetExecution.dumpToXml(testSetExecutionElement);
-			root.addContent(testSetExecutionElement);
-		}
 		
 		// dump previous execution
 		if (previousExecution != null) {
-			Element prevExecElement = new Element("PreviousExecution");
+			Element prevExecElement = new Element(XML_CHILD_PREVIOUS_EXECUTION);
 			prevExecElement.addContent(previousExecution.getIFile()
 					.getProjectRelativePath().toString());
 			root.addContent(prevExecElement);
 		}
 		
-		// dump filenames for children
-		Element fileNames = new Element("FileNames");
-		root.addContent(fileNames);
-		
-		//FIXME AAA check what to do with this code
-//		Iterator<IExecution> iter = this.getChildren().iterator();
-//		while (iter.hasNext()){
-//			IExecution current = iter.next();
-//			if (current instanceof TestCaseExecution){
-//				Element childElement = new Element("FileName");
-//				childElement.addContent(((TestCaseExecution) current).getIFile().getProjectRelativePath().toString());
-//				fileNames.addContent(childElement);
-//			}
-//		}
-		
 	}
 
 	public TestCampaignExecution(IFile iFile) throws CoreException {
 		super(iFile);
-		
-		initFromIFile();
 	}
 
 	protected TestCampaignExecution(IFile iFile, TestCampaign testCampaign)
@@ -101,63 +68,10 @@ public class TestCampaignExecution extends FileTestExecution {
 		doSave();
 	}
 
-	private void initFromTestCampaign() {		
-		//FIXME AAA persist TestCaseExecutions (optionally) from TestSetExecution
-//		testSetExecution = new TestSetExecution(getTestCampaign().getTestSet(), getTestCampaign());
-		testSetExecution = new TestSetExecution(getTestCampaign().getTestSet(), getTestCampaign());
-	}
-
-	@Override
-	public boolean hasChildren() {
-		return testSetExecution != null && testSetExecution.hasChildren();
-	}
-
-	@Override
-	public Collection<IExecution> getChildren() {
-		ArrayList<IExecution> children = new ArrayList<IExecution>();
-		children.addAll(testSetExecution.getChildren());
-		return children;
-	}
-
-	@Override
-	public IExecution getParent() {
-		return null;
-	}
-
-	@Override
-	public String getName() {
-		return getTestCampaign().getName();
-	}
-
-	@Override
-	public String getComment() {
-		if (result != null) {
-			return result.getComment();
-		}
-		return "";
-	}
-
-	@Override
-	public String getDescription() {
-		return "";
-	}
-
-	@Override
-	public long getDuration() {
-		return testSetExecution.getDuration();
-	}
-
-	@Override
-	public String getId() {
-		return "";
-	}
-
-	@Override
-	protected void createIFile() {
-		if(!iFile.exists()){
-			Element root = new Element("TestCampaignExecution");
-			XMLHelper.saveDoc(iFile, root);
-		}
+	private void initFromTestCampaign() throws CoreException {
+		setId(getTestCampaign().getName());
+		//FIXME AAD persist TestCaseExecutions (optionally) from TestSetExecution
+		addChildExecution(new TestSetExecution(getTestCampaign().getTestSet(), getTestCampaign()));
 	}
 
 	public TestCampaign getTestCampaign() {
@@ -170,8 +84,8 @@ public class TestCampaignExecution extends FileTestExecution {
 	}
 
 	@Override
-	protected String getXmlRootElementName() {
-		return "TestCampaignExecution";
+	public String getXmlRootElementName() {
+		return XML_ELEMENT;
 	}
 
 	@Override
@@ -181,6 +95,7 @@ public class TestCampaignExecution extends FileTestExecution {
 		getTestCampaign().registerNewExecution(this);
 		
 		//execute the TestSet
+		TestSetExecution testSetExecution = getTestSetExecution();
 		testSetExecution.execute(runtimeReqs, forceExecution, monitor);
 		
 		try {
@@ -194,24 +109,6 @@ public class TestCampaignExecution extends FileTestExecution {
 		} catch (CoreException e) {
 			BasicLogger.logException("Unable to persist/propagate new ExecutionState in TestCampaign", e, LogLevel.WARN);
 		}
-	}
-
-	/**
-	 * checks whether the given file represents an TestCaseExecution object
-	 * 
-	 * @param iFile
-	 * @return
-	 */
-	public static boolean isFileRepresentation(IFile iFile) {
-		Document doc = XMLHelper.readDocument(iFile);
-		Element rootElem = doc.getRootElement();
-
-		// check that root element has correct name
-		if (!rootElem.getName().equals("TestCampaignExecution")) {
-			return false;
-		}
-
-		return true;
 	}
 	
 	/**
@@ -228,14 +125,10 @@ public class TestCampaignExecution extends FileTestExecution {
 	public TestCampaignExecution getPreviousExecution() {
 		return previousExecution;
 	}
+	
 	@Override
-	public void doSave() {
-		super.doSave();
-		
-		// save testSetExecution
-		if (testSetExecution != null) {
-			testSetExecution.doSaveChildren();
-		}
+	public void doSaveChildren() {
+		super.doSaveChildren();
 		
 		// save previous executions recursively
 		if (previousExecution != null) {
@@ -244,6 +137,10 @@ public class TestCampaignExecution extends FileTestExecution {
 	}
 
 	public TestSetExecution getTestSetExecution() {
-		return testSetExecution;
+		if (getChildren().isEmpty()) {
+			return null;
+		}
+		return (TestSetExecution) getChildren().iterator().next();
+
 	}
 }

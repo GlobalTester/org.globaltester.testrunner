@@ -20,6 +20,7 @@ import org.globaltester.logging.legacy.logger.GtErrorLogger;
 import org.globaltester.testrunner.testframework.TestCampaign;
 import org.globaltester.testrunner.utils.GtDateHelper;
 import org.globaltester.testspecification.testframework.FileTestExecutable;
+import org.globaltester.testspecification.testframework.ITestExecutable;
 import org.globaltester.testspecification.testframework.TestExecutableFactory;
 
 /**
@@ -195,24 +196,27 @@ public class GtTestCampaignProject implements ITreeObservable {
 	 * @return IFile inside the STATE_FOLDER of this project
 	 * @throws CoreException
 	 */
-	public IFile getNewStateIFile(FileTestExecutable executable) throws CoreException {
-		String execName = GtDateHelper.getCurrentTimeString() + "_" + executable.getName()+".gt";
-
-		return getNewStateIFile(execName);
+	public IFile getNewStateIFile(ITestExecutable executable) throws CoreException {
+		return getNewStateIFile(executable.getName());
 	}
 	
 	public IFile getNewCampaignStateIFile() throws CoreException {
-		String execName = GtDateHelper.getCurrentTimeString() + "_" + getName()+".gt";
-
-		return getNewStateIFile(execName);
+		curExecutionTimeStamp = GtDateHelper.getCurrentTimeString();
+		curExecutionCounter = 0;
+		return getNewStateIFile(getName());
 	}
 	
+	String curExecutionTimeStamp = GtDateHelper.getCurrentTimeString();
+	int curExecutionCounter = 0;
+	
 	private IFile getNewStateIFile(String execName) throws CoreException {
-		String copyRelPath = GtTestCampaignProject.STATE_FOLDER
-				+ File.separator + execName;
 
+		String format = GtTestCampaignProject.STATE_FOLDER
+				+ File.separator + "%s_%03d_%s" + ".gtstate"; 
+		String name = String.format(format, curExecutionTimeStamp, curExecutionCounter++, execName);
+		IFile iFile = iProject.getFile(name);
+		
 		// make sure that parents exist
-		IFile iFile = iProject.getFile(copyRelPath);
 		GtResourceHelper.createWithAllParents(iFile.getParent());
 
 		return iFile;

@@ -5,6 +5,9 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.globaltester.base.xml.XMLHelper;
 import org.globaltester.testrunner.GtTestCampaignProject;
+import org.globaltester.testspecification.testframework.FileTestExecutable;
+import org.globaltester.testspecification.testframework.ITestExecutable;
+import org.globaltester.testspecification.testframework.TestExecutableFactory;
 import org.jdom.Document;
 import org.jdom.Element;
 
@@ -15,7 +18,7 @@ import org.jdom.Element;
  * @author amay
  * 
  */
-public abstract class FileTestExecution extends AbstractTestExecution {
+public abstract class FileTestExecution extends CompositeTestExecution {
 
 	IFile iFile;
 	protected IFile specFile;
@@ -32,9 +35,12 @@ public abstract class FileTestExecution extends AbstractTestExecution {
 	 */
 	public FileTestExecution(IFile iFile) throws CoreException {
 		this.iFile = iFile;
-		if ((iFile != null) && (!iFile.exists())) {
-			// create the IFile
-			createIFile();
+		if ((iFile!= null)) {
+			if (iFile.exists()) {
+				initFromIFile();
+			} else {
+				createIFile();	
+			}
 		}
 	}
 
@@ -43,7 +49,7 @@ public abstract class FileTestExecution extends AbstractTestExecution {
 	 * variable iFile
 	 */
 	
-	protected void initFromIFile() {
+	protected void initFromIFile() throws CoreException {
 		Assert.isNotNull(iFile);
 		Document doc = XMLHelper.readDocument(iFile);
 		Element root = doc.getRootElement();
@@ -60,31 +66,38 @@ public abstract class FileTestExecution extends AbstractTestExecution {
 	/**
 	 * Create the resource iFile with initial content
 	 */
-	protected abstract void createIFile();
-
-	@Override
-	void extractFromXml(Element root) {
-		// extract all elements of parent class
-		super.extractFromXml(root);
-
-		// extract SpecificationResource
-		//FIXME AAAA check for NPE here when opening Campaign
-		String specFileName = root.getChild("SpecificationResource")
-				.getTextTrim();
-		specFile = iFile.getProject().getFile(specFileName);
-
+	protected void createIFile() {
+		if(!iFile.exists()){
+			Element root = new Element(getXmlRootElementName());
+			XMLHelper.saveDoc(iFile, root);
+		}
 	}
 
 	@Override
-	void dumpToXml(Element root) {
+	public void extractFromXml(Element root) throws CoreException {
+		// extract SpecificationResource
+		Element specFileElem = root.getChild("SpecificationResource");
+		if (specFileElem != null) {
+			String specFileName = specFileElem.getTextTrim();
+			specFile = iFile.getProject().getFile(specFileName);
+		}
+		
+		// extract all elements of parent class
+		super.extractFromXml(root);
+	}
+
+	@Override
+	public void dumpToXml(Element root) {
 		// dump all elements of parent class
 		super.dumpToXml(root);
 
 		// dump ref to specification resource
-		Element specFileElement = new Element("SpecificationResource");
-		specFileElement
-				.addContent(specFile.getProjectRelativePath().toString());
-		root.addContent(specFileElement);
+		if (specFile != null) {
+			Element specFileElement = new Element("SpecificationResource");
+			specFileElement
+					.addContent(specFile.getProjectRelativePath().toString());
+			root.addContent(specFileElement);
+		}
 
 
 	}
@@ -125,8 +138,26 @@ public abstract class FileTestExecution extends AbstractTestExecution {
 		Element root = new Element(getXmlRootElementName());
 		dumpToXml(root);
 		XMLHelper.saveDoc(iFile, root);
+		
+		//save all children
+		doSaveChildren();
 
 
+	}
+
+	FileTestExecutable cachedExecutable = null;
+	@Override
+	public ITestExecutable getExecutable() {
+		if (cachedExecutable == null) {
+			if (specFile != null) {
+				try {
+					cachedExecutable = TestExecutableFactory.getInstance(specFile);
+				} catch (CoreException e) {
+					return null;
+				}
+			}
+		}
+		return cachedExecutable;
 	}
 
 }

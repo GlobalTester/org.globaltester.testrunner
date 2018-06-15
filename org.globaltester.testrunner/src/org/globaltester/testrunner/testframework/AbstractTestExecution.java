@@ -4,19 +4,80 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.HashSet;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.globaltester.logging.legacy.logger.TestLogger;
 import org.globaltester.scriptrunner.GtRuntimeRequirements;
 import org.globaltester.testrunner.testframework.Result.Status;
+import org.globaltester.testspecification.testframework.ITestExecutable;
 import org.jdom.Element;
 
 public abstract class AbstractTestExecution implements IExecution {
 
+	private static final String XML_TAG_ID = "ID";
+	private static final String XML_TAG_COMMENT = "Comment";
+	private static final String XML_TAG_DESCRIPTION = "Description";
 	private static final String XML_TAG_LAST_EXECUTION_LOG_FILE_LINE = "LastExecutionLogFileLine";
 	private static final String XML_TAG_LAST_EXECUTION_LOG_FILE_NAME = "LastExecutionLogFileName";
 	private static final String XML_TAG_LAST_EXECUTION_RESULT = "LastExecutionResult";
 	private static final String XML_TAG_LAST_EXECUTION_DURATION = "LastExecutionDuration";
 	private static final String XML_TAG_LAST_EXECUTION_START_TIME = "LastExecutionStartTime";
+	
+	private String id;
+	private String description;
+	private String comment;
+
+
+	public AbstractTestExecution(String id) {
+		this.id = id;
+	}
+	
+	public AbstractTestExecution(String id, String description, String comment) {
+		this(id);
+		this.description = description;
+		this.comment = comment;
+	}
+
+	public AbstractTestExecution() {
+		this("no id set");
+	}
+	
+	public AbstractTestExecution(ITestExecutable testExecutable) {
+		this(testExecutable.getName()); //FIXME AAB check description and comment parameters here
+	}
+
+	@Override
+	public String getId() {
+		return id;
+	}
+
+	protected void setId(String id) {
+		this.id = id;
+	}
+
+	@Override
+	public String getComment() {
+		return comment;
+	}
+
+	protected void setComment(String comment) {
+		this.comment = comment;
+	}
+
+	@Override
+	public String getDescription() {
+		return description;
+	}
+	
+	protected void setDescription(String description) {
+		this.description = description;
+	}
+
+
+
+
+
+
 
 	protected Result result = ResultFactory.newEmptyResult();
 
@@ -47,12 +108,25 @@ public abstract class AbstractTestExecution implements IExecution {
 		this.logFileLine = logFileLine;
 	}
 
-	/**
-	 * dump this instance to the given XML Element
-	 * 
-	 * @param root
-	 */
-	void dumpToXml(Element root) {
+	@Override
+	public void dumpToXml(Element root) {
+		
+		Element idElement = new Element(XML_TAG_ID);
+		idElement.addContent(id);
+		root.addContent(idElement);
+		
+		if (description != null) {
+			Element descriptionElement = new Element(XML_TAG_DESCRIPTION);
+			descriptionElement.addContent(description);
+			root.addContent(descriptionElement);
+		}
+		
+		if (comment != null) {
+			Element commentElement = new Element(XML_TAG_COMMENT);
+			commentElement.addContent(comment);
+			root.addContent(commentElement);
+		}
+		
 		Element startTimeElement = new Element(XML_TAG_LAST_EXECUTION_START_TIME);
 		startTimeElement.addContent(Long.toString(lastExecutionStartTime));
 		root.addContent(startTimeElement);
@@ -74,13 +148,24 @@ public abstract class AbstractTestExecution implements IExecution {
 		root.addContent(logFileLineElement);
 	}
 
-	/**
-	 * extract data for this instance from XML Element
-	 * 
-	 * @param root
-	 */
-	void extractFromXml(Element root) {
+	@Override
+	public void extractFromXml(Element root) throws CoreException {
+		
+		Element idElem = root.getChild(XML_TAG_ID);
+		if (idElem != null) {
+			id = idElem.getTextTrim();
+		}
 
+		Element descriptionElem = root.getChild(XML_TAG_DESCRIPTION);
+		if (descriptionElem != null) {
+			description = descriptionElem.getTextTrim();
+		}
+		
+		Element commentElem = root.getChild(XML_TAG_COMMENT);
+		if (commentElem != null) {
+			comment = commentElem.getTextTrim();
+		}
+		
 		Element timeElem = root.getChild(XML_TAG_LAST_EXECUTION_START_TIME);
 		if (timeElem != null) {
 			lastExecutionStartTime = Long.valueOf(timeElem.getTextTrim());
@@ -139,15 +224,6 @@ public abstract class AbstractTestExecution implements IExecution {
 		
 		notifyResultChangeListeners();
 		
-		
-		//FIXME AAA remove this sleep		
-		try {
-			Thread.sleep(500);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
 	}
 
 	/**
@@ -192,27 +268,24 @@ public abstract class AbstractTestExecution implements IExecution {
 		return result.getStatus();
 	}
 	
-	/**
-	 * Return the name of the XML root element describing an instance
-	 * @return
-	 */
-	protected abstract String getXmlRootElementName();
-	
 	public String getExecutingUser() {
 		return executingUser;
 	}
 
 	HashSet<ResultChangeListener> resultChangeListeners = new HashSet<>();
 	
+	@Override
 	public void addResultListener(ResultChangeListener newListener) {
 		resultChangeListeners.add(newListener);
 	}
 
+	@Override
 	public void removeResultListener(ResultChangeListener obsoleteListener) {
 		resultChangeListeners.remove(obsoleteListener);
 	}
 
-	protected void notifyResultChangeListeners() {
+	@Override
+	public void notifyResultChangeListeners() {
 		for (ResultChangeListener resultChangeListener : resultChangeListeners) {
 			resultChangeListener.resultChanged();
 		}

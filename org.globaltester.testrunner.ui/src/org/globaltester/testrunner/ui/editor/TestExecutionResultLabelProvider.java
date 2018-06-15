@@ -41,7 +41,7 @@ public class TestExecutionResultLabelProvider implements ITableLabelProvider {
 		switch (columnIndex) {
 		case 0:
 			if (element instanceof IExecution)
-				return ((IExecution) element).getName();
+				return ((IExecution) element).getId();
 			return element.toString();
 		case 1: // Last executed
 			if (element instanceof AbstractTestExecution) {

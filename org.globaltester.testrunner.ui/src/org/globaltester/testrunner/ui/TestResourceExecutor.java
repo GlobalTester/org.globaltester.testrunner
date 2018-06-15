@@ -133,11 +133,6 @@ public abstract class TestResourceExecutor extends TestExecutor {
 					// execute the TestExecutable
 					execution.execute(runtimeRequirements, false, monitor);
 					
-
-					
-					//FIXME AAA show TestExecution in ResultView, check whether this should work via propertyChangeMechanisms here
-//					showTestExecutionInResultView(execution);
-					
 					//FIXME AAD warning message when no testcases where executed
 					// display warning message if no test cases where executed (and the user was not informed about the abort earlier)
 //					if (!abortExecution && !wasTestsApplicable()) {
@@ -168,7 +163,7 @@ public abstract class TestResourceExecutor extends TestExecutor {
 //						TestReport.generate(this, ReportXML.getDefaultDestinationDir());
 //					}
 
-				} catch (CoreException e) {
+				} catch (Exception e) {
 					GtErrorLogger.log(Activator.PLUGIN_ID, e);
 
 					return Status.CANCEL_STATUS;
@@ -201,7 +196,7 @@ public abstract class TestResourceExecutor extends TestExecutor {
 							.getActiveWorkbenchWindow().getActivePage();
 					IViewPart vp = null;
 					try {
-						vp = page.showView("org.globaltester.testrunner.ui.views.ResultView");
+						vp = page.showView(ResultView.VIEW_ID);
 					} catch (PartInitException e) {
 						BasicLogger.logException("ResultView could not be initialized", e, org.globaltester.logging.tags.LogLevel.WARN);
 					}
@@ -212,7 +207,7 @@ public abstract class TestResourceExecutor extends TestExecutor {
 					}
 				}
 			});
-		} catch (RuntimeException ex) {
+		} catch (RuntimeException ex) { //FIXME AAD remove this catch if possible
 			TestLogger.error(ex);
 		}
 	}
@@ -252,12 +247,6 @@ public abstract class TestResourceExecutor extends TestExecutor {
 			result.testCases = 0;
 			result.overallResult = org.globaltester.testrunner.testframework.Result.Status.UNDEFINED.getRating();	
 		}
-
-		
-
-		
-		
-		//IMPL: propagate subresults
 		
 		callback.testExecutionFinished(result);
 	}

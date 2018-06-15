@@ -11,25 +11,28 @@ import org.globaltester.scriptrunner.GtRuntimeRequirements;
 import org.globaltester.testrunner.testframework.Result.Status;
 import org.globaltester.testspecification.testframework.ActionStep;
 import org.globaltester.testspecification.testframework.ExpectedResult;
+import org.globaltester.testspecification.testframework.ITestExecutable;
 import org.jdom.Element;
 
 public abstract class ActionStepExecution extends AbstractTestExecution {
 
-	private ActionStep actionStep;
-	
 	Result expResultsExecutionResults;
 
 	private Result commandResult;
 
-	private IExecution parent;
+	IExecution parent;
+	private int childId;
 
 	/**
-	 * Constructor for new TestStepExecutionInstance
-	 * @param step	TestStep this execution instance should execute
+	 * Constructor for new ActionStepExecution
+	 * 
+	 * @param parent parent execution (used to dereference the specification) 
+	 * @param childId id of this child within parent
 	 */
-	protected ActionStepExecution(ActionStep step, IExecution parentExecution) {
-		actionStep = step;
-		parent = parentExecution;
+	protected ActionStepExecution(IExecution parent, int childId) {
+		super(parent.getExecutable().getChildren().get(childId));
+		this.parent = parent;
+		this.childId = childId;
 	}
 
 	@Override
@@ -41,6 +44,7 @@ public abstract class ActionStepExecution extends AbstractTestExecution {
 		try {
 
 			int expectedResults = 0;
+			ActionStep actionStep = (ActionStep) getExecutable();
 			if (actionStep.getExpectedResults() != null) {
 				expectedResults = actionStep.getExpectedResults().size();
 			}
@@ -167,33 +171,12 @@ public abstract class ActionStepExecution extends AbstractTestExecution {
 	}
 
 	@Override
+	public ITestExecutable getExecutable() {
+		return getParent().getExecutable().getChildren().get(childId);
+	}
+
 	public IExecution getParent() {
 		return parent;
-	}
-
-	@Override
-	public String getName() {
-		return actionStep.getName();
-	}
-
-	@Override
-	public String getComment() {
-		return "";
-	}
-
-	@Override
-	public String getDescription() {
-		return "";
-	}
-
-	@Override
-	public Status getStatus() {
-		return Status.UNDEFINED;
-	}
-
-	@Override
-	public String getId() {
-		return actionStep.getId();
 	}
 
 }

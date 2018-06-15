@@ -4,22 +4,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.SubMonitor;
-import org.globaltester.base.xml.XMLHelper;
 import org.globaltester.logging.legacy.logger.GtErrorLogger;
 import org.globaltester.logging.legacy.logger.TestLogger;
 import org.globaltester.sampleconfiguration.SampleConfig;
@@ -30,16 +24,12 @@ import org.globaltester.testrunner.utils.IntegrityCheckResult;
 import org.globaltester.testrunner.utils.TestSpecIntegrityChecker;
 import org.globaltester.testspecification.testframework.FileTestExecutable;
 import org.globaltester.testspecification.testframework.ITestExecutable;
-import org.globaltester.testspecification.testframework.TestCase;
 import org.globaltester.testspecification.testframework.TestSet;
-import org.jdom.Document;
 import org.jdom.Element;
 
 //FIXME AAB read this class for consistency (e.g. string labels etc)
-public class TestSetExecution extends CompositeTestExecution {
-
-	private static final String XML_CHILD_EXECUTION_REFERENCES = "FileNames";
-	private static final String XML_CHILD_EXECUTIONREFERENCE = "FileName";
+public class TestSetExecution extends FileTestExecution {
+	
 	public static final String XML_ELEMENT = "TestSetExecution";
 	private static final String XML_CHILD_SAMPLECONFIG = "SampleConfiguration";
 	private static final String XML_CHILD_CARDREADER = "CardReaderName";
@@ -52,13 +42,12 @@ public class TestSetExecution extends CompositeTestExecution {
 
 	private HashSet<IProject> specsToCheck = new HashSet<>();
 
-
-	public TestSetExecution(Element testSetExecutionElement) {
-		extractFromXml(testSetExecutionElement);
+	public TestSetExecution(IFile iFile) throws CoreException {
+		super(iFile);
 	}
-	
+
 	@Override
-	void extractFromXml(Element root) {
+	public void extractFromXml(Element root) throws CoreException {
 		super.extractFromXml(root);
 
 		// extract sampleConfig
@@ -78,38 +67,10 @@ public class TestSetExecution extends CompositeTestExecution {
 		if (integrityOfTestSuiteProvidedElement != null) {
 			integrityOfTestSpec = integrityOfTestSuiteProvidedElement.getTextTrim();
 		}
-
-		try {
-			//extract test case executions
-			Element fileNames = root.getChild(XML_CHILD_EXECUTION_REFERENCES);
-			if (fileNames != null) {
-				@SuppressWarnings("unchecked")
-				List<Element> children = fileNames.getChildren(XML_CHILD_EXECUTIONREFERENCE);
-				IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
-				for (Element curChildElem : children) {
-					IPath fileName = new Path(curChildElem.getTextTrim());
-					IFile curChildIFile = workspaceRoot.getFile(fileName);
-					
-					FileTestExecution fileTestExecution = FileTestExecutionFactory
-							.getInstance(curChildIFile);
-					
-					if (fileTestExecution instanceof TestCaseExecution) {
-						TestCaseExecution exec = (TestCaseExecution) fileTestExecution;
-						addChildExecution(exec);
-						result.addSubResult(exec.getResult());
-					}
-				}
-				
-				Element status = root.getChild("LastExecutionResult").getChild("Status");
-				result.status = Result.Status.get(status.getTextTrim());
-			}
-		} catch (CoreException e) {
-			// ignore empty set of executions
-		}
 	}
 
 	@Override
-	void dumpToXml(Element root) {
+	public void dumpToXml(Element root) {
 		super.dumpToXml(root);
 		
 		// dump sampleConfig
@@ -131,37 +92,27 @@ public class TestSetExecution extends CompositeTestExecution {
 		integrityOfTestSuiteProvidedElement.addContent(String.valueOf(integrityOfTestSpec));
 		root.addContent(integrityOfTestSuiteProvidedElement);
 		
-
-		// dump references to children
-		Element fileNames = new Element(XML_CHILD_EXECUTION_REFERENCES);
-		root.addContent(fileNames);
-		
-		Iterator<IExecution> iter = this.getChildren().iterator();
-		while (iter.hasNext()){
-			IExecution current = iter.next();
-			if (current instanceof TestCaseExecution){
-				Element childElement = new Element(XML_CHILD_EXECUTIONREFERENCE);
-				childElement.addContent(((TestCaseExecution) current).getIFile().getFullPath().toString());
-				fileNames.addContent(childElement);
-			}
-		}
-		
 	}
 
 	/**
 	 * 
 	 * @param testSet
 	 * @param campaign to store ExecutionStateFiles in, or null if no execution state needs to be preserved
+	 * @throws CoreException 
 	 */
-	public TestSetExecution(TestSet testSet, TestCampaign campaign) {
+	public TestSetExecution(TestSet testSet, TestCampaign campaign) throws CoreException {
+		super(campaign != null ? campaign.getProject().getNewStateIFile(testSet): null);
+		
+		setId(campaign != null ? "Persistent TestSet" : "Volatile TestSet");
+		
 		// create executions for children
 		for (ITestExecutable curTestExecutable : testSet.getChildren()) {
 			try {
 				if (curTestExecutable instanceof FileTestExecutable) {
-					TestCase curTestCase = (TestCase) curTestExecutable;
-					FileTestExecution tcExecution = FileTestExecutionFactory.createExecution(curTestCase, campaign);
+					FileTestExecutable curFileTestCase = (FileTestExecutable) curTestExecutable;
+					FileTestExecution tcExecution = FileTestExecutionFactory.createExecution(curFileTestCase, campaign);
 					addChildExecution(tcExecution);
-					specsToCheck .add(curTestCase.getIFile().getProject());
+					specsToCheck.add(curFileTestCase.getIFile().getProject());
 				} else {
 
 					throw new RuntimeException("Unsupported type of TestExecutable: " + curTestExecutable);
@@ -176,35 +127,7 @@ public class TestSetExecution extends CompositeTestExecution {
 	}
 
 	@Override
-	public IExecution getParent() {
-		return null;
-	}
-
-	@Override
-	public String getName() {
-		return "Volatile TestSet";
-	}
-
-	@Override
-	public String getComment() {
-		if (result != null) {
-			return result.getComment();
-		}
-		return "";
-	}
-
-	@Override
-	public String getDescription() {
-		return "";
-	}
-
-	@Override
-	public String getId() {
-		return "";
-	}
-
-	@Override
-	protected String getXmlRootElementName() {
+	public String getXmlRootElementName() {
 		return "TestSetExecution";
 	}
 
@@ -240,10 +163,10 @@ public class TestSetExecution extends CompositeTestExecution {
 			}
 			
 			// execute all included TestExecutables
-			for (Iterator<FileTestExecution> elemIter = childExecutions.iterator(); elemIter
+			for (Iterator<IExecution> elemIter = childExecutions.iterator(); elemIter
 					.hasNext() && !monitor.isCanceled();) {
 				IExecution curExec= elemIter.next();
-				monitor.subTask(curExec.getName());
+				monitor.subTask(curExec.getId());
 				curExec.execute(runtimeReqs, false,
 						new NullProgressMonitor());
 				result.addSubResult(curExec.getResult());
@@ -291,24 +214,6 @@ public class TestSetExecution extends CompositeTestExecution {
 		integrityOfTestSpec = TestSpecIntegrityChecker.getSimplifiedCheckResult(integrityResult);
 	}
 
-	/**
-	 * checks whether the given file represents an TestSetExecution object
-	 * 
-	 * @param iFile
-	 * @return
-	 */
-	public static boolean isFileRepresentation(IFile iFile) {
-		Document doc = XMLHelper.readDocument(iFile);
-		Element rootElem = doc.getRootElement();
-
-		// check that root element has correct name
-		if (!rootElem.getName().equals("TestCampaignExecution")) {
-			return false;
-		}
-
-		return true;
-	}
-
 	public SampleConfig getSampleConfig() {
 		return sampleConfig;
 	}
@@ -331,12 +236,6 @@ public class TestSetExecution extends CompositeTestExecution {
 
 	public long getNumberOfTestsWithStatus(Status expectedStatus) {
 		return childExecutions.stream().filter(exec -> exec.getStatus() == expectedStatus).count();
-	}
-
-	public void doSaveChildren() {
-		for (FileTestExecution curElemExecution : childExecutions) {
-			curElemExecution.doSave();
-		}
 	}
 
 }

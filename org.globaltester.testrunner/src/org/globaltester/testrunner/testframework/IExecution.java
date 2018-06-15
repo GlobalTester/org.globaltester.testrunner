@@ -2,50 +2,81 @@ package org.globaltester.testrunner.testframework;
 
 import java.util.Collection;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.globaltester.scriptrunner.GtRuntimeRequirements;
 import org.globaltester.testrunner.testframework.Result.Status;
+import org.globaltester.testspecification.testframework.ITestExecutable;
+import org.jdom.Element;
 
 public interface IExecution {
 
 	public abstract boolean hasChildren();
-	
-	public abstract Collection<IExecution> getChildren();
-	
-	public abstract IExecution getParent();
 
-	public abstract String getName();
+	public abstract Collection<IExecution> getChildren();
+
+	public abstract String getId();
 
 	public abstract String getComment();
 
 	public abstract String getDescription();
 
 	public abstract Status getStatus();
+	
+	public ITestExecutable getExecutable();
 
 	/**
-	 * Start time of this {@link IExecution}, formated as {@link java.util.Date#getTime()}
+	 * Start time of this {@link IExecution}, formated as
+	 * {@link java.util.Date#getTime()}
+	 * 
 	 * @return
 	 */
 	public abstract long getStartTime();
-	
+
 	/**
 	 * Duration of this {@link IExecution} in milliseconds
+	 * 
 	 * @return
 	 */
-	public abstract long getDuration();
+	public long getDuration();
 
-	public abstract String getId();
-	
-	public abstract String getLogFileName();
-	
-	public abstract int getLogFileLine();
+	public String getLogFileName();
 
-	public abstract Result getResult();
+	public int getLogFileLine();
 
-	public abstract void execute(GtRuntimeRequirements runtimeReqs, boolean b,
-			IProgressMonitor monitor);
+	public Result getResult();
 
-	static boolean isExecuted(IExecution execution){
+	public void execute(GtRuntimeRequirements runtimeReqs, boolean b, IProgressMonitor monitor);
+
+	public void addResultListener(ResultChangeListener newListener);
+
+	public void removeResultListener(ResultChangeListener obsoleteListener);
+
+	public void notifyResultChangeListeners();
+
+	/**
+	 * dump this instance to the given XML Element
+	 * 
+	 * @param root
+	 */
+	public void dumpToXml(Element root);
+
+	/**
+	 * extract data for this instance from XML Element
+	 * 
+	 * @param root
+	 * @throws CoreException 
+	 */
+	public void extractFromXml(Element root) throws CoreException;
+
+	/**
+	 * Return the name of the XML root element describing an instance
+	 * 
+	 * @return
+	 */
+	public String getXmlRootElementName();
+
+	static boolean isExecuted(IExecution execution) {
 		return Status.isExecuted(execution.getStatus());
 	}
 
