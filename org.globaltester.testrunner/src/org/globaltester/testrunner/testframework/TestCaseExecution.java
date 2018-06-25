@@ -13,7 +13,6 @@ import org.globaltester.sampleconfiguration.SampleConfig;
 import org.globaltester.scriptrunner.GtRuntimeRequirements;
 import org.globaltester.scriptrunner.ScriptRunner;
 import org.globaltester.scriptrunner.ScshScope;
-import org.globaltester.testrunner.GtTestCampaignProject;
 import org.globaltester.testrunner.testframework.Result.Status;
 import org.globaltester.testspecification.testframework.ITestExecutable;
 import org.globaltester.testspecification.testframework.PostCondition;
@@ -33,15 +32,10 @@ public class TestCaseExecution extends FileTestExecution {
 			throws CoreException {
 		super(iFile);
 
-		//persist the specFile to the GtTestCampaignProject
-		if (getGtTestCampaignProject() != null) { 
-			specFile = getGtTestCampaignProject().persistTestExecutable(testCase).getIFile();
-		} else {
-			specFile = testCase.getIFile();
-		}
+		specFile = testCase.getIFile();
 		
 		//create execution instances from testcase
-		initFromTestCase(testCase); //FIXME AAAB make sure that this testcase references the correct IFile (see above) and keep inmind that we don't want to persist those testcases any longer 
+		initFromTestCase(testCase); 
 
 		//store this configuration
 		doSave();
@@ -103,12 +97,7 @@ public class TestCaseExecution extends FileTestExecution {
 			return;
 		}
 		
-		IContainer scriptRoot;
-		if (isPartOfTestCampaign()) {
-			scriptRoot = getIFile().getProject().getFolder(GtTestCampaignProject.SPEC_FOLDER);
-		} else {
-			scriptRoot = ResourcesPlugin.getWorkspace().getRoot();
-		}
+		IContainer scriptRoot = ResourcesPlugin.getWorkspace().getRoot();
 		String workingDir = testCase.getIFile().getParent().getLocation().toOSString();
 		sr = new ScriptRunner(scriptRoot, workingDir, runtimeReqs);
 		sr.init(new ScshScope(sr));
@@ -143,14 +132,6 @@ public class TestCaseExecution extends FileTestExecution {
 			monitor.done();
 		}
 		
-	}
-
-	private boolean isPartOfTestCampaign() {
-		try {
-			return getGtTestCampaignProject() != null;
-		} catch (CoreException e) {
-			return false;
-		}
 	}
 
 	@Override

@@ -19,9 +19,7 @@ import org.globaltester.base.resources.GtResourceHelper;
 import org.globaltester.logging.legacy.logger.GtErrorLogger;
 import org.globaltester.testrunner.testframework.TestCampaign;
 import org.globaltester.testrunner.utils.GtDateHelper;
-import org.globaltester.testspecification.testframework.FileTestExecutable;
 import org.globaltester.testspecification.testframework.ITestExecutable;
-import org.globaltester.testspecification.testframework.TestExecutableFactory;
 
 /**
  * Represents and handles the workspace representation of a TestCampaign
@@ -31,7 +29,6 @@ import org.globaltester.testspecification.testframework.TestExecutableFactory;
  */
 public class GtTestCampaignProject implements ITreeObservable {
 
-	public static final String SPEC_FOLDER = "TestSpecification";
 	public static final String STATE_FOLDER = "ExecutionState";
 	public static final String RESULT_FOLDER = "TestResults";
 	
@@ -64,8 +61,7 @@ public class GtTestCampaignProject implements ITreeObservable {
 		try {
 			GtResourceHelper.addNature(project, GtTestCampaignNature.NATURE_ID);
 
-			String[] paths = { STATE_FOLDER, SPEC_FOLDER,
-					RESULT_FOLDER };
+			String[] paths = { STATE_FOLDER, RESULT_FOLDER };
 			GtResourceHelper.addToProjectStructure(project, paths);
 		} catch (CoreException e) {
 			e.printStackTrace();
@@ -150,44 +146,6 @@ public class GtTestCampaignProject implements ITreeObservable {
 	}
 
 	/**
-	 * Returns an IFile where the given TestExecutable specification file should
-	 * be stored for usage by this run
-	 * 
-	 * @param executable
-	 *            TestExecutable
-	 * @return IFile inside the SPEC_FOLDER of this project
-	 * @throws CoreException
-	 */
-	public IFile getSpecificationIFile(FileTestExecutable executable)
-			throws CoreException {
-		String execProjName = executable.getIFile().getProject().getName();
-		String execRelPath = executable.getIFile().getProjectRelativePath()
-				.toOSString();
-		String copyRelPath = GtTestCampaignProject.SPEC_FOLDER + File.separator
-				+ execProjName + File.separator + execRelPath;
-
-		// make sure that parents exist
-		IFile iFile = iProject.getFile(copyRelPath);
-		GtResourceHelper.createWithAllParents(iFile.getParent());
-
-		return iFile;
-	}
-
-	/**
-	 * Returns the IFolder that is used to persist TestSpecifications. Although
-	 * IResource operations are handle operations only this will create the
-	 * folder (and its parents if needed).
-	 * 
-	 * @return the IFolder that is used to persist TestSpecifications
-	 * @throws CoreException 
-	 */
-	public IFolder getSpecificationFolder() throws CoreException {
-		IFolder specFolder = iProject.getFolder(SPEC_FOLDER);
-		GtResourceHelper.createWithAllParents(specFolder);
-		return specFolder;
-	}
-
-	/**
 	 * Returns a new IFile where the given TestExecution file for the given
 	 * TestExecutable should be stored for usage by this run
 	 * 
@@ -233,32 +191,6 @@ public class GtTestCampaignProject implements ITreeObservable {
 	public IFolder getDefaultLoggingDir() {
 		return getIProject().getFolder(
 				RESULT_FOLDER);
-	}
-
-	/**
-	 * Store the given TestExecutable in the TestCampaignProject. If the
-	 * specification is already present this will return the existing instance.
-	 * If not the specification will be copied and a new TestExecutable will be
-	 * created and returned.
-	 * 
-	 * @param executable
-	 * @return
-	 * @throws CoreException 
-	 */
-	public FileTestExecutable persistTestExecutable(FileTestExecutable executable) throws CoreException {
-		//no further action needed if executable is already located in this GtTestCampaignProject
-		if (executable.getIFile().getProject().equals(this.iProject))
-			return executable;
-		
-		// generate the IFile representing the local specification
-		IFile localSpecIFile = getSpecificationIFile(executable);
-		
-		//if the specification is not yet present in this project copy it to the given IFile
-		if (!localSpecIFile.exists()){
-			executable.copyTo(localSpecIFile);
-		}
-		
-		return TestExecutableFactory.getInstance(localSpecIFile);
 	}
 
 	public void doSave() throws CoreException {
