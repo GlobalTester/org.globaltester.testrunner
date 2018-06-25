@@ -1,8 +1,11 @@
 package org.globaltester.testrunner.testframework;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.globaltester.base.xml.XMLHelper;
 import org.globaltester.testrunner.GtTestCampaignProject;
 import org.globaltester.testspecification.testframework.FileTestExecutable;
@@ -78,8 +81,8 @@ public abstract class FileTestExecution extends CompositeTestExecution {
 		// extract SpecificationResource
 		Element specFileElem = root.getChild("SpecificationResource");
 		if (specFileElem != null) {
-			String specFileName = specFileElem.getTextTrim();
-			specFile = iFile.getProject().getFile(specFileName);
+			IPath specPath = new Path(specFileElem.getTextTrim());
+			specFile = ResourcesPlugin.getWorkspace().getRoot().getFile(specPath);
 		}
 		
 		// extract all elements of parent class
@@ -95,7 +98,7 @@ public abstract class FileTestExecution extends CompositeTestExecution {
 		if (specFile != null) {
 			Element specFileElement = new Element("SpecificationResource");
 			specFileElement
-					.addContent(specFile.getProjectRelativePath().toString());
+					.addContent(specFile.getFullPath().toString());
 			root.addContent(specFileElement);
 		}
 

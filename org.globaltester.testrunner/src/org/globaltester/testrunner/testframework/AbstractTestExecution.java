@@ -43,7 +43,7 @@ public abstract class AbstractTestExecution implements IExecution {
 	}
 	
 	public AbstractTestExecution(ITestExecutable testExecutable) {
-		this(testExecutable.getName()); //FIXME AAB check description and comment parameters here
+		this(testExecutable.getName());
 	}
 
 	@Override

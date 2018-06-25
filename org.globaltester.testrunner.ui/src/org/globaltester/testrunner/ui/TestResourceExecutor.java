@@ -109,7 +109,7 @@ public abstract class TestResourceExecutor extends TestExecutor {
 					EnvironmentInspector.dumpEnvironmentInfoToLogfile();
 					
 					
-					//FIXME AAB when check integrity
+					//FIXME AAA when check integrity
 //					boolean integrityAllowsTests = checkIntegrity();
 					
 					TestLogger.info("Start TestExecution");

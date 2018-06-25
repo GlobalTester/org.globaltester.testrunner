@@ -241,7 +241,7 @@ public class ResultView extends ViewPart {
 		actionGenerateReport = new Action() {
 			@Override
 			public void run() {
-				//FIXME AAC adapt report generation code below
+				//FIXME AAB reportgeneration - adapt report generation code below
 //				TestSession lastSession = TestSession.getLastTestSession();
 //				if (lastSession == null || lastSession.getVirtualSuite() == null) {
 //					MessageDialog.openWarning(getShell(), SHELL_NAME,
@@ -336,19 +336,10 @@ public class ResultView extends ViewPart {
 		setActionImageDescriptor(actionGenerateReport, "icons//gtGenerateReport.png");
 	}
 
-	/**
-	 * Return the shell of this workbench, mostly used to open dialogs.
-	 * 
-	 * @return
-	 */
-	private Shell getShell() {
-		return getViewSite().getShell();
-	}
-
 	private static void setActionImageDescriptor(Action action, String imagePath) {
 //		Bundle bundle = Activator.getDefault().getBundle();
 		Bundle bundle = Platform.getBundle("org.globaltester.testmanager.ui"); 
-		//FIXME AAB move these required resources as well
+		//FIXME AAB UI - move these required resources as well
 		
 //		Path path = new Path(imagePath);
 //		URL fileURL = FileLocator.find(bundle, path, null);
@@ -391,99 +382,6 @@ public class ResultView extends ViewPart {
 //			MessageDialog.openWarning(getShell(), SHELL_NAME, "No last test session available to restart.");
 //		}
 	}
-
-	//FIXME AAC see if we can get away without this code
-//	private void createActionShowTestcase() {
-//		actionShowTestCase = new Action() {
-//			@Override
-//			public void run() {
-//				ISelection selection = viewer.getSelection();
-//				Object obj = ((IStructuredSelection) selection).getFirstElement();
-//				if (obj != null) {
-//					TestResult testResult = (TestResult) obj;
-//					String fileName = testResult.getFileName();
-//					File file = getAsFile(fileName);
-//					showFile(file, 0);
-//				}
-//			}
-//		};
-//
-//		actionShowTestCase.setText("Show test case");
-//		actionShowTestCase.setToolTipText("Show test case");
-//		actionShowTestCase.setImageDescriptor(
-//				PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_PASTE));
-//	}
-//
-//	private void createActionShowLog() {
-//		actionShowLog = new Action() {
-//			@Override
-//			public void run() {
-//				ISelection selection = viewer.getSelection();
-//				Object obj = ((IStructuredSelection) selection).getFirstElement();
-//				if (obj != null) {
-//					TestResult testResult = (TestResult) obj;
-//					String fileName = testResult.getLogFileName();
-//					File file = getAsFile(fileName);
-//					showFile(file, 0);
-//				}
-//			}
-//		};
-//
-//		actionShowLog.setText("Show log file");
-//		actionShowLog.setToolTipText("Show log file");
-//		actionShowLog.setImageDescriptor(
-//				PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_PASTE));
-//	}
-//
-//	/**
-//	 * This method returns a File matching the provided file name. If the file
-//	 * name is absolute and references an existing file the respective File
-//	 * object will be returned. If the file does not exist null will be
-//	 * returned. If the file name is relative to the workspace and references an
-//	 * existing file the respective File object will be returned. If the file
-//	 * does not exist ( e.g. a file outside the workspace) null will be
-//	 * returned.
-//	 * 
-//	 * @param filename
-//	 *            the name of the file to return
-//	 * @return the file referenced by the filename or null
-//	 */
-//	private static File getAsFile(String filename) {
-//		if (filename == null) {
-//			return null;
-//		}
-//
-//		File file = new File(filename);
-//
-//		if (file.isAbsolute()) {
-//			if (!file.exists()) {
-//				file = null;
-//			}
-//		} else {
-//			IPath iPath = Path.fromOSString(filename);
-//			IFile ifile = ResourcesPlugin.getWorkspace().getRoot().getFile(iPath);
-//
-//			if (ifile.exists()) {
-//				URI uri = ifile.getLocationURI();
-//
-//				if (ifile.isLinked()) {
-//					uri = ifile.getRawLocationURI();
-//				}
-//
-//				try {
-//					file = EFS.getStore(uri).toLocalFile(0, new NullProgressMonitor());
-//				} catch (CoreException e) {
-//					file = null;
-//					GtErrorLogger.log(Activator.PLUGIN_ID, e);
-//				}
-//			} else {
-//				file = null;
-//			}
-//
-//		}
-//
-//		return file;
-//	}
 
 	/**
 	 * Passing the focus request to the viewer's control.

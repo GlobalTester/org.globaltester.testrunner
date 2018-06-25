@@ -369,8 +369,6 @@ public class TestExecutionResultViewer implements SelectionListener, ResultChang
 			actionShowSpec.setEnabled(enableSpecAction);
 			return;
 		}
-		//FIXME AAB lets see if it works without this
-//		updateEditor();
 	}
 
 	@Override
