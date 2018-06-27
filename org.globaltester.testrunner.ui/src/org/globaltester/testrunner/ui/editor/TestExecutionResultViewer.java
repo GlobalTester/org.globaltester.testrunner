@@ -6,6 +6,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.ContributionManager;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -44,6 +45,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
+import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.globaltester.base.ui.GtUiHelper;
 import org.globaltester.logging.legacy.logger.GTLogger;
@@ -123,8 +125,9 @@ public class TestExecutionResultViewer implements SelectionListener, ResultChang
 			protected CellEditor getCellEditor(Object element) {
 				if (element instanceof AbstractTestExecution){
 					// set editor dirty if cell is going to be edited
-//FIXME AAB make editing in TestCampaignEditor possible again
-//					setDirty(true);
+					if (part instanceof TestCampaignEditor){
+						((TestCampaignEditor) part).setDirty(true);
+					}
 					return new TextCellEditor(treeViewer.getTree());
 				}
 				return null;

@@ -1,15 +1,10 @@
 package org.globaltester.testrunner.testframework;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
 
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -21,7 +16,6 @@ import org.globaltester.scriptrunner.GtRuntimeRequirements;
 import org.globaltester.testrunner.Activator;
 import org.globaltester.testrunner.testframework.Result.Status;
 import org.globaltester.testrunner.utils.IntegrityCheckResult;
-import org.globaltester.testrunner.utils.TestSpecIntegrityChecker;
 import org.globaltester.testspecification.testframework.FileTestExecutable;
 import org.globaltester.testspecification.testframework.ITestExecutable;
 import org.globaltester.testspecification.testframework.TestSet;
@@ -40,7 +34,7 @@ public class TestSetExecution extends FileTestExecution {
 	private String cardReaderName;
 	private String integrityOfTestSpec;
 
-	private HashSet<IProject> specsToCheck = new HashSet<>();
+
 
 	public TestSetExecution(IFile iFile) throws CoreException {
 		super(iFile);
@@ -102,8 +96,8 @@ public class TestSetExecution extends FileTestExecution {
 	 */
 	public TestSetExecution(TestSet testSet, TestCampaign campaign) throws CoreException {
 		super(campaign != null ? campaign.getProject().getNewStateIFile(testSet): null);
-		
 		setId(campaign != null ? "Persistent TestSet" : "Volatile TestSet");
+		cachedExecutable = testSet;
 		
 		// create executions for children
 		for (ITestExecutable curTestExecutable : testSet.getChildren()) {
@@ -112,7 +106,6 @@ public class TestSetExecution extends FileTestExecution {
 					FileTestExecutable curFileTestCase = (FileTestExecutable) curTestExecutable;
 					FileTestExecution tcExecution = FileTestExecutionFactory.createExecution(curFileTestCase, campaign);
 					addChildExecution(tcExecution);
-					specsToCheck.add(curFileTestCase.getIFile().getProject());
 				} else {
 
 					throw new RuntimeException("Unsupported type of TestExecutable: " + curTestExecutable);
@@ -138,7 +131,7 @@ public class TestSetExecution extends FileTestExecution {
 			monitor = new NullProgressMonitor();
 		}
 		
-		SubMonitor progress = SubMonitor.convert(monitor, 100);
+		SubMonitor progress = SubMonitor.convert(monitor, 1 + childExecutions.size());
 		
 		try {
 			progress.subTask("Initialization");
@@ -147,10 +140,6 @@ public class TestSetExecution extends FileTestExecution {
 			setLogFileName(TestLogger.getLogFileName());
 			setLogFileLine(TestLogger.getLogFileLine());
 			
-			progress.worked(1);
-			
-			progress.subTask("Integrity check of TestSpecifications");
-			performIntegrityCheck();
 			progress.worked(1);
 			
 			progress.beginTask("Execute TestCases ", childExecutions.size());
@@ -162,56 +151,26 @@ public class TestSetExecution extends FileTestExecution {
 				this.sampleConfig = new SampleConfig(xmlRepresentation);	
 			}
 			
+			if (runtimeReqs.containsKey(IntegrityCheckResult.class)){
+				this.integrityOfTestSpec = runtimeReqs.get(IntegrityCheckResult.class).getStatus().toString();	
+			} else {
+				this.integrityOfTestSpec = "unknown";
+			}
+			
 			// execute all included TestExecutables
 			for (Iterator<IExecution> elemIter = childExecutions.iterator(); elemIter
-					.hasNext() && !monitor.isCanceled();) {
+					.hasNext() && !progress.isCanceled();) {
 				IExecution curExec= elemIter.next();
-				monitor.subTask(curExec.getId());
+				progress.subTask(curExec.getId());
 				curExec.execute(runtimeReqs, false,
 						new NullProgressMonitor());
 				result.addSubResult(curExec.getResult());
-				monitor.worked(1);
+				progress.worked(1);
 			}	
 			
-			// shutdown the TestLogger
-			progress.subTask("Shutdown");
-			progress.worked(1);
 		} finally {
 			monitor.done();
 		}
-	}
-
-	private void performIntegrityCheck() {
-		TestSpecIntegrityChecker integrityChecker = new TestSpecIntegrityChecker();
-		for (IResource curResource : specsToCheck) {
-			if (curResource instanceof IContainer) {
-				integrityChecker.addSpecsToCheck((IContainer) curResource);
-			}
-		}
-		Map<String, IntegrityCheckResult> integrityResult = integrityChecker.check();
-		ArrayList<String> specNames = new ArrayList<>(integrityResult.keySet());
-		Collections.sort(specNames);
-		String nonValidProjects = "";
-		for (String curSpec: specNames) {
-			TestLogger.info("Checksum of "+ curSpec + " is "+ integrityResult.get(curSpec).getStatus());
-			TestLogger.trace("Expected checksum: "+ integrityResult.get(curSpec).getExpectedChecksum());
-			TestLogger.trace("Actual checksum: "+ integrityResult.get(curSpec).getCalculatedChecksum());
-			
-			if (integrityResult.get(curSpec).getStatus() != IntegrityCheckResult.IntegrityCheckStatus.VALID) {
-				nonValidProjects+="\n-"+curSpec + ": " +integrityResult.get(curSpec).getStatus() ;
-			} 
-		}
-
-		
-		if (!nonValidProjects.isEmpty()) {
-
-			String message = "Functional integrity of testcases is not assured!\n\nThe following Scripts have been modified since delivery or remain unchecked:\n"
-					+ nonValidProjects + "\n";
-
-			TestLogger.warn(message);	
-		}
-
-		integrityOfTestSpec = TestSpecIntegrityChecker.getSimplifiedCheckResult(integrityResult);
 	}
 
 	public SampleConfig getSampleConfig() {
@@ -237,5 +196,4 @@ public class TestSetExecution extends FileTestExecution {
 	public long getNumberOfTestsWithStatus(Status expectedStatus) {
 		return childExecutions.stream().filter(exec -> exec.getStatus() == expectedStatus).count();
 	}
-
 }

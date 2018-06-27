@@ -1,5 +1,7 @@
 package org.globaltester.testrunner.testframework;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -9,6 +11,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.globaltester.base.xml.XMLHelper;
 import org.globaltester.testrunner.GtTestCampaignProject;
 import org.globaltester.testspecification.testframework.FileTestExecutable;
+import org.globaltester.testspecification.testframework.ITestExecutable;
 import org.globaltester.testspecification.testframework.TestSet;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -20,7 +23,7 @@ import org.jdom.Element;
  * @author amay
  * 
  */
-public class TestCampaign {
+public class TestCampaign implements ITestExecutable {
 
 	private GtTestCampaignProject project;
 	private TestSet testSet = new TestSet();
@@ -204,6 +207,20 @@ public class TestCampaign {
 
 	public TestSet getTestSet() {
 		return testSet;
+	}
+
+	@Override
+	public List<ITestExecutable> getChildren() {
+		if (testSet != null) {
+			return Arrays.asList(testSet);
+		} else {
+			return Collections.emptyList();
+		}
+	}
+
+	@Override
+	public boolean hasChildren() {
+		return testSet != null;
 	}
 	
 }

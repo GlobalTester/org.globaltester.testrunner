@@ -403,7 +403,7 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 		txtSpecName.setFocus();
 	}
 
-	private void setDirty(boolean isDirty) {
+	void setDirty(boolean isDirty) {
 		this.dirty = isDirty;
 		input.setDirty(isDirty);
 		firePropertyChange(IEditorPart.PROP_DIRTY);

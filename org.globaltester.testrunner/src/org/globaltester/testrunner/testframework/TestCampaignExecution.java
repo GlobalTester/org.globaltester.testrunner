@@ -58,6 +58,7 @@ public class TestCampaignExecution extends FileTestExecution {
 	protected TestCampaignExecution(IFile iFile, TestCampaign testCampaign)
 			throws CoreException {
 		super(iFile);
+		cachedExecutable = testCampaign;
 
 		// persist the specFile to the GtTestCampaignProject
 		specFile = getGtTestCampaignProject().getTestCampaignIFile();

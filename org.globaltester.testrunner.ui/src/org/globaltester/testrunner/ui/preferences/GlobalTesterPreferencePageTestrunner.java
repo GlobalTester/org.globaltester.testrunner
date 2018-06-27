@@ -1,6 +1,7 @@
 package org.globaltester.testrunner.ui.preferences;
 
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -26,6 +27,7 @@ FieldEditorPreferencePage implements IWorkbenchPreferencePage{
 
 	Group testOptionsGroup;
 	Group customizationGroup;
+	private BooleanFieldEditor bfeIntegrityWarningDialog;
 	
 	
 	public GlobalTesterPreferencePageTestrunner() {
@@ -62,17 +64,19 @@ FieldEditorPreferencePage implements IWorkbenchPreferencePage{
 		customizationGroup.setLayoutData(gd);
 		customizationGroup.setLayout(new GridLayout(4, false));
 
+		// disable integrity warning dialog 
+		bfeIntegrityWarningDialog = new BooleanFieldEditor(
+				PreferenceConstants.P_IGNORECHECKSUMRESULT,
+				"Ignore integrity checks testcases", customizationGroup);
+		addField(bfeIntegrityWarningDialog);
 		
 		String doubleClicks[][] = new String[2][2];
 		doubleClicks[0][0] = PreferenceConstants.TEST_CASE;
 		doubleClicks[0][1] = "0";
 		doubleClicks[1][0] = PreferenceConstants.LOG_FILE;
 		doubleClicks[1][1] = "1";
-		
-		
 		ComboFieldEditor cfeDoubleClickResultView = new ComboFieldEditor(PreferenceConstants.P_DOUBLECLICKRESULTVIEW, 
-				"Double Click in TestCampaign editor shows: ", doubleClicks, customizationGroup);
-		
+				"Double click in test results shows: ", doubleClicks, customizationGroup);
 		addField(cfeDoubleClickResultView);
 
 	}

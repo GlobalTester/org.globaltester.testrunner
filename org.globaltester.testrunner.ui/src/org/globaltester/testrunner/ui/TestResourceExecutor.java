@@ -2,7 +2,9 @@ package org.globaltester.testrunner.ui;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -10,6 +12,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -21,6 +24,8 @@ import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.globaltester.base.PreferenceHelper;
+import org.globaltester.base.UserInteraction;
 import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.legacy.logger.GtErrorLogger;
 import org.globaltester.logging.legacy.logger.TestLogger;
@@ -30,10 +35,13 @@ import org.globaltester.scriptrunner.TestExecutionCallback.SubTestResult;
 import org.globaltester.scriptrunner.TestExecutor;
 import org.globaltester.scriptrunner.TestResourceExecutorLock;
 import org.globaltester.testrunner.EnvironmentInspector;
+import org.globaltester.testrunner.preferences.PreferenceConstants;
 import org.globaltester.testrunner.testframework.AbstractTestExecution;
 import org.globaltester.testrunner.testframework.IExecution;
 import org.globaltester.testrunner.testframework.TestCaseExecution;
 import org.globaltester.testrunner.ui.views.ResultView;
+import org.globaltester.testrunner.utils.IntegrityCheckResult;
+import org.globaltester.testrunner.utils.TestSpecIntegrityChecker;
 
 public abstract class TestResourceExecutor extends TestExecutor {
 
@@ -55,7 +63,7 @@ public abstract class TestResourceExecutor extends TestExecutor {
 
 			protected IStatus run(IProgressMonitor monitor) {
 
-				// FIXME AAB integrate monitor implementation here that updates
+				// FIXME AAC integrate monitor implementation here that updates
 				// ResultView
 
 				ThreadGroup threadGroup = new ThreadGroup(
@@ -109,8 +117,10 @@ public abstract class TestResourceExecutor extends TestExecutor {
 					EnvironmentInspector.dumpEnvironmentInfoToLogfile();
 					
 					
-					//FIXME AAA when check integrity
-//					boolean integrityAllowsTests = checkIntegrity();
+					// check integrity
+					if (!checkIntegrity(runtimeRequirements, execution)) {
+						return Status.CANCEL_STATUS;
+					}
 					
 					TestLogger.info("Start TestExecution");
 					
@@ -168,9 +178,10 @@ public abstract class TestResourceExecutor extends TestExecutor {
 
 					return Status.CANCEL_STATUS;
 				} finally {
-					TestLogger.shutdown();
+					TestLogger.shutdown(); //FIXME AAF concurrency problem here?
 					returnTestResultsToCallback(execution, callback);
 					TestResourceExecutorLock.getLock().unlock();
+					monitor.done();
 				}
 
 				// refresh the workspace
@@ -267,7 +278,62 @@ public abstract class TestResourceExecutor extends TestExecutor {
 	 */
 	protected abstract AbstractTestExecution buildTestExecution(List<IResource> resources) throws CoreException;
 
-	
+
+
+	/**
+	 * Checks the Integrity of TestSpecifications and persists the check result in RuntimeRequirements.
+	 * 
+	 * Returns true if either all specs are valid, preferences are set to ignore mismatches or user manually accepts through user interaction.
+	 * @param execution 
+	 * @param runtimeRequirements 
+	 * @return
+	 */
+	private boolean checkIntegrity(GtRuntimeRequirements runtimeRequirements, AbstractTestExecution execution) {
+		
+		TestSpecIntegrityChecker integrityChecker = new TestSpecIntegrityChecker();
+		integrityChecker.addRecursive(execution.getExecutable());
+		integrityChecker.addDependencies();
+		
+		//check integrity of specs and log results
+		Map<String, IntegrityCheckResult> integrityResult = integrityChecker.check();
+		ArrayList<String> specNames = new ArrayList<>(integrityResult.keySet());
+		Collections.sort(specNames);
+		String nonValidProjects = "";
+		for (String curSpec: specNames) {
+			TestLogger.info("Checksum of "+ curSpec + " is "+ integrityResult.get(curSpec).getStatus());
+			TestLogger.trace("Expected checksum: "+ integrityResult.get(curSpec).getExpectedChecksum());
+			TestLogger.trace("Actual checksum: "+ integrityResult.get(curSpec).getCalculatedChecksum());
+			
+			if (integrityResult.get(curSpec).getStatus() != IntegrityCheckResult.IntegrityCheckStatus.VALID) {
+				nonValidProjects+="\n-"+curSpec + ": " +integrityResult.get(curSpec).getStatus() ;
+			} 
+		}
+
+		// persist check result in runtimeRequirements
+		runtimeRequirements.put(IntegrityCheckResult.class, IntegrityCheckResult.combineCheckStatus(integrityResult.values()));		
+		
+		
+		//handle non-valid specs
+		if (!nonValidProjects.isEmpty()) {
+			String message = "Functional integrity of testcases is not assured!\n\nThe following Scripts have been modified since delivery or remain unchecked:\n"
+					+ nonValidProjects + "\n";
+			TestLogger.warn(message);
+			
+			//proceed if preferences say so
+			if (Boolean.parseBoolean(PreferenceHelper.getPreferenceValue(org.globaltester.testrunner.Activator.PLUGIN_ID, PreferenceConstants.P_IGNORECHECKSUMRESULT))) {
+				return true;
+			}
+			
+			//ask user to how to proceed
+			UserInteraction interaction = runtimeRequirements.get(UserInteraction.class);
+			if (interaction.select(message + "\n\nExecute test case(s) anyway?", null, "Ok", "Cancel") != 0) {
+				return false;
+			}
+			
+		}		
+		
+		return true;
+	}
 	//FIXME AAD check implemention of  user abort functionality (IProgressMonitor.isCanceled())
 
 }

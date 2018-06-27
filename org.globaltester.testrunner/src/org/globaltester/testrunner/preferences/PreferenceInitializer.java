@@ -27,6 +27,9 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 		//if TestCase or log file should open on double click
 		preferences.putInt(PreferenceConstants.P_DOUBLECLICKRESULTVIEW, 0);
 		
+		//do not ignore checksum results by default
+		preferences.putBoolean(PreferenceConstants.P_IGNORECHECKSUMRESULT, false);
+		
 		// Force the application to save the preferences
 		try {
 			preferences.flush();

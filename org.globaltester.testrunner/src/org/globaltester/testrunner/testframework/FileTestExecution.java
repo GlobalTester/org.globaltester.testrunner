@@ -148,7 +148,7 @@ public abstract class FileTestExecution extends CompositeTestExecution {
 
 	}
 
-	FileTestExecutable cachedExecutable = null;
+	ITestExecutable cachedExecutable = null;
 	@Override
 	public ITestExecutable getExecutable() {
 		if (cachedExecutable == null) {

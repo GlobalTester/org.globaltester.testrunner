@@ -8,11 +8,14 @@ package org.globaltester.testrunner.preferences;
  */
 
 public class PreferenceConstants {
-
+	
 	//constants for double click in
 	public static final String P_DOUBLECLICKRESULTVIEW =  "Double click in TestCampaign editor opens";
 	public static final String TEST_CASE = "Test Case";	
 	public static final String LOG_FILE = "Log File";
+	
+	public static final String P_IGNORECHECKSUMRESULT = "IgnoreChecksumResult";
+	
 	
 
 }
