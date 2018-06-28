@@ -77,10 +77,6 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 	private Button btnStepForward;
 	private Button btnNewest;
 	
-	
-	private String baseDirName;
-	private boolean writeReport;
-
 	@Override
 	public void doSave(IProgressMonitor monitor) {
 		//IMPL handle progress in monitor
@@ -304,87 +300,9 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 					return;
 				}
 				
-				// ask for report location
-				DialogOptions dialogOptions = new DialogOptions();
-				dialogOptions.setMessage("Please select location to store the report files");
-				dialogOptions.setFilterPath(null); // do not filter at all
-				baseDirName = GtUiHelper.openDirectoryDialog(getSite().getShell(), dialogOptions);
-				
-				if (baseDirName != null){
-					writeReport = true;
-					// check if file exists
-					File baseDir = new File(baseDirName);
-					if (baseDir.list().length > 0) {
-
-						PlatformUI.getWorkbench().getDisplay()
-								.syncExec(new Runnable() {
-
-									@Override
-									public void run() {
-										String message = "The selected destination folder is not empty, proceed?";
-										writeReport = MessageDialog
-												.openConfirm(null,
-														"Warning",
-														message);
-									}
-								});
-					}
-					if (writeReport){
-						Job job = new Job("PDF export") {
-							
-							@Override
-							public IStatus run(IProgressMonitor monitor) {
-
-								monitor.beginTask("Export report", 5);
-
-								monitor.subTask("Prepare reports");
-
-								// create report
-								TestReport report = new TestReport(
-										currentExecution,
-										baseDirName);
-
-								monitor.worked(1);
-
-								try {
-									monitor.subTask("Create CSV report");
-									ReportCsvGenerator.writeCsvReport(report);
-									monitor.worked(1);
-									monitor.subTask("Create PDF report");
-									ReportPdfGenerator.writePdfReport(report);
-									monitor.worked(1);
-									monitor.subTask("Create JUnit report");
-									ReportJunitGenerator.writeJUnitReport(report);
-									monitor.worked(1);
-									GtResourceHelper.copyFilesToDir(report.getLogFiles(), report.getReportDir().getAbsolutePath());
-									monitor.worked(1);
-									PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
-
-												@Override
-												public void run() {
-													MessageDialog.openInformation(null, "PDF report", "Report exported successfully.");
-												}
-											});
-
-								} catch (IOException ex) {
-									IStatus status = new Status(Status.ERROR,
-											Activator.PLUGIN_ID,
-											"PDF report could not be created",
-											ex);
-									StatusManager.getManager().handle(status,
-											StatusManager.SHOW);
-								}
-
-								monitor.done();
-								return new Status(IStatus.OK, Activator.PLUGIN_ID,
-										"Export successfull.");
-							}
-						};
-						job.setUser(true);
-						job.schedule();
-					}
-					
-				}
+				Job job = new ReportGenerationJob(currentExecution, getSite().getShell());
+				job.setUser(true);
+				job.schedule();
 				
 
 			}

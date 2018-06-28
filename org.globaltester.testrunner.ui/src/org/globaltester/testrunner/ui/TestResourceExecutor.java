@@ -3,6 +3,7 @@ package org.globaltester.testrunner.ui;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -12,7 +13,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -25,6 +25,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.globaltester.base.PreferenceHelper;
+import org.globaltester.base.SeverityLevel;
 import org.globaltester.base.UserInteraction;
 import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.legacy.logger.GtErrorLogger;
@@ -124,22 +125,6 @@ public abstract class TestResourceExecutor extends TestExecutor {
 					
 					TestLogger.info("Start TestExecution");
 					
-					//FIXME AAB integrate TestExtender
-					// let all dependent plug-ins integrate in start process
-//					Iterator<ITestExtender> iter = Activator.testExtenders.iterator();
-//					while (iter.hasNext()) {
-//						ITestExtender curTestExtender = iter.next(); 
-//						int result = curTestExtender.extendTestStart();
-//						if (result != ITestExtender.NO_FAILURE) {
-//							String msg = curTestExtender.getFailureMessage(result);
-//							interaction.notify(SeverityLevel.ERROR, "The plugin "+curTestExtender.getPlugInName()+" failed to extend the test startup with the following message:\n\n"+
-//									msg+
-//									"\n\nCurrent execution of test cases will be aborted.");
-//							abortExecution = true;
-//						}
-//					}
-
-
 					// execute the TestExecutable
 					execution.execute(runtimeRequirements, false, monitor);
 					

@@ -9,6 +9,7 @@ import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
@@ -36,10 +37,10 @@ import org.globaltester.scriptrunner.RunTests;
 import org.globaltester.scriptrunner.TestExecutionCallback;
 import org.globaltester.testrunner.Activator;
 import org.globaltester.testrunner.testframework.AbstractTestExecution;
-import org.globaltester.testrunner.testframework.FileTestExecution;
 import org.globaltester.testrunner.testframework.IExecution;
 import org.globaltester.testrunner.testframework.TestCampaignExecution;
 import org.globaltester.testrunner.testframework.TestSetExecution;
+import org.globaltester.testrunner.ui.editor.ReportGenerationJob;
 import org.globaltester.testrunner.ui.editor.TestExecutionResultViewer;
 import org.globaltester.testspecification.testframework.FileTestExecutable;
 import org.globaltester.testspecification.testframework.ITestExecutable;
@@ -248,92 +249,9 @@ public class ResultView extends ViewPart {
 		actionGenerateReport = new Action() {
 			@Override
 			public void run() {
-				//FIXME AAB reportgeneration - adapt report generation code below
-//				TestSession lastSession = TestSession.getLastTestSession();
-//				if (lastSession == null || lastSession.getVirtualSuite() == null) {
-//					MessageDialog.openWarning(getShell(), SHELL_NAME,
-//							"No last test session available. Report cannot be generated.");
-//					return;
-//				}
-//
-//				boolean staticReportDir = store.getBoolean(PreferenceConstants.P_FIXEDDIRSETTINGS); //FIXME move this preference to the testrunner configuration
-//
-//				//FIXME AAD clean up reporting configuration and consolidate it to a single bundle
-//				staticReportDir = false;
-//				
-//				File destinationDir = null;
-//
-//				if (!staticReportDir) {
-//					// ask for report location
-//					DialogOptions dialogOptions = new DialogOptions();
-//					dialogOptions.setMessage("Please select location to store the report files");
-//					dialogOptions.setFilterPath(null); // do not filter at all
-//					String baseDirPath = GtUiHelper.openDirectoryDialog(PlatformUI.getWorkbench().getModalDialogShellProvider().getShell(), dialogOptions);
-//					destinationDir = new File(baseDirPath);
-//
-//					if ((destinationDir.list().length > 0) &&
-//						 !MessageDialog.openQuestion(getShell(), SHELL_NAME, "The target directory is not empty, proceed?")) {
-//						return;	
-//					}
-//				} else {
-//					destinationDir = TestReport.getDefaultDestinationDir();
-//				}
-//				String reportBaseDir = destinationDir.getAbsolutePath();
-//				
-//				Job job = new Job("Export TestReport") {
-//					
-//					@Override
-//					public IStatus run(IProgressMonitor monitor) {
-//
-//						monitor.beginTask("Export report", 5);
-//
-//						monitor.subTask("Prepare reports");
-//
-//						
-//						// create report
-//						TestReport report = new TestReport(
-//								lastSession.getTestSetExecution(),
-//								reportBaseDir);
-//
-//						monitor.worked(1);
-//
-//						try {
-//							monitor.subTask("Create CSV report");
-//							ReportCsvGenerator.writeCsvReport(report);
-//							monitor.worked(1);
-//							monitor.subTask("Create PDF report");
-//							ReportPdfGenerator.writePdfReport(report);
-//							monitor.worked(1);
-//							monitor.subTask("Create JUnit report");
-//							ReportJunitGenerator.writeJUnitReport(report);
-//							monitor.worked(1);
-//							GtResourceHelper.copyFilesToDir(report.getLogFiles(), report.getReportDir().getAbsolutePath());
-//							monitor.worked(1);
-//							PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
-//
-//										@Override
-//										public void run() {
-//											MessageDialog.openInformation(null, "PDF report", "Report exported successfully.");
-//										}
-//									});
-//
-//						} catch (IOException ex) {
-//							IStatus status = new org.eclipse.core.runtime.Status(org.eclipse.core.runtime.Status.ERROR,
-//									Activator.PLUGIN_ID,
-//									"PDF report could not be created",
-//									ex);
-//							StatusManager.getManager().handle(status,
-//									StatusManager.SHOW);
-//						}
-//
-//						monitor.done();
-//						MessageDialog.openInformation(getShell(), SHELL_NAME, "The report has been generated");
-//						return new org.eclipse.core.runtime.Status(IStatus.OK, Activator.PLUGIN_ID,
-//								"Export successfull.");
-//					}
-//				};
-//				job.setUser(true);
-//				job.schedule();
+
+				Job job = new ReportGenerationJob(viewer.getInput(), getSite().getShell());
+				job.schedule();
 
 			}
 		};

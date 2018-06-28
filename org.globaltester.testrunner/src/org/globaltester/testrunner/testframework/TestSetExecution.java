@@ -1,10 +1,8 @@
 package org.globaltester.testrunner.testframework;
 
-import java.util.HashSet;
 import java.util.Iterator;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -21,7 +19,7 @@ import org.globaltester.testspecification.testframework.ITestExecutable;
 import org.globaltester.testspecification.testframework.TestSet;
 import org.jdom.Element;
 
-//FIXME AAB read this class for consistency (e.g. string labels etc)
+//FIXME AAF read this class for consistency (e.g. string labels etc)
 public class TestSetExecution extends FileTestExecution {
 	
 	public static final String XML_ELEMENT = "TestSetExecution";
