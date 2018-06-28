@@ -20,6 +20,7 @@ import org.globaltester.testrunner.testframework.FileTestExecutionFactory;
 public class TestCampaignExecutor extends TestResourceExecutor {
 
 	public boolean canExecute(List<IResource> resources) {
+		if (resources == null) return false;
 		if (resources.size() != 1)
 			return false;
 		IResource resource = resources.iterator().next();

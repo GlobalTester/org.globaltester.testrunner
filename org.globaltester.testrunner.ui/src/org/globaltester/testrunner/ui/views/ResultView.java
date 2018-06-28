@@ -1,24 +1,21 @@
 package org.globaltester.testrunner.ui.views;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.URL;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
-import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.core.runtime.Path;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.ISharedImages;
@@ -28,11 +25,24 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.texteditor.ITextEditor;
+import org.globaltester.base.ui.GtUiHelper;
+import org.globaltester.base.ui.UserInteractionImpl;
+import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.legacy.logger.GTLogger;
 import org.globaltester.logging.legacy.logger.GtErrorLogger;
+import org.globaltester.logging.tags.LogLevel;
+import org.globaltester.scriptrunner.GtRuntimeRequirements;
+import org.globaltester.scriptrunner.RunTests;
+import org.globaltester.scriptrunner.TestExecutionCallback;
 import org.globaltester.testrunner.Activator;
 import org.globaltester.testrunner.testframework.AbstractTestExecution;
+import org.globaltester.testrunner.testframework.FileTestExecution;
+import org.globaltester.testrunner.testframework.IExecution;
+import org.globaltester.testrunner.testframework.TestCampaignExecution;
+import org.globaltester.testrunner.testframework.TestSetExecution;
 import org.globaltester.testrunner.ui.editor.TestExecutionResultViewer;
+import org.globaltester.testspecification.testframework.FileTestExecutable;
+import org.globaltester.testspecification.testframework.ITestExecutable;
 import org.osgi.framework.Bundle;
 
 /**
@@ -44,9 +54,6 @@ import org.osgi.framework.Bundle;
  */
 
 public class ResultView extends ViewPart {
-	//FIXME AAD remove this class if possible
-	private static final String SHELL_NAME = "GlobalTester";
-
 	public static final String VIEW_ID = "org.globaltester.testrunner.ui.views.ResultView";
 
 	// table viewer to show test results
@@ -369,18 +376,39 @@ public class ResultView extends ViewPart {
 	}
 
 	protected void restartTestCases() {
-		//FIXME AAB implement restart of TestExecution
-//		TestSession testSession = TestSession.getLastTestSession();
-//		if (testSession != null) {
-//			if (!TestLogger.isInitialized())
-//				TestLogger.init();
-//			ThreadGroup threadGroup = new ThreadGroup("TestManager test execution by result view thread group " + Calendar.getInstance().getTimeInMillis());
-//			TestSession testSessionCopy = TestSession.getTestSessionCopy(testSession);
-//			
-//			new Thread(threadGroup, new TestManagerExecution(testSessionCopy)).start();
-//		} else {
-//			MessageDialog.openWarning(getShell(), SHELL_NAME, "No last test session available to restart.");
-//		}
+		
+		AbstractTestExecution previousExecution = viewer.getInput();
+		List<IResource> resources = new LinkedList<>();
+		try {
+			resources.addAll(extractResources(previousExecution));
+		} catch (CoreException e) {
+			String msg = "Unable to restore resources from previous Execution";
+			BasicLogger.logException(msg, e, LogLevel.WARN);
+			GtUiHelper.openErrorDialog(getViewSite().getShell(), "Running failed: " + msg);
+			return;
+		}
+		
+		
+		GtRuntimeRequirements runtimeReqs = new GtRuntimeRequirements(new UserInteractionImpl(), RunTests.getLastUsedSampleConfig());
+		
+		if (!new RunTests(runtimeReqs).execute(resources, TestExecutionCallback.NULL_CALLBACK)){
+			GtUiHelper.openErrorDialog(getViewSite().getShell(), "Running failed: No valid execution engine found for your selection.");
+		}
+	}
+
+	private List<IResource> extractResources(AbstractTestExecution previousExecution) throws CoreException {
+		List<IResource> retVal = new LinkedList<>();
+		if (previousExecution instanceof TestCampaignExecution) {
+			retVal.add(((TestCampaignExecution) previousExecution).getGtTestCampaignProject().getTestCampaignIFile());
+		} else if (previousExecution instanceof TestSetExecution) {
+			for (IExecution curChild : previousExecution.getChildren()) {
+				ITestExecutable curExecutable = curChild.getExecutable();
+				if (curExecutable instanceof FileTestExecutable) {
+					retVal.add(((FileTestExecutable) curExecutable).getIFile());
+				}
+			}
+		}
+		return retVal;
 	}
 
 	/**

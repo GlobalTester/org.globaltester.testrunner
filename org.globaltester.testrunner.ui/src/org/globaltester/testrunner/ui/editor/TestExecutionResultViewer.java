@@ -393,8 +393,10 @@ public class TestExecutionResultViewer implements SelectionListener, ResultChang
 				treeViewer.expandToLevel(2);
 			}
 		}
-		
-		
+	}
+	
+	public AbstractTestExecution getInput() {
+		return (AbstractTestExecution) treeViewer.getInput();
 	}
 
 	public void expandAll() {
