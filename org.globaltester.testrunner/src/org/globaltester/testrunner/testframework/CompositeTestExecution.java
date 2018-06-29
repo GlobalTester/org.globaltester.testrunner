@@ -54,8 +54,8 @@ public abstract class CompositeTestExecution extends AbstractTestExecution imple
 	}
 	
 	@Override
-	public void resultChanged() {
-		notifyResultChangeListeners();
+	public void resultChanged(IExecution changedObject) {
+		notifyResultChangeListeners(changedObject);
 	}
 	
 	@Override

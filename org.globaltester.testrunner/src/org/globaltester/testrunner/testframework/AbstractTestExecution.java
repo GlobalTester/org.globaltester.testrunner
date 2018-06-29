@@ -222,7 +222,7 @@ public abstract class AbstractTestExecution implements IExecution {
 		
 		executingUser = System.getProperty("user.name");
 		
-		notifyResultChangeListeners();
+		notifyResultChangeListeners(this);
 		
 	}
 
@@ -285,9 +285,9 @@ public abstract class AbstractTestExecution implements IExecution {
 	}
 
 	@Override
-	public void notifyResultChangeListeners() {
+	public void notifyResultChangeListeners(IExecution changedObject) {
 		for (ResultChangeListener resultChangeListener : resultChangeListeners) {
-			resultChangeListener.resultChanged();
+			resultChangeListener.resultChanged(changedObject);
 		}
 	}
 

@@ -13,16 +13,20 @@ import org.globaltester.sampleconfiguration.SampleConfig;
 import org.globaltester.scriptrunner.GtRuntimeRequirements;
 import org.globaltester.scriptrunner.ScriptRunner;
 import org.globaltester.scriptrunner.ScshScope;
+import org.globaltester.testrunner.GtTestCampaignProject;
 import org.globaltester.testrunner.testframework.Result.Status;
 import org.globaltester.testspecification.testframework.ITestExecutable;
+import org.globaltester.testspecification.testframework.ParameterGenerator;
 import org.globaltester.testspecification.testframework.PostCondition;
 import org.globaltester.testspecification.testframework.PreCondition;
 import org.globaltester.testspecification.testframework.TestCase;
+import org.globaltester.testspecification.testframework.TestCaseParameter;
 import org.globaltester.testspecification.testframework.TestStep;
 
 public class TestCaseExecution extends FileTestExecution {
 
 	public static final String XML_ELEMENT = "TestCaseExecution";
+	private TestCaseParameter testCaseParameter = null;
 
 	protected TestCaseExecution(IFile iFile) throws CoreException {
 		super(iFile);
@@ -31,11 +35,21 @@ public class TestCaseExecution extends FileTestExecution {
 	protected TestCaseExecution(IFile iFile, TestCase testCase)
 			throws CoreException {
 		super(iFile);
-
+		
 		specFile = testCase.getIFile();
 		
-		//create execution instances from testcase
-		initFromTestCase(testCase); 
+		initFromTestCase(testCase);
+		
+		//store this configuration
+		doSave();
+	}
+
+	private TestCaseExecution(IFile iFile, TestCase testCase, TestCaseParameter param)
+				throws CoreException {
+		this(iFile, testCase);
+		testCaseParameter = param;
+
+		setId(testCase.getName() + "_" + param.getIdSuffix());
 
 		//store this configuration
 		doSave();
@@ -46,8 +60,10 @@ public class TestCaseExecution extends FileTestExecution {
 	 */
 	private void initFromTestCase(TestCase testCase) {
 		setId(testCase.getName());
-		setDescription(testCase.getTestCasePurpose()); 
-		
+		setDescription(testCase.getTestCasePurpose());
+	}
+
+	private void createChildrenFromActionSteps(TestCase testCase) {
 		int childIndex = 0;
 		for (ITestExecutable curChild : testCase.getChildren()) {
 
@@ -59,7 +75,29 @@ public class TestCaseExecution extends FileTestExecution {
 				addChildExecution(new PostConditionExecution(this, childIndex++));
 			}
 		}
+	}
 
+	private void createChildrenFromParameters(TestCase testCase) {
+		//FIXME AAB rethink naming/numbering of stateFiles (f.e. create ChildExecutions for all Elements while execution)
+		ParameterGenerator generator = testCase.getParameterGenerator();
+		
+		for (TestCaseParameter curParameter : generator.generateParameters()) {
+			try {
+				addChildExecution(new TestCaseExecution(getNewStateFile(), testCase, curParameter));
+			} catch (CoreException e) {
+				throw new IllegalStateException("Unable to create child execution", e);
+			}
+		}
+	}
+
+	private IFile getNewStateFile() throws CoreException {
+		// TODO Auto-generated method stub
+		if (iFile != null) {
+			GtTestCampaignProject campaignProject = getGtTestCampaignProject();
+			if (campaignProject != null) return campaignProject.getNewStateIFile(getExecutable());
+		}
+		
+		return null;
 	}
 
 	@Override
@@ -69,6 +107,19 @@ public class TestCaseExecution extends FileTestExecution {
 		}
 		ScriptRunner sr = null;
 		try {
+			
+		
+		TestCase testCase = (TestCase) getExecutable();
+		if (!testCase.isParameterized() ) {
+			testCaseParameter = TestCaseParameter.UNPARAMETERIZED;
+		}
+		
+		if (testCaseParameter != null) {
+			runtimeReqs.put(TestCaseParameter.class, testCaseParameter);
+			createChildrenFromActionSteps(testCase);
+		} else {		
+			createChildrenFromParameters(testCase);
+		}
 			
 		monitor.beginTask("Execute TestCase "+getId() , getChildren().size());
 		
@@ -87,7 +138,6 @@ public class TestCaseExecution extends FileTestExecution {
 		setLogFileName(TestLogger.getTestCaseLogFileName());
 		setLogFileLine(TestLogger.getLogFileLine());
 		
-		TestCase testCase = (TestCase) getExecutable();
 		testCase.dumpTestCaseInfos();
 		
 		// check provider capabilities

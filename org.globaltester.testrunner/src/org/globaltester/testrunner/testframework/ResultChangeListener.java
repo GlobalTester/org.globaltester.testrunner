@@ -13,6 +13,6 @@ public interface ResultChangeListener {
 	 * This method gets called whenever a TestExecutionResult changed so that
 	 * Listeners can update their internal sttus
 	 */
-	public void resultChanged();
+	public void resultChanged(IExecution changedObject);
 
 }

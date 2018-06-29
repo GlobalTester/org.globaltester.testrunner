@@ -78,7 +78,7 @@ public class TestExecutionResultViewer implements SelectionListener, ResultChang
 
 	private void createPartControl(Composite parent) {
 		executionStateTree = new Tree(parent, SWT.BORDER
-				| SWT.FULL_SELECTION | SWT.NO_SCROLL);
+				| SWT.FULL_SELECTION);
 		executionStateTree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		executionStateTree.setHeaderVisible(true);
 		
@@ -419,12 +419,17 @@ public class TestExecutionResultViewer implements SelectionListener, ResultChang
 	}
 
 	@Override
-	public void resultChanged() {
+	public void resultChanged(final IExecution changedObject) {
 		//FIXME AAE try to make this a little less performance hungry
 		PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
 			public void run() {
 				if (!executionStateTree.isDisposed()) {
-					refresh();
+					if (changedObject != null) {
+						treeViewer.refresh(changedObject, true);
+						treeViewer.expandToLevel(changedObject, 2);
+					} else {
+						refresh();
+					}
 				}
 			}
 		});

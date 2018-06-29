@@ -23,7 +23,7 @@ public class FileTestExecutionFactory {
 	 */
 	public static FileTestExecution getInstance(IFile iFile) throws CoreException {
 		if (!instances.containsKey(iFile)) {
-			createFileTestExecution(iFile);
+			createExecution(iFile);
 		}
 		
 		return instances.get(iFile);
@@ -31,7 +31,7 @@ public class FileTestExecutionFactory {
 
 
 
-	public static void createFileTestExecution(IFile iFile) throws CoreException {
+	public static void createExecution(IFile iFile) throws CoreException {
 		Document doc = XMLHelper.readDocument(iFile);
 		Element rootElem = doc.getRootElement();
 		

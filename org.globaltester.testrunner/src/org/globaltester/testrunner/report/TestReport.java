@@ -12,9 +12,9 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.globaltester.sampleconfiguration.SampleConfig;
+import org.globaltester.testrunner.testframework.FileTestExecution;
 import org.globaltester.testrunner.testframework.IExecution;
 import org.globaltester.testrunner.testframework.Result.Status;
 import org.globaltester.testrunner.testframework.TestCampaign;
@@ -22,7 +22,6 @@ import org.globaltester.testrunner.testframework.TestCampaignExecution;
 import org.globaltester.testrunner.testframework.TestCaseExecution;
 import org.globaltester.testrunner.testframework.TestSetExecution;
 import org.globaltester.testspecification.testframework.FileTestExecutable;
-import org.globaltester.testspecification.testframework.TestExecutableFactory;
 
 /**
  * Represents a test report with fixed values stored from the results of a
@@ -91,23 +90,8 @@ public class TestReport {
 		specName = "unknown";
 		specVersion = "unknown";
 		
-		FileTestExecutable fileTestExecutable;
-		TestCaseExecution currentTestCaseExecution;
 		for(IExecution currentIexecution : testSetExec.getChildren()) {
-			elements.add(new TestReportPart(currentIexecution));
-			
-			if(currentIexecution instanceof TestCaseExecution) {
-				try {
-					currentTestCaseExecution = ((TestCaseExecution) currentIexecution);
-					fileTestExecutable = TestExecutableFactory.getInstance(currentTestCaseExecution.getSpecFile());
-					
-					if(!(currentTestCaseExecution.getStatus().equals(Status.NOT_APPLICABLE))) {
-						selectedProfiles.addAll(parseProfileString(fileTestExecutable.getProfileString()));
-					}
-				} catch (CoreException e) {
-					// do nothing
-				}
-			}
+			addReportPart(currentIexecution);
 		}
 		
 		logFiles = new ArrayList<>();
@@ -130,6 +114,26 @@ public class TestReport {
 		platformId = sampleConfig.getPlatformId();
 		sampleId = sampleConfig.getSampleId();
 		
+	}
+
+	public void addReportPart(IExecution currentIexecution) {
+		elements.add(new TestReportPart(currentIexecution));
+		
+		//add children if they are FileTestExections
+		for (IExecution curChild : currentIexecution.getChildren()) {
+			if (curChild instanceof FileTestExecution) {
+				addReportPart(curChild);
+			}
+		}
+		
+		if(currentIexecution instanceof TestCaseExecution) {
+			
+			FileTestExecutable fileTestExecutable = (FileTestExecutable) currentIexecution.getExecutable();
+				
+			if(!(currentIexecution.getStatus().equals(Status.NOT_APPLICABLE))) {
+				selectedProfiles.addAll(parseProfileString(fileTestExecutable.getProfileString()));
+			}
+		}
 	}
 	
 	/**

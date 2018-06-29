@@ -52,7 +52,7 @@ public interface IExecution {
 
 	public void removeResultListener(ResultChangeListener obsoleteListener);
 
-	public void notifyResultChangeListeners();
+	public void notifyResultChangeListeners(IExecution changedObject);
 
 	/**
 	 * dump this instance to the given XML Element

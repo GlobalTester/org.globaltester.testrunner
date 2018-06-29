@@ -71,10 +71,10 @@
           <fo:block line-height="2"> 4) Overview of executed test cases </fo:block>
 
           <fo:table border="0.8pt solid black" text-align="left" font-size="8pt" width="100%" table-layout="fixed">
-            <fo:table-column column-width="20%"/>
-            <fo:table-column column-width="47%"/>
-            <fo:table-column column-width="10%"/>
-            <fo:table-column column-width="23%"/>
+            <fo:table-column column-width="30%"/>
+            <fo:table-column column-width="50%"/>
+            <fo:table-column column-width="8%"/>
+            <fo:table-column column-width="12%"/>
             <fo:table-body>
               <fo:table-row>
                 <fo:table-cell padding="1pt" border="0.8pt solid black" font-weight="bold" text-align="center" background-color="lightgrey">
@@ -99,7 +99,7 @@
                   <fo:table-cell padding="1pt" border="0.8pt solid black">
                     <fo:block> <xsl:value-of select="TESTCASEDESCR" /> </fo:block>
                   </fo:table-cell>
-                  <fo:table-cell padding="1pt" border="0.8pt solid black">
+                  <fo:table-cell text-align="right" padding="1pt" padding-right="1em" border="0.8pt solid black">
                     <fo:block> <xsl:value-of select="TESTCASETIME" /> </fo:block>
                   </fo:table-cell>
                   <fo:table-cell padding="1pt" border="0.8pt solid black">
@@ -113,7 +113,7 @@
                       <fo:block color="red"> <fo:external-graphic src="url('icons/sts_failed.png')" content-height="50%" content-width="50%" padding-right="3pt"/> <xsl:value-of select="TESTCASESTATUS" /> </fo:block>
                     </xsl:if>
                     <xsl:if test="TESTCASESTATUS='WARNING'">
-                      <fo:block color="yellow"> <fo:external-graphic src="url('icons/sts_warning.png')" content-height="50%" content-width="50%" padding-right="3pt"/> <xsl:value-of select="TESTCASESTATUS" /> </fo:block>
+                      <fo:block color="#316395"> <fo:external-graphic src="url('icons/sts_warning.png')" content-height="50%" content-width="50%" padding-right="3pt"/> <xsl:value-of select="TESTCASESTATUS" /> </fo:block>
                     </xsl:if>
                     <xsl:if test="TESTCASESTATUS='NOT APPLICABLE'">
                       <fo:block color="blue"> <fo:external-graphic src="url('icons/sts_na.png')" content-height="50%" content-width="50%" padding-right="3pt"/> <xsl:value-of select="TESTCASESTATUS" /> </fo:block>
