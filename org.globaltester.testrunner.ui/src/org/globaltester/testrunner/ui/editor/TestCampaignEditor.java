@@ -1,8 +1,5 @@
 package org.globaltester.testrunner.ui.editor;
 
-import java.io.File;
-import java.io.IOException;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
@@ -10,9 +7,7 @@ import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -43,14 +38,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.statushandlers.StatusManager;
-import org.globaltester.base.resources.GtResourceHelper;
-import org.globaltester.base.ui.DialogOptions;
-import org.globaltester.base.ui.GtUiHelper;
 import org.globaltester.sampleconfiguration.ui.SampleConfigEditorWidget;
-import org.globaltester.testrunner.report.ReportCsvGenerator;
-import org.globaltester.testrunner.report.ReportJunitGenerator;
-import org.globaltester.testrunner.report.ReportPdfGenerator;
-import org.globaltester.testrunner.report.TestReport;
 import org.globaltester.testrunner.testframework.TestCampaignExecution;
 import org.globaltester.testrunner.ui.Activator;
 import org.globaltester.testrunner.ui.UiImages;

@@ -4,11 +4,11 @@ import java.util.Hashtable;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
+import org.globaltester.base.xml.XMLHelper;
+import org.globaltester.testspecification.testframework.FileTestExecutable;
 import org.globaltester.testspecification.testframework.TestCase;
 import org.jdom.Document;
 import org.jdom.Element;
-import org.globaltester.base.xml.XMLHelper;
-import org.globaltester.testspecification.testframework.FileTestExecutable;
 
 public class FileTestExecutionFactory {
 

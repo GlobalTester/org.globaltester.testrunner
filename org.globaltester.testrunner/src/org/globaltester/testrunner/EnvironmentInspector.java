@@ -6,11 +6,9 @@ import java.util.Date;
 
 import javax.crypto.Cipher;
 
-import org.globaltester.base.SeverityLevel;
 import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.legacy.logger.TestLogger;
 import org.globaltester.smartcardshell.preferences.SmartCardShellInfo;
-import org.globaltester.testrunner.Activator;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 

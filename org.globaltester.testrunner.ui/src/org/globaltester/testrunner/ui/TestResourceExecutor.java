@@ -3,7 +3,6 @@ package org.globaltester.testrunner.ui;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -25,7 +24,6 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.globaltester.base.PreferenceHelper;
-import org.globaltester.base.SeverityLevel;
 import org.globaltester.base.UserInteraction;
 import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.legacy.logger.GtErrorLogger;
@@ -63,9 +61,6 @@ public abstract class TestResourceExecutor extends TestExecutor {
 		Job job = new Job("Executing tests...") {
 
 			protected IStatus run(IProgressMonitor monitor) {
-
-				// FIXME AAC integrate monitor implementation here that updates
-				// ResultView
 
 				ThreadGroup threadGroup = new ThreadGroup(
 						"TestResourceExecutor thread group " + Calendar.getInstance().getTimeInMillis());

@@ -105,7 +105,7 @@ public class TestSetExecution extends FileTestExecution {
 					FileTestExecution tcExecution = FileTestExecutionFactory.createExecution(curFileTestCase, campaign);
 					addChildExecution(tcExecution);
 				} else {
-
+					//FIXME AAD handle this situation appropriately (i.e. interact with user)
 					throw new RuntimeException("Unsupported type of TestExecutable: " + curTestExecutable);
 				}
 

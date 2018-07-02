@@ -68,11 +68,6 @@ public class TestExecutionResultLabelProvider implements ITableLabelProvider {
 	}
 
 	public boolean isLabelProperty(Object element, String property) {
-		//FIXME AAC check below code and mybe implement this method
-//		if ((element instanceof TestCampaignElement)
-//				&& ("lastExecution".equals(property)))
-//			return true;
-//		return false;
 		return true;
 	}
 

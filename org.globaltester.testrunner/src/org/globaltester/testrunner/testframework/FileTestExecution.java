@@ -8,7 +8,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.globaltester.base.xml.XMLHelper;
 import org.globaltester.testrunner.GtTestCampaignProject;
-import org.globaltester.testspecification.testframework.FileTestExecutable;
 import org.globaltester.testspecification.testframework.ITestExecutable;
 import org.globaltester.testspecification.testframework.TestExecutableFactory;
 import org.jdom.Document;
