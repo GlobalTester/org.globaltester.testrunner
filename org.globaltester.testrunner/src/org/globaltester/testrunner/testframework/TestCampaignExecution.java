@@ -100,7 +100,6 @@ public class TestCampaignExecution extends FileTestExecution {
 		testSetExecution.execute(runtimeReqs, forceExecution, monitor);
 		
 		try {
-			//FIXME AAD check whether this is late enough
 			// save the new state
 			getGtTestCampaignProject().doSave();
 

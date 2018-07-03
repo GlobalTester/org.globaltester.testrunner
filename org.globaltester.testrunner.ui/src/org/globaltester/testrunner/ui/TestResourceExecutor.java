@@ -34,7 +34,7 @@ import org.globaltester.scriptrunner.TestExecutionCallback;
 import org.globaltester.scriptrunner.TestExecutionCallback.SubTestResult;
 import org.globaltester.scriptrunner.TestExecutor;
 import org.globaltester.scriptrunner.TestResourceExecutorLock;
-import org.globaltester.testrunner.EnvironmentInspector;
+import org.globaltester.testrunner.TestRunLogHelper;
 import org.globaltester.testrunner.preferences.PreferenceConstants;
 import org.globaltester.testrunner.testframework.AbstractTestExecution;
 import org.globaltester.testrunner.testframework.IExecution;
@@ -111,8 +111,7 @@ public abstract class TestResourceExecutor extends TestExecutor {
 
 					TestLogger.init(getLoggingDir(resources));
 					
-					//FIXME AAC Logfile "Header"
-					EnvironmentInspector.dumpEnvironmentInfoToLogfile();
+					TestRunLogHelper.dumpLogfileHeaderToTestLogger();
 					
 					
 					// check integrity
@@ -131,21 +130,8 @@ public abstract class TestResourceExecutor extends TestExecutor {
 //						interaction.notify(SeverityLevel.WARNING, "No testcases have been executed! Probably none of the selected cases was applicable to your sample. ");
 //					}
 					
-					//FIXME AAC logfile marking (check how this works in the Campaign)
-//					addLogReferencesToFailureList(TestLogger.getLogFileName(), failureList);
-//					markLogFile(TestLogger.getLogFileName(), failureList);
-					
-					//FIXME AAC Logfile "Footer"
-//					double testTime = execution.getLastExecutionDuration() / 1000.;
-//					
-//					TestLogger.info("");
-//					TestLogger.info("---------------------------------");
-//					TestLogger.info("Test Summary");
-//					TestLogger.info("");
-//					TestLogger.info("Time for complete session: " + testTime + " sec");
-//					TestLogger.info("Number of test cases: " + execution.getChildren().size());
-//					TestLogger.info("Session failures: " + execution.getNumberOfTestsWithStatus(Status.FAILURE));
-//					TestLogger.info("Session warnings: " + execution.getNumberOfTestsWithStatus(Status.WARNING));
+					TestRunLogHelper.dumpLogfileFooterToTestLogger(execution);
+
 					
 					IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 					boolean automaticReport = store.getBoolean(PreferenceConstants.P_REPORT_AUTOMATIC);
@@ -159,7 +145,7 @@ public abstract class TestResourceExecutor extends TestExecutor {
 
 					return Status.CANCEL_STATUS;
 				} finally {
-					TestLogger.shutdown(); //FIXME AAF concurrency problem here?
+					TestLogger.shutdown();
 					returnTestResultsToCallback(execution, callback);
 					TestResourceExecutorLock.getLock().unlock();
 					monitor.done();
@@ -181,27 +167,23 @@ public abstract class TestResourceExecutor extends TestExecutor {
 	}
 
 	private void showTestExecutionInResultView(AbstractTestExecution execution) {
-		try {
-			PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
-				public void run() {
-					IWorkbenchPage page = Activator.getDefault().getWorkbench()
-							.getActiveWorkbenchWindow().getActivePage();
-					IViewPart vp = null;
-					try {
-						vp = page.showView(ResultView.VIEW_ID);
-					} catch (PartInitException e) {
-						BasicLogger.logException("ResultView could not be initialized", e, org.globaltester.logging.tags.LogLevel.WARN);
-					}
-
-					if (vp instanceof ResultView) {
-						ResultView resultView = (ResultView) vp;
-						resultView.setInput(execution);
-					}
+		PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+			public void run() {
+				IWorkbenchPage page = Activator.getDefault().getWorkbench()
+						.getActiveWorkbenchWindow().getActivePage();
+				IViewPart vp = null;
+				try {
+					vp = page.showView(ResultView.VIEW_ID);
+				} catch (PartInitException e) {
+					BasicLogger.logException("ResultView could not be initialized", e, org.globaltester.logging.tags.LogLevel.WARN);
 				}
-			});
-		} catch (RuntimeException ex) { //FIXME AAD remove this catch if possible
-			TestLogger.error(ex);
-		}
+
+				if (vp instanceof ResultView) {
+					ResultView resultView = (ResultView) vp;
+					resultView.setInput(execution);
+				}
+			}
+		});
 	}
 
 	/**
@@ -315,6 +297,5 @@ public abstract class TestResourceExecutor extends TestExecutor {
 		
 		return true;
 	}
-	//FIXME AAD check implemention of  user abort functionality (IProgressMonitor.isCanceled())
 
 }

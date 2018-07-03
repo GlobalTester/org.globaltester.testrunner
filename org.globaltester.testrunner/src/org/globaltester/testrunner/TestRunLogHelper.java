@@ -9,54 +9,55 @@ import javax.crypto.Cipher;
 import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.legacy.logger.TestLogger;
 import org.globaltester.smartcardshell.preferences.SmartCardShellInfo;
+import org.globaltester.testrunner.testframework.AbstractTestExecution;
+import org.globaltester.testrunner.testframework.CompositeTestExecution;
+import org.globaltester.testrunner.testframework.Result.Status;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
-public final class EnvironmentInspector {
+/**
+ * This helper class provides utility methods to dump TestRun information into
+ * the TestLogger.
+ * 
+ * @author amay
+ *
+ */
+public final class TestRunLogHelper {
 
 	/**
 	 * This class does not need to be instantiated as it provides only static
 	 * methods
 	 */
-	private EnvironmentInspector() {
+	private TestRunLogHelper() {
 
 	}
-	
-	//FIXME AAE find a better name for this class and method
 
+	// FIXME AAE find a better name for this class and method
 
-	public static void dumpEnvironmentInfoToLogfile() {
+	public static void dumpLogfileHeaderToTestLogger() {
 		Date now = new Date();
 		DateFormat df = DateFormat.getDateTimeInstance();
-		
+
 		TestLogger.info("GlobalTester TestRunner " + Activator.VERSION);
 		TestLogger.info("Copyright secunet Security Networks AG (Germany)   www.globaltester.org");
 		TestLogger.info("Starting new test session at " + df.format(now));
 		TestLogger.info("Test executed by: " + System.getProperty("user.name"));
 
-		if (!EnvironmentInspector.checkJavaVersion()) {
+		if (!TestRunLogHelper.checkJavaVersion()) {
 			return;
 		}
-		
-		EnvironmentInspector.checkJCEUnlimitedPolicy();
 
-		//FIXME AAE handle working dir (or throw away)
-//		TestLogger.debug("Working directory: " + Activator.getWorkingDir());
+		TestRunLogHelper.checkJCEUnlimitedPolicy();
 
-		TestLogger.debug("Operating system: " + System.getProperty("os.name") + " "
-				+ System.getProperty("os.version") + "  (" + System.getProperty("os.arch") + ")");
+		TestLogger.debug("Operating system: " + System.getProperty("os.name") + " " + System.getProperty("os.version")
+				+ "  (" + System.getProperty("os.arch") + ")");
 
 		TestLogger.debug("User directory: " + System.getProperty("user.dir"));
 
-		EnvironmentInspector.findAndLogGtPlugins();
+		TestRunLogHelper.findAndLogGtPlugins();
 
-		if (!SmartCardShellInfo.checkCardReader()) {
-			//FIXME AAC really abort here? maybe even remove this SmartCardDependency here completely
-//			interaction.notify(SeverityLevel.ERROR, "No card reader registered or no card available!\n\nPlease check your hardware settings.");
-//			return;
-		}		
+		SmartCardShellInfo.checkCardReader();
 	}
-	
 
 	/**
 	 * Find and log available GlobalTester plugins
@@ -93,7 +94,7 @@ public final class EnvironmentInspector {
 			}
 
 		} catch (NoSuchAlgorithmException e) {
-			BasicLogger.logException(EnvironmentInspector.class, e);
+			BasicLogger.logException(TestRunLogHelper.class, e);
 			TestLogger.info("WARNING: AES Cipher unknown!");
 		}
 	}
@@ -122,6 +123,25 @@ public final class EnvironmentInspector {
 			}
 		}
 		return false;
+	}
+
+	public static void dumpLogfileFooterToTestLogger(AbstractTestExecution execution) {
+		double testTime = execution.getLastExecutionDuration() / 1000.;
+
+		TestLogger.info("");
+		TestLogger.info("---------------------------------");
+		TestLogger.info("Test Summary");
+		TestLogger.info("");
+		TestLogger.info("Time for complete session: " + testTime + " sec");
+		TestLogger.info("Overall result: " + execution.getStatus());
+		if (execution instanceof CompositeTestExecution) {
+			TestLogger.info("Number of test cases: " + execution.getChildren().size());
+			TestLogger.info("Session failures: "
+					+ ((CompositeTestExecution) execution).getNumberOfTestsWithStatus(Status.FAILURE));
+			TestLogger.info("Session warnings: "
+					+ ((CompositeTestExecution) execution).getNumberOfTestsWithStatus(Status.WARNING));
+		}
+
 	}
 
 }

@@ -418,7 +418,6 @@ public class TestExecutionResultViewer implements SelectionListener, ResultChang
 
 	@Override
 	public void resultChanged(final IExecution changedObject) {
-		//FIXME AAE try to make this a little less performance hungry
 		PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
 			public void run() {
 				if (!executionStateTree.isDisposed()) {

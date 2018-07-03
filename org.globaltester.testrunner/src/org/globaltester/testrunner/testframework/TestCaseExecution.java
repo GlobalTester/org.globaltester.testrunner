@@ -78,7 +78,7 @@ public class TestCaseExecution extends FileTestExecution {
 	}
 
 	private void createChildrenFromParameters(TestCase testCase) {
-		//FIXME AAB rethink naming/numbering of stateFiles (f.e. create ChildExecutions for all Elements while execution)
+		//FIXME AAF rethink naming/numbering of stateFiles (f.e. create ChildExecutions for all Elements while execution)
 		ParameterGenerator generator = testCase.getParameterGenerator();
 		
 		for (TestCaseParameter curParameter : generator.generateParameters()) {
@@ -91,7 +91,6 @@ public class TestCaseExecution extends FileTestExecution {
 	}
 
 	private IFile getNewStateFile() throws CoreException {
-		// TODO Auto-generated method stub
 		if (iFile != null) {
 			GtTestCampaignProject campaignProject = getGtTestCampaignProject();
 			if (campaignProject != null) return campaignProject.getNewStateIFile(getExecutable());

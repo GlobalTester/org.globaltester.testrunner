@@ -337,7 +337,7 @@
        <fo:inline color="red"> <xsl:apply-templates /> </fo:inline>
      </xsl:if>
      <xsl:if test=".='WARNING'">
-       <fo:inline color="yellow"> <xsl:apply-templates /> </fo:inline>
+       <fo:inline color="#316395"> <xsl:apply-templates /> </fo:inline>
      </xsl:if>
      <xsl:if test=".='NOT APPLICABLE'">
        <fo:inline color="blue"> <xsl:apply-templates /> </fo:inline>

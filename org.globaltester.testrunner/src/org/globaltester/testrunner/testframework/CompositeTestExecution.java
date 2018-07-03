@@ -11,6 +11,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.globaltester.testrunner.testframework.Result.Status;
 import org.jdom.Element;
 
 public abstract class CompositeTestExecution extends AbstractTestExecution implements ResultChangeListener {
@@ -154,6 +155,14 @@ public abstract class CompositeTestExecution extends AbstractTestExecution imple
 				((FileTestExecution) curElemExecution).doSave();
 			}
 		}
+	}
+
+	public long getNumberOfExecutedTests() {
+		return childExecutions.stream().filter(IExecution::isExecuted).count();
+	}
+
+	public long getNumberOfTestsWithStatus(Status expectedStatus) {
+		return childExecutions.stream().filter(exec -> exec.getStatus() == expectedStatus).count();
 	}
 
 }

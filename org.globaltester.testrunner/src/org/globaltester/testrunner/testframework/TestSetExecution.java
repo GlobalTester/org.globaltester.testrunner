@@ -12,7 +12,6 @@ import org.globaltester.logging.legacy.logger.TestLogger;
 import org.globaltester.sampleconfiguration.SampleConfig;
 import org.globaltester.scriptrunner.GtRuntimeRequirements;
 import org.globaltester.testrunner.Activator;
-import org.globaltester.testrunner.testframework.Result.Status;
 import org.globaltester.testrunner.utils.IntegrityCheckResult;
 import org.globaltester.testspecification.testframework.FileTestExecutable;
 import org.globaltester.testspecification.testframework.ITestExecutable;
@@ -185,13 +184,5 @@ public class TestSetExecution extends FileTestExecution {
 
 	public String getIntegrityOfTestSpec() {
 		return integrityOfTestSpec;
-	}
-
-	public long getNumberOfExecutedTests() {
-		return childExecutions.stream().filter(IExecution::isExecuted).count();
-	}
-
-	public long getNumberOfTestsWithStatus(Status expectedStatus) {
-		return childExecutions.stream().filter(exec -> exec.getStatus() == expectedStatus).count();
 	}
 }
