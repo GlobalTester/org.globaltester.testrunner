@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import org.globaltester.base.resources.GtResourceHelper;
 import org.globaltester.testrunner.testframework.Result.Status;
 
 /**
@@ -27,9 +28,9 @@ public class ReportCsvGenerator {
 		String sampleID = report.getSampleId();		
 		
 		//open the file and fill it with content
-		File destFile = new File(report.getFileName("csv"));
+		File csvReportFile = new File(report.getFileName("csv"));
 		report.getReportDir().mkdirs();
-		try (PrintWriter pw = new PrintWriter(destFile)) {
+		try (PrintWriter pw = new PrintWriter(csvReportFile)) {
 			for (TestReportPart curElem : report.getElements()) {
 				
 
@@ -58,5 +59,10 @@ public class ReportCsvGenerator {
 			}
 
 		}
+		
+		//create a copy of CSV report with name platform_sample.csv
+		File destFile = new File(report.getReportDir(), platformID+"_"+sampleID+".csv");
+		GtResourceHelper.copyFiles(csvReportFile, destFile);
+		
 	}
 }

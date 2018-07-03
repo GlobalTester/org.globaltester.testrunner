@@ -1,7 +1,11 @@
 package org.globaltester.testrunner.report;
 
+import java.util.ArrayList;
+
 import org.globaltester.testrunner.testframework.IExecution;
+import org.globaltester.testrunner.testframework.Result;
 import org.globaltester.testrunner.testframework.Result.Status;
+import org.globaltester.testrunner.testframework.ScriptIssue;
 
 /**
  * Represents the results of a test case as shown in the report. This might
@@ -19,6 +23,7 @@ public class TestReportPart {
 	private String description;
 	private Status status;
 	private double time;
+	private ArrayList<ScriptIssue> scriptIssues = new ArrayList<>();
 
 	public TestReportPart(IExecution iExecution) {
 		id = iExecution.getId();
@@ -26,6 +31,20 @@ public class TestReportPart {
 		description = iExecution.getDescription();
 		status = iExecution.getStatus();
 		time = iExecution.getDuration();
+		
+		addScriptIssues(iExecution.getResult());
+	}
+
+	private void addScriptIssues(Result result) {
+		if (result instanceof ScriptIssue) {
+			scriptIssues.add((ScriptIssue) result);
+			return;
+		}
+		
+		for (Result curSubResult : result.getSubResults()){
+			addScriptIssues(curSubResult);
+		}
+		
 	}
 
 	public String getID() {
@@ -46,6 +65,10 @@ public class TestReportPart {
 
 	public String getComment() {
 		return comment;
+	}
+
+	public ArrayList<ScriptIssue> getScriptIssues() {
+		return scriptIssues;
 	}
 
 }

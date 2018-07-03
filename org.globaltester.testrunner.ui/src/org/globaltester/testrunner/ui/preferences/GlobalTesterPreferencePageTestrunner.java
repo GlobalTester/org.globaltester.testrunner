@@ -25,7 +25,6 @@ import org.globaltester.testrunner.preferences.PreferenceConstants;
 public class GlobalTesterPreferencePageTestrunner extends
 FieldEditorPreferencePage implements IWorkbenchPreferencePage{
 
-	Group testOptionsGroup;
 	Group customizationGroup;
 	private BooleanFieldEditor bfeIntegrityWarningDialog;
 	

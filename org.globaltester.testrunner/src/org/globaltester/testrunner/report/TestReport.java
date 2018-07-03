@@ -10,9 +10,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.Path;
 import org.globaltester.sampleconfiguration.SampleConfig;
 import org.globaltester.testrunner.testframework.FileTestExecution;
 import org.globaltester.testrunner.testframework.IExecution;
@@ -125,17 +122,16 @@ public class TestReport {
 				addReportPart(curChild);
 			}
 		}
-		
+
+		//collect applicable profiles from testcases
 		if(currentIexecution instanceof TestCaseExecution) {
-			
 			FileTestExecutable fileTestExecutable = (FileTestExecutable) currentIexecution.getExecutable();
-				
 			if(!(currentIexecution.getStatus().equals(Status.NOT_APPLICABLE))) {
 				selectedProfiles.addAll(parseProfileString(fileTestExecutable.getProfileString()));
 			}
 		}
 	}
-	
+
 	/**
 	 * This method parses a String separated by commas.
 	 * It returns a Set containing all unique trimmed single Strings.
@@ -270,21 +266,6 @@ public class TestReport {
 	public String getIntegrityOfTestSpec() {
 		return integrityOfTestSpec;
 	}
-
-	public static File getDefaultDestinationDir() {
-		//FIXME AAB reportgeneration - defaultDir
-//            boolean fixedDir = Activator.getDefault().getPreferenceStore().getBoolean(PreferenceConstants.P_FIXEDDIRSETTINGS);
-//            if(fixedDir) {
-//                    String fixedDirPath = Activator.getDefault().getPreferenceStore().getString(PreferenceConstants.P_REPORTDIR);
-//                    return new File(fixedDirPath);
-//            } else {
-//                    IPath reportDirIpath = Activator.getWorkingDir();
-//                    IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(reportDirIpath);
-//                    return new File(file.getFullPath().toOSString() + File.separator + "Reports" + File.separator + getDateString("yyyyMMdd_HHmmss"));
-//            }
-		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path("GT Reports"));
-		return new File(file.getFullPath().toOSString() + File.separator + "Reports" + File.separator + getDateString("yyyyMMdd_HHmmss"));
-    }
 	
     /**
      * Returns the current date inclusive time in requested format

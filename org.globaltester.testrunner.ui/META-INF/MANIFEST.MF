@@ -25,7 +25,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.resources,
  org.globaltester.protocol,
  org.eclipse.core.filesystem,
- org.globaltester.logging
+ org.globaltester.logging,
+ org.eclipse.jface
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: org.globaltester.testrunner.ui,

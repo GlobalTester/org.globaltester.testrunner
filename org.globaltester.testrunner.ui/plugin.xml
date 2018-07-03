@@ -135,10 +135,25 @@
       <page
             category="org.globaltester.preferences.GlobalTesterPreferencePage"
             class="org.globaltester.testrunner.ui.preferences.GlobalTesterPreferencePageTestrunner"
-            id="orgorg.globaltester.testrunner.ui.preferences.GlobalTesterPreferencePageTestrunner.globaltester.testrunner.ui.PreferencePage"
+            id="orgorg.globaltester.testrunner.ui.preferences.GlobalTesterPreferencePageTestrunner"
             name="TestRunner">
       </page>
    </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="org.globaltester.preferences.GlobalTesterPreferencePage"
+            class="org.globaltester.testrunner.ui.preferences.ReportingPreferencePage"
+            id="orgorg.globaltester.testrunner.ui.preferences.ReportingPreferencePage"
+            name="Reporting">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="org.globaltester.testrunner.ui.preferences.PreferenceInitializer">
+      </initializer>
+  </extension>
    
    <extension
          point="org.eclipse.ui.views">

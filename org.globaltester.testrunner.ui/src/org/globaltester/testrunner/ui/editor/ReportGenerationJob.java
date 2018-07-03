@@ -8,12 +8,14 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.statushandlers.StatusManager;
 import org.globaltester.base.resources.GtResourceHelper;
 import org.globaltester.base.ui.DialogOptions;
 import org.globaltester.base.ui.GtUiHelper;
+import org.globaltester.testrunner.preferences.PreferenceConstants;
 import org.globaltester.testrunner.report.ReportCsvGenerator;
 import org.globaltester.testrunner.report.ReportJunitGenerator;
 import org.globaltester.testrunner.report.ReportPdfGenerator;
@@ -94,10 +96,27 @@ public class ReportGenerationJob extends Job {
 	}
 
 	public String getReportDir() {
+		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+		boolean staticReportDir = store.getBoolean(PreferenceConstants.P_REPORT_USE_FIXED_DIR);
+		
+		if (staticReportDir) {
+			reportDir = store.getString(PreferenceConstants.P_REPORT_DIR);
+		}else {
+			reportDir = getReportDirFromUser();
+		}
+		
+		return reportDir;
+	}
+
+	public String getReportDirFromUser() {
 		PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
 			
 			@Override
 			public void run() {
+				if (shell == null) {
+					shell = PlatformUI.getWorkbench().getModalDialogShellProvider().getShell();
+				}
+				
 				// ask user for report location
 				DialogOptions dialogOptions = new DialogOptions();
 				dialogOptions.setMessage("Please select location to store the report files");
@@ -117,32 +136,6 @@ public class ReportGenerationJob extends Job {
 				}				
 			}
 		});
-		
 		return reportDir;
-		
-//		boolean staticReportDir = store.getBoolean(PreferenceConstants.P_FIXEDDIRSETTINGS); //FIXME move this preference to the testrunner configuration
-//
-//		//FIXME AAB clean up reporting configuration and consolidate it to a single bundle
-//		staticReportDir = false;
-//		
-//		File destinationDir = null;
-//
-//		if (!staticReportDir) {
-//			// ask for report location
-//			DialogOptions dialogOptions = new DialogOptions();
-//			dialogOptions.setMessage("Please select location to store the report files");
-//			dialogOptions.setFilterPath(null); // do not filter at all
-//			String baseDirPath = GtUiHelper.openDirectoryDialog(PlatformUI.getWorkbench().getModalDialogShellProvider().getShell(), dialogOptions);
-//			destinationDir = new File(baseDirPath);
-//
-//			if ((destinationDir.list().length > 0) &&
-//				 !MessageDialog.openQuestion(getShell(), SHELL_NAME, "The target directory is not empty, proceed?")) {
-//				return;	
-//			}
-//		} else {
-//			destinationDir = TestReport.getDefaultDestinationDir();
-//		}
-//		String reportBaseDir = destinationDir.getAbsolutePath();
-//
 	}
 }

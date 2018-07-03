@@ -3,6 +3,7 @@ package org.globaltester.testrunner.testframework;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.jdom.Element;
 
@@ -160,6 +161,10 @@ public class Result implements Serializable{
 		commentElement.addContent(comment);
 		root.addContent(commentElement);
 		
+	}
+
+	public List<Result> getSubResults() {
+		return subResults;
 	}
 
 }

@@ -1,17 +1,23 @@
 package org.globaltester.testrunner.report;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 
+import javax.xml.transform.Result;
 import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
-import org.globaltester.lib.fop.renderer.GtFopHelper;
+import org.globaltester.logging.legacy.logger.GtErrorLogger;
 import org.globaltester.testrunner.Activator;
 import org.osgi.framework.Bundle;
 
@@ -44,7 +50,16 @@ public class ReportJunitGenerator {
 		IPath styleSheetPath = new Path(FileLocator.toFileURL(url).getPath()).append("stylesheets/report/report2junit.xsl");
 		File styleSheet = styleSheetPath.toFile();
 
-		GtFopHelper.transformToPdf(src, destFile, styleSheet);
+		// transform the xml report
+		TransformerFactory factory = TransformerFactory.newInstance();
+		try (FileOutputStream outputStream = new FileOutputStream(destFile)){
+			Transformer transformer = factory.newTransformer(new StreamSource(styleSheet));
+				Result res = new StreamResult(outputStream);
+				transformer.transform(src, res);
+		} catch (IOException | TransformerException e) {
+			GtErrorLogger.log(Activator.PLUGIN_ID, e);
+		}
+		
 	}
 
 }

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Iterator;
+import java.util.List;
 import java.util.StringJoiner;
 
 import org.eclipse.core.runtime.FileLocator;
@@ -15,6 +16,7 @@ import org.globaltester.base.xml.XMLHelper;
 import org.globaltester.logging.legacy.logger.GtErrorLogger;
 import org.globaltester.testrunner.Activator;
 import org.globaltester.testrunner.testframework.Result.Status;
+import org.globaltester.testrunner.testframework.ScriptIssue;
 import org.jdom.DocType;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -140,8 +142,47 @@ public class ReportXmlGenerator {
 			reportTestCaseDescr.setText(testReportPart.getDescription());
 			reportTestCase.addContent(reportTestCaseDescr);
 			
-			root.addContent(reportTestCase);
+			//persist ScriptIssues
+			List<ScriptIssue> scriptIssues = testReportPart.getScriptIssues();
+			for (ScriptIssue currentFailure : scriptIssues) {
+			
+					Element failure = new Element("TESTCASEFAILURE");
 
+					Element failureID = new Element("FAILUREID");
+					failureID.setText(Integer.toString(currentFailure.getId()));
+					failure.addContent(failureID);
+
+					Element failureRating = new Element("RATING");
+					failureRating.setText(currentFailure.getStatus().getTextualRepresentation());
+					failure.addContent(failureRating);
+
+					Element failureText = new Element("DESCRIPTION");
+					failureText.setText(currentFailure.getIssueText());
+					failure.addContent(failureText);
+
+					Element failureLineScript = new Element("LINESCRIPT");
+					failureLineScript.setText(Integer.toString(currentFailure.getLineScript()));
+					failure.addContent(failureLineScript);
+
+					Element failureLineLogFile = new Element("LINELOGFILE");
+					failureLineLogFile.setText(Integer.toString(currentFailure.getLineLogFile()));
+					failure.addContent(failureLineLogFile);
+
+					Element failureExpectedVal = new Element("EXPECTEDVALUE");
+					failureExpectedVal.setText(currentFailure
+							.getExpectedValue());
+					failure.addContent(failureExpectedVal);
+
+					Element failureReceivedVal = new Element("RECEIVEDVALUE");
+					failureReceivedVal.setText(currentFailure
+							.getReceivedValue());
+					failure.addContent(failureReceivedVal);
+
+					reportTestCase.addContent(failure);
+			}
+			
+			
+			root.addContent(reportTestCase);
 		}
 		
 		Element reportExcutedTests = new Element("EXECUTEDTESTS");

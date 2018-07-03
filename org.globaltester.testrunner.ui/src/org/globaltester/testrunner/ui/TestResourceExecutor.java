@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
@@ -38,6 +39,7 @@ import org.globaltester.testrunner.preferences.PreferenceConstants;
 import org.globaltester.testrunner.testframework.AbstractTestExecution;
 import org.globaltester.testrunner.testframework.IExecution;
 import org.globaltester.testrunner.testframework.TestCaseExecution;
+import org.globaltester.testrunner.ui.editor.ReportGenerationJob;
 import org.globaltester.testrunner.ui.views.ResultView;
 import org.globaltester.testrunner.utils.IntegrityCheckResult;
 import org.globaltester.testrunner.utils.TestSpecIntegrityChecker;
@@ -145,13 +147,12 @@ public abstract class TestResourceExecutor extends TestExecutor {
 //					TestLogger.info("Session failures: " + execution.getNumberOfTestsWithStatus(Status.FAILURE));
 //					TestLogger.info("Session warnings: " + execution.getNumberOfTestsWithStatus(Status.WARNING));
 					
-					//FIXME AAC implement automatic report generation
-//					IPreferenceStore store = Activator.getDefault().getPreferenceStore();
-//					boolean automaticReport = store.getBoolean(PreferenceConstants.P_AUTOMATICREPORT);
-			//
-//					if (automaticReport) {
-//						TestReport.generate(this, ReportXML.getDefaultDestinationDir());
-//					}
+					IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+					boolean automaticReport = store.getBoolean(PreferenceConstants.P_REPORT_AUTOMATIC);
+					if (automaticReport) {
+						Job job = new ReportGenerationJob(execution, null); //FIXME MBK who to handle this Shell in RemoteControl scenario?
+						job.schedule();
+					}
 
 				} catch (Exception e) {
 					GtErrorLogger.log(Activator.PLUGIN_ID, e);
