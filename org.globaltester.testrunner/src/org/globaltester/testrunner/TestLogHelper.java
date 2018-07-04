@@ -22,17 +22,15 @@ import org.osgi.framework.BundleContext;
  * @author amay
  *
  */
-public final class TestRunLogHelper {
+public final class TestLogHelper {
 
 	/**
 	 * This class does not need to be instantiated as it provides only static
 	 * methods
 	 */
-	private TestRunLogHelper() {
+	private TestLogHelper() {
 
 	}
-
-	// FIXME AAE find a better name for this class and method
 
 	public static void dumpLogfileHeaderToTestLogger() {
 		Date now = new Date();
@@ -43,18 +41,18 @@ public final class TestRunLogHelper {
 		TestLogger.info("Starting new test session at " + df.format(now));
 		TestLogger.info("Test executed by: " + System.getProperty("user.name"));
 
-		if (!TestRunLogHelper.checkJavaVersion()) {
+		if (!TestLogHelper.checkJavaVersion()) {
 			return;
 		}
 
-		TestRunLogHelper.checkJCEUnlimitedPolicy();
+		TestLogHelper.checkJCEUnlimitedPolicy();
 
 		TestLogger.debug("Operating system: " + System.getProperty("os.name") + " " + System.getProperty("os.version")
 				+ "  (" + System.getProperty("os.arch") + ")");
 
 		TestLogger.debug("User directory: " + System.getProperty("user.dir"));
 
-		TestRunLogHelper.findAndLogGtPlugins();
+		TestLogHelper.findAndLogGtPlugins();
 
 		SmartCardShellInfo.checkCardReader();
 	}
@@ -94,7 +92,7 @@ public final class TestRunLogHelper {
 			}
 
 		} catch (NoSuchAlgorithmException e) {
-			BasicLogger.logException(TestRunLogHelper.class, e);
+			BasicLogger.logException(TestLogHelper.class, e);
 			TestLogger.info("WARNING: AES Cipher unknown!");
 		}
 	}

@@ -113,6 +113,7 @@ public class ReportGenerationJob extends Job {
 			
 			@Override
 			public void run() {
+				//XXX  migrate this to UserInteraction as soon as UserInteraction support generic String responses 
 				if (shell == null) {
 					shell = PlatformUI.getWorkbench().getModalDialogShellProvider().getShell();
 				}

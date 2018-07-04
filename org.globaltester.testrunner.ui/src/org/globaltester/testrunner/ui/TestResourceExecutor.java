@@ -34,7 +34,7 @@ import org.globaltester.scriptrunner.TestExecutionCallback;
 import org.globaltester.scriptrunner.TestExecutionCallback.SubTestResult;
 import org.globaltester.scriptrunner.TestExecutor;
 import org.globaltester.scriptrunner.TestResourceExecutorLock;
-import org.globaltester.testrunner.TestRunLogHelper;
+import org.globaltester.testrunner.TestLogHelper;
 import org.globaltester.testrunner.preferences.PreferenceConstants;
 import org.globaltester.testrunner.testframework.AbstractTestExecution;
 import org.globaltester.testrunner.testframework.IExecution;
@@ -111,7 +111,7 @@ public abstract class TestResourceExecutor extends TestExecutor {
 
 					TestLogger.init(getLoggingDir(resources));
 					
-					TestRunLogHelper.dumpLogfileHeaderToTestLogger();
+					TestLogHelper.dumpLogfileHeaderToTestLogger();
 					
 					
 					// check integrity
@@ -124,19 +124,12 @@ public abstract class TestResourceExecutor extends TestExecutor {
 					// execute the TestExecutable
 					execution.execute(runtimeRequirements, false, monitor);
 					
-					//FIXME AAD warning message when no testcases where executed
-					// display warning message if no test cases where executed (and the user was not informed about the abort earlier)
-//					if (!abortExecution && !wasTestsApplicable()) {
-//						interaction.notify(SeverityLevel.WARNING, "No testcases have been executed! Probably none of the selected cases was applicable to your sample. ");
-//					}
-					
-					TestRunLogHelper.dumpLogfileFooterToTestLogger(execution);
-
+					TestLogHelper.dumpLogfileFooterToTestLogger(execution);
 					
 					IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 					boolean automaticReport = store.getBoolean(PreferenceConstants.P_REPORT_AUTOMATIC);
 					if (automaticReport) {
-						Job job = new ReportGenerationJob(execution, null); //FIXME MBK who to handle this Shell in RemoteControl scenario?
+						Job job = new ReportGenerationJob(execution, null);
 						job.schedule();
 					}
 

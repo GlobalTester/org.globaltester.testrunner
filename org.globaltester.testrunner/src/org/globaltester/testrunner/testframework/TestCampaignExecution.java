@@ -71,7 +71,6 @@ public class TestCampaignExecution extends FileTestExecution {
 
 	private void initFromTestCampaign() throws CoreException {
 		setId(getTestCampaign().getName());
-		//FIXME AAD persist TestCaseExecutions (optionally) from TestSetExecution
 		addChildExecution(new TestSetExecution(getTestCampaign().getTestSet(), getTestCampaign()));
 	}
 

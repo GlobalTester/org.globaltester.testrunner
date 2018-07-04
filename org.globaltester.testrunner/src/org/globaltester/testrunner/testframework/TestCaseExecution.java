@@ -78,7 +78,6 @@ public class TestCaseExecution extends FileTestExecution {
 	}
 
 	private void createChildrenFromParameters(TestCase testCase) {
-		//FIXME AAF rethink naming/numbering of stateFiles (f.e. create ChildExecutions for all Elements while execution)
 		ParameterGenerator generator = testCase.getParameterGenerator();
 		
 		for (TestCaseParameter curParameter : generator.generateParameters()) {

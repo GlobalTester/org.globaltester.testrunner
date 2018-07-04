@@ -18,7 +18,6 @@ import org.globaltester.testspecification.testframework.ITestExecutable;
 import org.globaltester.testspecification.testframework.TestSet;
 import org.jdom.Element;
 
-//FIXME AAF read this class for consistency (e.g. string labels etc)
 public class TestSetExecution extends FileTestExecution {
 	
 	public static final String XML_ELEMENT = "TestSetExecution";
@@ -104,7 +103,6 @@ public class TestSetExecution extends FileTestExecution {
 					FileTestExecution tcExecution = FileTestExecutionFactory.createExecution(curFileTestCase, campaign);
 					addChildExecution(tcExecution);
 				} else {
-					//FIXME AAD handle this situation appropriately (i.e. interact with user)
 					throw new RuntimeException("Unsupported type of TestExecutable: " + curTestExecutable);
 				}
 
