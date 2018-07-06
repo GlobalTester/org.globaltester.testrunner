@@ -98,9 +98,8 @@ public class ActionStepExecutor {
 					return ResultFactory.newFailure(Status.FAILURE, 0, TestLogger.getLogFileLine(), jse.toString());
 				}
 			} else {
-				// this exception is thrown e. g. by ECMA exceptions
-				// this might be a following error, so handle it as warning
-				return ResultFactory.newFailure(Status.WARNING, 0, TestLogger.getLogFileLine(), ex.toString());
+				// treat everything else as Failure
+				return ResultFactory.newFailure(Status.FAILURE, 0, TestLogger.getLogFileLine(), ex.toString());
 			}
 		}
 		
