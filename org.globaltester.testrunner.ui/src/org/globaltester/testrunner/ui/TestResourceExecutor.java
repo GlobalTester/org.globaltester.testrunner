@@ -20,10 +20,10 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
 import org.globaltester.base.PreferenceHelper;
 import org.globaltester.base.UserInteraction;
 import org.globaltester.logging.BasicLogger;
@@ -160,7 +160,7 @@ public abstract class TestResourceExecutor extends TestExecutor {
 	}
 
 	private void showTestExecutionInResultView(AbstractTestExecution execution) {
-		PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				IWorkbenchPage page = Activator.getDefault().getWorkbench()
 						.getActiveWorkbenchWindow().getActivePage();
