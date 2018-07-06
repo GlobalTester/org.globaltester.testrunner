@@ -231,7 +231,9 @@ public class TestCampaignEditor extends EditorPart implements SelectionListener,
 		sampleConfigViewer.setActive(false);
 		
 		Composite execStateTreeComp = new Composite(grpExecutionresults, SWT.NONE);
-		execStateTreeComp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1));
+		GridData gdExecState = new GridData(SWT.FILL, SWT.FILL, false, true);
+		gdExecState.heightHint = 200;
+		execStateTreeComp.setLayoutData(gdExecState);
 		
 		//show the ExecutionResults of the currently selected TestCampaignExecution
 		resultViewer = new TestExecutionResultViewer(execStateTreeComp, this);
