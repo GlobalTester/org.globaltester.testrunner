@@ -10,7 +10,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.ThreadFactory;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -29,6 +28,7 @@ import org.globaltester.base.UserInteraction;
 import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.legacy.logger.GtErrorLogger;
 import org.globaltester.logging.legacy.logger.TestLogger;
+import org.globaltester.logging.tags.LogLevel;
 import org.globaltester.scriptrunner.GtRuntimeRequirements;
 import org.globaltester.scriptrunner.TestExecutionCallback;
 import org.globaltester.scriptrunner.TestExecutionCallback.SubTestResult;
@@ -60,31 +60,26 @@ public abstract class TestResourceExecutor extends TestExecutor {
 			TestExecutionCallback callback) {
 
 		// execute the TestCampaign
-		Job job = new Job("Executing tests...") {
+		String jobName = "Executing tests...";
+		return  new Job(jobName) {
 
 			protected IStatus run(IProgressMonitor monitor) {
 
 				ThreadGroup threadGroup = new ThreadGroup(
 						"TestResourceExecutor thread group " + Calendar.getInstance().getTimeInMillis());
-				ExecutorService executor = Executors.newSingleThreadExecutor(new ThreadFactory() {
-
-					@Override
-					public Thread newThread(Runnable r) {
-						return new Thread(threadGroup, r);
-					}
-				});
+				ExecutorService executor = Executors.newSingleThreadExecutor( r -> new Thread(threadGroup, r));
 				Future<IStatus> future = executor
 						.submit(getExecutionCallable(resources, runtimeRequirements, callback, monitor));
 
 				try {
 					return future.get();
 				} catch (InterruptedException | ExecutionException e) {
+					BasicLogger.logException("Job " + jobName + " was aborted", e, LogLevel.WARN);
 					return Status.CANCEL_STATUS;
 				}
 			}
 		};
 
-		return job;
 	}
 
 	protected Callable<IStatus> getExecutionCallable(final List<IResource> resources,

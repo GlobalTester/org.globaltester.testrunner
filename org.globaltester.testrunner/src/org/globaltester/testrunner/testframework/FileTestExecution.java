@@ -7,6 +7,8 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.globaltester.base.xml.XMLHelper;
+import org.globaltester.logging.BasicLogger;
+import org.globaltester.logging.tags.LogLevel;
 import org.globaltester.testrunner.GtTestCampaignProject;
 import org.globaltester.testspecification.testframework.ITestExecutable;
 import org.globaltester.testspecification.testframework.TestExecutableFactory;
@@ -49,8 +51,7 @@ public abstract class FileTestExecution extends CompositeTestExecution {
 	/**
 	 * Initialize all values required for this instance form the already set
 	 * variable iFile
-	 */
-	
+	 */	
 	protected void initFromIFile() throws CoreException {
 		Assert.isNotNull(iFile);
 		Document doc = XMLHelper.readDocument(iFile);
@@ -150,13 +151,12 @@ public abstract class FileTestExecution extends CompositeTestExecution {
 	ITestExecutable cachedExecutable = null;
 	@Override
 	public ITestExecutable getExecutable() {
-		if (cachedExecutable == null) {
-			if (specFile != null) {
-				try {
-					cachedExecutable = TestExecutableFactory.getInstance(specFile);
-				} catch (CoreException e) {
-					return null;
-				}
+		if ((cachedExecutable == null) && (specFile != null)) {
+			try {
+				cachedExecutable = TestExecutableFactory.getInstance(specFile);
+			} catch (CoreException e) {
+				BasicLogger.logException("Unable to deserialize TestExecutable", e, LogLevel.WARN);
+				return null;
 			}
 		}
 		return cachedExecutable;

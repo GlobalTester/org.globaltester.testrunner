@@ -318,8 +318,8 @@ public class TestExecutionResultViewer implements SelectionListener, ResultChang
 				textEditor.selectAndReveal(document.getLineOffset(line),
 						document.getLineLength(line));
 
-			} catch (BadLocationException e) {
-				// invalid text position -> do nothing
+			} catch (BadLocationException e) { //NOSONAR
+				//invalid text position -> do nothing
 			}
 		}
 	}

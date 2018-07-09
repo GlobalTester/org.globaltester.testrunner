@@ -341,14 +341,10 @@ public class TestSpecIntegrityChecker {
 			}
 			return Arrays.asList(bundleSymbolicNames);
 			
-		} catch (FileNotFoundException e) {
-			TestLogger.error("Manifest File not found!");
-			return Collections.emptyList();
 		} catch (IOException e) {
-			e.printStackTrace();
+			TestLogger.error("Unable to get required bundles from Manifest file", e);
+			return Collections.emptyList();
 		}
-		
-		return Collections.emptyList();
 	}
 
 	
