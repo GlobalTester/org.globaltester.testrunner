@@ -1,8 +1,8 @@
 package org.globaltester.testrunner.ui.commands;
 
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -117,34 +117,26 @@ public class CreateTestCampaignCommandHandler extends AbstractHandler {
 	}
 	
 	/**
-	 * This method extracts test cases from grouped TestCases (TestSuites, TestUnits and TestLayers)
+	 * This method extracts TestCases from grouped entities (e.g. TestSuites, TestUnits and TestLayers)
 	 * @param testExecutableFiles: A Collection of iFiles (Test Cases, Suites etc.)
 	 * @return list of test files
 	 */
-	public static Collection<IFile> analyzeTestCollections(Collection<IFile> testExecutableFiles) {
-		//Analyze TestSuites, Units and Layers for testcases
-		LinkedList<IFile> foundTestsInSuite = new LinkedList<IFile>();
-		LinkedList<IFile> filesToRemove = new LinkedList<IFile>(); //only Testcases are added to the campaign. Therefore Suites etc. are removed from the file list after the extraction of the tests
-		Iterator<IFile> execFilesIter = testExecutableFiles.iterator();
-		while (execFilesIter.hasNext()) {
-			
-			IFile iFile = execFilesIter.next();
+	public static List<IFile> analyzeListOfTests(List<IFile> testExecutableFiles) {
+		LinkedList<IFile> retVal = new LinkedList<>();
+		
+		for (IFile iFile : testExecutableFiles) {
 			
 			if(TestSuiteLegacy.isFileRepresentation(iFile)){
-				foundTestsInSuite.addAll(TestSuiteLegacy.extractTests(iFile));
-				filesToRemove.add(iFile);
+				retVal.addAll(TestSuiteLegacy.extractTests(iFile));
 			} else if(TestUnit.isFileRepresentation(iFile)){
-				foundTestsInSuite.addAll(TestUnit.extractTests(iFile));
-				filesToRemove.add(iFile);
+				retVal.addAll(TestUnit.extractTests(iFile));
 			} else if(TestLayer.isFileRepresentation(iFile)){
-				foundTestsInSuite.addAll(TestLayer.extractTests(iFile));
-				filesToRemove.add(iFile);
+				retVal.addAll(TestLayer.extractTests(iFile));
+			} else {
+				retVal.add(iFile);
 			}
 		}
-		testExecutableFiles.removeAll(filesToRemove);
-		testExecutableFiles.addAll(foundTestsInSuite);
-		
-		return testExecutableFiles;
+		return retVal;
 	}
 
 	public static GtTestCampaignProject createTestCampaignProject(
@@ -160,7 +152,7 @@ public class CreateTestCampaignCommandHandler extends AbstractHandler {
 	}
 
 	public static GtTestCampaignProject createTestCampaignProject(
-			String projectName, Collection<IFile> testExecutableFiles, Shell shell)
+			String projectName, List<IFile> testExecutableFiles, Shell shell)
 			throws CoreException {
 		
 		// create the new TestCampaign project
@@ -170,7 +162,7 @@ public class CreateTestCampaignCommandHandler extends AbstractHandler {
 				.getProjectForResource(iProject);
 
 		//Analyze TestSuites, Units and Layers for testcases
-		testExecutableFiles=analyzeTestCollections(testExecutableFiles);
+		testExecutableFiles=analyzeListOfTests(testExecutableFiles);
 		
 		// add the selected resources to the list of executables
 		Iterator<IFile> execFilesIter = testExecutableFiles.iterator();

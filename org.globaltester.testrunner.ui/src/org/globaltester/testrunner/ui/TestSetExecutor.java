@@ -66,7 +66,7 @@ public class TestSetExecutor extends TestResourceExecutor {
 		}
 		
 		//check TestUnits and TestLayers
-		files = (List<IFile>) CreateTestCampaignCommandHandler.analyzeTestCollections(files);
+		files = CreateTestCampaignCommandHandler.analyzeListOfTests(files);
 		
 		TestSet testSet = new TestSet(files);
 		
