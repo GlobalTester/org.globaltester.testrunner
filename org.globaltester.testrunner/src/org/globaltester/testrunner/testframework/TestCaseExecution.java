@@ -10,6 +10,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.globaltester.logging.legacy.logger.TestLogger;
 import org.globaltester.sampleconfiguration.SampleConfig;
+import org.globaltester.sampleconfiguration.profiles.expressions.AndProfileExpression;
+import org.globaltester.sampleconfiguration.profiles.expressions.ProfileExpression;
 import org.globaltester.scriptrunner.GtRuntimeRequirements;
 import org.globaltester.scriptrunner.ScriptRunner;
 import org.globaltester.scriptrunner.ScshScope;
@@ -114,11 +116,15 @@ public class TestCaseExecution extends FileTestExecution {
 		
 		if (testCaseParameter != null) {
 			runtimeReqs.put(TestCaseParameter.class, testCaseParameter);
+			TestLogger.debug("Using test case parameter:" + testCaseParameter);
 			createChildrenFromActionSteps(testCase);
 		} else {		
 			createChildrenFromParameters(testCase);
 		}
-			
+		
+		// Update the tree structure after adding children for all listeners
+		notifyResultChangeListeners(this);
+		
 		monitor.beginTask("Execute TestCase "+getId() , getChildren().size());
 		
 		//make sure that failures are counted for each test case separately
@@ -153,9 +159,20 @@ public class TestCaseExecution extends FileTestExecution {
 		
 		// check if test case is applicable
 		TestLogger.info("Check test case profiles");
-		if (!testCase.getProfileExpression().evaluate(runtimeReqs.get(SampleConfig.class))){
+		
+
+
+		ProfileExpression profileExpression = testCase.getProfileExpression();
+		if (testCaseParameter != null) {
+			Object profileParam = testCaseParameter.get("profile");
+			if (profileParam != null && profileParam instanceof String) {
+				profileExpression = new AndProfileExpression(profileExpression, testCase.getProfileExpression((String) profileParam));
+			}
+		}
+		
+		if (!profileExpression.evaluate(runtimeReqs.get(SampleConfig.class))){
 			result.status = Status.NOT_APPLICABLE;
-			result.comment = "Profiles not fulfilled.";
+			result.comment = "Profiles " + profileExpression + " not fulfilled.";
 			TestLogger.info("Test case not applicable");
 			return;
 		}
