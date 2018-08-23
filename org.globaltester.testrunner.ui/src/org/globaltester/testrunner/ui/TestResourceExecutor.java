@@ -50,8 +50,8 @@ public abstract class TestResourceExecutor extends TestExecutor {
 	protected void addRuntimeRequirements(GtRuntimeRequirements runtimeReqs) {
 		
 		//add o.g.protocol.Activator 
-		if (!runtimeReqs.containsKey(org.globaltester.protocol.Activator.class)) {
-			runtimeReqs.put(org.globaltester.protocol.Activator.class, org.globaltester.protocol.Activator.getDefault());
+		if (!runtimeReqs.containsKey(org.globaltester.sampleconfiguration.Activator.class)) {
+			runtimeReqs.put(org.globaltester.sampleconfiguration.Activator.class, org.globaltester.sampleconfiguration.Activator.getDefault());
 		}
 	}
 
