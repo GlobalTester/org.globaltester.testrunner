@@ -27,7 +27,7 @@ public class Result implements Serializable{
 	public static final String STATUS_REQUIREMENT_MISSING = "REQUIREMENT_MISSING";
 
 	private static final long serialVersionUID = 1690869079522455149L;
-
+	
 	public enum Status {
 		PASSED(STATUS_PASSED,0), WARNING(STATUS_WARNING,2), FAILURE(STATUS_FAILURE,1), UNDEFINED(STATUS_UNDEFINED,4), NOT_APPLICABLE(STATUS_NOT_APPLICABLE,3), REQUIREMENT_MISSING(STATUS_REQUIREMENT_MISSING,5);
 		
@@ -106,7 +106,21 @@ public class Result implements Serializable{
 	}
 
 	/**
-	 * Add a new subResult and rebuild the overall status
+	 * Add a new subResult and rebuild the overall status.
+	 * 
+	 * Priority of the status during rebuilding is as follows:
+	 * 
+	 * <ol>
+	 * 	<li>{@link Status#FAILURE}</li>
+	 * 	<li>{@link Status#REQUIREMENT_MISSING}</li>
+	 * 	<li>{@link Status#WARNING}</li>
+	 * 	<li>{@link Status#UNDEFINED}</li>
+	 * 	<li>{@link Status#PASSED}</li>
+	 * 	<li>{@link Status#NOT_APPLICABLE}</li>
+	 * </ol>
+	 * 
+	 * This decides the overall status after adding a new sub result.
+	 * The overall status will be the highest priority status that is found in all sub results.
 	 * 
 	 * @param result
 	 */
@@ -121,27 +135,43 @@ public class Result implements Serializable{
 	 * By default this returns the worst status given by a sub result.
 	 */
 	void rebuildStatus() {
-		Status tmpStatus = Status.PASSED;
+		Status tmpStatus = Status.NOT_APPLICABLE;
 
-		// search worst status in sub results
 		Iterator<Result> subResultIter = subResults.iterator();
-		iterationLoop: while (subResultIter.hasNext()) {
-			Result curResult = (Result) subResultIter.next();
-			switch (curResult.getStatus()) {
+		while (subResultIter.hasNext()) {
+			Status curStatus = ((Result) subResultIter.next()).getStatus();
+
+			if (curStatus == Status.FAILURE) {
+				tmpStatus = curStatus;
+				break;
+			}
+			
+			switch (tmpStatus) {
+			case NOT_APPLICABLE:
+				if (curStatus == Status.FAILURE || curStatus == Status.REQUIREMENT_MISSING || curStatus == Status.WARNING || curStatus == Status.UNDEFINED || curStatus == Status.PASSED) {
+					tmpStatus = curStatus;
+				}
+				break;
+			case PASSED:
+				if (curStatus == Status.FAILURE || curStatus == Status.REQUIREMENT_MISSING || curStatus == Status.WARNING || curStatus == Status.UNDEFINED) {
+					tmpStatus = curStatus;
+				}
+				break;
 			case UNDEFINED:
-				if (tmpStatus == Status.PASSED) {
-					tmpStatus = Status.UNDEFINED;
+				if (curStatus == Status.FAILURE || curStatus == Status.REQUIREMENT_MISSING || curStatus == Status.WARNING) {
+					tmpStatus = curStatus;
+				}
+				break;
+			case WARNING:
+				if (curStatus == Status.FAILURE || curStatus == Status.REQUIREMENT_MISSING) {
+					tmpStatus = curStatus;
 				}
 				break;
 			case REQUIREMENT_MISSING:
-				tmpStatus = Status.REQUIREMENT_MISSING;
-				break iterationLoop;
-			case WARNING:
-				tmpStatus = Status.WARNING;
+				if (curStatus == Status.FAILURE) {
+					tmpStatus = curStatus;
+				}
 				break;
-			case FAILURE:
-				tmpStatus = Status.FAILURE;
-				break iterationLoop;
 			default:
 				break;
 			}
