@@ -18,6 +18,7 @@ import org.globaltester.scriptrunner.ScshScope;
 import org.globaltester.testrunner.GtTestCampaignProject;
 import org.globaltester.testrunner.testframework.Result.Status;
 import org.globaltester.testspecification.testframework.ITestExecutable;
+import org.globaltester.testspecification.testframework.ParameterGenerationFailedException;
 import org.globaltester.testspecification.testframework.ParameterGenerator;
 import org.globaltester.testspecification.testframework.PostCondition;
 import org.globaltester.testspecification.testframework.PreCondition;
@@ -79,16 +80,21 @@ public class TestCaseExecution extends FileTestExecution {
 		}
 	}
 
-	private void createChildrenFromParameters(TestCase testCase) {
+	private void createChildrenFromParameters(TestCase testCase, GtRuntimeRequirements runtimeReqs) throws ParameterGenerationFailedException {
 		ParameterGenerator generator = testCase.getParameterGenerator();
 		
-		for (TestCaseParameter curParameter : generator.generateParameters()) {
+		for (TestCaseParameter curParameter : generator.generateParameters(runtimeReqs.get(SampleConfig.class))) {
 			try {
 				addChildExecution(new TestCaseExecution(getNewStateFile(), testCase, curParameter));
 			} catch (CoreException e) {
-				throw new IllegalStateException("Unable to create child execution", e);
+				throw new ParameterGenerationFailedException(e);
 			}
 		}
+		if (childExecutions.isEmpty()) {
+			result.status = Status.NOT_APPLICABLE;
+			result.comment = "Parameter generation resulted in no applicable test case instances";
+			TestLogger.warn(result.comment);
+		} 
 	}
 
 	private IFile getNewStateFile() throws CoreException {
@@ -118,8 +124,16 @@ public class TestCaseExecution extends FileTestExecution {
 			runtimeReqs.put(TestCaseParameter.class, testCaseParameter);
 			TestLogger.debug("Using test case parameter:" + testCaseParameter);
 			createChildrenFromActionSteps(testCase);
-		} else {		
-			createChildrenFromParameters(testCase);
+		} else {
+			try {
+				createChildrenFromParameters(testCase, runtimeReqs);
+			} catch (RuntimeException | ParameterGenerationFailedException e) {
+				result.status = Status.FAILURE;
+				result.comment = ParameterGenerationFailedException.DEFAULT_MSG;
+				TestLogger.error(ParameterGenerationFailedException.DEFAULT_MSG);
+				return;
+			}
+
 		}
 		
 		// Update the tree structure after adding children for all listeners
