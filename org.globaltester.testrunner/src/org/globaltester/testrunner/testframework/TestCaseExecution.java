@@ -120,25 +120,6 @@ public class TestCaseExecution extends FileTestExecution {
 			testCaseParameter = TestCaseParameter.UNPARAMETERIZED;
 		}
 		
-		if (testCaseParameter != null) {
-			runtimeReqs.put(TestCaseParameter.class, testCaseParameter);
-			TestLogger.debug("Using test case parameter:" + testCaseParameter);
-			createChildrenFromActionSteps(testCase);
-		} else {
-			try {
-				createChildrenFromParameters(testCase, runtimeReqs);
-			} catch (RuntimeException | ParameterGenerationFailedException e) {
-				result.status = Status.FAILURE;
-				result.comment = ParameterGenerationFailedException.DEFAULT_MSG;
-				TestLogger.error(ParameterGenerationFailedException.DEFAULT_MSG);
-				return;
-			}
-
-		}
-		
-		// Update the tree structure after adding children for all listeners
-		notifyResultChangeListeners(this);
-		
 		monitor.beginTask("Execute TestCase "+getId() , getChildren().size());
 		
 		//make sure that failures are counted for each test case separately
@@ -165,12 +146,6 @@ public class TestCaseExecution extends FileTestExecution {
 			return;
 		}
 		
-		IContainer scriptRoot = ResourcesPlugin.getWorkspace().getRoot();
-		String workingDir = testCase.getIFile().getParent().getLocation().toOSString();
-		sr = new ScriptRunner(scriptRoot, workingDir, runtimeReqs);
-		sr.init(new ScshScope(sr));
-		runtimeReqs.put(ScriptRunner.class, sr);
-		
 		// check if test case is applicable
 		TestLogger.info("Check test case profiles");
 		
@@ -196,6 +171,27 @@ public class TestCaseExecution extends FileTestExecution {
 			TestLogger.info("Test case not applicable");
 			return;
 		}
+		
+		if (testCaseParameter != null) {
+			runtimeReqs.put(TestCaseParameter.class, testCaseParameter);
+			createChildrenFromActionSteps(testCase);
+		} else {
+			try {
+				createChildrenFromParameters(testCase, runtimeReqs);
+			} catch (RuntimeException | ParameterGenerationFailedException e) {
+				result.status = Status.FAILURE;
+				result.comment = ParameterGenerationFailedException.DEFAULT_MSG;
+				TestLogger.error(ParameterGenerationFailedException.DEFAULT_MSG);
+				return;
+			}
+
+		}
+		
+		IContainer scriptRoot = ResourcesPlugin.getWorkspace().getRoot();
+		String workingDir = testCase.getIFile().getParent().getLocation().toOSString();
+		sr = new ScriptRunner(scriptRoot, workingDir, runtimeReqs);
+		sr.init(new ScshScope(sr));
+		runtimeReqs.put(ScriptRunner.class, sr);
 
 		// iterate over all ActionSteps
 		TestLogger.info("Running ActionSteps");
