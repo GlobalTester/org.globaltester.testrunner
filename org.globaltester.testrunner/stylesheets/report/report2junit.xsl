@@ -16,7 +16,9 @@
  
 <xsl:template match="TESTREPORT">
  	<testsuite>
-  	
+        <xsl:attribute name="time"><xsl:value-of select="TESTSESSIONTIME" /></xsl:attribute>
+        <xsl:attribute name="tests"><xsl:value-of select="EXECUTEDTESTS" /></xsl:attribute>
+        <xsl:attribute name="failures"><xsl:value-of select="FAILEDTESTS" /></xsl:attribute>  	
   	<xsl:apply-templates select="TESTCASE" />
  	
  	</testsuite>
@@ -26,6 +28,7 @@
     <testcase>
         <xsl:attribute name="classname">org.globaltester.testmanager.testframework.TestCase<xsl:value-of select="$classNameExtension" /></xsl:attribute>
         <xsl:attribute name="name"><xsl:value-of select="TESTCASEID" /></xsl:attribute>
+        <xsl:attribute name="time"><xsl:value-of select="TESTCASETIME" /></xsl:attribute>
 
     <xsl:apply-templates select="TESTCASEFAILURE" />
     
