@@ -165,8 +165,14 @@ public class TestCaseExecution extends FileTestExecution {
 		ProfileExpression profileExpression = testCase.getProfileExpression();
 		if (testCaseParameter != null) {
 			Object profileParam = testCaseParameter.get("profile");
-			if (profileParam != null && profileParam instanceof String) {
-				profileExpression = new AndProfileExpression(profileExpression, testCase.getProfileExpression((String) profileParam));
+			if (profileParam != null ) {
+				if (profileParam instanceof String) {
+					profileExpression = new AndProfileExpression(profileExpression, testCase.getProfileExpression((String) profileParam));
+				} else {
+					result.status = Status.FAILURE;
+					result.comment = "Profile expression from TestCaseParameter not parsable";
+					return;
+				}
 			}
 		}
 		
