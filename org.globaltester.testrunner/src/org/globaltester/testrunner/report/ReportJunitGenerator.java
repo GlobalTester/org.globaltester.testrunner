@@ -51,7 +51,7 @@ public class ReportJunitGenerator {
 		File styleSheet = styleSheetPath.toFile();
 
 		// transform the xml report
-		TransformerFactory factory = TransformerFactory.newInstance();
+		TransformerFactory factory = TransformerFactory.newInstance(); //NOSONAR
 		try (FileOutputStream outputStream = new FileOutputStream(destFile)){
 			Transformer transformer = factory.newTransformer(new StreamSource(styleSheet));
 				Result res = new StreamResult(outputStream);
