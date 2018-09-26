@@ -192,6 +192,9 @@ public class TestCaseExecution extends FileTestExecution {
 		sr = new ScriptRunner(scriptRoot, workingDir, runtimeReqs);
 		sr.init(new ScshScope(sr));
 		runtimeReqs.put(ScriptRunner.class, sr);
+		
+
+		runtimeReqs.put(TestCaseExecution.class, this);
 
 		// iterate over all ActionSteps
 		TestLogger.info("Running ActionSteps");
