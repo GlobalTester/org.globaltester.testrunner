@@ -8,6 +8,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.legacy.logger.TestLogger;
 import org.globaltester.sampleconfiguration.SampleConfig;
 import org.globaltester.sampleconfiguration.profiles.expressions.AndProfileExpression;
@@ -76,6 +77,8 @@ public class TestCaseExecution extends FileTestExecution {
 				addChildExecution(new TestStepExecution(this, childIndex++));
 			} else if (curChild instanceof PostCondition) {
 				addChildExecution(new PostConditionExecution(this, childIndex++));
+			} else {
+				BasicLogger.log(getClass(), "Found unknown child in TestCase, ignored.");
 			}
 		}
 	}
@@ -179,6 +182,7 @@ public class TestCaseExecution extends FileTestExecution {
 			try {
 				createChildrenFromParameters(testCase, runtimeReqs);
 			} catch (RuntimeException | ParameterGenerationFailedException e) {
+				BasicLogger.logException(getClass(), "Unable to generate parametrized TestcaseExecutions", e);
 				result.status = Status.FAILURE;
 				result.comment = ParameterGenerationFailedException.DEFAULT_MSG;
 				TestLogger.error(ParameterGenerationFailedException.DEFAULT_MSG);
