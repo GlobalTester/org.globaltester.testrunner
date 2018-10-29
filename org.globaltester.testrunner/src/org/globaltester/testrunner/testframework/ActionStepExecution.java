@@ -55,7 +55,7 @@ public abstract class ActionStepExecution extends AbstractTestExecution {
 
 			monitor.subTask("Initialization");
 			// log TestStep ID and Command
-			TestLogger.info("TestStep: " + actionStep.getId());
+			TestLogger.info("TestStep: " + actionStep.getId() + " (" + parent.getId() + ")");
 			Element commandElem = actionStep.getCommand();
 			if (commandElem != null) {
 				String command = commandElem.getTextNormalize();
@@ -104,7 +104,7 @@ public abstract class ActionStepExecution extends AbstractTestExecution {
 					ExpectedResult curResult = expResultIter.next();
 
 					monitor.subTask("ExpectedResult: " + curResult.getId());
-					TestLogger.info("ExpectedResult: " + curResult.getId());
+					TestLogger.info("ExpectedResult: " + curResult.getId() + " (" + parent.getId() + ")");
 
 					// log ExpectedResult descriptions
 					Iterator<String> descrIter = curResult.getDescriptions().iterator();
