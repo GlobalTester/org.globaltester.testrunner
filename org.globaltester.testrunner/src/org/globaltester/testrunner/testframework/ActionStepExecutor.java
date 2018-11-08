@@ -40,6 +40,7 @@ public class ActionStepExecutor {
 		//get and execute the code
 		TestLogger.trace("Code:\n" + code);
 		try {
+			scriptRunner.breakNow();
 			scriptRunner.exec(code, sourceName, -1);
 		} catch (EvaluatorException ex) {
 			// this exception is thrown e. g. by asserts
