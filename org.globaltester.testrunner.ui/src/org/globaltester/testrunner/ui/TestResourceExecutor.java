@@ -29,6 +29,7 @@ import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.legacy.logger.GtErrorLogger;
 import org.globaltester.logging.legacy.logger.TestLogger;
 import org.globaltester.logging.tags.LogLevel;
+import org.globaltester.sampleconfiguration.SampleConfig;
 import org.globaltester.scriptrunner.GtRuntimeRequirements;
 import org.globaltester.scriptrunner.TestExecutionCallback;
 import org.globaltester.scriptrunner.TestExecutionCallback.SubTestResult;
@@ -91,6 +92,8 @@ public abstract class TestResourceExecutor extends TestExecutor {
 			public IStatus call() throws Exception {
 				TestResourceExecutorLock.getLock().lock();
 				AbstractTestExecution execution = null;
+				
+				SampleConfig sampleConfig = runtimeRequirements.get(SampleConfig.class);
 
 				try {
 					// create TestExecution from resources					
@@ -105,6 +108,10 @@ public abstract class TestResourceExecutor extends TestExecutor {
 					}
 
 					TestLogger.init(getLoggingDir(resources));
+					
+					if (sampleConfig != null) {
+						sampleConfig.lock();
+					}
 					
 					TestLogHelper.dumpLogfileHeaderToTestLogger();
 					
@@ -133,6 +140,9 @@ public abstract class TestResourceExecutor extends TestExecutor {
 
 					return Status.CANCEL_STATUS;
 				} finally {
+					if (sampleConfig != null) {
+						sampleConfig.unlock();
+					}
 					TestLogger.shutdown();
 					returnTestResultsToCallback(execution, callback);
 					TestResourceExecutorLock.getLock().unlock();
