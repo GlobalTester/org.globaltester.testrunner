@@ -10,8 +10,10 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.legacy.logger.TestLogger;
+import org.globaltester.logging.tags.LogLevel;
 import org.globaltester.sampleconfiguration.SampleConfig;
 import org.globaltester.sampleconfiguration.profiles.expressions.AndProfileExpression;
+import org.globaltester.sampleconfiguration.profiles.expressions.ProfileEvaluationException;
 import org.globaltester.sampleconfiguration.profiles.expressions.ProfileExpression;
 import org.globaltester.scriptrunner.GtRuntimeRequirements;
 import org.globaltester.scriptrunner.ScriptRunner;
@@ -168,10 +170,19 @@ public class TestCaseExecution extends FileTestExecution {
 			}
 		}
 		
-		if (!profileExpression.evaluate(runtimeReqs.get(SampleConfig.class))){
-			result.status = Status.NOT_APPLICABLE;
-			result.comment = "Profiles " + profileExpression + " not fulfilled.";
-			TestLogger.info("Test case not applicable");
+		try {
+			if (!profileExpression.evaluate(runtimeReqs.get(SampleConfig.class))){
+				result.status = Status.NOT_APPLICABLE;
+				result.comment = "Profiles " + profileExpression + " not fulfilled.";
+				TestLogger.info("Test case not applicable");
+				return;
+			}
+		} catch (ProfileEvaluationException e) {
+			BasicLogger.logException(e.getMessage(), e, LogLevel.WARN);
+			ResultFactory.newFailure(Status.FAILURE, 0, TestLogger.getLogFileLine(), e.getMessage());
+			result.status = Status.FAILURE;
+			result.comment = e.getMessage();
+			
 			return;
 		}
 		
