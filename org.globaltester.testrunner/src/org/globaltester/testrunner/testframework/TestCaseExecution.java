@@ -166,7 +166,7 @@ public class TestCaseExecution extends FileTestExecution {
 					profileExpression = new AndProfileExpression(profileExpression, testCase.getProfileExpression((String) profileParam));
 				} else if (profileParam instanceof ArrayList<?>) {
 					ProfileExpression [] params = new ProfileExpression [((ArrayList<?>) profileParam).size() + 1];
-					params[0] = new AndProfileExpression(profileExpression, testCase.getProfileExpression((String) profileParam));
+					params[0] = new AndProfileExpression(profileExpression);
 					for (int i=0; i<params.length-1; i++){
 						ProfileExpression tmpExpr = ProfileMapper.parse((String) (((ArrayList) profileParam).get(i)), testCase.getPropertyFiles());
 						params[i+1] = new AndProfileExpression(tmpExpr);
