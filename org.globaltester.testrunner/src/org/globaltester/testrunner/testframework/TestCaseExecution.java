@@ -1,5 +1,6 @@
 package org.globaltester.testrunner.testframework;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.eclipse.core.resources.IContainer;
@@ -12,6 +13,7 @@ import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.legacy.logger.TestLogger;
 import org.globaltester.logging.tags.LogLevel;
 import org.globaltester.sampleconfiguration.SampleConfig;
+import org.globaltester.sampleconfiguration.profiles.ProfileMapper;
 import org.globaltester.sampleconfiguration.profiles.expressions.AndProfileExpression;
 import org.globaltester.sampleconfiguration.profiles.expressions.ProfileEvaluationException;
 import org.globaltester.sampleconfiguration.profiles.expressions.ProfileExpression;
@@ -162,6 +164,14 @@ public class TestCaseExecution extends FileTestExecution {
 			if (profileParam != null ) {
 				if (profileParam instanceof String) {
 					profileExpression = new AndProfileExpression(profileExpression, testCase.getProfileExpression((String) profileParam));
+				} else if (profileParam instanceof ArrayList<?>) {
+					ProfileExpression [] params = new ProfileExpression [((ArrayList<?>) profileParam).size() + 1];
+					params[0] = new AndProfileExpression(profileExpression);
+					for (int i=0; i<params.length-1; i++){
+						ProfileExpression tmpExpr = ProfileMapper.parse((String) (((ArrayList) profileParam).get(i)), testCase.getPropertyFiles());
+						params[i+1] = new AndProfileExpression(tmpExpr);
+					}
+					profileExpression = new AndProfileExpression(params);
 				} else {
 					result.status = Status.FAILURE;
 					result.comment = "Profile expression from TestCaseParameter not parsable";
