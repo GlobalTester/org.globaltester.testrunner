@@ -235,7 +235,7 @@ public class TestCaseExecution extends FileTestExecution {
 			if (sr != null){
 				sr.close();
 			}
-			TestLogger.info("End execution of " + getId());
+			TestLogger.info("End execution of " + getId() +", result: "+ result.getStatus());
 			TestLogger.info("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< -");
 			TestLogger.shutdownTestCase();
 			monitor.done();
