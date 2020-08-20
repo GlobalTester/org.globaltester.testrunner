@@ -27,6 +27,7 @@ FieldEditorPreferencePage implements IWorkbenchPreferencePage{
 
 	Group customizationGroup;
 	private BooleanFieldEditor bfeIntegrityWarningDialog;
+	private BooleanFieldEditor bfeUserInteractionForGeneratedTests;
 	
 	
 	public GlobalTesterPreferencePageTestrunner() {
@@ -77,6 +78,12 @@ FieldEditorPreferencePage implements IWorkbenchPreferencePage{
 		ComboFieldEditor cfeDoubleClickResultView = new ComboFieldEditor(PreferenceConstants.P_DOUBLECLICKRESULTVIEW, 
 				"Double click in test results shows: ", doubleClicks, customizationGroup);
 		addField(cfeDoubleClickResultView);
+
+		// enable user interaction for generated test cases
+		bfeUserInteractionForGeneratedTests = new BooleanFieldEditor(
+				PreferenceConstants.P_ASK_USER_FOR_GENERATED_TESTS,
+				"Ask user for execution of generated test cases", customizationGroup);
+		addField(bfeUserInteractionForGeneratedTests);
 
 	}
 	
