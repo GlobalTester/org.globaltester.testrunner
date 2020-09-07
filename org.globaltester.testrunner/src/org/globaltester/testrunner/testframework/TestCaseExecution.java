@@ -9,6 +9,8 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.globaltester.base.PreferenceHelper;
+import org.globaltester.base.UserInteraction;
 import org.globaltester.logging.BasicLogger;
 import org.globaltester.logging.legacy.logger.TestLogger;
 import org.globaltester.logging.tags.LogLevel;
@@ -21,6 +23,7 @@ import org.globaltester.scriptrunner.GtRuntimeRequirements;
 import org.globaltester.scriptrunner.ScriptRunner;
 import org.globaltester.scriptrunner.ScshScope;
 import org.globaltester.testrunner.GtTestCampaignProject;
+import org.globaltester.testrunner.preferences.PreferenceConstants;
 import org.globaltester.testrunner.testframework.Result.Status;
 import org.globaltester.testspecification.testframework.ITestExecutable;
 import org.globaltester.testspecification.testframework.ParameterGenerationFailedException;
@@ -179,6 +182,12 @@ public class TestCaseExecution extends FileTestExecution {
 				}
 			}
 		}
+
+		boolean askUser = Boolean.parseBoolean(PreferenceHelper.getPreferenceValue("org.globaltester.testrunner",
+			PreferenceConstants.P_ASK_USER_FOR_GENERATED_TESTS, "false"));
+
+
+
 		
 		try {
 			if (!profileExpression.evaluate(runtimeReqs.get(SampleConfig.class))){
@@ -210,6 +219,21 @@ public class TestCaseExecution extends FileTestExecution {
 				return;
 			}
 
+		}
+		
+		if (!childExecutions.stream().anyMatch(a -> TestCaseExecution.class.isInstance(a)) && askUser){
+			UserInteraction interaction = runtimeReqs.get(UserInteraction.class);
+			switch (interaction.select("Test id: " + this.getId() + "\n\nExecute test case?", null, "Ok", "Skip")) {
+				case 0:
+					TestLogger.debug("Test case applicable (user input).");
+					break;
+				case 1:
+					result.status = Status.NOT_APPLICABLE;
+					result.comment = "User selected skip";
+					TestLogger.info("Test case not applicable (user input).");
+					return;
+				default:
+			}
 		}
 		
 		IContainer scriptRoot = ResourcesPlugin.getWorkspace().getRoot();

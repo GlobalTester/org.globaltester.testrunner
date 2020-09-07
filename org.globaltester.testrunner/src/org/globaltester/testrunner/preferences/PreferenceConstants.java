@@ -6,6 +6,8 @@ public class PreferenceConstants {
 	public static final String P_DOUBLECLICKRESULTVIEW = "DoubleClickResult_opens";
 	public static final String TEST_CASE = "TestCase";
 	public static final String LOG_FILE = "LogFile";
+	
+	public static final String P_ASK_USER_FOR_GENERATED_TESTS = "AskUserForGeneratedTests";
 
 	//checksum validation
 	public static final String P_IGNORECHECKSUMRESULT = "IgnoreChecksumResult";
