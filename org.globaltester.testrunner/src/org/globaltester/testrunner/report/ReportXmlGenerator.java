@@ -238,18 +238,20 @@ public class ReportXmlGenerator {
 	 */
 	public static String formattedTestCaseId (String tcId) {
 		String res = "";
-		String tmp = "";
-		Pattern p = Pattern.compile("LDS.*|ISO.*|EAC.*|TS.*");
+		Pattern p = Pattern.compile("(EAC(1|2)?|TS|ISO(7816|\\_18013\\_4)?|LDS)\\_\\w.(\\d)*");
 		Matcher m = p.matcher(tcId);
 		// check if regex matches
 		if (m.find())
 	    {
 		   res = m.group(0);
-		   // check if found regex is NOT the whole string tcId
-		   if (tcId.indexOf(res)>0) {
-			   tmp = tcId.split(res)[0].replaceAll("_", " ");			   
+		   String [] rest = tcId.split(res);
+		   if (tcId.endsWith(res)) {
+			   res = rest[0].replaceAll("_", " ") + res;
+		   } else if (tcId.startsWith(res)) {			   
+			   res = res + rest[1].replaceAll("_", " ");
+		   } else {
+			   res = rest[0].replaceAll("_", " ") + res + rest[1].replaceAll("_", " ");			   
 		   }
-	  	   res = tmp + res;
 	    } else {
 	       res = tcId.replaceAll("_", " ");
 	    }
