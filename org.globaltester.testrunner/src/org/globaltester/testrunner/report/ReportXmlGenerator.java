@@ -238,7 +238,7 @@ public class ReportXmlGenerator {
 	 */
 	public static String formattedTestCaseId (String tcId) {
 		String res = "";
-		Pattern p = Pattern.compile("(EAC(1|2)?|TS|ISO(7816|\\_18013\\_4)?|LDS)\\_\\w.(\\d)*");
+		Pattern p = Pattern.compile("(EAC(1|2)?|TS|ISO(7816|\\_18013\\_4)?|LDS)\\_[A-Z]+(\\d)*(\\_)?(\\d)+");
 		Matcher m = p.matcher(tcId);
 		// check if regex matches
 		if (m.find())
