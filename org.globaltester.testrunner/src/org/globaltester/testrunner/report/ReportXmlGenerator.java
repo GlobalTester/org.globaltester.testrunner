@@ -6,6 +6,8 @@ import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringJoiner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
@@ -104,7 +106,7 @@ public class ReportXmlGenerator {
 			TestReportPart testReportPart = elemIter.next();
 			Element reportTestCase = new Element("TESTCASE");
 			Element reportTestCaseID = new Element("TESTCASEID");
-			reportTestCaseID.setText(testReportPart.getID());
+			reportTestCaseID.setText(formattedTestCaseId(testReportPart.getID()));
 			reportTestCase.addContent(reportTestCaseID);
 			
 			Element reportTestCaseTime = new Element("TESTCASETIME");
@@ -226,6 +228,32 @@ public class ReportXmlGenerator {
 		root.addContent(reportDirectory);
 
 		return root;
+	}
+	
+	/**
+	 * Format the TestCaseId of this report
+	 * 
+	 * @param tcId
+	 * @return formattedString
+	 */
+	public static String formattedTestCaseId (String tcId) {
+		String res = "";
+		String tmp = "";
+		Pattern p = Pattern.compile("LDS.*|ISO.*|EAC.*|TS.*");
+		Matcher m = p.matcher(tcId);
+		// check if regex matches
+		if (m.find())
+	    {
+		   res = m.group(0);
+		   // check if found regex is NOT the whole string tcId
+		   if (tcId.indexOf(res)>0) {
+			   tmp = tcId.split(res)[0].replaceAll("_", " ");			   
+		   }
+	  	   res = tmp + res;
+	    } else {
+	       res = tcId.replaceAll("_", " ");
+	    }
+		return res;
 	}
 
 	/**
