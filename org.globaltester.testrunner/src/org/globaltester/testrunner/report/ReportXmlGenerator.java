@@ -238,20 +238,16 @@ public class ReportXmlGenerator {
 	 */
 	public static String formattedTestCaseId (String tcId) {
 		String res = "";
-		Pattern p = Pattern.compile("(EAC(1|2)?|TS|ISO(7816|\\_18013\\_4)?|LDS)\\_[A-Z]+(\\_)?(\\d)+");
+		
+		Pattern p = Pattern.compile("^(?<prefix>(EAC(1|2)?|ESIGN)?[_]?((EID)?DATA|7816|ISO(7816|_18013_4)?|LDS))_(?<name>[A-Z]+[_]?([0-9a-zA-Z])+)[_]?(?<postfix>.*)$");
 		Matcher m = p.matcher(tcId);
 		// check if regex matches
-		if (m.find())
+		if (m.find() && m.group("prefix")!= null && !m.group("prefix").isEmpty() && m.group("name")!= null && !m.group("name").isEmpty())
 	    {
-		   res = m.group(0);
-		   String [] rest = tcId.split(res);
-		   if (tcId.endsWith(res)) {
-			   res = rest[0].replaceAll("_", " ") + res;
-		   } else if (tcId.startsWith(res)) {			   
-			   res = res + rest[1].replaceAll("_", " ");
-		   } else {
-			   res = rest[0].replaceAll("_", " ") + res + rest[1].replaceAll("_", " ");			   
-		   }
+			res = m.group("prefix") + " " + m.group("name");
+			if (m.group("postfix") != null && !m.group("postfix").isEmpty()) {
+				res += " " + m.group("postfix");
+			}
 	    } else {
 	       res = tcId.replaceAll("_", " ");
 	    }
