@@ -236,21 +236,22 @@ public class ReportXmlGenerator {
 	 * @param tcId
 	 * @return formattedString
 	 */
-	public static String formattedTestCaseId (String tcId) {
+	public static String formattedTestCaseId(String tcId) {
 		String res = "";
-		
-		Pattern p = Pattern.compile("^(?<prefix>(EAC(1|2)?|ESIGN)?[_]?((EID)?DATA|7816|ISO(7816|_18013_4)?|LDS))_(?<name>[A-Z]+[_]?([0-9a-zA-Z])+)[_]?(?<postfix>.*)$");
+		String prefix = "(SE|TS|R|EAC(1|2)?|ESIGN)?[_]?((EID)?DATA|7816|ISO(7816|_18013_4)?|LDS)?";
+		String name = "((CA|eID|bio|PACE|TA|Sig)_)?[0-9a-zA-Z]*[_]?(([0-9a-zA-Z])+|([0-9a-zA-Z]\\.[0-9a-zA-Z]\\.[0-9a-zA-Z])[_]?[a-z]?)";
+		String postfix = "[a-zA-Z0-9_]*";
+		Pattern p = Pattern.compile("^(?<prefix>" + prefix + ")_(?<name>" + name + ")(_(?<postfix>" + postfix + "))?$");
 		Matcher m = p.matcher(tcId);
 		// check if regex matches
-		if (m.find() && m.group("prefix")!= null && !m.group("prefix").isEmpty() && m.group("name")!= null && !m.group("name").isEmpty())
-	    {
+		if (m.find() && m.group("prefix") != null && !m.group("prefix").isEmpty() && m.group("name") != null && !m.group("name").isEmpty()) {
 			res = m.group("prefix") + " " + m.group("name");
 			if (m.group("postfix") != null && !m.group("postfix").isEmpty()) {
 				res += " " + m.group("postfix");
 			}
-	    } else {
-	       res = tcId.replaceAll("_", " ");
-	    }
+		} else {
+			res = tcId;
+		}
 		return res;
 	}
 
