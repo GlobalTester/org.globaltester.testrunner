@@ -60,7 +60,7 @@ public class TestCaseExecution extends FileTestExecution {
 		this(iFile, testCase);
 		testCaseParameter = param;
 
-		setId(testCase.getName() + "_" + param.getIdSuffix());
+		setId(testCase.getName() + " " + param.getIdSuffix());
 
 		//store this configuration
 		doSave();
