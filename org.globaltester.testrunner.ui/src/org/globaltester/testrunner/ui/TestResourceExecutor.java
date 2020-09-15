@@ -133,6 +133,7 @@ public abstract class TestResourceExecutor extends TestExecutor {
 					if (automaticReport) {
 						Job job = new ReportGenerationJob(execution, null);
 						job.schedule();
+						job.join();
 					}
 
 				} catch (Exception e) {

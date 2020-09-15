@@ -58,15 +58,6 @@ public class ReportXmlGenerator {
 		Element root = new Element("TESTREPORT");
 
 
-		// new tags for spec and release:
-		Element reportSpecName = new Element("SPECNAME");
-		reportSpecName.setText(report.getSpecName());
-		root.addContent(reportSpecName);
-
-		Element reportSpecVersion = new Element("SPECVERSION");
-		reportSpecVersion.setText(report.getSpecVersion());
-		root.addContent(reportSpecVersion);
-
 		Element reportDate = new Element("DATE");
 		reportDate.setText(report.getExecutionTime());
 		root.addContent(reportDate);

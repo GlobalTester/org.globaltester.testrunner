@@ -42,7 +42,7 @@ public class ReportJunitGenerator {
 
 		// get source and target for this transformation from report
 		Source src = new StreamSource(report.getFileName("xml"));
-		File destFile = new File(report.getFileName("junit"));
+		File destFile = new File(report.getFileName()+"-junit.xml");
 
 		// get XSLT-Stylesheet
 		Bundle curBundle = Platform.getBundle(Activator.PLUGIN_ID);

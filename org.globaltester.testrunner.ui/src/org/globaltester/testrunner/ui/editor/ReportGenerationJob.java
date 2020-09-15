@@ -78,12 +78,15 @@ public class ReportGenerationJob extends Job {
 			GtResourceHelper.copyFilesToDir(report.getLogFiles(), report.getReportDir().getAbsolutePath());
 			monitor.worked(1);
 
-			PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
-				@Override
-				public void run() {
-					MessageDialog.openInformation(null, "TestReport", "TestReport exported successfully.");
-				}
-			});
+			if (this.shell != null) {
+				PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
+					@Override
+					public void run() {
+						
+						MessageDialog.openInformation(null, "TestReport", "TestReport exported successfully.");
+					}
+				});
+			}
 
 		} catch (IOException ex) {
 			IStatus status = new Status(Status.ERROR, Activator.PLUGIN_ID, "TestReport could not be created", ex);
@@ -114,22 +117,25 @@ public class ReportGenerationJob extends Job {
 			@Override
 			public void run() {
 				//XXX  migrate this to UserInteraction as soon as UserInteraction support generic String responses 
+				Shell userInteraction;
 				if (shell == null) {
-					shell = PlatformUI.getWorkbench().getModalDialogShellProvider().getShell();
+					userInteraction = PlatformUI.getWorkbench().getModalDialogShellProvider().getShell();
+				} else {
+					userInteraction = shell;
 				}
 				
 				// ask user for report location
 				DialogOptions dialogOptions = new DialogOptions();
 				dialogOptions.setMessage("Please select location to store the report files");
 				dialogOptions.setFilterPath(null); // do not filter at all
-				reportDir  = GtUiHelper.openDirectoryDialog(shell, dialogOptions);
+				reportDir  = GtUiHelper.openDirectoryDialog(userInteraction, dialogOptions);
 
 				if (reportDir != null) {
 					// check if file exists
 					File baseDir = new File(reportDir);
 					if (baseDir.list().length > 0) {
 						String message = "The selected destination folder is not empty, proceed?";
-						if (!MessageDialog.openConfirm(shell, "Warning", message)) {
+						if (!MessageDialog.openConfirm(userInteraction, "Warning", message)) {
 							reportDir = null;
 						}
 					}

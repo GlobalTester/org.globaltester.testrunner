@@ -219,8 +219,12 @@ public class TestReport {
 		return logFiles;
 	}
 
+	public String getFileName() {
+		return baseDir.getAbsolutePath()+File.separator+fileName;
+	}
+
 	public String getFileName(String extension) {
-		return baseDir.getAbsolutePath()+File.separator+fileName+"."+extension;
+		return getFileName()+"."+extension;
 	}
 
 	public String getSpecName() {
