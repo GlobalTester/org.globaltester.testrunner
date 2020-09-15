@@ -110,16 +110,21 @@ public final class TestLogHelper {
 		if (version.length > 1) {
 			int major = Integer.parseInt(version[0]);
 			int minor = Integer.parseInt(version[1]);
-
-			if (major != 1 || minor < 8) {
-				TestLogger
-						.error("Java version is too old!\nAt least java version 1.8 is required. You are using version"
-								+ javaVersion);
-				return false;
-			} else {
+			
+			//JAVA 8 is encoded as 1.8 in some VMs
+			if (major == 1 || minor > 8) {
+				return true;
+			}
+			
+			//otherwise, if major version is at least 8, we should be good
+			if (major >= 8) {
 				return true;
 			}
 		}
+		
+		TestLogger
+		.error("Java version is too old!\nAt least java version 1.8 is required. You are using version"
+				+ javaVersion);
 		return false;
 	}
 
