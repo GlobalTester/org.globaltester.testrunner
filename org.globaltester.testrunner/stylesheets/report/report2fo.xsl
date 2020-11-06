@@ -42,7 +42,8 @@
           
           <xsl:apply-templates select="TESTREPORT/PLATFORMID" />
           <xsl:apply-templates select="TESTREPORT/SAMPLEID" />
-          <xsl:apply-templates select="TESTREPORT/READER" />
+          <xsl:apply-templates select="TESTREPORT/TESTSETUP" />
+          <xsl:apply-templates select="TESTREPORT/DESCRIPTION" />
           <xsl:apply-templates select="TESTREPORT/INTEGRITY" />
           <xsl:apply-templates select="TESTREPORT/PROFILES" />
           <xsl:apply-templates select="TESTREPORT/ADDITIONALINFO" />
@@ -378,6 +379,22 @@
   <xsl:template match="SAMPLEID">
     <fo:block font-size="10pt" line-height="2">
       <fo:inline font-weight="bold">Sample ID: </fo:inline>
+      <xsl:apply-templates />
+    </fo:block>
+  </xsl:template>
+  
+  <xsl:template match="DESCRIPTION">
+    <fo:block font-size="10pt" line-height="2" linefeed-treatment="preserve">
+      <fo:inline font-weight="bold">Description:
+      </fo:inline>
+      <xsl:apply-templates />
+    </fo:block>
+  </xsl:template>
+  
+  <xsl:template match="TESTSETUP">
+    <fo:block font-size="10pt" line-height="2" linefeed-treatment="preserve">
+      <fo:inline font-weight="bold">Test setup:
+      </fo:inline>
       <xsl:apply-templates />
     </fo:block>
   </xsl:template>
