@@ -16,9 +16,13 @@
  
 <xsl:template match="TESTREPORT">
  	<testsuite>
+  		<xsl:attribute name="name">org.globaltester.testmanager.testframework.TestCase<xsl:value-of select="$classNameExtension" /></xsl:attribute>
         <xsl:attribute name="time"><xsl:value-of select="TESTSESSIONTIME" /></xsl:attribute>
         <xsl:attribute name="tests"><xsl:value-of select="EXECUTEDTESTS" /></xsl:attribute>
+        <xsl:attribute name="errors">0</xsl:attribute>
         <xsl:attribute name="failures"><xsl:value-of select="FAILEDTESTS" /></xsl:attribute>  	
+        <xsl:attribute name="skipped">0</xsl:attribute>
+  	
   	<xsl:apply-templates select="TESTCASE" />
  	
  	</testsuite>
