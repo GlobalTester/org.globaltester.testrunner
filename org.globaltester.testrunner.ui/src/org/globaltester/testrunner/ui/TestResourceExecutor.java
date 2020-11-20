@@ -58,7 +58,7 @@ public abstract class TestResourceExecutor extends TestExecutor {
 
 	@Override
 	protected Job getExecutionJob(List<IResource> resources, GtRuntimeRequirements runtimeRequirements,
-			TestExecutionCallback callback) {
+			TestExecutionCallback callback, Object family) {
 
 		// execute the TestCampaign
 		String jobName = "Executing tests...";
@@ -78,6 +78,11 @@ public abstract class TestResourceExecutor extends TestExecutor {
 					BasicLogger.logException("Job " + jobName + " was aborted", e, LogLevel.WARN);
 					return Status.CANCEL_STATUS;
 				}
+			}
+			
+			@Override
+			public boolean belongsTo(Object familyToCheck) {
+				return family == familyToCheck;
 			}
 		};
 
