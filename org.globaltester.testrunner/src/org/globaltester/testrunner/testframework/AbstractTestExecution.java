@@ -82,7 +82,7 @@ public abstract class AbstractTestExecution implements IExecution {
 	protected Result result = ResultFactory.newEmptyResult();
 
 	// store time and duration of last execution
-	protected long lastExecutionStartTime = 0;
+	protected Long lastExecutionStartTime = null;
 	protected long lastExecutionDuration = 0;
 	private String logFileName = "unknown";
 	private int logFileLine;
@@ -206,7 +206,7 @@ public abstract class AbstractTestExecution implements IExecution {
 	 */
 	public void execute(GtRuntimeRequirements runtimeReqs, boolean forceExecution, IProgressMonitor monitor) {
 		// set the execution time
-		boolean reExecution = lastExecutionStartTime != 0;
+		boolean reExecution = lastExecutionStartTime != null;
 
 		lastExecutionStartTime = new Date().getTime();
 		
@@ -240,18 +240,22 @@ public abstract class AbstractTestExecution implements IExecution {
 	 */
 	protected abstract void execute(GtRuntimeRequirements runtimeReqs, boolean forceExecution, boolean reExecution, IProgressMonitor monitor);
 
-	public long getLastExecutionStartTime() {
+	public Long getLastExecutionStartTime() {
 		return lastExecutionStartTime;
 	}
 	
 	@Override
-	public long getStartTime() {
+	public Long getStartTime() {
 		return getLastExecutionStartTime();
 	}
 
 	public String getLastExecutionStartTimeAsString() {
-		return DateFormat.getDateTimeInstance().format(
-				new Date(getLastExecutionStartTime()));
+		Long lastExecStart = getLastExecutionStartTime();
+		if (lastExecStart != null) {
+			return DateFormat.getDateTimeInstance().format(
+					new Date(getLastExecutionStartTime()));
+		}
+		return "";
 	}
 	
 	public long getLastExecutionDuration() {

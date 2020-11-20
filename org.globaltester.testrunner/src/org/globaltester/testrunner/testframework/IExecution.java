@@ -31,7 +31,7 @@ public interface IExecution {
 	 * 
 	 * @return
 	 */
-	public abstract long getStartTime();
+	public abstract Long getStartTime();
 
 	/**
 	 * Duration of this {@link IExecution} in milliseconds
