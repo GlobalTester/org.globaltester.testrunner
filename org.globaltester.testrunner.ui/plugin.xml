@@ -135,7 +135,7 @@
       <page
             category="org.globaltester.preferences.GlobalTesterPreferencePage"
             class="org.globaltester.testrunner.ui.preferences.GlobalTesterPreferencePageTestrunner"
-            id="orgorg.globaltester.testrunner.ui.preferences.GlobalTesterPreferencePageTestrunner"
+            id="org.globaltester.testrunner.ui.preferences.GlobalTesterPreferencePageTestrunner"
             name="TestRunner">
       </page>
    </extension>
@@ -144,7 +144,7 @@
       <page
             category="org.globaltester.preferences.GlobalTesterPreferencePage"
             class="org.globaltester.testrunner.ui.preferences.ReportingPreferencePage"
-            id="orgorg.globaltester.testrunner.ui.preferences.ReportingPreferencePage"
+            id="org.globaltester.testrunner.ui.preferences.ReportingPreferencePage"
             name="Reporting">
       </page>
    </extension>
