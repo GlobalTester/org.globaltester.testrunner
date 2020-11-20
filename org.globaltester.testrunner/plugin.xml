@@ -43,4 +43,10 @@
     <attribute name="expectedValue" />
     <attribute name="receivedValue" />              
    </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="org.globaltester.testrunner.preferences.PreferenceInitializer">
+      </initializer>
+   </extension>
 </plugin>

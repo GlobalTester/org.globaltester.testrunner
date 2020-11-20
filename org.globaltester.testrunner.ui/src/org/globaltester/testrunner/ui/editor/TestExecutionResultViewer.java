@@ -24,6 +24,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
+import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -45,6 +46,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.texteditor.ITextEditor;
+import org.globaltester.base.PreferenceHelper;
 import org.globaltester.base.ui.GtUiHelper;
 import org.globaltester.logging.legacy.logger.GTLogger;
 import org.globaltester.logging.logfileeditor.ui.editors.LogfileEditor;
@@ -53,9 +55,11 @@ import org.globaltester.testrunner.testframework.ActionStepExecution;
 import org.globaltester.testrunner.testframework.FileTestExecution;
 import org.globaltester.testrunner.testframework.IExecution;
 import org.globaltester.testrunner.testframework.Result;
+import org.globaltester.testrunner.testframework.Result.Status;
 import org.globaltester.testrunner.testframework.ResultChangeListener;
 import org.globaltester.testrunner.testframework.TestCampaign;
 import org.globaltester.testrunner.testframework.TestCampaignExecution;
+import org.globaltester.testrunner.testframework.TestCaseExecution;
 
 public class TestExecutionResultViewer implements SelectionListener, ResultChangeListener {
 
@@ -67,7 +71,16 @@ public class TestExecutionResultViewer implements SelectionListener, ResultChang
 	private Action actionShowSpec;
 	private Action actionShowLog;
 	private Action doubleClickAction;
+
+	private boolean autoExpandNonPassed = Boolean.parseBoolean(PreferenceHelper.getPreferenceValue(org.globaltester.testrunner.Activator.PLUGIN_ID, org.globaltester.testrunner.preferences.PreferenceConstants.P_AUTO_EXPAND_NON_PASSED, org.globaltester.testrunner.preferences.PreferenceConstants.P_AUTO_EXPAND_NON_PASSED_DEFAULT));
+
+	private boolean filterPassed = Boolean.parseBoolean(PreferenceHelper.getPreferenceValue(org.globaltester.testrunner.Activator.PLUGIN_ID, org.globaltester.testrunner.preferences.PreferenceConstants.P_FILTER_PASSED, org.globaltester.testrunner.preferences.PreferenceConstants.P_FILTER_PASSED_DEFAULT));
+
+	private TreeColumn columnName;
+
+	private boolean autoScroll = true;
 	
+
 
 	public TestExecutionResultViewer(Composite parent, IWorkbenchPart part) {
 		this.part = part;
@@ -82,10 +95,12 @@ public class TestExecutionResultViewer implements SelectionListener, ResultChang
 		
 		treeViewer = new TreeViewer(executionStateTree);
 		
-		TreeColumn columnName = new TreeColumn(executionStateTree, SWT.LEFT);
+		columnName = new TreeColumn(executionStateTree, SWT.LEFT);
 		executionStateTree.setLinesVisible(true);
 		columnName.setAlignment(SWT.LEFT);
-		columnName.setText("Test case");
+		
+		updateColumnName();
+		
 		TreeColumn columnLastExec = new TreeColumn(executionStateTree,
 				SWT.RIGHT);
 		columnLastExec.setAlignment(SWT.LEFT);
@@ -387,9 +402,7 @@ public class TestExecutionResultViewer implements SelectionListener, ResultChang
 		if (newInput != null) {
 			newInput.addResultListener(this);
 			
-			if (newInput.getChildren().size() == 1) {
-				treeViewer.expandToLevel(2);
-			}
+			applyVisualModifiers(newInput);
 		}
 	}
 	
@@ -416,20 +429,88 @@ public class TestExecutionResultViewer implements SelectionListener, ResultChang
 		treeViewer.refresh();
 	}
 
+	public void applyVisualModifiers(IExecution execution) {		
+		
+		for (IExecution child : execution.getChildren()) {
+			applyVisualModifiers(child);
+		}
+		
+
+		if (autoScroll ) {
+			for (TreeItem item : treeViewer.getTree().getItems()) {
+				if (execution.equals(item.getData())) {
+					treeViewer.getTree().setTopItem(item);
+				}
+			}
+		}
+		
+		if (execution instanceof TestCaseExecution && autoExpandNonPassed && !execution.getResult().getStatus().equals(Status.PASSED)) {
+			treeViewer.setExpandedState(execution, true);
+		}
+	}
+	
 	@Override
 	public void resultChanged(final IExecution changedObject) {
 		PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
 			public void run() {
 				if (!executionStateTree.isDisposed()) {
 					if (changedObject != null) {
-						treeViewer.refresh(changedObject, true);
-						treeViewer.expandToLevel(changedObject, 2);
-					} else {
-						refresh();
+						applyVisualModifiers(changedObject);
 					}
+					refresh();
 				}
 			}
 		});
+	}
+
+	public void toggleExpandNonPassed() {
+		this.autoExpandNonPassed = !this.autoExpandNonPassed;
+		updateColumnName();
+	}
+
+	private void updateColumnName() {
+		String text = "Test case";
+		if (filterPassed) {
+			text += " (filter PASSED)";
+		}
+		columnName.setText(text);
+	}
+
+	public void toggleFilterPassed() {
+		this.filterPassed = !this.filterPassed;
+		updateColumnName();
+	}
+
+	public void addFilter(ViewerFilter filter) {
+		treeViewer.addFilter(filter);
+	}
+
+	public void removeFilter(ViewerFilter filter) {
+		treeViewer.removeFilter(filter);
+	}
+
+	public void expandNonPassed() {
+		for (TreeItem item : treeViewer.getTree().getItems()) {
+			expandNonPassed(item);
+		}
+		treeViewer.refresh();
+	}
+
+	private void expandNonPassed(TreeItem item) {
+		if (item.getData() instanceof TestCaseExecution && !((TestCaseExecution)item.getData()).getResult().getStatus().equals(Status.PASSED)) {
+			treeViewer.setExpandedState(item.getData(), true);
+		}
+		for (TreeItem subItem : item.getItems()) {
+			expandNonPassed(subItem);
+		}
+	}
+
+	public void collapseAll() {
+		treeViewer.collapseAll();
+	}
+
+	public void setAutoExpandNonPassed(boolean checked) {
+		autoExpandNonPassed = checked;
 	}
 	
 	

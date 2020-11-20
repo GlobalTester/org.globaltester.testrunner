@@ -12,16 +12,21 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
+import org.globaltester.base.PreferenceHelper;
 import org.globaltester.base.ui.GtUiHelper;
 import org.globaltester.base.ui.UserInteractionImpl;
 import org.globaltester.logging.BasicLogger;
@@ -30,10 +35,13 @@ import org.globaltester.logging.tags.LogLevel;
 import org.globaltester.scriptrunner.GtRuntimeRequirements;
 import org.globaltester.scriptrunner.RunTests;
 import org.globaltester.scriptrunner.TestExecutionCallback;
+import org.globaltester.scriptrunner.TestExecutor;
 import org.globaltester.testrunner.testframework.AbstractTestExecution;
 import org.globaltester.testrunner.testframework.IExecution;
 import org.globaltester.testrunner.testframework.TestCampaignExecution;
+import org.globaltester.testrunner.testframework.TestCaseExecution;
 import org.globaltester.testrunner.testframework.TestSetExecution;
+import org.globaltester.testrunner.testframework.Result.Status;
 import org.globaltester.testrunner.ui.Activator;
 import org.globaltester.testrunner.ui.editor.ReportGenerationJob;
 import org.globaltester.testrunner.ui.editor.TestExecutionResultViewer;
@@ -57,9 +65,21 @@ public class ResultView extends ViewPart {
 
 	// some actions defined for this view
 	private Action actionClear;
+	private Action actionFilterPassed;
+	private Action actionExpandNonPassed;
+	private Action actionExpandAll;
+	private Action actionCollapseAll;
 	private Action actionGenerateReport;
 	private Action actionRestart;
+	private Action actionAutoExpandNonPassed;
 
+	private Action actionAutoScroll;
+
+	private IAction actionFilterUndefined;
+
+	private Action actionStop;
+
+	
 	public final static int NO = 1;
 	public final static int TESTSUITE = 2;
 	public final static int TESTCASEID = 3;
@@ -91,6 +111,7 @@ public class ResultView extends ViewPart {
 
 		makeActions();
 		contributeToActionBars();
+		
 	}
 
 	private void contributeToActionBars() {
@@ -104,12 +125,28 @@ public class ResultView extends ViewPart {
 		manager.add(actionGenerateReport);
 		manager.add(actionRestart);
 		manager.add(new Separator());
+		manager.add(actionAutoScroll);
+		manager.add(actionAutoExpandNonPassed);
+		IMenuManager filter = new MenuManager("Filter");
+		filter.add(actionFilterPassed);
+		filter.add(actionFilterUndefined);
+		manager.add(filter);
+		IMenuManager expand = new MenuManager("Expand");
+		expand.add(actionExpandNonPassed);
+		expand.add(actionExpandAll);
+		expand.add(actionCollapseAll);
+		manager.add(expand);
+		
 	}
 
 	private void fillLocalToolBar(IToolBarManager manager) {
+		manager.add(actionCollapseAll);
+		manager.add(new Separator());
 		manager.add(actionClear);
 		manager.add(actionGenerateReport);
+		manager.add(new Separator());
 		manager.add(actionRestart);
+		manager.add(actionStop);
 	}
 
 	public void reset() {
@@ -125,6 +162,14 @@ public class ResultView extends ViewPart {
 		createActionClear();
 		createActionGenerateReport();
 		createActionRestart();
+		createActionFilterPassed();
+		createActionExpandNonPassed();
+		createActionAutoExpandNonPassed();
+		createActionCollapseAll();
+		createActionExpandAll();
+		createActionAutoScroll();
+		createActionStop();
+		createActionFilterUndefined();
 	}
 
 	private void createActionClear() {
@@ -138,6 +183,132 @@ public class ResultView extends ViewPart {
 		actionClear.setToolTipText("Clear list");
 		actionClear.setImageDescriptor(
 				PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_DELETE));
+	}
+
+	private void createActionFilterPassed() {
+		Status status = Status.PASSED;
+		ViewerFilter filter = createFilter(status);
+		actionFilterPassed = new Action("Hide " + status.getTextualRepresentation(), Action.AS_CHECK_BOX) {
+			
+			@Override
+			public void run() {
+				if (actionFilterPassed.isChecked()) {
+					viewer.addFilter(filter);
+				} else {
+					viewer.removeFilter(filter);
+				}
+			}
+		};
+		actionFilterPassed.setChecked(Boolean.parseBoolean(PreferenceHelper.getPreferenceValue(org.globaltester.testrunner.Activator.PLUGIN_ID, org.globaltester.testrunner.preferences.PreferenceConstants.P_FILTER_PASSED, org.globaltester.testrunner.preferences.PreferenceConstants.P_FILTER_PASSED_DEFAULT)));
+		actionFilterPassed.setToolTipText("Hide all " + status.getTextualRepresentation() + " elements");
+		actionFilterPassed.run();
+	}
+
+	private void createActionFilterUndefined() {
+		Status status = Status.UNDEFINED;
+		ViewerFilter filter = createFilter(status);
+		actionFilterUndefined = new Action("Hide " + status.getTextualRepresentation(), Action.AS_CHECK_BOX) {
+			
+			@Override
+			public void run() {
+				if (actionFilterUndefined.isChecked()) {
+					viewer.addFilter(filter);
+				} else {
+					viewer.removeFilter(filter);
+				}
+			}
+		};
+		actionFilterUndefined.setChecked(Boolean.parseBoolean(PreferenceHelper.getPreferenceValue(org.globaltester.testrunner.Activator.PLUGIN_ID, org.globaltester.testrunner.preferences.PreferenceConstants.P_FILTER_UNDEFINED, org.globaltester.testrunner.preferences.PreferenceConstants.P_FILTER_UNDEFINED_DEFAULT)));
+		actionFilterUndefined.setToolTipText("Hide all " + status.getTextualRepresentation() + " elements");
+		actionFilterUndefined.run();
+	}
+
+	private ViewerFilter createFilter(Status status) {
+		return new ViewerFilter() {
+
+			@Override
+			public boolean select(Viewer viewer, Object parentElement, Object element) {
+				if (element instanceof TestCaseExecution) {
+					return ((TestCaseExecution) element).getResult().getStatus() != status;
+				}
+				return true;
+			}
+			
+		};
+	}
+
+	private void createActionAutoExpandNonPassed() {
+		actionAutoExpandNonPassed = new Action("Automatically expand non-PASSED", Action.AS_CHECK_BOX) {
+			
+			@Override
+			public void run() {
+				viewer.setAutoExpandNonPassed(actionAutoExpandNonPassed.isChecked());
+			}
+		};
+		actionAutoExpandNonPassed.setChecked(Boolean.parseBoolean(PreferenceHelper.getPreferenceValue(org.globaltester.testrunner.Activator.PLUGIN_ID, org.globaltester.testrunner.preferences.PreferenceConstants.P_AUTO_EXPAND_NON_PASSED, org.globaltester.testrunner.preferences.PreferenceConstants.P_AUTO_EXPAND_NON_PASSED_DEFAULT)));
+		actionAutoExpandNonPassed.setToolTipText("Automatically expand all non-PASSED elements");
+		actionAutoExpandNonPassed.run();
+	}
+
+	private void createActionAutoScroll() {
+		actionAutoScroll = new Action("Automatically scroll", Action.AS_CHECK_BOX) {
+			
+			@Override
+			public void run() {
+				viewer.setAutoExpandNonPassed(actionAutoScroll.isChecked());
+			}
+		};
+		actionAutoScroll.setChecked(Boolean.parseBoolean(PreferenceHelper.getPreferenceValue(org.globaltester.testrunner.Activator.PLUGIN_ID, org.globaltester.testrunner.preferences.PreferenceConstants.P_AUTO_SCROLL, org.globaltester.testrunner.preferences.PreferenceConstants.P_AUTO_SCROLL_DEFAULT)));
+		actionAutoScroll.setToolTipText("Automatically scroll");
+		actionAutoScroll.run();
+	}
+
+	private void createActionExpandNonPassed() {
+		actionExpandNonPassed = new Action("Expand non-PASSED") {
+			
+			@Override
+			public void run() {
+				viewer.expandNonPassed();
+			}
+		};
+		actionExpandNonPassed.setToolTipText("Expand all non-PASSED elements");
+	}
+
+	private void createActionExpandAll() {
+		actionExpandAll = new Action("Expand all elements") {
+			
+			@Override
+			public void run() {
+				viewer.expandAll();
+			}
+		};
+		actionExpandAll.setToolTipText("Expand all elements");
+	}
+
+	private void createActionCollapseAll() {
+		actionCollapseAll = new Action("Collapse all elements") {
+			
+			@Override
+			public void run() {
+				viewer.collapseAll();
+			}
+		};
+		actionCollapseAll.setToolTipText("Collapse all elements");
+		actionCollapseAll.setImageDescriptor(
+				PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_ELCL_COLLAPSEALL));
+	}
+
+	private void createActionStop() {
+		actionStop = new Action("Stop all currently running tests") {
+			
+			@Override
+			public void run() {
+				Job.getJobManager().cancel(TestExecutor.FAMILY);
+			}
+		};
+		actionStop.setToolTipText("Stop all currently running tests");
+		actionStop.setImageDescriptor(
+				PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_ELCL_STOP));
 	}
 
 	private void createActionGenerateReport() {

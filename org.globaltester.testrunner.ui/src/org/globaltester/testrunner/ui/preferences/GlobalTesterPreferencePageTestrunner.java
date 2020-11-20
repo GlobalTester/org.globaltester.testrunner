@@ -25,9 +25,13 @@ import org.globaltester.testrunner.preferences.PreferenceConstants;
 public class GlobalTesterPreferencePageTestrunner extends
 FieldEditorPreferencePage implements IWorkbenchPreferencePage{
 
-	Group customizationGroup;
+	Group resultViewGroup;
+	Group generalGroup;
 	private BooleanFieldEditor bfeIntegrityWarningDialog;
 	private BooleanFieldEditor bfeUserInteractionForGeneratedTests;
+	private BooleanFieldEditor bfeAutoExpandNonPassed;
+	private BooleanFieldEditor bfeFilterPassed;
+	private BooleanFieldEditor bfeAutoScroll;
 	
 	
 	public GlobalTesterPreferencePageTestrunner() {
@@ -55,20 +59,54 @@ FieldEditorPreferencePage implements IWorkbenchPreferencePage{
 
 		GridLayout layout = new GridLayout(1, false);
 		container.setLayout(layout);
-		GridData gd = new GridData(GridData.FILL, GridData.FILL, true, false);
+		GridData gd = new GridData(GridData.FILL, SWT.TOP, true, false);
 		gd.horizontalSpan = 4;
 		
-		customizationGroup = new Group(container, SWT.NONE);
-		customizationGroup.setText("Customization");
+		generalGroup = new Group(container, SWT.FILL);
+		generalGroup.setText("General");
 		
-		customizationGroup.setLayoutData(gd);
-		customizationGroup.setLayout(new GridLayout(4, false));
-
+		generalGroup.setLayoutData(gd);
+		generalGroup.setLayout(new GridLayout(4, false));
+		
 		// disable integrity warning dialog 
 		bfeIntegrityWarningDialog = new BooleanFieldEditor(
 				PreferenceConstants.P_IGNORECHECKSUMRESULT,
-				"Ignore integrity checks testcases", customizationGroup);
+				"Ignore integrity checks testcases", generalGroup);
 		addField(bfeIntegrityWarningDialog);
+
+		// enable user interaction for generated test cases
+		bfeUserInteractionForGeneratedTests = new BooleanFieldEditor(
+				PreferenceConstants.P_ASK_USER_FOR_GENERATED_TESTS,
+				"Ask user for execution of generated test cases", generalGroup);
+		addField(bfeUserInteractionForGeneratedTests);
+		
+		resultViewGroup = new Group(container, SWT.FILL);
+		resultViewGroup.setText("Result view");
+		
+		resultViewGroup.setLayoutData(gd);
+		resultViewGroup.setLayout(new GridLayout(4, false));
+
+		bfeAutoExpandNonPassed = new BooleanFieldEditor(
+				PreferenceConstants.P_AUTO_EXPAND_NON_PASSED,
+				"Auto expand non-PASSED elements in result view", resultViewGroup);
+		addField(bfeAutoExpandNonPassed);
+
+		bfeAutoScroll = new BooleanFieldEditor(
+				PreferenceConstants.P_AUTO_SCROLL,
+				"Automatically scroll to the most recentyl changed result", resultViewGroup);
+		addField(bfeAutoScroll);
+
+
+		bfeFilterPassed = new BooleanFieldEditor(
+				PreferenceConstants.P_FILTER_PASSED,
+				"Do not show PASSED elements in result view", resultViewGroup);
+		addField(bfeFilterPassed);
+
+
+		bfeFilterPassed = new BooleanFieldEditor(
+				PreferenceConstants.P_FILTER_UNDEFINED,
+				"Do not show UNDEFINED elements in result view", resultViewGroup);
+		addField(bfeFilterPassed);
 		
 		String doubleClicks[][] = new String[2][2];
 		doubleClicks[0][0] = PreferenceConstants.TEST_CASE;
@@ -76,15 +114,8 @@ FieldEditorPreferencePage implements IWorkbenchPreferencePage{
 		doubleClicks[1][0] = PreferenceConstants.LOG_FILE;
 		doubleClicks[1][1] = "1";
 		ComboFieldEditor cfeDoubleClickResultView = new ComboFieldEditor(PreferenceConstants.P_DOUBLECLICKRESULTVIEW, 
-				"Double click in test results shows: ", doubleClicks, customizationGroup);
+				"Double click in test results shows: ", doubleClicks, resultViewGroup);
 		addField(cfeDoubleClickResultView);
-
-		// enable user interaction for generated test cases
-		bfeUserInteractionForGeneratedTests = new BooleanFieldEditor(
-				PreferenceConstants.P_ASK_USER_FOR_GENERATED_TESTS,
-				"Ask user for execution of generated test cases", customizationGroup);
-		addField(bfeUserInteractionForGeneratedTests);
-
 	}
 	
 	
