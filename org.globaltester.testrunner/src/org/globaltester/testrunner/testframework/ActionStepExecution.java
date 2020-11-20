@@ -1,6 +1,7 @@
 package org.globaltester.testrunner.testframework;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -166,7 +167,7 @@ public abstract class ActionStepExecution extends AbstractTestExecution {
 	@Override
 	public Collection<IExecution> getChildren() {
 		// test step has no children
-		return null;
+		return Collections.emptyList();
 		
 	}
 
