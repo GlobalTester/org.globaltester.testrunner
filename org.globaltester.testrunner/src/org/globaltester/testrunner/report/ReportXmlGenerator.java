@@ -19,10 +19,12 @@ import org.globaltester.logging.legacy.logger.GtErrorLogger;
 import org.globaltester.testrunner.Activator;
 import org.globaltester.testrunner.testframework.Result.Status;
 import org.globaltester.testrunner.testframework.ScriptIssue;
+import org.jdom.CDATA;
 import org.jdom.DocType;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.ProcessingInstruction;
+import org.jdom.Text;
 import org.osgi.framework.Bundle;
 
 
@@ -74,10 +76,21 @@ public class ReportXmlGenerator {
 		sampleID.setText(report.getSampleId());
 		root.addContent(sampleID);
 
-		Element readerName = new Element("READER");
-		String cardReaderName = report.getCardReaderName();
-		readerName.setText(cardReaderName);
-		root.addContent(readerName);
+		if (report.getTestSetup() != null && !report.getTestSetup().isEmpty()) {
+			Element testSetupElement = new Element("TESTSETUP");
+			CDATA testSetup = new CDATA("");
+			testSetup.setText(report.getTestSetup());
+			testSetupElement.addContent(testSetup);
+			root.addContent(testSetupElement);
+		}
+
+		if (report.getDescription() != null && !report.getDescription().isEmpty()) {
+			Element descriptionElement = new Element("DESCRIPTION");
+			CDATA description = new CDATA("");
+			description.setText(report.getDescription());
+			descriptionElement.setContent(description);
+			root.addContent(descriptionElement);
+		}
 
 		Element integrityOfTestSuite = new Element("INTEGRITY");
 		integrityOfTestSuite.setText(report.getIntegrityOfTestSpec());
