@@ -70,7 +70,12 @@ FieldEditorPreferencePage implements IWorkbenchPreferencePage{
 
 				dfeReportDir = new DirectoryFieldEditor(
 						PreferenceConstants.P_REPORT_DIR, "Report directory:",
-						testReportGroup);
+						testReportGroup) {
+					@Override
+					public boolean checkState() {
+						return !getPreferenceStore().getBoolean(PreferenceConstants.P_REPORT_USE_FIXED_DIR) || super.checkState();
+					}
+				};
 				dfeReportDir.setEmptyStringAllowed(false);
 				addField(dfeReportDir);
 
@@ -81,8 +86,7 @@ FieldEditorPreferencePage implements IWorkbenchPreferencePage{
 				
 				addField(dfeReportDir);
 
-	}
-	
+	}	
 	
 	@Override
 	public boolean performOk() {
