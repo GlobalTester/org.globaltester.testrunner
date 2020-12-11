@@ -156,6 +156,9 @@ public class TestCaseExecution extends FileTestExecution {
 			return;
 		}
 		
+		SampleConfig config = runtimeReqs.get(SampleConfig.class);
+		TestLogger.trace(config.dump());
+		
 		// check if test case is applicable
 		TestLogger.info("Check test case profiles");
 		
@@ -171,7 +174,7 @@ public class TestCaseExecution extends FileTestExecution {
 					ProfileExpression [] params = new ProfileExpression [((ArrayList<?>) profileParam).size() + 1];
 					params[0] = new AndProfileExpression(profileExpression);
 					for (int i=0; i<params.length-1; i++){
-						ProfileExpression tmpExpr = ProfileMapper.parse((String) (((ArrayList) profileParam).get(i)), testCase.getPropertyFiles());
+						ProfileExpression tmpExpr = ProfileMapper.parse((String) (((ArrayList<?>) profileParam).get(i)), testCase.getPropertyFiles());
 						params[i+1] = new AndProfileExpression(tmpExpr);
 					}
 					profileExpression = new AndProfileExpression(params);
