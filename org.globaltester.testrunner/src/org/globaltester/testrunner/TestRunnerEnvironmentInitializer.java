@@ -57,7 +57,7 @@ public class TestRunnerEnvironmentInitializer {
 		runner.getContext().setWrapFactory(wf);
 
 		try {
-			SmartCard.start();
+			SmartCardShellInfo.startSmartcard();
 		} catch (OpenCardPropertyLoadingException | CardServiceException | CardTerminalException
 				| ClassNotFoundException e) {
 			TestLogger.error(e);
@@ -122,7 +122,7 @@ public class TestRunnerEnvironmentInitializer {
 	public static void cleanEnvironment(){
 		TestLogger.debug("Shutting down card system...");
 		try {
-			SmartCard.shutdown();
+			SmartCardShellInfo.shutdownSmartcard();
 		} catch (Exception e) {
 			TestLogger.error(e);
 		}
