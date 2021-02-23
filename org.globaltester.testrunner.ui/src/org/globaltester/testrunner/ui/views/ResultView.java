@@ -76,6 +76,7 @@ public class ResultView extends ViewPart {
 	private Action actionAutoScroll;
 
 	private IAction actionFilterUndefined;
+	private IAction actionFilterNotApplicable;
 
 	private Action actionStop;
 
@@ -130,6 +131,7 @@ public class ResultView extends ViewPart {
 		IMenuManager filter = new MenuManager("Filter");
 		filter.add(actionFilterPassed);
 		filter.add(actionFilterUndefined);
+		filter.add(actionFilterNotApplicable);
 		manager.add(filter);
 		IMenuManager expand = new MenuManager("Expand");
 		expand.add(actionExpandNonPassed);
@@ -170,6 +172,7 @@ public class ResultView extends ViewPart {
 		createActionAutoScroll();
 		createActionStop();
 		createActionFilterUndefined();
+		createActionFilterNotApplicable();
 	}
 
 	private void createActionClear() {
@@ -221,6 +224,25 @@ public class ResultView extends ViewPart {
 		actionFilterUndefined.setChecked(Boolean.parseBoolean(PreferenceHelper.getPreferenceValue(org.globaltester.testrunner.Activator.PLUGIN_ID, org.globaltester.testrunner.preferences.PreferenceConstants.P_FILTER_UNDEFINED, org.globaltester.testrunner.preferences.PreferenceConstants.P_FILTER_UNDEFINED_DEFAULT)));
 		actionFilterUndefined.setToolTipText("Hide all " + status.getTextualRepresentation() + " elements");
 		actionFilterUndefined.run();
+	}
+
+	private void createActionFilterNotApplicable() {
+		Status status = Status.NOT_APPLICABLE;
+		ViewerFilter filter = createFilter(status);
+		actionFilterNotApplicable = new Action("Hide " + status.getTextualRepresentation(), Action.AS_CHECK_BOX) {
+			
+			@Override
+			public void run() {
+				if (actionFilterNotApplicable.isChecked()) {
+					viewer.addFilter(filter);
+				} else {
+					viewer.removeFilter(filter);
+				}
+			}
+		};
+		actionFilterNotApplicable.setChecked(Boolean.parseBoolean(PreferenceHelper.getPreferenceValue(org.globaltester.testrunner.Activator.PLUGIN_ID, org.globaltester.testrunner.preferences.PreferenceConstants.P_FILTER_NOT_APPLICABLE, org.globaltester.testrunner.preferences.PreferenceConstants.P_FILTER_NOT_APPLICABLE_DEFAULT)));
+		actionFilterNotApplicable.setToolTipText("Hide all " + status.getTextualRepresentation() + " elements");
+		actionFilterNotApplicable.run();
 	}
 
 	private ViewerFilter createFilter(Status status) {

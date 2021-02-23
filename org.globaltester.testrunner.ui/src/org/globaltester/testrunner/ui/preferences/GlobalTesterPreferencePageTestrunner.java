@@ -31,6 +31,8 @@ FieldEditorPreferencePage implements IWorkbenchPreferencePage{
 	private BooleanFieldEditor bfeUserInteractionForGeneratedTests;
 	private BooleanFieldEditor bfeAutoExpandNonPassed;
 	private BooleanFieldEditor bfeFilterPassed;
+	private BooleanFieldEditor bfeFilterUndefined;
+	private BooleanFieldEditor bfeFilterNotApplicable;
 	private BooleanFieldEditor bfeAutoScroll;
 	
 	
@@ -103,10 +105,16 @@ FieldEditorPreferencePage implements IWorkbenchPreferencePage{
 		addField(bfeFilterPassed);
 
 
-		bfeFilterPassed = new BooleanFieldEditor(
+		bfeFilterUndefined = new BooleanFieldEditor(
 				PreferenceConstants.P_FILTER_UNDEFINED,
 				"Do not show UNDEFINED elements in result view", resultViewGroup);
-		addField(bfeFilterPassed);
+		addField(bfeFilterUndefined);
+
+
+		bfeFilterNotApplicable = new BooleanFieldEditor(
+				PreferenceConstants.P_FILTER_NOT_APPLICABLE,
+				"Do not show NOT APPLICABLE elements in result view", resultViewGroup);
+		addField(bfeFilterNotApplicable);
 		
 		String doubleClicks[][] = new String[2][2];
 		doubleClicks[0][0] = PreferenceConstants.TEST_CASE;

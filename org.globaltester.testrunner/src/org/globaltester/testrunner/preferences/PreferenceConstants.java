@@ -24,5 +24,7 @@ public class PreferenceConstants {
 	public static final String P_AUTO_SCROLL_DEFAULT = "true";
 	public static final String P_FILTER_UNDEFINED = "FilterUndefined";
 	public static final String P_FILTER_UNDEFINED_DEFAULT = "true";
+	public static final String P_FILTER_NOT_APPLICABLE = "FilterNotApplicable";
+	public static final String P_FILTER_NOT_APPLICABLE_DEFAULT = "false";
 
 }
