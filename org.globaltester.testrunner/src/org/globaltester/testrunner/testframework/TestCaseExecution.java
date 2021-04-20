@@ -153,6 +153,7 @@ public class TestCaseExecution extends FileTestExecution {
 		if (!runtimeReqs.containsKey(SampleConfig.class)) {
 			result.status = Status.NOT_APPLICABLE;
 			result.comment = "Runtime requirements not fulfilled.";
+			TestLogger.info(result.comment);
 			return;
 		}
 		
@@ -181,6 +182,7 @@ public class TestCaseExecution extends FileTestExecution {
 				} else {
 					result.status = Status.FAILURE;
 					result.comment = "Profile expression from TestCaseParameter not parsable";
+					TestLogger.info(result.comment);
 					return;
 				}
 			}
@@ -196,7 +198,7 @@ public class TestCaseExecution extends FileTestExecution {
 			if (!profileExpression.evaluate(runtimeReqs.get(SampleConfig.class))){
 				result.status = Status.NOT_APPLICABLE;
 				result.comment = "Profiles " + profileExpression + " not fulfilled.";
-				TestLogger.info("Test case not applicable");
+				TestLogger.info("Test case not applicable - " + result.comment);
 				return;
 			}
 		} catch (ProfileEvaluationException e) {
