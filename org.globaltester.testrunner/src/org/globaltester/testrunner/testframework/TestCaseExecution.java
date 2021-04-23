@@ -2,6 +2,7 @@ package org.globaltester.testrunner.testframework;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.StringJoiner;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -195,12 +196,46 @@ public class TestCaseExecution extends FileTestExecution {
 
 		
 		try {
-			if (!profileExpression.evaluate(runtimeReqs.get(SampleConfig.class))){
-				result.status = Status.NOT_APPLICABLE;
-				result.comment = "Profiles " + profileExpression + " not fulfilled.";
-				TestLogger.info("Test case not applicable - " + result.comment);
-				return;
+			String paramProfiles = "";
+			
+			if (testCaseParameter != null) {
+				Object profileParam = testCaseParameter.get("profile");
+				if (profileParam != null ) {
+					if (profileParam instanceof String) {
+						paramProfiles += " and \"" + testCaseParameter.get("profile") + "\"";
+					} else if (profileParam instanceof ArrayList<?>) {
+						ArrayList<?> params = (ArrayList<?>) profileParam;
+						StringJoiner joiner = new StringJoiner("\" and \"");
+						for (Object c : params){
+							joiner.add(c.toString());
+						}
+						paramProfiles += " and \"" + joiner.toString() + "\"";
+					}
+				}
 			}
+			
+			String comment = "";
+			
+			if (!profileExpression.evaluate(runtimeReqs.get(SampleConfig.class))){
+				result.status = Status.NOT_APPLICABLE;				
+				comment = "Profiles \"" + testCase.getProfileString() + "\"";
+
+				comment += paramProfiles;
+				
+				comment += " not fulfilled. Checked expression was \'" + profileExpression + "\'";
+				result.comment = comment;
+				TestLogger.info("Test case not applicable - " + this.getId() + " - " + comment);
+				return;
+			} else {
+				comment = "Profiles \"" + testCase.getProfileString() + "\"";
+				
+				comment += paramProfiles;
+				
+				comment += " fulfilled. Checked expression was \'" + profileExpression + "\'";
+				TestLogger.debug("Test case applicable - " + this.getId() + " - " + comment);
+			}
+			
+			
 		} catch (ProfileEvaluationException e) {
 			BasicLogger.logException(e.getMessage(), e, LogLevel.WARN);
 			ResultFactory.newFailure(Status.FAILURE, 0, TestLogger.getLogFileLine(), e.getMessage());
