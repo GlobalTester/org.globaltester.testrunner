@@ -128,8 +128,10 @@ public abstract class AbstractTestExecution implements IExecution {
 		}
 		
 		Element startTimeElement = new Element(XML_TAG_LAST_EXECUTION_START_TIME);
-		startTimeElement.addContent(Long.toString(lastExecutionStartTime));
-		root.addContent(startTimeElement);
+		if (lastExecutionStartTime != null) {
+			startTimeElement.addContent(Long.toString(lastExecutionStartTime));
+			root.addContent(startTimeElement);	
+		}
 
 		Element durationElement = new Element(XML_TAG_LAST_EXECUTION_DURATION);
 		durationElement.addContent(Long.toString(lastExecutionDuration));
