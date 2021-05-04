@@ -12,18 +12,22 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.globaltester.lib.fop.renderer.GtFopHelper;
+import org.globaltester.lib.fop.renderer.PdfReportGenerationException;
 import org.globaltester.testrunner.Activator;
 import org.osgi.framework.Bundle;
 
 public class ReportPdfGenerator {
 
 	/**
+	 * @throws PdfReportGenerationException 
 	 * Generate a PDF representation of this report and write it to disk
 	 * 
 	 * @param report
 	 * @throws IOException
+	 * @throws TransformerException 
+	 * @throws  
 	 */
-	public static void writePdfReport(TestReport report) throws IOException {
+	public static void writePdfReport(TestReport report) throws IOException, PdfReportGenerationException {
 		// write the xml report to disk in order to transform it later
 		ReportXmlGenerator.writeXmlReport(report);
 

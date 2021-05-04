@@ -24,7 +24,6 @@ import org.jdom.DocType;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.ProcessingInstruction;
-import org.jdom.Text;
 import org.osgi.framework.Bundle;
 
 

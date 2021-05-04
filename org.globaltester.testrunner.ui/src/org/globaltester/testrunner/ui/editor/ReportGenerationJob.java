@@ -15,6 +15,7 @@ import org.eclipse.ui.statushandlers.StatusManager;
 import org.globaltester.base.resources.GtResourceHelper;
 import org.globaltester.base.ui.DialogOptions;
 import org.globaltester.base.ui.GtUiHelper;
+import org.globaltester.lib.fop.renderer.PdfReportGenerationException;
 import org.globaltester.testrunner.preferences.PreferenceConstants;
 import org.globaltester.testrunner.report.ReportCsvGenerator;
 import org.globaltester.testrunner.report.ReportJunitGenerator;
@@ -88,7 +89,7 @@ public class ReportGenerationJob extends Job {
 				});
 			}
 
-		} catch (IOException ex) {
+		} catch (IOException | PdfReportGenerationException ex) {
 			IStatus status = new Status(Status.ERROR, Activator.PLUGIN_ID, "TestReport could not be created", ex);
 			StatusManager.getManager().handle(status, StatusManager.SHOW);
 			return status;
