@@ -1,6 +1,7 @@
 package org.globaltester.testrunner.report;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import org.globaltester.testrunner.testframework.IExecution;
 import org.globaltester.testrunner.testframework.Result;
@@ -21,6 +22,7 @@ public class TestReportPart {
 	private String id;
 	private String comment;
 	private String description;
+	private Map<String,String> additionalInfos;
 	private Status status;
 	private double time;
 	private ArrayList<ScriptIssue> scriptIssues = new ArrayList<>();
@@ -31,6 +33,7 @@ public class TestReportPart {
 		description = iExecution.getDescription();
 		status = iExecution.getStatus();
 		time = iExecution.getDuration();
+		additionalInfos = iExecution.getAdditionalInfos();
 		
 		addScriptIssues(iExecution.getResult());
 	}
@@ -71,4 +74,8 @@ public class TestReportPart {
 		return scriptIssues;
 	}
 
+	public Map<String, String> getAdditionalInfos() {
+		return additionalInfos;
+	}
+	
 }

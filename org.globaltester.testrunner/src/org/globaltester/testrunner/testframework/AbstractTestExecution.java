@@ -1,8 +1,11 @@
 package org.globaltester.testrunner.testframework;
 
 import java.text.DateFormat;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -26,6 +29,7 @@ public abstract class AbstractTestExecution implements IExecution {
 	private String id;
 	private String description;
 	private String comment;
+	private Map<String,String> additionalInfo;
 
 
 	public AbstractTestExecution(String id) {
@@ -73,11 +77,29 @@ public abstract class AbstractTestExecution implements IExecution {
 		this.description = description;
 	}
 
-
-
-
-
-
+	@Override
+	public void putAdditionalInfo(String key, String value) {
+		if (additionalInfo == null) {
+			additionalInfo = new HashMap<String, String>();
+		}
+		additionalInfo.put(key, value);
+	}
+	
+	@Override
+	public String getAdditionalInfoValue(String key) {
+		if (additionalInfo != null) {
+			return additionalInfo.get(key);
+		}
+		return null;
+	}
+	
+	@Override
+	public Map<String, String> getAdditionalInfos() {
+		if (additionalInfo == null) {
+			return Collections.emptyMap();
+		}
+		return Collections.unmodifiableMap(additionalInfo);
+	}
 
 	protected Result result = ResultFactory.newEmptyResult();
 

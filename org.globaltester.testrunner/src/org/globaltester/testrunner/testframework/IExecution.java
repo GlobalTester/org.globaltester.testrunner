@@ -1,6 +1,7 @@
 package org.globaltester.testrunner.testframework;
 
 import java.util.Collection;
+import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -20,6 +21,10 @@ public interface IExecution {
 	public abstract String getComment();
 
 	public abstract String getDescription();
+	
+	public abstract void putAdditionalInfo(String key, String value);
+	public abstract String getAdditionalInfoValue(String key);
+	public abstract Map<String, String> getAdditionalInfos();
 
 	public abstract Status getStatus();
 	
@@ -79,5 +84,7 @@ public interface IExecution {
 	static boolean isExecuted(IExecution execution) {
 		return Status.isExecuted(execution.getStatus());
 	}
+
+
 
 }

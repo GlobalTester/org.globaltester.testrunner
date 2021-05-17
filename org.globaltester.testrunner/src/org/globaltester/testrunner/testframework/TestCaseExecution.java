@@ -184,6 +184,7 @@ public class TestCaseExecution extends FileTestExecution {
 					result.status = Status.FAILURE;
 					result.comment = "Profile expression from TestCaseParameter not parsable";
 					TestLogger.info(result.comment);
+					this.putAdditionalInfo("Profile details", "Profile not parseable");
 					return;
 				}
 			}
@@ -225,6 +226,7 @@ public class TestCaseExecution extends FileTestExecution {
 				comment += " not fulfilled. Checked expression was \'" + profileExpression + "\'";
 				result.comment = comment;
 				TestLogger.info("Test case not applicable - " + this.getId() + " - " + comment);
+				this.putAdditionalInfo("Profile details", comment.replaceAll("\"", "").replaceAll("'", ""));
 				return;
 			} else {
 				comment = "Profiles \"" + testCase.getProfileString() + "\"";
@@ -233,6 +235,7 @@ public class TestCaseExecution extends FileTestExecution {
 				
 				comment += " fulfilled. Checked expression was \'" + profileExpression + "\'";
 				TestLogger.debug("Test case applicable - " + this.getId() + " - " + comment);
+				this.putAdditionalInfo("Profile details", comment.replaceAll("\"", "").replaceAll("'", ""));
 			}
 			
 			
@@ -271,6 +274,7 @@ public class TestCaseExecution extends FileTestExecution {
 					result.status = Status.NOT_APPLICABLE;
 					result.comment = "User selected skip";
 					TestLogger.info("Test case not applicable (user input).");
+					this.putAdditionalInfo("User input", "Test selected as not applicable by user.");
 					return;
 				default:
 			}

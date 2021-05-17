@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -121,6 +122,22 @@ public class ReportXmlGenerator {
 			Element reportTestCaseStatus = new Element("TESTCASESTATUS");
 			reportTestCaseStatus.setText(testReportPart.getStatus().toString());
 			reportTestCase.addContent(reportTestCaseStatus);
+			
+			Map<String, String> additionalInfos = testReportPart.getAdditionalInfos();
+			if (additionalInfos != null) {
+				additionalInfos.keySet().stream().sorted().forEach(k -> {
+					Element info = new Element("TESTCASEINFO");
+					Element key = new Element("KEY");
+					key.setText(k);
+					Element value = new Element("VALUE");
+					value.setText(additionalInfos.get(k));
+					info.addContent(key);
+					info.addContent(value);
+					reportTestCase.addContent(info);
+				});
+			}
+			
+			
 			
 			executedTests++;
 			
