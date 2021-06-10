@@ -512,6 +512,10 @@ public class TestExecutionResultViewer implements SelectionListener, ResultChang
 	public void setAutoExpandNonPassed(boolean checked) {
 		autoExpandNonPassed = checked;
 	}
+
+	public void setAutoScroll(boolean checked) {
+		autoScroll = checked;
+	}
 	
 	
 

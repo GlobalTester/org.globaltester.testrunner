@@ -277,7 +277,7 @@ public class ResultView extends ViewPart {
 			
 			@Override
 			public void run() {
-				viewer.setAutoExpandNonPassed(actionAutoScroll.isChecked());
+				viewer.setAutoScroll(actionAutoScroll.isChecked());
 			}
 		};
 		actionAutoScroll.setChecked(Boolean.parseBoolean(PreferenceHelper.getPreferenceValue(org.globaltester.testrunner.Activator.PLUGIN_ID, org.globaltester.testrunner.preferences.PreferenceConstants.P_AUTO_SCROLL, org.globaltester.testrunner.preferences.PreferenceConstants.P_AUTO_SCROLL_DEFAULT)));
