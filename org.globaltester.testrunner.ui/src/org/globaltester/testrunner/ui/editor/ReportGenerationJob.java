@@ -96,7 +96,7 @@ public class ReportGenerationJob extends Job {
 		}
 
 		monitor.done();
-		return new Status(IStatus.OK, Activator.PLUGIN_ID, "Export successfull.");
+		return new Status(IStatus.OK, Activator.PLUGIN_ID, "Export successful.");
 	}
 
 	public String getReportDir() {
