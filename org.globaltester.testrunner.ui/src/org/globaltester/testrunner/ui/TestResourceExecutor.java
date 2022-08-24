@@ -141,10 +141,12 @@ public abstract class TestResourceExecutor extends TestExecutor {
 						job.join();
 					}
 
-				} catch (Throwable e) {
+				} catch (Exception e) {
 					GtErrorLogger.log(Activator.PLUGIN_ID, e);
-
 					return Status.CANCEL_STATUS;
+				}  catch (Throwable e) {
+					GtErrorLogger.log(Activator.PLUGIN_ID, e);
+					throw e;
 				} finally {
 					if (sampleConfig != null) {
 						sampleConfig.unlock();
