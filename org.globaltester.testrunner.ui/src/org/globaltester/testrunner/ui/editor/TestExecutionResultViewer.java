@@ -120,7 +120,8 @@ public class TestExecutionResultViewer implements SelectionListener, ResultChang
 			protected void setValue(Object element, Object value) {
 				if (element instanceof AbstractTestExecution && value instanceof String){
 					Result result = ((AbstractTestExecution) element).getResult();
-					if (!result.getComment().equals(value)){
+					String comment = TestExecutionResultLabelProvider.findFirstComment(result);
+					if (!comment.equals(value)){
 						result.setComment((String)value);
 						treeViewer.refresh();
 					}
@@ -130,7 +131,7 @@ public class TestExecutionResultViewer implements SelectionListener, ResultChang
 			@Override
 			protected Object getValue(Object element) {
 				if (element instanceof AbstractTestExecution)
-					return ((AbstractTestExecution) element).getResult().getComment();
+					return TestExecutionResultLabelProvider.findFirstComment(((AbstractTestExecution) element).getResult());
 				return null;
 			}
 			

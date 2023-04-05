@@ -6,6 +6,7 @@ import org.eclipse.swt.graphics.Image;
 import org.globaltester.testrunner.testframework.AbstractTestExecution;
 import org.globaltester.testrunner.testframework.ActionStepExecution;
 import org.globaltester.testrunner.testframework.IExecution;
+import org.globaltester.testrunner.testframework.Result;
 import org.globaltester.testrunner.testframework.TestCampaign;
 import org.globaltester.testrunner.testframework.TestCampaignExecution;
 import org.globaltester.testrunner.testframework.TestCaseExecution;
@@ -36,6 +37,17 @@ public class TestExecutionResultLabelProvider implements ITableLabelProvider {
 
 		return null;
 	}
+	
+	public static String findFirstComment(Result result) {
+		if (result.getComment() != null && !result.getComment().isEmpty()) {
+			return result.getComment();
+		}
+		for (Result s : result.getSubResults()) {
+			String r = findFirstComment(s);
+			if (r != null && !r.isEmpty()) return r;
+		}
+		return "";
+	}
 
 	public String getColumnText(Object element, int columnIndex) {
 		switch (columnIndex) {
@@ -54,8 +66,9 @@ public class TestExecutionResultLabelProvider implements ITableLabelProvider {
 						.toString();
 			break;
 		case 3: // Comment
-			if (element instanceof AbstractTestExecution)
-				return ((AbstractTestExecution) element).getResult().getComment();
+			if (element instanceof AbstractTestExecution) {
+				return findFirstComment(((AbstractTestExecution) element).getResult());
+			}
 			break;
 		}
 		return null;

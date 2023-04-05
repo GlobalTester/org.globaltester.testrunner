@@ -94,6 +94,7 @@ public class ScriptIssue extends Result implements Serializable {
 		this.lineScript = lineScript;
 		this.lineLogFile = lineLogFile;
 		this.issueText = issueText;
+		this.comment = "@FailureID" + id + ":  " + issueText;
 		this.expectedValue = expectedValue;
 		this.receivedValue = receivedValue;
 		TestLogger.info("@FailureID" + id + ":  " + issueText);
